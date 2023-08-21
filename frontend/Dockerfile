@@ -50,6 +50,6 @@ ENV NODE_ENV production
 ENV PORT PORT
 ENV NITRO_PORT PORT
 ENV HOST 0.0.0.0
-EXPOSE PORT
+EXPOSE ${PORT}
 
 CMD ["node", ".output/server/index.mjs"]
