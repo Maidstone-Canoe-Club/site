@@ -1,0 +1,53 @@
+﻿version: '3.8'
+
+services:
+
+  directus:
+    container_name: mcc-backend
+    restart: unless-stopped
+    build:
+      context: "./directus"
+      dockerfile: "Dockerfile"
+    ports:
+      - "8055:8055"
+    volumes:
+      - ./directus/snapshots:/directus/snapshots
+      - ./directus/extensions:/directus/extensions
+      - ./directus/uploads:/directus/uploads
+      - ./directus/database:/directus/database
+    environment:
+      KEY: '255d861b-5ea1-5996-9aa3-922530ec40b1'
+      SECRET: '6116487b-cda1-52c2-b5b5-c8022c45e263'
+      CACHE_ENABLED: 'true'
+      CACHE_AUTO_PURGE: 'true'
+      CORS_ENABLED: 'true'
+      CORS_ORIGIN: "*"
+      DB_CLIENT: 'sqlite3'
+      DB_FILENAME: './database/data.db'
+      ADMIN_EMAIL: 'admin@example.com'
+      ADMIN_PASSWORD: 'password'
+
+  frontend:
+    container_name: mcc-frontend
+    build:
+      context: "./frontend"
+      dockerfile: "Dockerfile"
+      target: base
+    environment:
+      NODE_ENV: 'development'
+      NUXT_DIRECTUS_URL: 'http://host.docker.internal:8055'
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "24678:24678"
+      - "3000:3000"
+    volumes:
+      - ./frontend/src:/opt/node_app/app/src
+      - ./frontend/.npmrc:/opt/node_app/app/.npmrc
+      - ./frontend/nuxt.config.ts:/opt/node_app/app/nuxt.config.ts
+      - ./frontend/tailwind.config.ts:/opt/node_app/app/tailwind.config.ts
+      - ./frontend/tsconfig.json:/opt/node_app/app/tsconfig.json
+      - ./frontend/package.json:/opt/node_app/app/package.json
+      - ./frontend/package-lock.json:/opt/node_app/app/package-lock.json
+    command: ["npm", "run", "dev"]
