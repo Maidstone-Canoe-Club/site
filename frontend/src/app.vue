@@ -10,8 +10,6 @@ const {getItems} = useDirectusItems();
 
 const {
   data: newsItems,
-  pending,
-  error
 } = await useAsyncData("news", () => {
   return getItems({
     collection: "news"
