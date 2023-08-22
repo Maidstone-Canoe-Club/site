@@ -1,0 +1,9 @@
+﻿{
+  "name": "mcc-directus",
+  "scripts": {
+    "build": "npm run build --workspaces --if-present"
+  },
+  "workspaces": [
+    "extensions/directus-extension-*"
+  ]
+}
