@@ -44,13 +44,13 @@ WORKDIR /opt/node_app/app
 ARG BASE_URL
 ENV BASE_URL ${BASE_URL}
 
-ARG PORT
-
+#ARG PORT
+#
 ENV NODE_ENV production
-ENV PORT ${PORT}
-ENV NITRO_PORT ${PORT}
-ENV HOST 0.0.0.0
-
-EXPOSE ${PORT}
+#ENV PORT ${PORT}
+#ENV NITRO_PORT ${PORT}
+#ENV HOST 0.0.0.0
+#
+#EXPOSE ${PORT}
 
 CMD ["node", ".output/server/index.mjs"]
