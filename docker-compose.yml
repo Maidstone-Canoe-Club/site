@@ -3,6 +3,7 @@
 services:
 
   database:
+    container_name: mcc-database
     image: postgis/postgis:13-master
     volumes:
       - ./data/database:/var/lib/postgresql/data
