@@ -9,9 +9,11 @@
 <script setup lang="ts">
 // const {getItems} = useDirectusItems();
 
-const newsItems = null;
+const newsItems = loadNews();
 
-// async function loadNews(){
+function loadNews () {
+  console.log("loading news");
+  return null;
 //   try{
 //     const {data: newsItem}= await useAsyncData("news", () => {
 //       return getItems({
@@ -25,6 +27,6 @@ const newsItems = null;
 //     console.log("didn't work", e);
 //     return null;
 //   }
-// }
+}
 
 </script>
