@@ -7,24 +7,24 @@
 </template>
 
 <script setup lang="ts">
-const {getItems} = useDirectusItems();
+// const {getItems} = useDirectusItems();
 
-const newsItems = await loadNews();
+const newsItems = null;
 
-async function loadNews(){
-  try{
-    const {data: newsItem}= await useAsyncData("news", () => {
-      return getItems({
-        collection: "news"
-      })
-    })
-
-    return newsItem;
-
-  }catch(e){
-    console.log("didn't work", e);
-    return null;
-  }
-}
+// async function loadNews(){
+//   try{
+//     const {data: newsItem}= await useAsyncData("news", () => {
+//       return getItems({
+//         collection: "news"
+//       })
+//     })
+//
+//     return newsItem;
+//
+//   }catch(e){
+//     console.log("didn't work", e);
+//     return null;
+//   }
+// }
 
 </script>
