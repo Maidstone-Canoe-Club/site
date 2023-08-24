@@ -10,16 +10,22 @@
     "lint": "eslint --fix --ext .ts.vue"
   },
   "devDependencies": {
+    "@headlessui/tailwindcss": "^0.2.0",
     "@nuxt/devtools": "latest",
     "@nuxtjs/eslint-config-typescript": "^12.0.0",
+    "@nuxtjs/tailwindcss": "^6.8.0",
+    "@tailwindcss/forms": "^0.5.4",
     "@types/node": "^18.17.3",
     "eslint": "^8.37.0",
     "eslint-plugin-vue": "^9.17.0",
     "nuxt": "^3.6.5",
+    "nuxt-headlessui": "^1.1.4",
     "typescript": "^5.0.3"
   },
   "dependencies": {
-    "nuxt-directus": "^5.5.0"
+    "@heroicons/vue": "^2.0.18",
+    "nuxt-directus": "^5.5.0",
+    "nuxt-umami": "^2.5.3"
   },
   "overrides": {
     "vue": "latest"

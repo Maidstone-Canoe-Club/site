@@ -1,36 +1,19 @@
 ﻿<template>
   <div>
-    <template
-      v-if="user">
-      <nuxt-link
-        to="/profile">
-        Profile
-      </nuxt-link>
-      <button type="button" @click="onLogout">
-        Logout
-      </button>
-    </template>
-    <nuxt-link
-      v-else
-      to="/login">
-      Login
-    </nuxt-link>
-
-    <slot />
+    <div class="flex min-h-full flex-col">
+      <page-header />
+      <div class="mx-auto w-full max-w-7xl flex-grow px-4 sm:px-6 lg-px-8">
+        <slot />
+      </div>
+      <page-footer />
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { useDirectusUser, useDirectusAuth, navigateTo } from "#imports";
-
-const user = useDirectusUser();
-const { logout } = useDirectusAuth();
-
-async function onLogout () {
-  await logout();
-  await navigateTo("/");
-}
-
+useHead({
+  titleTemplate: title => title ? `${title} | MCC` : "Maidstone Canoe Club"
+});
 </script>
 
 <style scoped lang="scss">
