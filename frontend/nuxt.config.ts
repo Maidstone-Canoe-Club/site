@@ -1,11 +1,26 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+
+function scripts () {
+  const result = [];
+
+  if (process.env.NUXT_PUBLIC_UMAMI_HOST && process.env.NUXT_PUBLIC_UMAMI_ID) {
+    result.push({
+      src: `${process.env.NUXT_PUBLIC_UMAMI_HOST}/script.js`,
+      async: true,
+      "data-website-id": process.env.NUXT_PUBLIC_UMAMI_ID
+    });
+  }
+
+  return result;
+}
+
 export default defineNuxtConfig({
   devtools: { enabled: true },
   srcDir: "src/",
 
   app: {
     head: {
-      title: "Maidstone Canoe Club",
+      script: scripts(),
       meta: [
         { name: "apple-mobile-web-app-title", content: "Maidstone Canoe Club" },
         { name: "application-name", content: "Maidstone Canoe Club" },
@@ -29,7 +44,11 @@ export default defineNuxtConfig({
     }
   ],
 
-  modules: ["nuxt-directus"],
+  modules: [
+    "nuxt-directus",
+    "@nuxtjs/tailwindcss",
+    "nuxt-headlessui"
+  ],
 
   directus: {
     autoRefresh: true
