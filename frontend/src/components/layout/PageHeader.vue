@@ -22,15 +22,7 @@
               <div>
                 <MenuButton class="flex max-w-xs items-center rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                   <span class="sr-only">Open user menu</span>
-                  <img
-                    v-if="hasAvatar"
-                    class="h-8 w-8 rounded-full"
-                    :src="avatarUrl!"
-                    alt="User avatar">
-                  <UserCircleIcon
-                    v-else
-                    class="h-12 w-12 text-gray-300"
-                    aria-hidden="true" />
+                  <user-avatar :user="user" />
                 </MenuButton>
               </div>
               <transition
@@ -96,15 +88,7 @@
         class="border-t border-gray-200 pt-4 pb-3">
         <div class="flex items-center px-4">
           <div class="flex-shrink-0">
-            <img
-              v-if="hasAvatar && avatarUrl"
-              class="h-10 w-10 rounded-full"
-              :src="avatarUrl"
-              alt="User avatar">
-            <UserCircleIcon
-              v-else
-              class="h-12 w-12 text-gray-300"
-              aria-hidden="true" />
+            <user-avatar :user="user" />
           </div>
           <div class="ml-3">
             <div class="text-base font-medium text-gray-800">

@@ -2,10 +2,10 @@
 import { Ref } from "vue";
 import { useDirectusUrl } from "#imports";
 
-export function getAvatarUrl (user: Ref<DirectusUser>, size = 40) {
-  const directusUrl = useDirectusUrl();
-  if (user.value) {
-    return `${directusUrl}/assets/${user.value.avatar}?width=${size}&height=${size}&fit=cover`;
+export function getAvatarUrl (user: DirectusUser, size = 40) {
+  if (user) {
+    const directusUrl = useDirectusUrl();
+    return `${directusUrl}/assets/${user.avatar}?width=${size}&height=${size}&fit=cover&format=webp`;
   }
   return null;
 }

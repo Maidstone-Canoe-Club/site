@@ -1,7 +1,7 @@
 ﻿<template>
   <div class="">
     <strong>login</strong>
-    <form @submit.prevent="onSubmit">
+    <form @submit.prevent>
       <input-field
         id="email"
         v-model="email"
@@ -16,9 +16,9 @@
         type="password"
         autocomplete="current-password"
         required />
-      <button type="submit">
+      <custom-button type="submit" :action="onSubmit">
         Login
-      </button>
+      </custom-button>
     </form>
   </div>
 </template>

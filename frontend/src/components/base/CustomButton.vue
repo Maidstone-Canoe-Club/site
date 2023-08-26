@@ -21,7 +21,7 @@ const props = defineProps<{
   class?: string,
   disabled?: boolean,
   action: Function,
-  type?: string
+  type?: "button" | "submit" | "reset" | undefined
 }>();
 
 const buttonDisabled = computed(() => {
@@ -33,7 +33,7 @@ const buttonClass = ref(props.class);
 const loading = ref(false);
 
 const button = ref(null);
-const width = ref(null);
+const width = ref<string | null>(null);
 
 onMounted(() => {
   width.value = `${button.value.clientWidth}px`;
