@@ -1,172 +1,260 @@
-﻿<script setup lang="ts">
-import { DirectusUser } from "nuxt-directus/dist/runtime/types";
-
-const emits = defineEmits(["update:modelValue"]);
-
-const props = defineProps<{
-  modelValue: DirectusUser
-}>();
-
-const internalValue = ref(props.modelValue);
-
-watch(() => props.modelValue, (val: DirectusUser) => {
-  internalValue.value = val;
-}, { deep: true });
-
-watch(internalValue, (val: DirectusUser) => {
-  emits("update:modelValue", val);
-}, { deep: true });
-
-</script>
-
-<template>
-  <div class="mx-auto max-w-2xl space-y-16 sm:space-y-20 lg:mx-0 lg:max-w-none">
-    <div>
-      <h2 class="text-base font-semibold leading-7 text-gray-900">
-        Profile
-      </h2>
-      <p class="mt-1 text-sm leading-6 text-gray-500">
-        This information will be visible to coaches when you sign up to events
-      </p>
-
-      <dl class="mt-6 space-y-6 divide-y divide-gray-100 border-t border-gray-200 text-sm leading-6">
-        <div class="pt-6 sm:flex">
-          <dt class="font-medium text-gray-900 sm:w-64 sm:flex-none sm:pr-6">
-            First name
-          </dt>
-          <dd class="mt-1 flex justify-between gap-x-6 sm:mt-0 sm:flex-auto">
-            <input-field
-              id="first-name"
-              v-model="internalValue.first_name"
-              class="w-full"
-              required
-              name="first-name" />
-          </dd>
-        </div>
-        <div class="pt-6 sm:flex">
-          <dt class="font-medium text-gray-900 sm:w-64 sm:flex-none sm:pr-6">
-            Last name
-          </dt>
-          <dd class="mt-1 flex justify-between gap-x-6 sm:mt-0 sm:flex-auto">
-            <input-field
-              id="last-name"
-              v-model="internalValue.last_name"
-              class="w-full"
-              required
-              name="last-name" />
-          </dd>
-        </div>
-        <div class="pt-6 sm:flex">
-          <dt class="font-medium text-gray-900 sm:w-64 sm:flex-none sm:pr-6">
-            Date of birth
-          </dt>
-          <dd class="mt-1 flex justify-between gap-x-6 sm:mt-0 sm:flex-auto">
-            <input-field
-              id="dob"
-              v-model="internalValue.dob"
-              class="w-full"
-              required
-              type="date"
-              name="dob" />
-          </dd>
-        </div>
-        <div class="pt-6 sm:flex">
-          <dt class="font-medium text-gray-900 sm:w-64 sm:flex-none sm:pr-6">
-            Email address
-          </dt>
-          <dd class="mt-1 flex justify-between gap-x-6 sm:mt-0 sm:flex-auto">
-            <input-field
-              id="email-address"
-              v-model="internalValue.email"
-              class="w-full"
-              type="email"
-              required
-              name="email-address" />
-          </dd>
-        </div>
-        <div class="pt-6 sm:flex">
-          <dt class="font-medium text-gray-900 sm:w-64 sm:flex-none sm:pr-6">
-            Home tel
-          </dt>
-          <dd class="mt-1 flex justify-between gap-x-6 sm:mt-0 sm:flex-auto">
-            <input-field
-              id="home-tel"
-              v-model="internalValue.homeTel"
-              type="tel"
-              class="w-full"
-              name="email-address" />
-          </dd>
-        </div>
-        <div class="pt-6 sm:flex">
-          <dt class="font-medium text-gray-900 sm:w-64 sm:flex-none sm:pr-6">
-            Mobile
-          </dt>
-          <dd class="mt-1 flex justify-between gap-x-6 sm:mt-0 sm:flex-auto">
-            <input-field
-              id="mobile"
-              v-model="internalValue.mobile"
-              class="w-full"
-              type="tel"
-              name="mobile" />
-          </dd>
-        </div>
-      </dl>
-    </div>
-
-    <div>
-      <h2 class="text-base font-semibold leading-7 text-gray-900">
-        Emergency contacts
-      </h2>
-      <p class="mt-1 text-sm leading-6 text-gray-500">
-        Details of your emergency contacts
-      </p>
-
-      <ul role="list" class="mt-6 divide-y divide-gray-100 border-t border-gray-200 text-sm leading-6">
-        <li class="flex justify-between gap-x-6 py-6">
-          <div class="font-medium text-gray-900">
-            TD Canada Trust
-          </div>
-          <button type="button" class="font-semibold text-indigo-600 hover:text-indigo-500">
-            Update
-          </button>
-        </li>
-        <li class="flex justify-between gap-x-6 py-6">
-          <div class="font-medium text-gray-900">
-            Royal Bank of Canada
-          </div>
-          <button type="button" class="font-semibold text-indigo-600 hover:text-indigo-500">
-            Update
-          </button>
-        </li>
-      </ul>
-
-      <div class="flex border-t border-gray-100 pt-6">
-        <button type="button" class="text-sm font-semibold leading-6 text-indigo-600 hover:text-indigo-500">
-          <span aria-hidden="true">+</span> Add another bank
-        </button>
+﻿<template>
+  <div
+    v-if="user"
+    class="flex flex-col gap-10">
+    <div class="grid grid-cols-1 gap-x-8 gap-y-8">
+      <div class="px-4 sm:px-0">
+        <h2 class="text-base font-semibold leading-7 text-gray-900">
+          User information
+        </h2>
       </div>
+
+      <form class="bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl" @submit.prevent>
+        <div class="px-4 py-6 sm:p-8">
+          <div class="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+            <div class="sm:col-span-3">
+              <input-field
+                id="first-name"
+                v-model="user.first_name"
+                autocomplete="given-name"
+                label="First name"
+                name="first-name" />
+            </div>
+
+            <div class="sm:col-span-3">
+              <input-field
+                id="last-name"
+                v-model="user.last_name"
+                autocomplete="last-name"
+                label="Last name"
+                name="last-name" />
+            </div>
+
+            <div class="sm:col-span-3">
+              <input-field
+                id="home-tel"
+                v-model="user.home_tel"
+                autocomplete="tel"
+                label="Home Tel."
+                name="home-tel" />
+            </div>
+
+            <div class="sm:col-span-3">
+              <input-field
+                id="mobile-tel"
+                v-model="user.mobile"
+                autocomplete="mobile-tel"
+                label="Mobile"
+                name="mobile-tel" />
+            </div>
+
+            <div class="col-span-full">
+              <input-field
+                id="street-address"
+                v-model="user.street_address"
+                autocomplete="street-address"
+                label="Street address"
+                name="street-address" />
+            </div>
+
+            <div class="sm:col-span-2 sm:col-start-1">
+              <input-field
+                id="city"
+                v-model="user.city"
+                autocomplete="address-level2"
+                label="City"
+                name="city" />
+            </div>
+
+            <div class="sm:col-span-2">
+              <input-field
+                id="region"
+                v-model="user.county"
+                autocomplete="address-level1"
+                label="County"
+                name="region" />
+            </div>
+
+            <div class="sm:col-span-2">
+              <input-field
+                id="post-code"
+                v-model="user.postcode"
+                autocomplete="postal-code"
+                label="Post code"
+                name="post-code" />
+            </div>
+
+            <div class="sm:col-span-full">
+              <label for="photo" class="block text-sm font-medium leading-6 text-gray-900">Profile picture</label>
+              <div class="mt-2 flex items-center gap-x-3">
+                <user-avatar :user="user" />
+                <label for="file-upload">
+                  <span class="rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+                    Change
+                  </span>
+                  <input
+                    id="file-upload"
+                    name="file-upload"
+                    type="file"
+                    accept="image/*"
+                    class="hidden"
+                    @change="avatarChanged">
+                </label>
+                <div v-if="uploadingAvatar">
+                  <span class="text-gray-500 text-sm">Uploading...</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="flex items-center justify-end gap-x-6 border-t border-gray-900/10 px-4 py-4 sm:px-8">
+          <custom-button
+            type="submit"
+            :action="() => onSave('details')">
+            Save
+          </custom-button>
+        </div>
+      </form>
     </div>
 
-    <div>
-      <h2 class="text-base font-semibold leading-7 text-gray-900">
-        Medical information
-      </h2>
-      <p class="mt-1 text-sm leading-6 text-gray-500">
-        Any medical conditions you may have
-      </p>
+    <div class="grid grid-cols-1 gap-x-8 gap-y-8">
+      <div class="px-4 sm:px-0">
+        <h2 class="text-base font-semibold leading-7 text-gray-900">
+          Login information
+        </h2>
+      </div>
 
-      <dl class="mt-6 space-y-6 divide-y divide-gray-100 border-t border-gray-200 text-sm leading-6">
-        <div class="pt-6 sm:flex">
-          <textarea
-            id="medical-info"
-            name="medical-info"
-            rows="3"
-            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+      <form class="bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl" @submit.prevent>
+        <div class="px-4 py-6 sm:p-8">
+          <div class="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+            <div class="sm:col-span-4">
+              <input-field
+                id="email"
+                v-model="user.email"
+                type="email"
+                autocomplete="email"
+                label="Email address"
+                name="email" />
+            </div>
+
+            <div class="sm:col-span-3">
+              <input-field
+                id="new-password"
+                v-model="newPassword"
+                autocomplete="new-password"
+                label="New password"
+                type="password"
+                name="new-password" />
+            </div>
+
+            <div class="sm:col-span-3">
+              <input-field
+                id="confirm-password"
+                v-model="confirmPassword"
+                autocomplete="new-password"
+                label="Confirm password"
+                type="password"
+                name="confirm-password" />
+            </div>
+          </div>
         </div>
-      </dl>
+        <div class="flex items-center justify-end gap-x-6 border-t border-gray-900/10 px-4 py-4 sm:px-8">
+          <custom-button
+            type="submit"
+            :action="() => onSave('login')">
+            Save
+          </custom-button>
+        </div>
+      </form>
     </div>
   </div>
 </template>
+
+<script setup lang="ts">
+import { DirectusUser } from "nuxt-directus/dist/runtime/types";
+import { UserCircleIcon } from "@heroicons/vue/24/outline";
+import { useDirectusUser, useDirectusUsers } from "#imports";
+import { useFileUploader } from "~/composables/useFileUploader";
+import { UploadableFile } from "~/composables/useFileManager";
+
+const { uploadFile } = useFileUploader();
+const { updateUser } = useDirectusUsers();
+const user = useDirectusUser();
+
+const newPassword = ref("");
+const confirmPassword = ref("");
+const uploadingAvatar = ref(false);
+
+const emergencyContacts = [
+  {
+    fullName: "Name here",
+    relation: "Person",
+    contactNumber: "01234 567890"
+  },
+  {
+    fullName: "Name here",
+    relation: "Person",
+    contactNumber: "01234 567890"
+  }
+];
+
+async function onSave (type: string) {
+  try {
+    user.value = await updateUser<DirectusUser>({
+      id: user.value!.id,
+      user: cleanUser(user.value, type)
+    });
+  } catch (e) {
+    console.log("details not saved", e);
+  }
+}
+
+function cleanUser (user: DirectusUser, type: string): object {
+  if (type === "details") {
+    return {
+      first_name: user!.first_name,
+      last_name: user!.last_name
+    };
+  } else if (type === "avatar") {
+    return {
+      avatar: user!.avatar
+    };
+  } else if (type === "login") {
+    const result = {
+      email: user!.email
+    };
+
+    if (newPassword.value && confirmPassword.value && newPassword.value === confirmPassword.value) {
+      result.password = newPassword.value;
+    }
+
+    return result;
+  } else {
+    throw new Error(`Unknown save type: ${type}`);
+  }
+}
+
+async function avatarChanged (event) {
+  const directus = useDirectus();
+  const file = new UploadableFile(event.target.files[0], false);
+
+  uploadingAvatar.value = true;
+  try {
+    const oldId = user.value!.avatar;
+    const result = await uploadFile(file);
+    user.value.avatar = result.data.id;
+
+    await onSave("avatar");
+
+    await directus(`/files/${oldId}`, {
+      method: "DELETE"
+    });
+  } finally {
+    uploadingAvatar.value = false;
+  }
+}
+
+</script>
 
 <style scoped lang="scss">
 

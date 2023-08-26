@@ -11,8 +11,10 @@
         v-model="internalValue"
         :type="type"
         :name="name"
+        :required="required"
         class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-        :placeholder="placeholder">
+        :placeholder="placeholder"
+        :autocomplete="autocomplete">
     </div>
   </div>
 </template>
@@ -23,20 +25,22 @@ interface Props {
   modelValue: string | number | null | undefined,
   id: string,
   type?: string,
-  name?: string,
+  name?: string | undefined,
   label?: string | null,
   required?: boolean,
-  placeholder?: string
+  placeholder?: string | undefined,
+  autocomplete?: string | undefined
 }
 
 const emits = defineEmits(["update:modelValue"]);
 
 const props = withDefaults(defineProps<Props>(), {
   type: "text",
-  name: null,
+  name: undefined,
   label: null,
   required: false,
-  placeholder: null
+  placeholder: undefined,
+  autocomplete: undefined
 });
 
 const internalValue = computed<string | number | null>({

@@ -1,14 +1,24 @@
 ﻿<template>
   <div class="">
     <strong>login</strong>
-    <form @submit.prevent="onSubmit">
-      <label for="email">Email</label>
-      <input id="email" v-model="email" type="email" required>
-      <label for="password">Password</label>
-      <input id="password" v-model="password" type="password" required>
-      <button type="submit">
+    <form @submit.prevent>
+      <input-field
+        id="email"
+        v-model="email"
+        autocomplete="email"
+        label="Email"
+        type="email"
+        required />
+      <input-field
+        id="password"
+        v-model="password"
+        label="Password"
+        type="password"
+        autocomplete="current-password"
+        required />
+      <custom-button type="submit" :action="onSubmit">
         Login
-      </button>
+      </custom-button>
     </form>
   </div>
 </template>
