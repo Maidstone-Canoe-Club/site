@@ -61,5 +61,9 @@ export default defineNuxtConfig({
         interval: 1000
       }
     }
-  }
+  },
+
+  css: [
+    "~/assets/main.css"
+  ]
 });

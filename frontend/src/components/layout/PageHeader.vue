@@ -41,7 +41,7 @@
                 leave-from-class="scale-100 transform opacity-100"
                 leave-to-class="scale-95 transform opacity-0">
                 <MenuItems class="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                  <MenuItem v-for="item in userNavigation" :key="item.name" v-slot="{ active }">
+                  <MenuItem v-for="item in userNavigation" :key="item.name" v-slot="{ active, close }">
                     <button
                       v-if="item.onClick"
                       type="button"
@@ -52,7 +52,9 @@
                     <nuxt-link
                       v-else
                       :to="item.href"
-                      :class="[active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700']">
+                      :target="item.target"
+                      :class="[active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700']"
+                      @mouseup="close">
                       {{ item.name }}
                     </nuxt-link>
                   </MenuItem>
@@ -95,7 +97,7 @@
         <div class="flex items-center px-4">
           <div class="flex-shrink-0">
             <img
-              v-if="hasAvatar"
+              v-if="hasAvatar && avatarUrl"
               class="h-10 w-10 rounded-full"
               :src="avatarUrl"
               alt="User avatar">
@@ -151,6 +153,7 @@ const user = useDirectusUser();
 const { logout } = useDirectusAuth();
 
 const loginUrl = computed(() => `/login?redirect=${route.fullPath}`);
+const directusUrl = useDirectusUrl();
 
 const navigation = computed(() => {
   return [
@@ -160,7 +163,7 @@ const navigation = computed(() => {
   ];
 });
 
-const userNavigation = [
+const userNavigation = ref([
   { name: "Profile", href: "/profile" },
   {
     name: "Sign out",
@@ -170,9 +173,23 @@ const userNavigation = [
       await navigateTo("/");
     }
   }
-];
+]);
 
-const hasAvatar = computed(() => !!user.value.avatar);
+// temp check to see if user is admin
+if (user.value && user.value.role === "b4a0ccc9-6378-4b29-a3d5-dfb065b2ff42") {
+  userNavigation.value.push({
+    name: "Directus",
+    href: directusUrl,
+    target: "_blank"
+  },
+  {
+    name: "Analytics",
+    href: "https://analytics.mccdev.co.uk",
+    target: "_blank"
+  });
+}
+
+const hasAvatar = computed(() => !!user.value?.avatar);
 const avatarUrl = getAvatarUrl(user);
 
 </script>
