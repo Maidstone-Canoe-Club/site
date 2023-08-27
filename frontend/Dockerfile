@@ -7,6 +7,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends netcat wget \
 WORKDIR /opt/node_app/app
 
 COPY ./package*.json ./
+COPY ./.npmrc ./
 
 FROM prebase AS base
 
@@ -33,6 +34,7 @@ COPY --from=base --chown=node:node /opt/node_app/app .
 
 COPY ./src ./src
 COPY ./nuxt.config.ts ./
+COPY ./tailwind.config.ts ./
 COPY ./tsconfig.json ./
 
 RUN npm run build
