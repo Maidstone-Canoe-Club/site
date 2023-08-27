@@ -16,6 +16,7 @@ WORKDIR /directus
 COPY snapshots/ ./snapshots
 COPY extensions/templates/ ./extensions/templates
 COPY --from=builder /builder/extensions/directus-extension-slugify ./extensions/directus-extension-slugify
+COPY --from=builder /builder/extensions/directus-extension-invites ./extensions/directus-extension-invites
 
 ARG DB_CLIENT
 ARG DB_HOST
