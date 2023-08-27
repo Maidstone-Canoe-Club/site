@@ -39,7 +39,7 @@ COPY ./tsconfig.json ./
 
 RUN npm run build
 
-RUN rm -rf node_mdules && rm -rf .nuxt && npm cache clean --force
+RUN rm -rf node_modules && rm -rf .nuxt && npm cache clean --force
 
 FROM prebase
 
