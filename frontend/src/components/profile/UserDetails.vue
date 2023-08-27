@@ -246,9 +246,11 @@ async function avatarChanged (event) {
 
     await onSave("avatar");
 
-    await directus(`/files/${oldId}`, {
-      method: "DELETE"
-    });
+    if (oldId) {
+      await directus(`/files/${oldId}`, {
+        method: "DELETE"
+      });
+    }
   } finally {
     uploadingAvatar.value = false;
   }
