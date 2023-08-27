@@ -1,4 +1,5 @@
-﻿
+﻿@tailwind components;
+
 html, body, #__nuxt {
   margin: 0;
   height: 100%;
