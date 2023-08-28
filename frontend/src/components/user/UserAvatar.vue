@@ -1,12 +1,14 @@
 ﻿<template>
   <img
     v-if="hasAvatar"
-    class="h-8 w-8 rounded-full"
+    class="rounded-full"
+    :class="sizeClass"
     :src="avatarUrl!"
     alt="User avatar">
   <UserCircleIcon
     v-else
-    class="h-12 w-12 text-gray-300"
+    class="text-gray-300"
+    :class="sizeClass"
     aria-hidden="true" />
 </template>
 
@@ -14,12 +16,17 @@
 import { UserCircleIcon } from "@heroicons/vue/24/outline";
 import { DirectusUser } from "nuxt-directus/dist/runtime/types";
 
-const props = defineProps<{
-  user: DirectusUser
-}>();
+const props = withDefaults(defineProps<{
+  user: DirectusUser,
+  imageSize?: number,
+  sizeClass?: string
+}>(), {
+  imageSize: 50,
+  sizeClass: "w-8 h-8"
+});
 
 const hasAvatar = computed(() => !!props.user!.avatar);
-const avatarUrl = computed(() => getAvatarUrl(props.user));
+const avatarUrl = computed(() => getAvatarUrl(props.user, props.imageSize));
 </script>
 
 <style scoped lang="scss">
