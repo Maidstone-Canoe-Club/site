@@ -86,11 +86,14 @@
 
             <div class="sm:col-span-full">
               <label for="photo" class="block text-sm font-medium leading-6 text-gray-900">Profile picture</label>
-              <div class="mt-2 flex items-center gap-x-3">
-                <user-avatar :user="user" />
+              <div class="mt-2 flex items-center gap-x-5">
+                <user-avatar
+                  :user="user"
+                  :image-size="96"
+                  size-class="w-24 h-24" />
                 <label for="file-upload">
                   <span class="rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
-                    Change
+                    {{ user.avatar ? "Change" : "Upload" }}
                   </span>
                   <input
                     id="file-upload"
@@ -100,6 +103,13 @@
                     class="hidden"
                     @change="avatarChanged">
                 </label>
+                <button
+                  v-if="user.avatar"
+                  type="button"
+                  class="rounded bg-rose-600 px-2 py-1 text-sm font-semibold text-white shadow-sm hover:bg-rose-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-600"
+                  @click="removeAvatar">
+                  Remove
+                </button>
                 <div v-if="uploadingAvatar">
                   <span class="text-gray-500 text-sm">Uploading...</span>
                 </div>
@@ -180,6 +190,7 @@ import { UploadableFile } from "~/composables/useFileManager";
 const { uploadFile } = useFileUploader();
 const { updateUser } = useDirectusUsers();
 const user = useDirectusUser();
+const directus = useDirectus();
 
 const newPassword = ref("");
 const confirmPassword = ref("");
@@ -235,7 +246,6 @@ function cleanUser (user: DirectusUser, type: string): object {
 }
 
 async function avatarChanged (event) {
-  const directus = useDirectus();
   const file = new UploadableFile(event.target.files[0], false);
 
   uploadingAvatar.value = true;
@@ -254,6 +264,19 @@ async function avatarChanged (event) {
   } finally {
     uploadingAvatar.value = false;
   }
+}
+
+async function removeAvatar () {
+  const oldId = user.value!.avatar;
+  user.value = await updateUser<DirectusUser>({
+    id: user.value!.id,
+    user: {
+      avatar: null
+    }
+  });
+  await directus(`/files/${oldId}`, {
+    method: "DELETE"
+  });
 }
 
 </script>

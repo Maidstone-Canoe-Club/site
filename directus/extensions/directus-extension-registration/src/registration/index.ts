@@ -37,11 +37,6 @@ export default defineEndpoint((router, {services, database}) => {
         const emergencyContacts = req.body.emergencyContacts;
         const medicalInfo = req.body.medicalInfo;
 
-        console.log("got user", user);
-        console.log("got invite id", inviteId);
-        console.log("got contacts", emergencyContacts);
-        console.log("got medical info", medicalInfo);
-
         if (!user) {
             return res.status(400).send("missing user");
         }
@@ -59,45 +54,31 @@ export default defineEndpoint((router, {services, database}) => {
         if (inviteId) {
             const memberRole = await getRole("Member", rolesService);
             user.role = memberRole.id;
-            // get member role
-            // set user.role to member role
         } else {
             const unverifiedRole = await getRole("Unverified", rolesService);
-            console.log("found unverified role", unverifiedRole);
             user.role = unverifiedRole.id;
-            // get unverified role
-            // set user.role to unverified role id
         }
 
         const usersService = new UsersService({knex: database, schema: req.schema, accountability: adminAccountability});
 
-        // create the user
         const newUserId = await usersService.createOne(user);
-        console.log("created new user id", newUserId);
 
         medicalInfo.user = newUserId;
         for(let i = 0; i < emergencyContacts.length; i++){
             emergencyContacts[i].user = newUserId;
         }
 
-        // save the emergency contact info
         const emergencyContactsService = new ItemsService("emergency_contacts", {knex: database, schema: req.schema, accountability: adminAccountability});
-        const contactsResult = await emergencyContactsService.createMany(emergencyContacts);
-        console.log("created emergency contacts", contactsResult);
+        await emergencyContactsService.createMany(emergencyContacts);
 
-        // save the medical info
         const medicalInfoService = new ItemsService("medical_info", {knex: database, schema: req.schema, accountability: adminAccountability});
-        const medialResult = await medicalInfoService.createOne(medicalInfo);
-        console.log("created medical info", medialResult);
+        await medicalInfoService.createOne(medicalInfo);
 
         if (inviteId) {
             const inviteService = new ItemsService("member_invites", {knex: database, schema: req.schema, accountability: adminAccountability})
-            // complete the invite
             const invite = await inviteService.readOne(inviteId);
-            console.log("found existing invite");
             invite.accepted = true;
-            const inviteAcceptedResult = await inviteService.updateOne(inviteId, invite);
-            console.log("invite accepted", inviteAcceptedResult);
+            await inviteService.updateOne(inviteId, invite);
         }
 
         return res.send(newUserId);
