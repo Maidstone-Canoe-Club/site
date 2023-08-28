@@ -88,24 +88,6 @@
           @on-back="previousStep"
           @on-next="onCompleteRegistration" />
       </template>
-
-      <!--      <div class="flex flex-col gap-4 mt-14">-->
-      <!--        <button-->
-      <!--          class="flex-grow rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"-->
-      <!--          type="button"-->
-      <!--          :disabled="!canGoNextStep"-->
-      <!--          @click="nextStep">-->
-      <!--          {{ currentStep === steps.length ? "Complete Registration" : "Next" }}-->
-      <!--        </button>-->
-
-      <!--        <button-->
-      <!--          v-if="canGoBack"-->
-      <!--          class="flex-grow rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"-->
-      <!--          type="button"-->
-      <!--          @click="previousStep">-->
-      <!--          Back-->
-      <!--        </button>-->
-      <!--      </div>-->
     </div>
   </div>
 </template>
