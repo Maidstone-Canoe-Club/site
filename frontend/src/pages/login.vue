@@ -8,19 +8,15 @@
 
     <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
       <form class="space-y-6" @submit.prevent>
-        <div>
-          <label for="email" class="block text-sm font-medium leading-6 text-gray-900">Email address</label>
-          <div class="mt-2">
-            <input
-              id="email"
-              v-model="email"
-              name="email"
-              type="email"
-              autocomplete="email"
-              required
-              class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-          </div>
-        </div>
+        <input-field
+          id="email"
+          v-model="email"
+          name="email"
+          type="email"
+          label="Email address"
+          autocomplete="email"
+          required
+          :v="v$.email" />
 
         <div>
           <div class="flex items-center justify-between">
@@ -30,14 +26,14 @@
             </div>
           </div>
           <div class="mt-2">
-            <input
+            <input-field
               id="password"
               v-model="password"
               name="password"
               type="password"
               autocomplete="current-password"
               required
-              class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+              :v="v$.password" />
           </div>
         </div>
 
@@ -47,6 +43,13 @@
           type="submit">
           Sign in
         </custom-button>
+        <div v-if="error">
+          <p
+            v-for="(e, index) in error.errors"
+            :key="index">
+            {{ e.message }}
+          </p>
+        </div>
       </form>
 
       <hr class="mt-10">
@@ -63,7 +66,14 @@
 </template>
 
 <script setup lang="ts">
-import { useDirectusAuth, navigateTo } from "#imports";
+import { useVuelidate, Validation } from "@vuelidate/core";
+import { minLength, required, email as emailValidator } from "@vuelidate/validators";
+import { Ref } from "vue";
+import { useDirectusAuth, navigateTo, definePageMeta } from "#imports";
+
+definePageMeta({
+  middleware: ["public-only"]
+});
 
 useHead({ title: "Login" });
 
@@ -74,14 +84,32 @@ const { login } = useDirectusAuth();
 
 const route = useRoute();
 
+const error: any = ref(null);
 const redirect = route.query.redirect as string || "/";
 
+const rules = {
+  email: {
+    required,
+    emailValidator
+  },
+  password: {
+    required,
+    minLength: minLength(8)
+  }
+};
+
+const v$: Ref<Validation> = useVuelidate(rules, { email, password });
+
 async function onSubmit () {
-  try {
-    await login({ email: email.value, password: password.value });
-    await navigateTo(redirect);
-  } catch (e) {
-    console.log("unable to login", e);
+  v$.value.$touch();
+
+  if (!v$.value.$invalid) {
+    try {
+      await login({ email: email.value, password: password.value });
+      await navigateTo(redirect);
+    } catch (e) {
+      error.value = e.data;
+    }
   }
 }
 </script>

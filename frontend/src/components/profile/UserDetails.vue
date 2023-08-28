@@ -141,6 +141,7 @@
               <input-field
                 id="email"
                 v-model="user.email"
+                :disabled="!user.email_confirmed"
                 type="email"
                 autocomplete="email"
                 label="Email address"

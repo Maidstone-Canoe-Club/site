@@ -9,7 +9,7 @@ async function sendNew (services: any, input: any, schema: any, database: any) {
     const token = nanoid(34);
 
     input.confirm_token = token;
-    input.confirm_token_create_date = Date.now();
+    input.confirm_token_create_date = new Date();
     input.email_confirmed = false;
 
     const publicUrl = process.env.PUBLIC_URL;

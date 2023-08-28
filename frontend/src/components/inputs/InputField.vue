@@ -13,6 +13,7 @@
         :type="type"
         :name="name"
         :required="required"
+        :disabled="disabled"
         class="block w-full rounded-md border-0 py-1.5 sm:text-sm sm:leading-6"
         :class="inputClass"
         :placeholder="placeholder"
@@ -44,6 +45,7 @@ interface Props {
   name?: string | undefined,
   label?: string | null,
   required?: boolean,
+  disabled?: boolean,
   placeholder?: string | undefined,
   autocomplete?: string | undefined,
   v?: Validation | null
@@ -56,6 +58,7 @@ const props = withDefaults(defineProps<Props>(), {
   name: undefined,
   label: null,
   required: false,
+  disabled: false,
   placeholder: undefined,
   autocomplete: undefined,
   v: null
@@ -85,6 +88,10 @@ const isValid = computed(() => {
 });
 
 const inputClass = computed(() => {
+  if (props.disabled) {
+    return "text-gray-600 bg-gray-50 ring-1 ring-inset ring-gray-200";
+  }
+
   if (isValid.value) {
     return "text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-indigo-600";
   } else {
