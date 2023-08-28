@@ -46,12 +46,19 @@ export default defineNuxtConfig({
 
   modules: [
     "nuxt-directus",
+    "@nuxtjs/google-fonts",
     "@nuxtjs/tailwindcss",
     "nuxt-headlessui"
   ],
 
   directus: {
     autoRefresh: true
+  },
+
+  googleFonts: {
+    families: {
+      Inter: [400, 500, 600, 700]
+    }
   },
 
   vite: {

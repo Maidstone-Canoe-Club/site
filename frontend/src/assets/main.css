@@ -1,5 +1,9 @@
 ﻿@tailwind components;
 
+html {
+  font-family: 'Inter', Arial, sans-serif;
+}
+
 html, body, #__nuxt {
   margin: 0;
   height: 100%;

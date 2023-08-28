@@ -49,7 +49,9 @@
         </custom-button>
       </form>
 
-      <p class="mt-10 text-center text-sm text-gray-500">
+      <hr class="mt-10">
+
+      <p class="mt-5 text-center text-sm text-gray-500">
         Already a club member?
         {{ ' ' }}
         <nuxt-link to="/member-check" class="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">

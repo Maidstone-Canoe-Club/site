@@ -142,8 +142,7 @@ async function onCheck () {
     });
 
     if (check.result) {
-      // navigate to member registraion page?
-      navigateTo(`/member-register?id=${check.id}`);
+      await navigateTo(`/register?inviteId=${check.id}`);
     } else {
       checkResult.value = check;
     }
