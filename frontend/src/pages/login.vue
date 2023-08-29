@@ -22,7 +22,9 @@
           <div class="flex items-center justify-between">
             <label for="password" class="block text-sm font-medium leading-6 text-gray-900">Password</label>
             <div class="text-sm">
-              <a href="#" class="font-semibold text-indigo-600 hover:text-indigo-500">Forgot password?</a>
+              <nuxt-link to="/forgot-password" class="font-semibold text-indigo-600 hover:text-indigo-500">
+                Forgot password?
+              </nuxt-link>
             </div>
           </div>
           <div class="mt-2">

@@ -59,18 +59,34 @@ export default defineEndpoint((router, {services, database}) => {
         });
     });
 
-    router.get("/:id", async (req, res) => {
-        const id = req.params.id;
+    router.get("/", async (req, res) => {
+        const id = req.query.id;
+        const email = req.query.email;
 
-        if(!id){
+        console.log("got id", id, "got email", email)
+        if (!id && !email) {
             return res.status(404);
         }
 
         const itemService = new ItemsService("member_invites", {knex: database, schema: req.schema, accountability: adminAccountability})
 
-        const invite = await itemService.readOne(id);
+        let invite;
 
-        if(!invite){
+        if (id) {
+            invite = await itemService.readOne(id);
+        } else if (email) {
+            const invites = await itemService.readByQuery({
+                filter: {
+                    email: {
+                        _eq: email
+                    }
+                }
+            });
+
+            invite = invites.length ? invites[0] : null;
+        }
+
+        if (!invite) {
             return res.status(404);
         }
 
