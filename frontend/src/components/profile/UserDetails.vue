@@ -183,7 +183,6 @@
 
 <script setup lang="ts">
 import { DirectusUser } from "nuxt-directus/dist/runtime/types";
-import { UserCircleIcon } from "@heroicons/vue/24/outline";
 import { useDirectusUser, useDirectusUsers } from "#imports";
 import { useFileUploader } from "~/composables/useFileUploader";
 import { UploadableFile } from "~/composables/useFileManager";

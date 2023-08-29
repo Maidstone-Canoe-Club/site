@@ -65,6 +65,7 @@
       <template v-if="currentStep === 1">
         <login-details-step
           v-model="user"
+          :invite-id="inviteId"
           @on-next="nextStep" />
       </template>
       <template v-if="currentStep === 2">
@@ -95,7 +96,7 @@
 <script setup lang="ts">
 import { CheckIcon } from "@heroicons/vue/24/solid";
 import { definePageMeta } from "#imports";
-import { EmergencyContact, MedicalInfo } from "~/types";
+import { EmergencyContact, InviteData, MedicalInfo } from "~/types";
 
 definePageMeta({
   middleware: ["public-only"]
@@ -105,15 +106,6 @@ const route = useRoute();
 const inviteId = route.query.inviteId as string;
 const directus = useDirectus();
 const { login } = useDirectusAuth();
-
-type InviteData = {
-  id: string,
-  email: string,
-  club_number: number,
-  bc_number: number,
-  first_name: string,
-  last_name: string,
-}
 
 const user = ref({
   email: "",
@@ -145,7 +137,7 @@ const emergencyContacts = ref<EmergencyContact[]>([]);
 
 if (inviteId) {
   const directus = useDirectus();
-  const inviteInfo = await directus<InviteData>(`/invites/${inviteId}`);
+  const inviteInfo = await directus<InviteData>(`/invites?id=${inviteId}`);
   user.value.email = inviteInfo.email;
   user.value.bc_number = inviteInfo.bc_number;
   user.value.club_number = inviteInfo.club_number;

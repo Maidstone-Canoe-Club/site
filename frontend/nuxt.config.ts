@@ -1,5 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 
+import { sentryVitePlugin } from "@sentry/vite-plugin";
+
 function scripts () {
   const result = [];
 
@@ -17,6 +19,21 @@ function scripts () {
 export default defineNuxtConfig({
   devtools: { enabled: true },
   srcDir: "src/",
+
+  runtimeConfig: {
+    public: {
+      ENV: process.env.NODE_ENV ?? "production",
+      SENTRY_ENABLED: (process.env.NODE_ENV ?? "production") === "production",
+      SENTRY_DSN: process.env.SENTRY_DSN,
+      SENTRY_ENVIRONMENT: process.env.SENTRY_ENVIRONMENT,
+      SENTRY_RELEASE: process.env.SENTRY_RELEASE
+    }
+  },
+
+  sourcemap: {
+    server: true,
+    client: true
+  },
 
   app: {
     head: {
@@ -62,6 +79,22 @@ export default defineNuxtConfig({
   },
 
   vite: {
+    build: {
+      sourcemap: true
+    },
+    plugins: [
+      sentryVitePlugin({
+        authToken: process.env.SENTRY_AUTH_TOKEN,
+        org: process.env.SENTRY_ORG,
+        project: process.env.SENTRY_PROJECT,
+        telemetry: false,
+        disable: process.env.NODE_ENV !== "production",
+        release: {
+          name: process.env.SENTRY_RELEASE
+        },
+        debug: true
+      })
+    ],
     server: {
       watch: {
         usePolling: true,
