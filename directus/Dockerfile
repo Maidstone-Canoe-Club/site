@@ -19,7 +19,6 @@ COPY --from=builder /builder/extensions/directus-extension-slugify ./extensions/
 COPY --from=builder /builder/extensions/directus-extension-invites ./extensions/directus-extension-invites
 COPY --from=builder /builder/extensions/directus-extension-confirm-email ./extensions/directus-extension-confirm-email
 COPY --from=builder /builder/extensions/directus-extension-registration ./extensions/directus-extension-registration
-COPY --from=builder /builder/extensions/directus-extension-sentry ./extensions/directus-extension-sentry
 
 ARG DB_CLIENT
 ARG DB_HOST
