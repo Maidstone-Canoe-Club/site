@@ -1,0 +1,41 @@
+{
+	"name": "directus-extension-mcc",
+	"version": "1.0.0",
+	"type": "module",
+	"directus:extension": {
+		"host": "^10.1.9",
+		"type": "bundle",
+		"path": {
+			"app": "dist/app.js",
+			"api": "dist/api.js"
+		},
+		"entries": [
+			{
+				"type": "endpoint",
+				"name": "webhooks",
+				"source": "src/webhooks/index.ts"
+			}
+		]
+	},
+	"description": "Please enter a description for your extension",
+	"icon": "extension",
+	"keywords": [
+		"directus",
+		"directus-extension",
+		"directus-custom-bundle"
+	],
+	"scripts": {
+		"build": "directus-extension build",
+		"dev": "directus-extension build -w --no-minify",
+		"link": "directus-extension link",
+		"add": "directus-extension add"
+	},
+	"devDependencies": {
+		"@directus/extensions-sdk": "10.1.9",
+		"@types/node": "^20.5.7",
+		"nanoid": "^4.0.2",
+		"nanoid-dictionary": "^4.3.0",
+		"ofetch": "^1.3.3",
+		"typescript": "^5.2.2"
+	}
+}
