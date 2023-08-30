@@ -56,6 +56,7 @@ COPY ./tailwind.config.ts ./
 COPY ./tsconfig.json ./
 
 RUN npm run build
+RUN npx @sentry/wizard@latest -i sourcemaps
 
 RUN rm -rf node_modules && rm -rf .nuxt && npm cache clean --force
 
