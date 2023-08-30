@@ -1,27 +1,13 @@
 ﻿<template>
   <div>
     <div class="flex flex-row gap-1">
-      <input-field
+      <input-password
         id="password"
         v-model="password"
         :label="label"
-        :type="showPassword ? 'text' : 'password'"
         class="flex-grow"
+        show-password-toggle
         :v="v" />
-
-      <button
-        type="button"
-        class="rounded-md bg-white px-2 py-1 text-xs font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-        :title="showPassword ? 'Hide password' : 'Show password'"
-        @click="showPassword = !showPassword">
-        <!--        {{ showPassword ? "hide": "show" }}-->
-        <EyeIcon
-          v-if="showPassword"
-          class="w-5 h-5 text-gray-600" />
-        <EyeSlashIcon
-          v-else
-          class="w-5 h-5 text-gray-600" />
-      </button>
     </div>
 
     <span
@@ -80,7 +66,7 @@ const password = computed<string>({
   }
 });
 
-const showPassword = ref(false);
+// const showPassword = ref(false);
 
 const useZxcvbn = async () => {
   if (password) {

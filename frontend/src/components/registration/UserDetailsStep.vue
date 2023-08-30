@@ -1,5 +1,8 @@
 ﻿<template>
   <form @submit.prevent>
+    <p v-if="discoveredNewMember">
+      Hi there! You seem to already be a club member!
+    </p>
     <div class="space-y-6">
       <input-field
         id="first-name"
@@ -76,7 +79,8 @@ import { Ref } from "vue";
 const emits = defineEmits(["update:modelValue", "onBack", "onNext"]);
 
 const props = defineProps<{
-  modelValue: DirectusUser
+  modelValue: DirectusUser,
+  inviteId?: string
 }>();
 
 const internalValue = ref(props.modelValue);
@@ -94,6 +98,8 @@ const rules = {
   last_name: { required },
   dob: { required }
 };
+
+const discoveredNewMember = computed(() => !props.inviteId && internalValue.value!.bc_number);
 
 const v$: Ref<Validation> = useVuelidate(rules, internalValue);
 
