@@ -19,6 +19,7 @@ COPY --from=builder /builder/extensions/directus-extension-slugify ./extensions/
 COPY --from=builder /builder/extensions/directus-extension-invites ./extensions/directus-extension-invites
 COPY --from=builder /builder/extensions/directus-extension-confirm-email ./extensions/directus-extension-confirm-email
 COPY --from=builder /builder/extensions/directus-extension-registration ./extensions/directus-extension-registration
+COPY --from=builder /builder/extensions/directus-extension-mcc ./extensions/directus-extension-mcc
 
 ARG DB_CLIENT
 ARG DB_HOST
@@ -37,6 +38,7 @@ ARG EMAIL_SMTP_HOST
 ARG EMAIL_SMTP_PORT
 ARG EMAIL_SMTP_USER
 ARG EMAIL_SMTP_PASSWORD
+ARG EMAIL_DOMAIN
 ARG SENTRY_DSN
 
 ENV DB_CLIENT ${DB_CLIENT}
@@ -56,6 +58,7 @@ ENV EMAIL_SMTP_HOST ${EMAIL_SMTP_HOST}
 ENV EMAIL_SMTP_PORT ${EMAIL_SMTP_PORT}
 ENV EMAIL_SMTP_USER ${EMAIL_SMTP_USER}
 ENV EMAIL_SMTP_PASSWORD ${EMAIL_SMTP_PASSWORD}
+ENV EMAIL_DOMAIN ${EMAIL_DOMAIN}
 ENV SENTRY_DSN ${SENTRY_DSN}
 
 ARG PORT
