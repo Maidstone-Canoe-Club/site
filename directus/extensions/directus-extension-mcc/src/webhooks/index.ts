@@ -199,14 +199,12 @@ async function handleMailForward(data: InboundEmail, toAddress: FullAddress, mai
 }
 
 async function sendEmail(email: OutboundEmail) {
-    console.log("SENDING EMAIL", email);
-    return new Promise(resolve => resolve());
-    // return await ofetch("/email", {
-    //     baseURL: postmarkUrl,
-    //     method: "POST",
-    //     headers: {
-    //         "X-Postmark-Server-Token": process.env.EMAIL_SMTP_PASSWORD!
-    //     },
-    //     body: email
-    // })
+    return await ofetch("/email", {
+        baseURL: postmarkUrl,
+        method: "POST",
+        headers: {
+            "X-Postmark-Server-Token": process.env.EMAIL_SMTP_PASSWORD!
+        },
+        body: email
+    });
 }
