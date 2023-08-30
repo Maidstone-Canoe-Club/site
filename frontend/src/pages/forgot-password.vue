@@ -96,14 +96,17 @@ watch(email, () => {
   v$.value.$reset();
 });
 
+const config = useRuntimeConfig();
+
 async function onSubmit () {
   v$.value.$touch();
 
   if (!v$.value.$invalid) {
     try {
+      const url = config.public.BASE_URL + "/reset-password";
       await requestPasswordReset({
         email: email.value,
-        reset_url: process.env.BASE_URL + "/reset-password"
+        reset_url: url
       });
       status.value = Status.Success;
     } catch {
