@@ -89,7 +89,7 @@ const rules = {
 };
 
 const v$: Ref<Validation> = useVuelidate(rules, { password, confirmedPassword });
-const status = ref<Status>(Status.Error);
+const status = ref<Status>(Status.Waiting);
 
 watch([password, confirmedPassword], () => {
   v$.value.$reset();

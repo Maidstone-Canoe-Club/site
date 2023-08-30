@@ -22,6 +22,7 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
+      BASE_URL: process.env.BASE_URL,
       ENV: process.env.NODE_ENV ?? "production",
       SENTRY_ENABLED: (process.env.NODE_ENV ?? "production") === "production",
       SENTRY_DSN: process.env.SENTRY_DSN,
