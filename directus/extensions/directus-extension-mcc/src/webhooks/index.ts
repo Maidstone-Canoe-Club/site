@@ -152,7 +152,7 @@ async function handleMailForward(data: InboundEmail, toAddress: FullAddress, mai
                 console.log("something went wrong, unknown from address for thread")
             }
         } catch (e) {
-            console.log("something went wrong continuing mail thread", threadId, JSON.stringify(e));
+            console.log("something went wrong continuing mail thread", threadId, e, e.message, e.data);
         }
     } else {
         try {
@@ -193,12 +193,13 @@ async function handleMailForward(data: InboundEmail, toAddress: FullAddress, mai
                 console.log("no forward found for", name);
             }
         } catch (e) {
-            console.log("something went wrong creating a new mail thread", JSON.stringify(e));
+            console.log("something went wrong creating a new mail thread", e, e.message, e.data);
         }
     }
 }
 
 async function sendEmail(email: OutboundEmail) {
+    console.log("sending mail", email)
     return await ofetch("/email", {
         baseURL: postmarkUrl,
         method: "POST",
@@ -206,5 +207,7 @@ async function sendEmail(email: OutboundEmail) {
             "X-Postmark-Server-Token": process.env.EMAIL_SMTP_PASSWORD!
         },
         body: email
+    }).catch((err) => {
+        console.log("ofetch error: ", err.data)
     });
 }
