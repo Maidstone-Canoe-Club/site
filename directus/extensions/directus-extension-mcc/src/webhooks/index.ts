@@ -119,8 +119,9 @@ async function handleMailForward(data: InboundEmail, toAddress: FullAddress, mai
 
         try {
             const existingThread = await mailThreadsService.readOne(threadId);
-            console.log("got thread id", threadId)
+            console.log("got thread id", existingThread)
             if (existingThread) {
+                console.log("inbound mail", data)
                 if (data.FromFull.Email === existingThread.target_email) {
                     // send  to sender_email
                     await sendEmail({
