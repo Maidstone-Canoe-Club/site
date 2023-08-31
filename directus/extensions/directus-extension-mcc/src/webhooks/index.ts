@@ -152,7 +152,7 @@ async function handleMailForward(data: InboundEmail, toAddress: FullAddress, mai
                 console.log("something went wrong, unknown from address for thread")
             }
         } catch (e) {
-            console.log("something went wrong continuing mail thread", threadId);
+            console.log("something went wrong continuing mail thread", threadId, JSON.stringify(e));
         }
     } else {
         try {
@@ -193,7 +193,7 @@ async function handleMailForward(data: InboundEmail, toAddress: FullAddress, mai
                 console.log("no forward found for", name);
             }
         } catch (e) {
-            console.log("something went wrong creating a new mail thread", e.message);
+            console.log("something went wrong creating a new mail thread", JSON.stringify(e));
         }
     }
 }
