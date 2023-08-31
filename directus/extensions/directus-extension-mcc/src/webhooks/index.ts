@@ -152,7 +152,7 @@ async function handleMailForward(data: InboundEmail, toAddress: FullAddress, mai
                 console.log("something went wrong, unknown from address for thread")
             }
         } catch (e) {
-            console.log("something went wrong continuing mail thread", threadId)
+            console.log("something went wrong continuing mail thread", threadId);
         }
     } else {
         try {
