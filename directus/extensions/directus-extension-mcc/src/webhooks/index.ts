@@ -124,7 +124,7 @@ async function handleMailForward(data: InboundEmail, toAddress: FullAddress, mai
                 if (data.FromFull.Email === existingThread.target_email) {
                     // send  to sender_email
                     await sendEmail({
-                        From: data.From,
+                        From: `forwards@${process.env.EMAIL_DOMAIN}`,
                         To: existingThread.sender_email,
                         HtmlBody: data.HtmlBody,
                         Subject: data.Subject,
@@ -136,7 +136,7 @@ async function handleMailForward(data: InboundEmail, toAddress: FullAddress, mai
                 } else if (data.FromFull.Email === existingThread.sender_email) {
                     // send to target_email
                     await sendEmail({
-                        From: data.From,
+                        From: `forwards@${process.env.EMAIL_DOMAIN}`,
                         To: existingThread.target_email,
                         HtmlBody: data.HtmlBody,
                         Subject: data.Subject,
@@ -180,7 +180,7 @@ async function handleMailForward(data: InboundEmail, toAddress: FullAddress, mai
 
                 // send email to target
                 await sendEmail({
-                    From: data.From,
+                    From: `forwards@${process.env.EMAIL_DOMAIN}`,
                     To: forward.target_email,
                     HtmlBody: data.HtmlBody,
                     Subject: data.Subject,
