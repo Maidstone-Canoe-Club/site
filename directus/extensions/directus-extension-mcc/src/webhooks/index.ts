@@ -119,9 +119,10 @@ async function handleMailForward(data: InboundEmail, toAddress: FullAddress, mai
 
         try {
             const existingThread = await mailThreadsService.readOne(threadId);
-            console.log("got thread id", existingThread)
+            console.log("got thread id", threadId, existingThread)
+            console.log("inbound mail", data)
+
             if (existingThread) {
-                console.log("inbound mail", data)
                 if (data.FromFull.Email === existingThread.target_email) {
                     // send  to sender_email
                     await sendEmail({
@@ -156,6 +157,7 @@ async function handleMailForward(data: InboundEmail, toAddress: FullAddress, mai
             console.log("something went wrong continuing mail thread", threadId, e, e.message, e.data);
         }
     } else {
+        // We have received a new email to forward
         try {
             const name = toAddress.Email.split("@")[0];
 
@@ -179,9 +181,11 @@ async function handleMailForward(data: InboundEmail, toAddress: FullAddress, mai
                     sender_email: data.FromFull.Email
                 });
 
+                const fromAddress = `<${data.FromName}> forwards@${process.env.EMAIL_DOMAIN}`;
+
                 // send email to target
                 await sendEmail({
-                    From: `forwards@${process.env.EMAIL_DOMAIN}`,
+                    From: fromAddress,
                     To: forward.target_email,
                     HtmlBody: data.HtmlBody,
                     Subject: data.Subject,
