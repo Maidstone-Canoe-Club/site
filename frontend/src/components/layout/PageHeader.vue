@@ -141,7 +141,8 @@ const directusUrl = useDirectusUrl();
 
 const navigation = computed(() => {
   return [
-    { name: "Home", href: "/", current: route.path === "/" }
+    { name: "Home", href: "/", current: route.path === "/" },
+    { name: "About us", href: "/about-us", current: route.path === "/about-us" }
     // { name: "Calendar", href: "/calendar", current: route.path === "/calendar" },
     // { name: "Coaching", href: "/content/1/coaching", current: route.path === "/content/1/coaching" }
   ];
