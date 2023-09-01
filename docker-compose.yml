@@ -5,6 +5,8 @@ services:
   database:
     container_name: mcc-database
     image: postgis/postgis:13-master
+    ports:
+      - "5432:5432"
     volumes:
       - ./data/database:/var/lib/postgresql/data
     environment:
@@ -27,8 +29,8 @@ services:
       - ./directus/database:/directus/database
     environment:
       PORT: '8055'
-      KEY: '255d861b-5ea1-5996-9aa3-922530ec40b1'
-      SECRET: '6116487b-cda1-52c2-b5b5-c8022c45e263'
+      KEY: ${KEY}
+      SECRET: ${SECRET}
       CACHE_ENABLED: 'true'
       CACHE_AUTO_PURGE: 'true'
       CORS_ENABLED: 'true'
@@ -40,7 +42,16 @@ services:
       DB_USER: 'directus'
       DB_PASSWORD: 'directus'
       ADMIN_EMAIL: 'admin@example.com'
+      PUBLIC_URL: 'http://localhost:3000'
+      EMAIL_FROM: 'no-reply@mattclegg.dev'
+      EMAIL_DOMAIN: 'mattclegg.dev'
+      EMAIL_TRANSPORT: 'smtp'
       ADMIN_PASSWORD: 'password'
+      EMAIL_SMTP_HOST: ${EMAIL_SMTP_HOST}
+      EMAIL_SMTP_PORT: ${EMAIL_SMTP_PORT}
+      EMAIL_SMTP_USER: ${EMAIL_SMTP_USER}
+      EMAIL_SMTP_PASSWORD: ${EMAIL_SMTP_PASSWORD}
+      PASSWORD_RESET_URL_ALLOW_LIST: 'http://localhost:3000/reset-password'
 
   frontend:
     container_name: mcc-frontend
@@ -50,6 +61,7 @@ services:
       target: base
     environment:
       NODE_ENV: 'development'
+      BASE_URL: 'http://localhost:3000'
       NUXT_DIRECTUS_URL: 'http://host.docker.internal:8055'
     restart: unless-stopped
     extra_hosts:

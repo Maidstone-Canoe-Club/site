@@ -237,3 +237,4 @@ yarn-error.log
 # Directus uploads
 **/uploads/
 **/database/
+**/directus-migrator.config.js
