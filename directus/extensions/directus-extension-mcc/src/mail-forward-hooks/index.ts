@@ -1,24 +1,26 @@
 import {defineHook} from '@directus/extensions-sdk';
-import {ofetch} from "ofetch";
+// import {ofetch} from "ofetch";
 
 const postmarkUrl = "https://api.postmarkapp.com";
 
 export default defineHook(({filter}) => {
 
     filter('items.create', async (payload, meta) => {
+        console.log("items.create");
         await handleMailForwardCreate(payload, meta);
     });
 
     filter('items.update', async (payload, meta) => {
+        console.log("items.update");
         await handleMailForwardUpdate(payload, meta);
     });
 });
 
 function handleMailForwardCreate(payload: any, meta: Record<string, any>) {
     if (meta.collection === "mail_forwards") {
-        const signatureName = payload.name;
-        const signatureFromName = payload.from_name;
-
+        // const signatureName = payload.name;
+        // const signatureFromName = payload.from_name;
+    console.log("mail forward created", payload);
         // const res = await ofetch("/senders", {
         //     method: "POST",
         //     baseURL: postmarkUrl,
