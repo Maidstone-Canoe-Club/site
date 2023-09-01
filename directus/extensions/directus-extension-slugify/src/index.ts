@@ -1,8 +1,7 @@
 import { defineHook } from '@directus/extensions-sdk';
 
 const events = ["items.create", "items.update"];
-const collections = ["content", "news"];
-
+const collections = ["content_page", "news"];
 
 type Content = {
 	title?: string,

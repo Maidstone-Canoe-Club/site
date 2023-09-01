@@ -80,7 +80,7 @@ enum Status {
 
 const { requestPasswordReset } = useDirectusAuth();
 
-const email = ref("foo@bar.com");
+const email = ref("");
 
 const status = ref<Status>(Status.Waiting);
 
