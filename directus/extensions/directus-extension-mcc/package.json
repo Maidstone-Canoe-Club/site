@@ -39,11 +39,6 @@
 				"type": "endpoint",
 				"name": "registration",
 				"source": "src/registration/index.ts"
-			},
-			{
-				"type": "hook",
-				"name": "sentry",
-				"source": "src/sentry/index.ts"
 			}
 		]
 	},
@@ -64,7 +59,6 @@
 	"devDependencies": {
 		"@directus/errors": "^0.0.2",
 		"@directus/extensions-sdk": "10.1.9",
-		"@sentry/node": "^7.66.0",
 		"@types/node": "^20.5.8",
 		"@typescript-eslint/eslint-plugin": "^6.5.0",
 		"@typescript-eslint/parser": "^6.5.0",
