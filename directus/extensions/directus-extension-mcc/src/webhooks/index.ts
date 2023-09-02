@@ -123,7 +123,7 @@ async function handleMailForward(data: InboundEmail, toAddress: FullAddress, mai
             console.log("inbound mail", data)
 
             if (existingThread) {
-                if (data.FromFull.Email === existingThread.target_email) {
+                if (data.FromFull.Email.toLowerCase() === existingThread.target_email.toLowerCase()) {
                     let fromName = `forwards@${process.env.EMAIL_DOMAIN}`
 
                     if(existingThread.from_name){
@@ -141,7 +141,7 @@ async function handleMailForward(data: InboundEmail, toAddress: FullAddress, mai
                         Tag: "forwards",
                         Attachments: data.Attachments
                     });
-                } else if (data.FromFull.Email === existingThread.sender_email) {
+                } else if (data.FromFull.Email.toLowerCase() === existingThread.sender_email.toLowerCase()) {
                     let fromName = `forwards@${process.env.EMAIL_DOMAIN}`;
 
                     if(data.FromName){
