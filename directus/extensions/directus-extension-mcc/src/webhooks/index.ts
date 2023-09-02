@@ -89,7 +89,7 @@ async function handleMailingList(data: InboundEmail, toAddress: FullAddress, mai
     if (mailingList) {
       const subscribers: Subscriber[] = await mailingListSubscribersService
         .readByQuery({
-          fields: ["list", "user.email", "user.first_name", "user.last_name"],
+          fields: ["list", "user.email"],
           filter: {
             list: {
               _eq: mailingList.id
@@ -110,7 +110,7 @@ async function handleMailingList(data: InboundEmail, toAddress: FullAddress, mai
 
           const emailsToSend = chunk.map(subscriber => ({
             To: subscriber.user.email,
-            From: buildFromEmailAddress(mailingList, subscriber),
+            From: `${data.FromName} <${mailingList.email_name}@${process.env.EMAIL_DOMAIN}>`,
             Subject: data.Subject,
             TextBody: data.TextBody,
             HtmlBody: data.HtmlBody,
@@ -268,6 +268,8 @@ async function sendBatchEmail(data: any) {
     headers: {
       "X-Postmark-Server-Token": process.env.EMAIL_SMTP_PASSWORD
     }
+  }).catch((err) => {
+    console.log("send mail error: ", err.data);
   });
 }
 
@@ -281,9 +283,9 @@ function chunkArray<T>(input: T[], size: number): T[][] {
   return result;
 }
 
-function buildFromEmailAddress(mailingList: MailingList, subscriber: Subscriber) {
-  return `${subscriber.user.first_name} ${subscriber.user.last_name} <${mailingList.email_name}@${process.env.EMAIL_DOMAIN}>`;
-}
+// function buildFromEmailAddress(mailingList: MailingList, subscriber: Subscriber) {
+//   return `${subscriber.user.first_name} ${subscriber.user.last_name} <${mailingList.email_name}@${process.env.EMAIL_DOMAIN}>`;
+// }
 
 function buildReplyToEmailAddress(mailingList: MailingList) {
   return `${mailingList.email_name}@${process.env.EMAIL_DOMAIN}`;
