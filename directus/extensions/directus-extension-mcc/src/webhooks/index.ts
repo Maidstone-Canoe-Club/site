@@ -126,8 +126,18 @@ async function handleMailForward(data: InboundEmail, toAddress: FullAddress, mai
                 if (data.FromFull.Email.toLowerCase() === existingThread.target_email.toLowerCase()) {
                     let fromName = `forwards@${process.env.EMAIL_DOMAIN}`
 
-                    if(existingThread.from_name){
-                        fromName = `${existingThread.from_name} <${fromName}>`
+                    const forwards = await mailForwardsService.readByQuery({
+                        filter: {
+                            target_email: {
+                                _eq: data.FromFull.Email.toLowerCase()
+                            }
+                        }
+                    });
+
+                    const forward = forwards.length ? forwards[0] : null;
+
+                    if(forward && forwards.from_name){
+                        fromName = `${forward.from_name} <${fromName}>`
                     }
 
                     // send  to sender_email
