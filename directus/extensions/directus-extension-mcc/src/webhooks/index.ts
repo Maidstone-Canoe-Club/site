@@ -117,16 +117,29 @@ async function handleMailingList(data: InboundEmail, toAddress: FullAddress, mai
             ReplyTo: buildReplyToEmailAddress(mailingList),
             TrackOpens: true,
             TrackLinks: "None",
-            MessageStream: "broadcast"
+            MessageStream: "broadcast",
+            Headers: [
+              {
+                name: "Precedence",
+                value: "list"
+              },
+              {
+                name: "List-Id",
+                value: `${mailingList.name} <${mailingList.email_name}@${process.env.EMAIL_DOMAIN}>`,
+              },
+              {
+                name: "List-Unsubscribe",
+                value:  `<${process.env.PUBLIC_URL}/unsubscribe?list=${mailingList.email_name}>`
+              },
+              {
+                name: "Original-Sender",
+                value: data.From
+              }
+            ]
           }));
 
           console.log("sending emails!", emailsToSend);
-          await sendBatchEmail(emailsToSend, {
-            "Precedence": "list",
-            "List-Id": `${mailingList.name} <${mailingList.email_name}@${process.env.EMAIL_DOMAIN}>`,
-            "List-Unsubscribe": `<${process.env.PUBLIC_URL}/unsubscribe?list=${mailingList.email_name}>`,
-            "Original-Sender": data.From
-          });
+          await sendBatchEmail(emailsToSend);
         }
       } else {
         console.log("there are no subscribers for mailing list:", emailName);
@@ -265,14 +278,13 @@ async function sendEmail(email: OutboundEmail) {
   });
 }
 
-async function sendBatchEmail(data: any, headers?: any) {
+async function sendBatchEmail(data: any) {
   return await ofetch("/email/batch", {
     method: "POST",
     baseURL: postmarkUrl,
     body: data,
     headers: {
-      "X-Postmark-Server-Token": process.env.EMAIL_SMTP_PASSWORD,
-      ...headers
+      "X-Postmark-Server-Token": process.env.EMAIL_SMTP_PASSWORD
     }
   }).catch((err) => {
     console.log("send mail error: ", err.data);
