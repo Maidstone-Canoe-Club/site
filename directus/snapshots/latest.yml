@@ -1618,44 +1618,6 @@ fields:
       foreign_key_table: null
       foreign_key_column: null
   - collection: mail_forwards
-    field: sender_signature_id
-    type: string
-    meta:
-      collection: mail_forwards
-      conditions: null
-      display: null
-      display_options: null
-      field: sender_signature_id
-      group: null
-      hidden: false
-      interface: input
-      note: null
-      options: null
-      readonly: false
-      required: false
-      sort: 9
-      special: null
-      translations: null
-      validation: null
-      validation_message: null
-      width: full
-    schema:
-      name: sender_signature_id
-      table: mail_forwards
-      data_type: character varying
-      default_value: null
-      max_length: 255
-      numeric_precision: null
-      numeric_scale: null
-      is_nullable: true
-      is_unique: false
-      is_primary_key: false
-      is_generated: false
-      generation_expression: null
-      has_auto_increment: false
-      foreign_key_table: null
-      foreign_key_column: null
-  - collection: mail_forwards
     field: target_email
     type: string
     meta:
