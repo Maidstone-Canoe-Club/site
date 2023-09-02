@@ -117,7 +117,7 @@ async function handleMailingList(data: InboundEmail, toAddress: FullAddress, mai
             ReplyTo: buildReplyToEmailAddress(mailingList),
             TrackOpens: true,
             TrackLinks: "None",
-            MessageStream: "broadcasts"
+            MessageStream: "broadcast"
           }));
 
           console.log("sending emails!", emailsToSend);
