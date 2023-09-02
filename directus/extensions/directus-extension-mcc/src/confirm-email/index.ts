@@ -1,4 +1,4 @@
-import {defineEndpoint} from '@directus/extensions-sdk';
+﻿import {defineEndpoint} from '@directus/extensions-sdk';
 import sendNew from "../send-email";
 
 export default defineEndpoint((router, {services, database}) => {

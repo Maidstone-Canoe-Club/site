@@ -124,9 +124,15 @@ async function handleMailForward(data: InboundEmail, toAddress: FullAddress, mai
 
             if (existingThread) {
                 if (data.FromFull.Email === existingThread.target_email) {
+                    let fromName = `forwards@${process.env.EMAIL_DOMAIN}`
+
+                    if(existingThread.from_name){
+                        fromName = `<${existingThread.from_name}> ${fromName}`
+                    }
+
                     // send  to sender_email
                     await sendEmail({
-                        From: `forwards@${process.env.EMAIL_DOMAIN}`,
+                        From: fromName,
                         To: existingThread.sender_email,
                         HtmlBody: data.HtmlBody,
                         Subject: data.Subject,
@@ -136,9 +142,15 @@ async function handleMailForward(data: InboundEmail, toAddress: FullAddress, mai
                         Attachments: data.Attachments
                     });
                 } else if (data.FromFull.Email === existingThread.sender_email) {
+                    let fromName = `forwards@${process.env.EMAIL_DOMAIN}`;
+
+                    if(data.FromName){
+                        fromName = `<${data.FromName}> ${fromName}`
+                    }
+
                     // send to target_email
                     await sendEmail({
-                        From: `forwards@${process.env.EMAIL_DOMAIN}`,
+                        From: fromName,
                         To: existingThread.target_email,
                         HtmlBody: data.HtmlBody,
                         Subject: data.Subject,
