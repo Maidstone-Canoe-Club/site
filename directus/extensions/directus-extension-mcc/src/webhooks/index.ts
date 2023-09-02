@@ -119,8 +119,6 @@ async function handleMailForward(data: InboundEmail, toAddress: FullAddress, mai
 
         try {
             const existingThread = await mailThreadsService.readOne(threadId);
-            console.log("got thread id", threadId, existingThread)
-            console.log("inbound mail", data)
 
             if (existingThread) {
                 if (data.FromFull.Email.toLowerCase() === existingThread.target_email.toLowerCase()) {
@@ -136,11 +134,10 @@ async function handleMailForward(data: InboundEmail, toAddress: FullAddress, mai
 
                     const forward = forwards.length ? forwards[0] : null;
 
-                    if(forward && forwards.from_name){
+                    if(forward && forward.from_name){
                         fromName = `${forward.from_name} <${fromName}>`
                     }
 
-                    // send  to sender_email
                     await sendEmail({
                         From: fromName,
                         To: existingThread.sender_email,
@@ -158,7 +155,6 @@ async function handleMailForward(data: InboundEmail, toAddress: FullAddress, mai
                         fromName = `${data.FromName} <${fromName}>`
                     }
 
-                    // send to target_email
                     await sendEmail({
                         From: fromName,
                         To: existingThread.target_email,
@@ -196,7 +192,7 @@ async function handleMailForward(data: InboundEmail, toAddress: FullAddress, mai
 
             if (forward) {
                 const newThreadId = nanoid();
-                console.log("created new thread id", newThreadId)
+
                 await mailThreadsService.createOne({
                     id: newThreadId,
                     target_email: forward.target_email,
@@ -230,7 +226,6 @@ async function handleMailForward(data: InboundEmail, toAddress: FullAddress, mai
 }
 
 async function sendEmail(email: OutboundEmail) {
-    console.log("sending mail", email)
     return await ofetch("/email", {
         baseURL: postmarkUrl,
         method: "POST",
@@ -239,6 +234,6 @@ async function sendEmail(email: OutboundEmail) {
         },
         body: email
     }).catch((err) => {
-        console.log("ofetch error: ", err.data)
+        console.log("send mail error: ", err.data)
     });
 }
