@@ -1581,14 +1581,18 @@ fields:
     meta:
       collection: mail_forwards
       conditions: null
-      display: null
-      display_options: null
+      display: formatted-value
+      display_options:
+        suffix: '@maidstonecanoeclub.net'
       field: name
       group: null
       hidden: false
       interface: input
-      note: null
-      options: null
+      note: >-
+        The name part of the email address, before the @maidstonecanoeclub.net
+        part
+      options:
+        placeholder: whitewater, committee, john.smith, etc
       readonly: false
       required: true
       sort: 6
@@ -1663,8 +1667,9 @@ fields:
       group: null
       hidden: false
       interface: input
-      note: null
-      options: null
+      note: Where to forward emails to
+      options:
+        placeholder: person.name@example.com
       readonly: false
       required: true
       sort: 8
