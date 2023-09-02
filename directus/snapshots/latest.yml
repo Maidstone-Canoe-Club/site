@@ -2,6 +2,27 @@ version: 1
 directus: 12.1.3
 vendor: postgres
 collections:
+  - collection: Mail
+    meta:
+      accountability: all
+      archive_app_filter: true
+      archive_field: null
+      archive_value: null
+      collapse: open
+      collection: Mail
+      color: null
+      display_template: null
+      group: null
+      hidden: false
+      icon: folder
+      item_duplication_fields: null
+      note: null
+      preview_url: null
+      singleton: false
+      sort: 1
+      sort_field: null
+      translations: null
+      unarchive_value: null
   - collection: content_page
     meta:
       accountability: all
@@ -19,7 +40,7 @@ collections:
       note: null
       preview_url: null
       singleton: false
-      sort: null
+      sort: 2
       sort_field: null
       translations: null
       unarchive_value: draft
@@ -42,7 +63,7 @@ collections:
       note: null
       preview_url: null
       singleton: false
-      sort: null
+      sort: 3
       sort_field: null
       translations: null
       unarchive_value: null
@@ -58,14 +79,14 @@ collections:
       collection: mail_forwards
       color: null
       display_template: null
-      group: null
+      group: Mail
       hidden: false
       icon: forward_to_inbox
       item_duplication_fields: null
       note: null
       preview_url: null
       singleton: false
-      sort: null
+      sort: 4
       sort_field: null
       translations: null
       unarchive_value: null
@@ -81,19 +102,65 @@ collections:
       collection: mail_threads
       color: null
       display_template: null
-      group: null
+      group: Mail
       hidden: false
       icon: list
       item_duplication_fields: null
       note: null
       preview_url: null
       singleton: false
-      sort: null
+      sort: 3
       sort_field: null
       translations: null
       unarchive_value: null
     schema:
       name: mail_threads
+  - collection: mailing_list_subscriber
+    meta:
+      accountability: all
+      archive_app_filter: true
+      archive_field: null
+      archive_value: null
+      collapse: open
+      collection: mailing_list_subscriber
+      color: null
+      display_template: null
+      group: Mail
+      hidden: false
+      icon: contact_mail
+      item_duplication_fields: null
+      note: null
+      preview_url: null
+      singleton: false
+      sort: 1
+      sort_field: null
+      translations: null
+      unarchive_value: null
+    schema:
+      name: mailing_list_subscriber
+  - collection: mailing_lists
+    meta:
+      accountability: all
+      archive_app_filter: true
+      archive_field: null
+      archive_value: null
+      collapse: open
+      collection: mailing_lists
+      color: null
+      display_template: null
+      group: Mail
+      hidden: false
+      icon: mail
+      item_duplication_fields: null
+      note: null
+      preview_url: null
+      singleton: false
+      sort: 2
+      sort_field: null
+      translations: null
+      unarchive_value: null
+    schema:
+      name: mailing_lists
   - collection: medical_info
     meta:
       accountability: all
@@ -111,7 +178,7 @@ collections:
       note: null
       preview_url: null
       singleton: false
-      sort: null
+      sort: 4
       sort_field: null
       translations: null
       unarchive_value: null
@@ -134,7 +201,7 @@ collections:
       note: null
       preview_url: null
       singleton: false
-      sort: null
+      sort: 5
       sort_field: null
       translations: null
       unarchive_value: null
@@ -157,7 +224,7 @@ collections:
       note: null
       preview_url: null
       singleton: false
-      sort: null
+      sort: 6
       sort_field: sort
       translations: null
       unarchive_value: draft
@@ -1890,6 +1957,563 @@ fields:
       has_auto_increment: false
       foreign_key_table: null
       foreign_key_column: null
+  - collection: mailing_list_subscriber
+    field: date_created
+    type: timestamp
+    meta:
+      collection: mailing_list_subscriber
+      conditions: null
+      display: datetime
+      display_options:
+        relative: true
+      field: date_created
+      group: null
+      hidden: true
+      interface: datetime
+      note: null
+      options: null
+      readonly: true
+      required: false
+      sort: 3
+      special:
+        - date-created
+      translations: null
+      validation: null
+      validation_message: null
+      width: half
+    schema:
+      name: date_created
+      table: mailing_list_subscriber
+      data_type: timestamp with time zone
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: mailing_list_subscriber
+    field: date_updated
+    type: timestamp
+    meta:
+      collection: mailing_list_subscriber
+      conditions: null
+      display: datetime
+      display_options:
+        relative: true
+      field: date_updated
+      group: null
+      hidden: true
+      interface: datetime
+      note: null
+      options: null
+      readonly: true
+      required: false
+      sort: 5
+      special:
+        - date-updated
+      translations: null
+      validation: null
+      validation_message: null
+      width: half
+    schema:
+      name: date_updated
+      table: mailing_list_subscriber
+      data_type: timestamp with time zone
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: mailing_list_subscriber
+    field: id
+    type: uuid
+    meta:
+      collection: mailing_list_subscriber
+      conditions: null
+      display: null
+      display_options: null
+      field: id
+      group: null
+      hidden: true
+      interface: input
+      note: null
+      options: null
+      readonly: true
+      required: false
+      sort: 1
+      special:
+        - uuid
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: id
+      table: mailing_list_subscriber
+      data_type: uuid
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: false
+      is_unique: true
+      is_primary_key: true
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: mailing_list_subscriber
+    field: list
+    type: uuid
+    meta:
+      collection: mailing_list_subscriber
+      conditions: null
+      display: null
+      display_options: null
+      field: list
+      group: null
+      hidden: false
+      interface: select-dropdown-m2o
+      note: null
+      options:
+        enableCreate: false
+        template: '{{name}}'
+      readonly: false
+      required: true
+      sort: 6
+      special:
+        - m2o
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: list
+      table: mailing_list_subscriber
+      data_type: uuid
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: mailing_lists
+      foreign_key_column: id
+  - collection: mailing_list_subscriber
+    field: user
+    type: uuid
+    meta:
+      collection: mailing_list_subscriber
+      conditions: null
+      display: null
+      display_options: null
+      field: user
+      group: null
+      hidden: false
+      interface: select-dropdown-m2o
+      note: null
+      options:
+        enableCreate: false
+      readonly: false
+      required: true
+      sort: 7
+      special:
+        - m2o
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: user
+      table: mailing_list_subscriber
+      data_type: uuid
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: directus_users
+      foreign_key_column: id
+  - collection: mailing_list_subscriber
+    field: user_created
+    type: uuid
+    meta:
+      collection: mailing_list_subscriber
+      conditions: null
+      display: user
+      display_options: null
+      field: user_created
+      group: null
+      hidden: true
+      interface: select-dropdown-m2o
+      note: null
+      options:
+        template: '{{avatar.$thumbnail}} {{first_name}} {{last_name}}'
+      readonly: true
+      required: false
+      sort: 2
+      special:
+        - user-created
+      translations: null
+      validation: null
+      validation_message: null
+      width: half
+    schema:
+      name: user_created
+      table: mailing_list_subscriber
+      data_type: uuid
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: directus_users
+      foreign_key_column: id
+  - collection: mailing_list_subscriber
+    field: user_updated
+    type: uuid
+    meta:
+      collection: mailing_list_subscriber
+      conditions: null
+      display: user
+      display_options: null
+      field: user_updated
+      group: null
+      hidden: true
+      interface: select-dropdown-m2o
+      note: null
+      options:
+        template: '{{avatar.$thumbnail}} {{first_name}} {{last_name}}'
+      readonly: true
+      required: false
+      sort: 4
+      special:
+        - user-updated
+      translations: null
+      validation: null
+      validation_message: null
+      width: half
+    schema:
+      name: user_updated
+      table: mailing_list_subscriber
+      data_type: uuid
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: directus_users
+      foreign_key_column: id
+  - collection: mailing_lists
+    field: date_created
+    type: timestamp
+    meta:
+      collection: mailing_lists
+      conditions: null
+      display: datetime
+      display_options:
+        relative: true
+      field: date_created
+      group: null
+      hidden: true
+      interface: datetime
+      note: null
+      options: null
+      readonly: true
+      required: false
+      sort: 3
+      special:
+        - date-created
+      translations: null
+      validation: null
+      validation_message: null
+      width: half
+    schema:
+      name: date_created
+      table: mailing_lists
+      data_type: timestamp with time zone
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: mailing_lists
+    field: date_updated
+    type: timestamp
+    meta:
+      collection: mailing_lists
+      conditions: null
+      display: datetime
+      display_options:
+        relative: true
+      field: date_updated
+      group: null
+      hidden: true
+      interface: datetime
+      note: null
+      options: null
+      readonly: true
+      required: false
+      sort: 5
+      special:
+        - date-updated
+      translations: null
+      validation: null
+      validation_message: null
+      width: half
+    schema:
+      name: date_updated
+      table: mailing_lists
+      data_type: timestamp with time zone
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: mailing_lists
+    field: email_name
+    type: string
+    meta:
+      collection: mailing_lists
+      conditions: null
+      display: formatted-value
+      display_options:
+        icon: mail
+        suffix: '@maidstonecanoeclub.net'
+      field: email_name
+      group: null
+      hidden: false
+      interface: input
+      note: The email address name, the part before @maidstonecanoeclub.net
+      options: null
+      readonly: false
+      required: true
+      sort: 7
+      special: null
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: email_name
+      table: mailing_lists
+      data_type: character varying
+      default_value: null
+      max_length: 255
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: mailing_lists
+    field: id
+    type: uuid
+    meta:
+      collection: mailing_lists
+      conditions: null
+      display: null
+      display_options: null
+      field: id
+      group: null
+      hidden: true
+      interface: input
+      note: null
+      options: null
+      readonly: true
+      required: false
+      sort: 1
+      special:
+        - uuid
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: id
+      table: mailing_lists
+      data_type: uuid
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: false
+      is_unique: true
+      is_primary_key: true
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: mailing_lists
+    field: name
+    type: string
+    meta:
+      collection: mailing_lists
+      conditions: null
+      display: null
+      display_options: null
+      field: name
+      group: null
+      hidden: false
+      interface: input
+      note: The formatted name of the mailing list
+      options: null
+      readonly: false
+      required: true
+      sort: 6
+      special: null
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: name
+      table: mailing_lists
+      data_type: character varying
+      default_value: null
+      max_length: 255
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: mailing_lists
+    field: user_created
+    type: uuid
+    meta:
+      collection: mailing_lists
+      conditions: null
+      display: user
+      display_options: null
+      field: user_created
+      group: null
+      hidden: true
+      interface: select-dropdown-m2o
+      note: null
+      options:
+        template: '{{avatar.$thumbnail}} {{first_name}} {{last_name}}'
+      readonly: true
+      required: false
+      sort: 2
+      special:
+        - user-created
+      translations: null
+      validation: null
+      validation_message: null
+      width: half
+    schema:
+      name: user_created
+      table: mailing_lists
+      data_type: uuid
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: directus_users
+      foreign_key_column: id
+  - collection: mailing_lists
+    field: user_updated
+    type: uuid
+    meta:
+      collection: mailing_lists
+      conditions: null
+      display: user
+      display_options: null
+      field: user_updated
+      group: null
+      hidden: true
+      interface: select-dropdown-m2o
+      note: null
+      options:
+        template: '{{avatar.$thumbnail}} {{first_name}} {{last_name}}'
+      readonly: true
+      required: false
+      sort: 4
+      special:
+        - user-updated
+      translations: null
+      validation: null
+      validation_message: null
+      width: half
+    schema:
+      name: user_updated
+      table: mailing_lists
+      data_type: uuid
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: directus_users
+      foreign_key_column: id
   - collection: medical_info
     field: allergies
     type: boolean
@@ -3339,6 +3963,132 @@ relations:
       foreign_key_table: directus_users
       foreign_key_column: id
       constraint_name: mail_forwards_user_updated_foreign
+      on_update: NO ACTION
+      on_delete: NO ACTION
+  - collection: mailing_list_subscriber
+    field: list
+    related_collection: mailing_lists
+    meta:
+      junction_field: null
+      many_collection: mailing_list_subscriber
+      many_field: list
+      one_allowed_collections: null
+      one_collection: mailing_lists
+      one_collection_field: null
+      one_deselect_action: nullify
+      one_field: null
+      sort_field: null
+    schema:
+      table: mailing_list_subscriber
+      column: list
+      foreign_key_table: mailing_lists
+      foreign_key_column: id
+      constraint_name: mailing_list_subscriber_list_foreign
+      on_update: NO ACTION
+      on_delete: SET NULL
+  - collection: mailing_list_subscriber
+    field: user
+    related_collection: directus_users
+    meta:
+      junction_field: null
+      many_collection: mailing_list_subscriber
+      many_field: user
+      one_allowed_collections: null
+      one_collection: directus_users
+      one_collection_field: null
+      one_deselect_action: nullify
+      one_field: null
+      sort_field: null
+    schema:
+      table: mailing_list_subscriber
+      column: user
+      foreign_key_table: directus_users
+      foreign_key_column: id
+      constraint_name: mailing_list_subscriber_user_foreign
+      on_update: NO ACTION
+      on_delete: SET NULL
+  - collection: mailing_list_subscriber
+    field: user_created
+    related_collection: directus_users
+    meta:
+      junction_field: null
+      many_collection: mailing_list_subscriber
+      many_field: user_created
+      one_allowed_collections: null
+      one_collection: directus_users
+      one_collection_field: null
+      one_deselect_action: nullify
+      one_field: null
+      sort_field: null
+    schema:
+      table: mailing_list_subscriber
+      column: user_created
+      foreign_key_table: directus_users
+      foreign_key_column: id
+      constraint_name: mailing_list_subscriber_user_created_foreign
+      on_update: NO ACTION
+      on_delete: NO ACTION
+  - collection: mailing_list_subscriber
+    field: user_updated
+    related_collection: directus_users
+    meta:
+      junction_field: null
+      many_collection: mailing_list_subscriber
+      many_field: user_updated
+      one_allowed_collections: null
+      one_collection: directus_users
+      one_collection_field: null
+      one_deselect_action: nullify
+      one_field: null
+      sort_field: null
+    schema:
+      table: mailing_list_subscriber
+      column: user_updated
+      foreign_key_table: directus_users
+      foreign_key_column: id
+      constraint_name: mailing_list_subscriber_user_updated_foreign
+      on_update: NO ACTION
+      on_delete: NO ACTION
+  - collection: mailing_lists
+    field: user_created
+    related_collection: directus_users
+    meta:
+      junction_field: null
+      many_collection: mailing_lists
+      many_field: user_created
+      one_allowed_collections: null
+      one_collection: directus_users
+      one_collection_field: null
+      one_deselect_action: nullify
+      one_field: null
+      sort_field: null
+    schema:
+      table: mailing_lists
+      column: user_created
+      foreign_key_table: directus_users
+      foreign_key_column: id
+      constraint_name: mailing_lists_user_created_foreign
+      on_update: NO ACTION
+      on_delete: NO ACTION
+  - collection: mailing_lists
+    field: user_updated
+    related_collection: directus_users
+    meta:
+      junction_field: null
+      many_collection: mailing_lists
+      many_field: user_updated
+      one_allowed_collections: null
+      one_collection: directus_users
+      one_collection_field: null
+      one_deselect_action: nullify
+      one_field: null
+      sort_field: null
+    schema:
+      table: mailing_lists
+      column: user_updated
+      foreign_key_table: directus_users
+      foreign_key_column: id
+      constraint_name: mailing_lists_user_updated_foreign
       on_update: NO ACTION
       on_delete: NO ACTION
   - collection: medical_info

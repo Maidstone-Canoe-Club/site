@@ -2,7 +2,7 @@
 
 services:
 
-  database:
+  postgres:
     container_name: mcc-database
     image: postgis/postgis:13-master
     ports:
@@ -36,7 +36,7 @@ services:
       CORS_ENABLED: 'true'
       CORS_ORIGIN: '*'
       DB_CLIENT: 'pg'
-      DB_HOST: 'database'
+      DB_HOST: 'postgres'
       DB_PORT: '5432'
       DB_DATABASE: 'directus'
       DB_USER: 'directus'

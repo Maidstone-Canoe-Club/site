@@ -53,12 +53,16 @@
 		"build": "directus-extension build",
 		"dev": "directus-extension build -w --no-minify",
 		"link": "directus-extension link",
-		"add": "directus-extension add"
+		"add": "directus-extension add",
+		"lint": "eslint --fix --ext .ts"
 	},
 	"devDependencies": {
 		"@directus/errors": "^0.0.2",
 		"@directus/extensions-sdk": "10.1.9",
 		"@types/node": "^20.5.8",
+		"@typescript-eslint/eslint-plugin": "^6.5.0",
+		"@typescript-eslint/parser": "^6.5.0",
+		"eslint": "^8.48.0",
 		"nanoid": "^4.0.2",
 		"nanoid-dictionary": "^4.3.0",
 		"ofetch": "^1.3.3",
