@@ -46,7 +46,7 @@ export default defineEndpoint((router, {services}) => {
         accountability: adminAccountability
       });
 
-      const mailingListSubscribersService = new ItemsService("mailing_list_subscribers", {
+      const mailingListSubscribersService = new ItemsService("mailing_list_subscriber", {
         schema: req.schema,
         accountability: adminAccountability
       });
@@ -66,59 +66,70 @@ export default defineEndpoint((router, {services}) => {
 });
 
 async function handleMailingList(data: InboundEmail, toAddress: FullAddress, mailingListsService: any, mailingListSubscribersService: any) {
-  const to = toAddress.Email;
-  const emailName = to.split("@")[0];
 
-  const foundLists: MailingList[] = await mailingListsService
-    .readByQuery({
-      filter: {
-        email_name: {
-          _eq: emailName
-        }
-      }
-    });
+  try {
+    const to = toAddress.Email;
+    const emailName = to.split("@")[0]!;
 
-  const mailingList: MailingList | null | undefined = foundLists.length > 0 ? foundLists[0] : null;
+    console.log("trying to handle mailing list email");
 
-  if(mailingList){
-    const subscribers: Subscriber[] = await mailingListSubscribersService
+    const foundLists: MailingList[] = await mailingListsService
       .readByQuery({
         filter: {
-          mailing_list: {
-            _eq: mailingList.id
+          email_name: {
+            _eq: emailName.toLowerCase()
           }
         }
       });
 
-    if(subscribers && subscribers.length){
-      const subscriberChunks = chunkArray<Subscriber>(subscribers, 50);
+    const mailingList: MailingList | null | undefined = foundLists.length > 0 ? foundLists[0] : null;
 
-      for (let j = 0; j < subscriberChunks.length; j++) {
-        const chunk = subscriberChunks[j];
-        if (!chunk) {
-          continue;
+    console.log("found mailing list", mailingList);
+
+    if (mailingList) {
+      const subscribers: Subscriber[] = await mailingListSubscribersService
+        .readByQuery({
+          filter: {
+            mailing_list: {
+              _eq: mailingList.id
+            }
+          }
+        });
+
+      if (subscribers && subscribers.length) {
+        console.log("found subscribers");
+        const subscriberChunks = chunkArray<Subscriber>(subscribers, 50);
+
+
+        for (let j = 0; j < subscriberChunks.length; j++) {
+          const chunk = subscriberChunks[j];
+          if (!chunk) {
+            continue;
+          }
+
+          const emailsToSend = chunk.map(subscriber => ({
+            To: subscriber.user.email,
+            From: buildFromEmailAddress(mailingList, subscriber),
+            Subject: data.Subject,
+            TextBody: data.TextBody,
+            HtmlBody: data.HtmlBody,
+            ReplyTo: buildReplyToEmailAddress(mailingList),
+            TrackOpens: true,
+            TrackLinks: "None",
+            MessageStream: "broadcasts"
+          }));
+
+          console.log("sending emails!", emailsToSend);
+          await sendBatchEmail(emailsToSend);
         }
-
-        const emailsToSend = chunk.map(subscriber => ({
-          To: subscriber.user.email,
-          From: buildFromEmailAddress(mailingList, subscriber),
-          Subject: data.Subject,
-          TextBody: data.TextBody,
-          HtmlBody: data.HtmlBody,
-          ReplyTo: buildReplyToEmailAddress(mailingList),
-          TrackOpens: true,
-          TrackLinks: "None",
-          MessageStream: "broadcasts"
-        }));
-
-        await sendBatchEmail(emailsToSend);
-        // console.log("sending emails!", emailsToSend);
+      } else {
+        console.log("there are no subscribers for mailing list:", emailName);
       }
-    }else{
-      console.log("there are no subscribers for mailing list:", emailName);
+    } else {
+      console.log("could not find mailing list:", emailName);
     }
-  }else{
-    console.log("could not find mailing list:", emailName);
+  }catch(e){
+    console.log("something went wrong handling mailing list email", e, e.message, e.data);
   }
 }
 
