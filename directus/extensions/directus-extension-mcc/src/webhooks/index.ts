@@ -127,7 +127,7 @@ async function handleMailForward(data: InboundEmail, toAddress: FullAddress, mai
                     let fromName = `forwards@${process.env.EMAIL_DOMAIN}`
 
                     if(existingThread.from_name){
-                        fromName = `<${existingThread.from_name}> ${fromName}`
+                        fromName = `${existingThread.from_name} <${fromName}>`
                     }
 
                     // send  to sender_email
@@ -145,7 +145,7 @@ async function handleMailForward(data: InboundEmail, toAddress: FullAddress, mai
                     let fromName = `forwards@${process.env.EMAIL_DOMAIN}`;
 
                     if(data.FromName){
-                        fromName = `<${data.FromName}> ${fromName}`
+                        fromName = `${data.FromName} <${fromName}>`
                     }
 
                     // send to target_email
@@ -193,7 +193,11 @@ async function handleMailForward(data: InboundEmail, toAddress: FullAddress, mai
                     sender_email: data.FromFull.Email
                 });
 
-                const fromAddress = `<${data.FromName}> forwards@${process.env.EMAIL_DOMAIN}`;
+                let fromAddress = `<forwards@${process.env.EMAIL_DOMAIN}>`;
+
+                if(data.FromName){
+                    fromAddress = `${data.FromName} ${fromAddress}`;
+                }
 
                 // send email to target
                 await sendEmail({
