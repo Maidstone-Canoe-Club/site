@@ -91,9 +91,18 @@ async function handleMailingList(data: InboundEmail, toAddress: FullAddress, mai
         .readByQuery({
           fields: ["list", "user.email"],
           filter: {
-            list: {
-              _eq: mailingList.id
-            }
+            _and: [
+              {
+                list: {
+                  _eq: mailingList.id
+                }
+              },
+              {
+                "user.email": {
+                  _neq: data.From
+                }
+              }
+            ]
           }
         });
 
