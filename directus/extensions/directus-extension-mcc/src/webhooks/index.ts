@@ -90,6 +90,7 @@ async function handleMailingList(data: InboundEmail, toAddress: FullAddress, mai
       const subscribers: Subscriber[] = await mailingListSubscribersService
         .readByQuery({
           filter: {
+            fields: ["list", "user.email", "user.first_name", "user.last_name"],
             list: {
               _eq: mailingList.id
             }
@@ -97,7 +98,7 @@ async function handleMailingList(data: InboundEmail, toAddress: FullAddress, mai
         });
 
       if (subscribers && subscribers.length) {
-        console.log("found subscribers");
+        console.log("found subscribers", subscribers);
         const subscriberChunks = chunkArray<Subscriber>(subscribers, 50);
 
 
