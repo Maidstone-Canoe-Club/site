@@ -89,8 +89,8 @@ async function handleMailingList(data: InboundEmail, toAddress: FullAddress, mai
     if (mailingList) {
       const subscribers: Subscriber[] = await mailingListSubscribersService
         .readByQuery({
+          fields: ["list", "user.email", "user.first_name", "user.last_name"],
           filter: {
-            fields: ["list", "user.email", "user.first_name", "user.last_name"],
             list: {
               _eq: mailingList.id
             }
