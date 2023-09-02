@@ -2082,8 +2082,9 @@ fields:
     meta:
       collection: mailing_list_subscriber
       conditions: null
-      display: null
-      display_options: null
+      display: related-values
+      display_options:
+        template: '{{name}}'
       field: list
       group: null
       hidden: false
@@ -2123,7 +2124,7 @@ fields:
     meta:
       collection: mailing_list_subscriber
       conditions: null
-      display: null
+      display: user
       display_options: null
       field: user
       group: null
