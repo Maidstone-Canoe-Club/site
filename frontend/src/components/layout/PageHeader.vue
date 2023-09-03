@@ -10,9 +10,50 @@
             </nuxt-link>
           </div>
           <div class="hidden sm:space-x-8 sm:-my-px sm:ml-6 sm:flex">
-            <nuxt-link v-for="item in navigation" :key="item.name" :to="item.href" :class="[item.current ? 'border-indigo-500 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700', 'inline-flex items-center border-b-2 px-1 pt-1 text-sm font-medium']" :aria-current="item.current ? 'page' : undefined">
-              {{ item.name }}
-            </nuxt-link>
+            <template v-for="item in navigation" :key="item.name">
+              <template v-if="item.childPages && item.childPages.length">
+                <Menu
+                  as="div"
+                  class="relative inline-flex justify-center">
+                  <div
+                    class="flex items-center border-b-2 px-1 pt-1 text-sm font-medium cursor-pointer"
+                    :class="[item.current ? 'border-indigo-500 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700']">
+                    <MenuButton class="flex flex-grow justify-center gap-2">
+                      <ChevronDownIcon class="w-5 h-5" />
+                      <span class="flex">
+                        {{ item.name }}
+                      </span>
+                    </MenuButton>
+                  </div>
+                  <transition
+                    enter-active-class="transition duration-200 ease-out"
+                    enter-from-class="scale-95 transform opacity-0"
+                    enter-to-class="scale-100 transform opacity-100"
+                    leave-active-class="transition duration-75 ease-in"
+                    leave-from-class="scale-100 transform opacity-100"
+                    leave-to-class="scale-95 transform opacity-0">
+                    <MenuItems class="absolute left-0 top-full z-10 -m-2 w-48 origin-top-left rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                      <MenuItem v-for="childPage in item.childPages" :key="childPage.href" v-slot="{ active, close }">
+                        <nuxt-link
+                          :to="childPage.href"
+                          :target="childPage.target"
+                          :class="[active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700']"
+                          @mouseup="close">
+                          {{ childPage.name }}
+                        </nuxt-link>
+                      </MenuItem>
+                    </MenuItems>
+                  </transition>
+                </Menu>
+              </template>
+              <nuxt-link
+                v-else
+                :to="item.href"
+                :class="[item.current ? 'border-indigo-500 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700', 'inline-flex items-center border-b-2 px-1 pt-1 text-sm font-medium']"
+                :aria-current="item.current ? 'page' : undefined">
+                {{ item.name }}
+              </nuxt-link>
+            </template>
           </div>
         </div>
         <div class="hidden sm:ml-6 sm:flex sm:items-center">
@@ -128,7 +169,7 @@
 </template>
 
 <script setup lang="ts">
-import { Bars3Icon, UserCircleIcon, XMarkIcon } from "@heroicons/vue/24/outline";
+import { Bars3Icon, XMarkIcon, ChevronDownIcon } from "@heroicons/vue/24/outline";
 import { Disclosure, DisclosurePanel, DisclosureButton, Menu, MenuButton, MenuItems, MenuItem } from "@headlessui/vue";
 import { useDirectusUser, navigateTo, useDirectusAuth, useRoute, getAvatarUrl } from "#imports";
 
@@ -142,7 +183,18 @@ const directusUrl = useDirectusUrl();
 const navigation = computed(() => {
   return [
     { name: "Home", href: "/", current: route.path === "/" },
-    { name: "About us", href: "/about-us", current: route.path === "/about-us" }
+    {
+      name: "About us",
+      href: "/about-us",
+      current: route.path === "/about-us",
+      childPages: [
+        {
+          name: "What we do",
+          href: "/about-us/what-we-do",
+          target: null
+        }
+      ]
+    }
     // { name: "Calendar", href: "/calendar", current: route.path === "/calendar" },
     // { name: "Coaching", href: "/content/1/coaching", current: route.path === "/content/1/coaching" }
   ];
