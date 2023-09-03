@@ -13,7 +13,7 @@
     </div>
 
     <div class="mt-16">
-      <div class="flex justify-center gap-5 md:gap-14 overflow-hidden pb-10 pt-2">
+      <div class="flex px-4 md:justify-center gap-5 md:gap-14 overflow-auto md:overflow-hidden pb-11 pt-3">
         <div
           v-for="(image, index) in images"
           :key="index"
@@ -28,7 +28,7 @@
     </div>
 
     <div class="mx-auto w-full max-w-7xl flex-grow px-4 sm:px-6 lg-px-8 mt-16">
-      <div class="grid grid-cols-1 lg:grid-cols-2">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-y-10">
         <div class="flex flex-col gap-10">
           <article
             v-for="(news, index) in newsItems"
@@ -50,18 +50,29 @@
             </div>
           </article>
         </div>
-        <div>
-          <div class="p-6 border-1 border-gray-400 rounded-2xl">
-            <h3>Stay up to date</h3>
-            <p>Subscribe to the MCC newsletter</p>
-            <div class="flex gap-2">
+        <div class="space-y-10 lg:pl-16 xl:pl-32">
+          <div class="p-6 border border-gray-200 rounded-2xl">
+            <h3 class="flex items-center text-sm font-semibold gap-3">
+              <EnvelopeIcon class="w-5 h-5" />
+              Stay up to date
+            </h3>
+            <p class="mt-2 text-sm text-gray-800">
+              Subscribe to the MCC newsletter
+            </p>
+            <div class="flex gap-2 mt-6">
               <input-field
                 id="newsletter-signup"
+                v-model="newsletterEmail"
+                class="flex-grow"
                 name="newsletter-signup"
                 placeholder="Email address"
                 type="email" />
               <custom-button>Signup</custom-button>
             </div>
+          </div>
+
+          <div class="mt-10 p-5 border border-gray-200 rounded-2xl">
+            <small>List of events this week</small>
           </div>
         </div>
       </div>
@@ -70,12 +81,15 @@
 </template>
 
 <script setup lang="ts">
+import { EnvelopeIcon } from "@heroicons/vue/24/outline";
 import { ChevronRightIcon } from "@heroicons/vue/24/solid";
 import { format, subDays } from "date-fns";
 
 definePageMeta({
   layout: "no-container"
 });
+
+const newsletterEmail = ref("");
 
 const images = [
   "https://images.unsplash.com/photo-1516817153573-7b617832a471?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjZ8fGtheWFrfGVufDB8fDB8fHww&auto=format&fit=crop&h=500&q=60",

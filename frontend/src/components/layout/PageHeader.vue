@@ -192,11 +192,41 @@ const navigation = computed(() => {
           name: "What we do",
           href: "/about-us/what-we-do",
           target: null
+        },
+        {
+          name: "Club history",
+          href: "/about-us/club-history",
+          target: null
+        },
+        {
+          name: "Governance",
+          href: "/about-us/governance",
+          target: null
+        }
+      ]
+    },
+    {
+      name: "Come & paddle",
+      href: "/come-paddle",
+      current: route.path === "/come-paddle",
+      childPages: [
+        {
+          name: "Paddle with us",
+          href: "/come-paddle/paddle-with-us",
+          target: null
+        },
+        {
+          name: "Memberships",
+          href: "/come-paddle/memberships",
+          target: null
+        },
+        {
+          name: "Fun sessions",
+          href: "/come-paddle/fun-sessions",
+          target: null
         }
       ]
     }
-    // { name: "Calendar", href: "/calendar", current: route.path === "/calendar" },
-    // { name: "Coaching", href: "/content/1/coaching", current: route.path === "/content/1/coaching" }
   ];
 });
 
