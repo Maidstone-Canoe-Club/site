@@ -1,15 +1,17 @@
 ﻿<template>
-  <img
-    v-if="hasAvatar"
-    class="rounded-full"
-    :class="sizeClass"
-    :src="avatarUrl!"
-    alt="User avatar">
-  <UserCircleIcon
-    v-else
-    class="text-gray-300"
-    :class="sizeClass"
-    aria-hidden="true" />
+  <template v-if="user">
+    <img
+      v-if="hasAvatar"
+      class="rounded-full"
+      :class="sizeClass"
+      :src="avatarUrl!"
+      alt="User avatar">
+    <UserCircleIcon
+      v-else
+      class="text-gray-300"
+      :class="sizeClass"
+      aria-hidden="true" />
+  </template>
 </template>
 
 <script setup lang="ts">
@@ -25,7 +27,7 @@ const props = withDefaults(defineProps<{
   sizeClass: "w-8 h-8"
 });
 
-const hasAvatar = computed(() => !!props.user!.avatar);
+const hasAvatar = computed(() => !!props.user?.avatar);
 const avatarUrl = computed(() => getAvatarUrl(props.user, props.imageSize));
 </script>
 

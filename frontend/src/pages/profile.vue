@@ -3,7 +3,7 @@
     <TabGroup>
       <aside
         class="flex overflow-x-auto border-b border-gray-900/5 py-4 lg:block lg:w-64 lg:flex-none lg:border-0 lg:py-20">
-        <nav class="flex-none px-4 sm:px-6 lg:px-0">
+        <nav class="flex-none px-2 sm:px-6 lg:px-0">
           <TabList>
             <ul role="list" class="flex gap-x-3 px-2 gap-y-1 whitespace-nowrap lg:flex-col">
               <li v-for="item in navigation" :key="item.name">
@@ -26,7 +26,7 @@
 
       <main
         v-if="user"
-        class="px-4 py-16 sm:px-6 lg:flex-auto lg:px-0 lg:py-20">
+        class="px-1 py-16 sm:px-6 lg:flex-auto lg:px-0 lg:py-20">
         <TabPanels>
           <TabPanel>
             <user-details v-model="user" />
