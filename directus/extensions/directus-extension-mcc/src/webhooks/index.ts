@@ -127,6 +127,7 @@ async function handleMailingList(data: InboundEmail, toAddress: FullAddress, mai
             TrackOpens: true,
             TrackLinks: "None",
             MessageStream: "broadcast",
+            Attachments: data.Attachments,
             Headers: [
               {
                 name: "Precedence",
