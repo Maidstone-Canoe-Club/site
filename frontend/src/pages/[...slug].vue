@@ -95,7 +95,8 @@ export type ContentItem = {
 if (!slug) {
   throw createError({
     statusCode: 404,
-    statusMessage: "Page not found"
+    statusMessage: "Page not found",
+    fatal: true
   });
 }
 
@@ -154,7 +155,8 @@ async function loadContent () {
 if (!item.value) {
   throw createError({
     statusCode: 404,
-    statusMessage: "Content not found"
+    statusMessage: "Content not found",
+    fatal: true
   });
 }
 

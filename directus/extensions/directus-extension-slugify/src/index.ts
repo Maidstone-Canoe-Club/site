@@ -30,10 +30,20 @@ export default defineHook(({filter, action}, {services}) => {
 
             if (existingPaths && existingPaths.length) {
                 const existingPath = existingPaths[0];
-                console.log("updating existing path", existingPath.id, path);
+
                 await pathService.updateOne(existingPath.id, {
                     path
                 });
+
+                const item = await contentService.readOne(itemId);
+
+                if (item.child_pages && item.child_pages.length) {
+
+                    for (let i = 0; i < item.child_pages.length; i++) {
+                        await handleChange(item.child_pages[i], schema);
+                    }
+                }
+
             } else {
                 console.log("creating new path", path);
                 await pathService.createOne({
@@ -41,28 +51,49 @@ export default defineHook(({filter, action}, {services}) => {
                     path
                 });
             }
-
         } catch (e) {
             console.log("something went wrong creating a path for", itemId, e);
         }
     };
 
+    const handleDelete = async (keys: any, schema: any) =>
+    {
+        console.log("handling delete!")
+        try {
+            const pathService = new ItemsService("content_paths", {schema, accountability});
+            await pathService.deleteMany(keys);
+            const contentService = new ItemsService("content_page", {schema, accountability});
+
+            for (let i = 0; i < keys.length; i++) {
+                const key = keys[i];
+                const item = contentService.readOne(key);
+
+                if (item.child_pages && item.child_pages.length) {
+                    await handleDelete(item.child_pages, schema);
+                }
+            }
+        }catch(e){
+            console.log("something went wrong deleting paths", e);
+        }
+    };
+
     action("items.create", async ({key, collection}, {schema}) => {
         if (collections.includes(collection)) {
+            console.log("handling create!")
             await handleChange(key, schema);
         }
     });
 
     action("items.update", async ({keys, collection}, {schema}) => {
         if (collections.includes(collection)) {
+            console.log("handling update!")
             await handleChange(keys[0], schema);
         }
     });
 
     action("items.delete", async ({keys, collection}, {schema}) => {
         if (collections.includes(collection)) {
-            const pathService = new ItemsService("content_paths", {schema, accountability});
-            await pathService.deleteMany(keys);
+            await handleDelete(keys, schema);
         }
     });
 

@@ -27,7 +27,7 @@ const props = withDefaults(defineProps<{
   sizeClass: "w-8 h-8"
 });
 
-const hasAvatar = computed(() => !!props.user?.avatar);
+const hasAvatar = computed(() => props.user!.avatar);
 const avatarUrl = computed(() => getAvatarUrl(props.user, props.imageSize));
 </script>
 

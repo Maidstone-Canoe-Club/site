@@ -22,3 +22,22 @@ export type InviteData = {
     first_name: string,
     last_name: string,
 }
+
+export interface EventItem {
+    id?: number,
+    title: string,
+    location?: string,
+    description?: string,
+    start_date: Date,
+    end_date?: Date,
+    is_full_day: boolean,
+    is_recurring: boolean
+    has_multiple: boolean,
+    // recurring_pattern: RecurringEventPattern,
+    parent_event_id?: number,
+    user_created?: string,
+    date_created?: string,
+
+    max_attendees?: number,
+    price?: number
+}
