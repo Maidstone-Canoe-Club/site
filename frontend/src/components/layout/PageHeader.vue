@@ -18,7 +18,7 @@
                   <div
                     class="flex items-center border-b-2 px-1 pt-1 text-sm font-medium cursor-pointer"
                     :class="[item.current ? 'border-indigo-500 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700']">
-                    <MenuButton class="flex flex-grow justify-center gap-2">
+                    <MenuButton class="flex flex-grow h-full items-center justify-center gap-2">
                       <ChevronDownIcon class="w-5 h-5" />
                       <span class="flex">
                         {{ item.name }}
@@ -87,7 +87,8 @@
                       :to="item.href"
                       :target="item.target"
                       :class="[active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700']"
-                      @mouseup="close">
+                      @mouseup="close"
+                      @touchend="close">
                       {{ item.name }}
                     </nuxt-link>
                   </MenuItem>
@@ -112,17 +113,47 @@
       </div>
     </div>
 
-    <DisclosurePanel class="sm:hidden">
+    <DisclosurePanel v-slot="{close}" class="sm:hidden">
       <div class="pt-2 pb-3 space-y-1">
-        <DisclosureButton
-          v-for="item in navigation"
-          :key="item.name"
-          as="a"
-          :href="item.href"
-          :class="[item.current ? 'border-indigo-500 bg-indigo-50 text-indigo-700' : 'border-transparent text-gray-600 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-800', 'block border-l-4 py-2 pl-3 pr-4 text-base font-medium']"
-          :aria-current="item.current ? 'page' : undefined">
-          {{ item.name }}
-        </DisclosureButton>
+        <!--        <DisclosureButton-->
+        <!--          v-for="item in navigation"-->
+        <!--          :key="item.name"-->
+        <!--          as="a"-->
+        <!--          :href="item.href"-->
+        <!--          :class="[item.current ? 'border-indigo-500 bg-indigo-50 text-indigo-700' : 'border-transparent text-gray-600 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-800', 'block border-l-4 py-2 pl-3 pr-4 text-base font-medium']"-->
+        <!--          :aria-current="item.current ? 'page' : undefined">-->
+        <!--          {{ item.name }}-->
+        <!--        </DisclosureButton>-->
+        <ul role="list" class="-mx-2 space-y-1">
+          <li v-for="item in navigation" :key="item.name">
+            <nuxt-link
+              v-if="!item.childPages"
+              :to="item.href"
+              :class="[item.current ? 'border-indigo-500 bg-indigo-50 text-indigo-700' : 'border-transparent text-gray-600 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-800', 'block border-l-4 py-2 pl-3 pr-4 text-base font-medium']">
+              {{ item.name }}
+            </nuxt-link>
+            <Disclosure v-else v-slot="{ open }" as="div">
+              <DisclosureButton
+                :class="[item.current ? 'border-indigo-500 bg-indigo-50 text-indigo-700' : 'border-transparent text-gray-600 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-800', 'flex items-center w-full gap-x-3 border-l-4 py-2 pl-3 pr-4 text-base font-medium']">
+                {{ item.name }}
+                <ChevronRightIcon :class="[open ? 'rotate-90 text-gray-500' : 'text-gray-400', 'ml-auto h-5 w-5 shrink-0']" aria-hidden="true" />
+              </DisclosureButton>
+              <DisclosurePanel as="ul" class="mt-1 px-2">
+                <li v-for="subItem in item.childPages" :key="subItem.name">
+                  <!-- 44px -->
+                  <DisclosureButton
+                    :as="NuxtLink"
+                    :to="subItem.href"
+                    :class="[subItem.current ? 'border-indigo-500 bg-indigo-50 text-indigo-700' : 'border-transparent text-gray-600 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-800', 'block border-l-4 py-2 pl-3 pr-4 text-base font-medium']"
+                    @mouseup="closeSubItem(subItem.href, close)"
+                    @touchend="closeSubItem(subItem.href, close)">
+                    {{ subItem.name }}
+                  </DisclosureButton>
+                </li>
+              </DisclosurePanel>
+            </Disclosure>
+          </li>
+        </ul>
       </div>
       <div
         v-if="user"
@@ -169,9 +200,12 @@
 </template>
 
 <script setup lang="ts">
+import { ChevronRightIcon } from "@heroicons/vue/20/solid";
 import { Bars3Icon, XMarkIcon, ChevronDownIcon } from "@heroicons/vue/24/outline";
 import { Disclosure, DisclosurePanel, DisclosureButton, Menu, MenuButton, MenuItems, MenuItem } from "@headlessui/vue";
-import { useDirectusUser, navigateTo, useDirectusAuth, useRoute, getAvatarUrl } from "#imports";
+import { useDirectusUser, navigateTo, useDirectusAuth, useRoute, getAvatarUrl, hasRole } from "#imports";
+
+const NuxtLink = resolveComponent("nuxt-link");
 
 const route = useRoute();
 const user = useDirectusUser();
@@ -185,23 +219,31 @@ const navigation = computed(() => {
     { name: "Home", href: "/", current: route.path === "/" },
     {
       name: "About us",
-      href: "/about-us",
-      current: route.path === "/about-us",
+      current: route.path.startsWith("/about-us"),
       childPages: [
+        {
+          name: "About the club",
+          href: "/about-us/about-the-club",
+          target: null,
+          current: route.path.endsWith("/about-the-club")
+        },
         {
           name: "What we do",
           href: "/about-us/what-we-do",
-          target: null
+          target: null,
+          current: route.path.endsWith("/what-we-do")
         },
         {
           name: "Club history",
           href: "/about-us/club-history",
-          target: null
+          target: null,
+          current: route.path.endsWith("/club-history")
         },
         {
           name: "Governance",
           href: "/about-us/governance",
-          target: null
+          target: null,
+          current: route.path.endsWith("/governance")
         }
       ]
     },
@@ -213,19 +255,33 @@ const navigation = computed(() => {
         {
           name: "Paddle with us",
           href: "/come-paddle/paddle-with-us",
-          target: null
+          target: null,
+          current: route.path.endsWith("/paddle-with-us")
         },
         {
           name: "Memberships",
           href: "/come-paddle/memberships",
-          target: null
+          target: null,
+          current: route.path.endsWith("/memberships")
         },
         {
           name: "Fun sessions",
           href: "/come-paddle/fun-sessions",
-          target: null
+          target: null,
+          current: route.path.endsWith("/fun-sessions")
         }
       ]
+    },
+    {
+      name: "Coaching",
+      href: "/coaching",
+      visible: () => hasRole(user, "coach"),
+      current: route.path.startsWith("/coaching")
+    },
+    {
+      name: "Calendar",
+      href: "/calendar",
+      current: route.path.startsWith("/calendar")
     }
   ];
 });
@@ -258,6 +314,11 @@ if (user.value && user.value.role === "b4a0ccc9-6378-4b29-a3d5-dfb065b2ff42") {
 
 const hasAvatar = computed(() => !!user.value?.avatar);
 const avatarUrl = getAvatarUrl(user);
+
+async function closeSubItem (href: string, close: any) {
+  close();
+  await navigateTo(href);
+}
 
 </script>
 

@@ -66,11 +66,19 @@ export default defineNuxtConfig({
     "nuxt-directus",
     "@nuxtjs/google-fonts",
     "@nuxtjs/tailwindcss",
-    "nuxt-headlessui"
+    "nuxt-headlessui",
+    "@pinia/nuxt"
   ],
 
   directus: {
-    autoRefresh: true
+    autoRefresh: true,
+    fetchUserParams: {
+      fields: ["*", "role.name"]
+    },
+    onAutoRefreshFailure () : Promise<void> {
+      console.log("AUTO REFRESH FAILURE!");
+      return Promise.resolve();
+    }
   },
 
   googleFonts: {
