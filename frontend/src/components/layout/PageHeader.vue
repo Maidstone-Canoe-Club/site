@@ -222,8 +222,8 @@ const navigation = computed(() => {
       current: route.path.startsWith("/about-us"),
       childPages: [
         {
-          name: "About the club",
-          href: "/about-us/about-the-club",
+          name: "About us",
+          href: "/about-us",
           target: null,
           current: route.path.endsWith("/about-the-club")
         },
@@ -298,8 +298,10 @@ const userNavigation = ref([
   }
 ]);
 
+const isAdmin = computed(() => hasRole(user.value, "administrator"));
+
 // temp check to see if user is admin
-if (user.value && user.value.role === "b4a0ccc9-6378-4b29-a3d5-dfb065b2ff42") {
+if (user.value && isAdmin.value) {
   userNavigation.value.push({
     name: "Directus",
     href: directusUrl,

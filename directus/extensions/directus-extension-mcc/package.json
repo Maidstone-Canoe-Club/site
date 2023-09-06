@@ -39,6 +39,11 @@
 				"type": "endpoint",
 				"name": "registration",
 				"source": "src/registration/index.ts"
+			},
+			{
+				"type": "endpoint",
+				"name": "content",
+				"source": "src/content/index.ts"
 			}
 		]
 	},
@@ -57,15 +62,8 @@
 		"lint": "eslint --fix --ext .ts"
 	},
 	"devDependencies": {
-		"@directus/errors": "^0.0.2",
 		"@directus/extensions-sdk": "10.1.9",
-		"@types/node": "^20.5.8",
-		"@typescript-eslint/eslint-plugin": "^6.5.0",
-		"@typescript-eslint/parser": "^6.5.0",
-		"eslint": "^8.48.0",
-		"nanoid": "^4.0.2",
-		"nanoid-dictionary": "^4.3.0",
-		"ofetch": "^1.3.3",
+		"@types/node": "^20.5.9",
 		"typescript": "^5.2.2"
 	}
 }
