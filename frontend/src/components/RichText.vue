@@ -26,4 +26,8 @@ defineProps<{
 ::v-deep(a) {
   @apply text-[#6475f0] underline;
 }
+
+::v-deep(h3) {
+  @apply text-2xl font-bold mb-2;
+}
 </style>
