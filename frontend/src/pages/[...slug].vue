@@ -95,7 +95,7 @@ export type ContentItem = {
 if (!slug) {
   throw createError({
     statusCode: 404,
-    statusMessage: "Page not found",
+    statusMessage: `Page not found: ${path}`,
     fatal: true
   });
 }
