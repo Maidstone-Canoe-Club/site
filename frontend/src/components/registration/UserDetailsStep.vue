@@ -1,7 +1,10 @@
 ﻿<template>
   <form @submit.prevent>
-    <p v-if="discoveredNewMember">
-      Hi there! You seem to already be a club member!
+    <p
+      v-if="discoveredNewMember"
+      class="mb-5 flex justify-center gap-5">
+      <HandRaisedIcon class="w-12 h-12 text-gray-600" />
+      Hi there! You seem to already be a club member! Some of your details have already been filled out.
     </p>
     <div class="space-y-6">
       <input-field
@@ -21,6 +24,13 @@
         name="last-name"
         autocomplete="family-name"
         :v="v$.last_name" />
+
+      <input-field
+        v-if="discoveredNewMember"
+        id="bc-number"
+        v-model="internalValue.bc_number"
+        name="bc-number"
+        label="BC number" />
 
       <input-field
         id="dob"
@@ -71,6 +81,7 @@
 </template>
 
 <script setup lang="ts">
+import { HandRaisedIcon } from "@heroicons/vue/24/outline";
 import { DirectusUser } from "nuxt-directus/dist/runtime/types";
 import { required } from "@vuelidate/validators";
 import { useVuelidate, Validation } from "@vuelidate/core";
