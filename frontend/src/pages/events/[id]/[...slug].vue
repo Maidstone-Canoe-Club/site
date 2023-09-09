@@ -45,8 +45,9 @@
     <div class="mt-5">
       <div class="grid md:grid-cols-12 gap-10">
         <div class="md:col-span-8 mt-5">
-          <div v-html="event.description" />
-          <pre>{{ recurringPattern }}</pre>
+          <div
+            v-if="event.description"
+            v-html="event.description" />
         </div>
         <div class="md:col-span-4">
           <div>
@@ -73,30 +74,30 @@
             <UsersIcon class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
             6/8 attendees
           </div>
-          <ul role="list" class="divide-y divide-gray-100">
-            <!--            <li v-for="person in people" :key="person.email" class="flex items-center justify-between gap-x-6 py-5">-->
-            <!--              <div class="flex min-w-0 gap-x-4">-->
-            <!--                <img-->
-            <!--                  v-if="person.imageUrl"-->
-            <!--                  class="h-12 w-12 flex-none rounded-full bg-gray-50"-->
-            <!--                  :src="person.imageUrl"-->
-            <!--                  alt="">-->
-            <!--                <UserCircleIcon-->
-            <!--                  v-else-->
-            <!--                  class="h-12 w-12 text-gray-300"-->
-            <!--                  aria-hidden="true" />-->
-            <!--                <div class="min-w-0 flex-auto">-->
-            <!--                  <p class="text-sm font-semibold leading-6 text-gray-900">-->
-            <!--                    {{ person.name }}-->
-            <!--                  </p>-->
-            <!--                  <p class="mt-1 truncate text-xs leading-5 text-gray-500">-->
-            <!--                    {{ person.email }}-->
-            <!--                  </p>-->
-            <!--                </div>-->
-            <!--              </div>-->
-            <!--              <a :href="person.href" class="rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">View</a>-->
-            <!--            </li>-->
-          </ul>
+          <!--          <ul role="list" class="divide-y divide-gray-100">-->
+          <!--            <li v-for="person in people" :key="person.email" class="flex items-center justify-between gap-x-6 py-5">-->
+          <!--              <div class="flex min-w-0 gap-x-4">-->
+          <!--                <img-->
+          <!--                  v-if="person.imageUrl"-->
+          <!--                  class="h-12 w-12 flex-none rounded-full bg-gray-50"-->
+          <!--                  :src="person.imageUrl"-->
+          <!--                  alt="">-->
+          <!--                <UserCircleIcon-->
+          <!--                  v-else-->
+          <!--                  class="h-12 w-12 text-gray-300"-->
+          <!--                  aria-hidden="true" />-->
+          <!--                <div class="min-w-0 flex-auto">-->
+          <!--                  <p class="text-sm font-semibold leading-6 text-gray-900">-->
+          <!--                    {{ person.name }}-->
+          <!--                  </p>-->
+          <!--                  <p class="mt-1 truncate text-xs leading-5 text-gray-500">-->
+          <!--                    {{ person.email }}-->
+          <!--                  </p>-->
+          <!--                </div>-->
+          <!--              </div>-->
+          <!--              <a :href="person.href" class="rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">View</a>-->
+          <!--            </li>-->
+          <!--          </ul>-->
         </div>
       </div>
     </div>
