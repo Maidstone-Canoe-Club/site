@@ -56,10 +56,17 @@
 
       <hr class="mt-10">
 
+      <!--      <p class="mt-5 text-center text-sm text-gray-500">-->
+      <!--        Already a club member?-->
+      <!--        {{ ' ' }}-->
+      <!--        <nuxt-link to="/member-check" class="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">-->
+      <!--          Sign up for an account here-->
+      <!--        </nuxt-link>-->
+      <!--      </p>-->
       <p class="mt-5 text-center text-sm text-gray-500">
-        Already a club member?
+        Don't have an account?
         {{ ' ' }}
-        <nuxt-link to="/member-check" class="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">
+        <nuxt-link to="/register" class="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">
           Sign up for an account here
         </nuxt-link>
       </p>

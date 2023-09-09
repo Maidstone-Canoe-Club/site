@@ -17,6 +17,7 @@ COPY snapshots/ ./snapshots
 COPY extensions/templates/ ./extensions/templates
 COPY --from=builder /builder/extensions/directus-extension-slugify ./extensions/directus-extension-slugify
 COPY --from=builder /builder/extensions/directus-extension-mcc ./extensions/directus-extension-mcc
+COPY --from=builder /builder/extensions/directus-extension-events ./extensions/directus-extension-events
 
 ARG DB_CLIENT
 ARG DB_HOST

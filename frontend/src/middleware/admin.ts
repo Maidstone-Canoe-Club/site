@@ -1,8 +1,9 @@
 ﻿export default defineNuxtRouteMiddleware(() => {
   const user = useDirectusUser();
-  if (user.value.role !== "b4a0ccc9-6378-4b29-a3d5-dfb065b2ff42") {
+  if (!hasRole(user.value, "Administrator")) {
     return createError({
-      statusCode: 401
+      statusCode: 401,
+      statusMessage: "You're not allowed to access this page"
     });
   }
 });

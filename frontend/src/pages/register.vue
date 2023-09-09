@@ -4,15 +4,15 @@
       <h2 class="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
         Register
       </h2>
-      <p
-        v-if="!inviteId"
-        class="mt-4 text-center text-sm text-gray-500">
-        Already a club member?
-        {{ ' ' }}
-        <nuxt-link to="/member-check" class="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">
-          Sign up for an account here
-        </nuxt-link>
-      </p>
+      <!--      <p-->
+      <!--        v-if="!inviteId"-->
+      <!--        class="mt-4 text-center text-sm text-gray-500">-->
+      <!--        Already a club member?-->
+      <!--        {{ ' ' }}-->
+      <!--        <nuxt-link to="/member-check" class="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">-->
+      <!--          Sign up for an account here-->
+      <!--        </nuxt-link>-->
+      <!--      </p>-->
     </div>
 
     <nav

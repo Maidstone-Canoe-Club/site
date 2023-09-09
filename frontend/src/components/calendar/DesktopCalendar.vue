@@ -174,7 +174,7 @@
             <time :datetime="day.date" :class="[day.isSelected && 'flex h-6 w-6 items-center justify-center rounded-full', day.isSelected && day.isToday && 'bg-indigo-600', day.isSelected && !day.isToday && 'bg-gray-900', 'ml-auto']">{{ day.date.split('-').pop().replace(/^0/, '') }}</time>
             <span class="sr-only">{{ day.events.length }} events</span>
             <span v-if="day.events.length > 0" class="mt-auto flex flex-wrap-reverse -mx-0.5">
-              <span v-for="event in day.events" :key="event.id" class="mb-1 rounded-full bg-gray-400 mx-0.5 h-1.5 w-1.5" />
+              <span v-for="event in day.events" :key="event.id + '-small'" class="mb-1 rounded-full bg-gray-400 mx-0.5 h-1.5 w-1.5" />
             </span>
           </button>
         </div>
@@ -306,19 +306,34 @@ function generateDays () {
 
 function getEventsForDay (date: Date): EventData[] {
   return props.events.filter((e) => {
-    return new Date(e.start_date).setHours(0, 0, 0, 0) === date.setHours(0, 0, 0, 0);
-  })
-    .map((e) => {
-      const date = new Date(e.start_date);
-      console.log("e", e, e.parent_event || e.id);
-      return {
-        id: e.id,
-        name: e.title,
-        time: format(date, "H:mmaa"),
-        datetime: `${format(date, "yyyy-MM-dd")}T${format(date, "H:mm")}`,
-        href: `/events/${e.parent_event || e.id}`
-      };
-    });
+    const start = new Date(e.start_date).setHours(0, 0, 0, 0);
+    const end = new Date(e.end_date).setHours(0, 0, 0, 0);
+    const toCheck = date.setHours(0, 0, 0, 0);
+    const dayMatches = start === toCheck;
+
+    if (toCheck >= start && toCheck <= end) {
+      return true;
+    }
+
+    return dayMatches;
+  }).map((e) => {
+    const date = new Date(e.start_date);
+
+    let title = e.title;
+
+    if (e.event_index && e.event_count) {
+      title = `(${e.event_index}/${e.event_count}) ${e.title}`;
+    }
+
+    return {
+      id: e.id,
+      name: title,
+      time: format(date, "H:mmaa"),
+      datetime: `${format(date, "yyyy-MM-dd")}T${format(date, "H:mm")}`,
+      parentId: e.parent_event,
+      href: `/events/${e.parent_event || e.id}`
+    };
+  });
 }
 
 watch(() => props.events, () => {
