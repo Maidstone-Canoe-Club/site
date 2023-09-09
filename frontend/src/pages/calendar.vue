@@ -76,138 +76,141 @@ async function fetchEvents () {
         }
       }
     });
-    const recurringEventIds = recurringEvents.map(e => e.id);
 
-    const recurringPatterns = await getItems({
-      collection: "recurring_event_patterns",
-      params: {
-        filter: {
-          event: {
-            _in: recurringEventIds
+    if (recurringEvents?.length) {
+      const recurringEventIds = recurringEvents.map(e => e.id);
+
+      const recurringPatterns = await getItems({
+        collection: "recurring_event_patterns",
+        params: {
+          filter: {
+            event: {
+              _in: recurringEventIds
+            }
           }
         }
-      }
-    });
+      });
 
-    recurringPatterns.forEach((p) => {
-      const event = recurringEvents.find(e => e.id === p.event);
-      event.is_recurring = false;
-      event.instance = 1;
-      foundEvents.push(event);
+      recurringPatterns.forEach((p) => {
+        const event = recurringEvents.find(e => e.id === p.event);
+        event.is_recurring = false;
+        event.instance = 1;
+        foundEvents.push(event);
 
-      // TODO: The following code is a hot mess and needs refactoring
+        // TODO: The following code is a hot mess and needs refactoring
 
-      if (p.type === "0") { // daily
-        if (p.max_occurences) {
-          for (let i = 1; i < p.max_occurences; i++) {
-            const repeatedEvent = { ...event };
-            repeatedEvent.start_date = addDays(new Date(event.start_date), i);
-            repeatedEvent.end_date = addDays(new Date(event.end_date), i);
-            repeatedEvent.instance = i + 1;
-            const repeatedStartMonth = getMonth(repeatedEvent.start_date);
-
-            // ensure we only add events that fall within the current month
-            if (repeatedStartMonth === calendarStore.getMonth) {
-              foundEvents.push(repeatedEvent);
-            }
-          }
-        } else {
-          const daysInMonth = getDaysInMonth(new Date(calendarStore.getYear, calendarStore.getMonth, 1));
-          const startDate = new Date(event.start_date);
-          for (let i = 0; i < daysInMonth; i++) {
-            const date = new Date(calendarStore.getYear, calendarStore.getMonth, i + 1);
-
-            if (date < startDate) {
-              continue;
-            }
-
-            if (isRecurringEventOnDate(p, date)) {
+        if (p.type === "0") { // daily
+          if (p.max_occurences) {
+            for (let i = 1; i < p.max_occurences; i++) {
               const repeatedEvent = { ...event };
-              const instance = countEventOccurences(p, startDate, date);
-              repeatedEvent.start_date = addDays(startDate, instance);
-              repeatedEvent.end_date = addDays(new Date(event.end_date), instance);
-              repeatedEvent.instance = instance + 1;
+              repeatedEvent.start_date = addDays(new Date(event.start_date), i);
+              repeatedEvent.end_date = addDays(new Date(event.end_date), i);
+              repeatedEvent.instance = i + 1;
+              const repeatedStartMonth = getMonth(repeatedEvent.start_date);
 
-              foundEvents.push(repeatedEvent);
+              // ensure we only add events that fall within the current month
+              if (repeatedStartMonth === calendarStore.getMonth) {
+                foundEvents.push(repeatedEvent);
+              }
+            }
+          } else {
+            const daysInMonth = getDaysInMonth(new Date(calendarStore.getYear, calendarStore.getMonth, 1));
+            const startDate = new Date(event.start_date);
+            for (let i = 0; i < daysInMonth; i++) {
+              const date = new Date(calendarStore.getYear, calendarStore.getMonth, i + 1);
+
+              if (date < startDate) {
+                continue;
+              }
+
+              if (isRecurringEventOnDate(p, date)) {
+                const repeatedEvent = { ...event };
+                const instance = countEventOccurences(p, startDate, date);
+                repeatedEvent.start_date = addDays(startDate, instance);
+                repeatedEvent.end_date = addDays(new Date(event.end_date), instance);
+                repeatedEvent.instance = instance + 1;
+
+                foundEvents.push(repeatedEvent);
+              }
             }
           }
-        }
-      } else if (p.type === "1") { // weekly
-        if (p.max_occurences) {
-          // TODO: clamp this loop to something sensible
-          for (let i = 1; i < p.max_occurences; i++) {
-            const repeatedEvent = { ...event };
-            repeatedEvent.start_date = addWeeks(new Date(event.start_date), i);
-            repeatedEvent.end_date = addWeeks(new Date(event.end_date), i);
-            repeatedEvent.instance = i + 1;
-            const repeatedStartMonth = getMonth(repeatedEvent.start_date);
-
-            // ensure we only add events that fall within the current month
-            if (repeatedStartMonth === calendarStore.getMonth) {
-              foundEvents.push(repeatedEvent);
-            }
-          }
-        } else {
-          const daysInMonth = getDaysInMonth(new Date(calendarStore.getYear, calendarStore.getMonth, 1));
-          const startDate = new Date(event.start_date);
-          for (let i = 0; i < daysInMonth; i++) {
-            const date = new Date(calendarStore.getYear, calendarStore.getMonth, i + 1);
-
-            if (date < startDate) {
-              continue;
-            }
-
-            if (isRecurringEventOnDate(p, date)) {
+        } else if (p.type === "1") { // weekly
+          if (p.max_occurences) {
+            // TODO: clamp this loop to something sensible
+            for (let i = 1; i < p.max_occurences; i++) {
               const repeatedEvent = { ...event };
-              const instance = countEventOccurences(p, startDate, date);
-              repeatedEvent.start_date = addWeeks(startDate, instance);
-              repeatedEvent.end_date = addWeeks(new Date(event.end_date), instance);
-              repeatedEvent.instance = instance + 1;
+              repeatedEvent.start_date = addWeeks(new Date(event.start_date), i);
+              repeatedEvent.end_date = addWeeks(new Date(event.end_date), i);
+              repeatedEvent.instance = i + 1;
+              const repeatedStartMonth = getMonth(repeatedEvent.start_date);
 
-              foundEvents.push(repeatedEvent);
+              // ensure we only add events that fall within the current month
+              if (repeatedStartMonth === calendarStore.getMonth) {
+                foundEvents.push(repeatedEvent);
+              }
+            }
+          } else {
+            const daysInMonth = getDaysInMonth(new Date(calendarStore.getYear, calendarStore.getMonth, 1));
+            const startDate = new Date(event.start_date);
+            for (let i = 0; i < daysInMonth; i++) {
+              const date = new Date(calendarStore.getYear, calendarStore.getMonth, i + 1);
+
+              if (date < startDate) {
+                continue;
+              }
+
+              if (isRecurringEventOnDate(p, date)) {
+                const repeatedEvent = { ...event };
+                const instance = countEventOccurences(p, startDate, date);
+                repeatedEvent.start_date = addWeeks(startDate, instance);
+                repeatedEvent.end_date = addWeeks(new Date(event.end_date), instance);
+                repeatedEvent.instance = instance + 1;
+
+                foundEvents.push(repeatedEvent);
+              }
             }
           }
-        }
-      } else if (p.type === "2") { // monthly
-        console.log("p", p);
-        if (p.max_occurences) {
-          // TODO: clamp this loop to something sensible
-          for (let i = 1; i < p.max_occurences; i++) {
-            const repeatedEvent = { ...event };
-            repeatedEvent.start_date = addMonths(new Date(event.start_date), i);
-            repeatedEvent.end_date = addMonths(new Date(event.end_date), i);
-            repeatedEvent.instance = i + 1;
-            const repeatedStartMonth = getMonth(repeatedEvent.start_date);
-
-            console.log("month", repeatedStartMonth, calendarStore.getMonth);
-            // ensure we only add events that fall within the current month
-            if (repeatedStartMonth === calendarStore.getMonth) {
-              foundEvents.push(repeatedEvent);
-            }
-          }
-        } else {
-          const daysInMonth = getDaysInMonth(new Date(calendarStore.getYear, calendarStore.getMonth, 1));
-          const startDate = new Date(event.start_date);
-          for (let i = 0; i < daysInMonth; i++) {
-            const date = new Date(calendarStore.getYear, calendarStore.getMonth, i + 1);
-
-            if (date < startDate) {
-              continue;
-            }
-
-            if (isRecurringEventOnDate(p, date)) {
+        } else if (p.type === "2") { // monthly
+          console.log("p", p);
+          if (p.max_occurences) {
+            // TODO: clamp this loop to something sensible
+            for (let i = 1; i < p.max_occurences; i++) {
               const repeatedEvent = { ...event };
-              const instance = countEventOccurences(p, startDate, date);
-              repeatedEvent.start_date = addWeeks(startDate, instance);
-              repeatedEvent.end_date = addWeeks(new Date(event.end_date), instance);
-              repeatedEvent.instance = instance + 1;
+              repeatedEvent.start_date = addMonths(new Date(event.start_date), i);
+              repeatedEvent.end_date = addMonths(new Date(event.end_date), i);
+              repeatedEvent.instance = i + 1;
+              const repeatedStartMonth = getMonth(repeatedEvent.start_date);
 
-              foundEvents.push(repeatedEvent);
+              console.log("month", repeatedStartMonth, calendarStore.getMonth);
+              // ensure we only add events that fall within the current month
+              if (repeatedStartMonth === calendarStore.getMonth) {
+                foundEvents.push(repeatedEvent);
+              }
+            }
+          } else {
+            const daysInMonth = getDaysInMonth(new Date(calendarStore.getYear, calendarStore.getMonth, 1));
+            const startDate = new Date(event.start_date);
+            for (let i = 0; i < daysInMonth; i++) {
+              const date = new Date(calendarStore.getYear, calendarStore.getMonth, i + 1);
+
+              if (date < startDate) {
+                continue;
+              }
+
+              if (isRecurringEventOnDate(p, date)) {
+                const repeatedEvent = { ...event };
+                const instance = countEventOccurences(p, startDate, date);
+                repeatedEvent.start_date = addWeeks(startDate, instance);
+                repeatedEvent.end_date = addWeeks(new Date(event.end_date), instance);
+                repeatedEvent.instance = instance + 1;
+
+                foundEvents.push(repeatedEvent);
+              }
             }
           }
         }
-      }
-    });
+      });
+    }
 
     events.value = foundEvents;
   } catch (e) {
