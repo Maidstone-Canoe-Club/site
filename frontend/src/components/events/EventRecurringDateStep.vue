@@ -9,6 +9,14 @@
         label="When does the event start?"
         :v="v$.startDate" />
 
+      <input-date
+        id="recurring-end"
+        v-model="eventDates.recurring.endDate"
+        enable-time-picker
+        required
+        label="When does the event end?"
+        :v="v$.endDate" />
+
       <input-dropdown
         id="recurring-type"
         v-model="eventDates.recurring.recurringType"
@@ -56,9 +64,9 @@ watch(eventDates, (val) => {
 
 const recurringTypes = [
   { id: "daily", name: "Daily" },
-  { id: "weekly", name: "Weekly" },
-  { id: "monthly", name: "Monthly" },
-  { id: "yearly", name: "Yearly" }
+  { id: "weekly", name: "Weekly" }
+  // { id: "monthly", name: "Monthly" }, // Removed until infinite repeating works
+  // { id: "yearly", name: "Yearly" }
 ];
 
 function onPrev () {
@@ -66,7 +74,8 @@ function onPrev () {
 }
 
 const rules = {
-  startDate: { required }
+  startDate: { required },
+  endDate: { required }
 };
 
 const v$: Ref<Validation> = useVuelidate(rules, eventDates.value.recurring);

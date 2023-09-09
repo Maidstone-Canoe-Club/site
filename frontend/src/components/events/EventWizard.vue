@@ -97,6 +97,7 @@ const currentStep = computed(() => steps.value[currentStepIndex.value].component
 
 const eventType = ref("");
 const eventItem = ref({
+  location: "Maidstone Canoe Club",
   allowedRole: []
 });
 const eventDates = ref({

@@ -30,7 +30,11 @@
         v-if="canEdit"
         class="mt-5 flex lg:ml-4 lg:mt-0">
         <span class="sm:ml-3">
-          <a :href="editLink" target="_blank" type="button" class="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+          <a
+            :href="editLink"
+            target="_blank"
+            type="button"
+            class="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
             <PencilIcon class="-ml-0.5 mr-1.5 h-5 w-5 text-gray-400" aria-hidden="true" />
             Edit
           </a>
@@ -42,6 +46,7 @@
       <div class="grid md:grid-cols-12 gap-10">
         <div class="md:col-span-8 mt-5">
           <div v-html="event.description" />
+          <pre>{{ recurringPattern }}</pre>
         </div>
         <div class="md:col-span-4">
           <div>
@@ -110,13 +115,16 @@ import {
 import { UserCircleIcon } from "@heroicons/vue/24/outline";
 // @ts-ignore
 import Dinero from "dinero.js";
-import { format, isSameDay } from "date-fns";
+import { addDays, addMonths, addWeeks, addYears, format, isSameDay } from "date-fns";
 
 const { getItemById, getItems } = useDirectusItems();
 const route = useRoute();
 const user = useDirectusUser();
 
+const instance = route.query.instance;
+
 const childEvents = ref();
+const recurringPattern = ref();
 
 const { data: event } = await useAsyncData(`event-item-${route.params.id}`, async () => {
   return await getItemById({
@@ -142,6 +150,23 @@ if (event.value?.has_multiple) {
   childEvents.value = events.value;
 }
 
+if (event.value?.is_recurring) {
+  const { data: pattern } = await useAsyncData("recurring-pattern-" + event.value.id, async () => {
+    return await getItems({
+      collection: "recurring_event_patterns",
+      params: {
+        filter: {
+          event: {
+            _eq: event.value.id
+          }
+        }
+      }
+    });
+  });
+
+  recurringPattern.value = pattern.value.length ? pattern.value[0] : null;
+}
+
 const sessionDates = computed(() => {
   let result = null;
 
@@ -158,6 +183,33 @@ const sessionDates = computed(() => {
         end: e.end_date
       });
     });
+  }
+
+  if (event.value.is_recurring) {
+    result = [];
+    const type = recurringPattern.value.type;
+
+    if (type === "0") { // daily
+      result.push({
+        start: addDays(new Date(event.value.start_date), instance - 1),
+        end: addDays(new Date(event.value.end_date), instance - 1)
+      });
+    } else if (type === "1") { // weekly
+      result.push({
+        start: addWeeks(new Date(event.value.start_date), instance - 1),
+        end: addWeeks(new Date(event.value.end_date), instance - 1)
+      });
+    } else if (type === "2") { // monthly
+      result.push({
+        start: addMonths(new Date(event.value.start_date), instance - 1),
+        end: addMonths(new Date(event.value.end_date), instance - 1)
+      });
+    } else if (type === "3") { // yearly
+      result.push({
+        start: addYears(new Date(event.value.start_date), instance - 1),
+        end: addYears(new Date(event.value.end_date), instance - 1)
+      });
+    }
   }
 
   return result;

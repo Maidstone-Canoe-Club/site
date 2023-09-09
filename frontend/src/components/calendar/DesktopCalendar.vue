@@ -61,10 +61,14 @@
           <!--              </HeadlessMenuItems>-->
           <!--            </transition>-->
           <!--          </HeadlessMenu>-->
-          <div class="ml-6 h-6 w-px bg-gray-300" />
-          <nuxt-link to="/events/new" class="ml-6 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500">
-            Add event
-          </nuxt-link>
+          <template v-if="canAddEvent">
+            <div class="ml-6 h-6 w-px bg-gray-300" />
+            <nuxt-link
+              to="/events/new"
+              class="ml-6 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500">
+              Add event
+            </nuxt-link>
+          </template>
         </div>
         <HeadlessMenu as="div" class="relative ml-6 md:hidden">
           <HeadlessMenuButton class="-mx-2 flex items-center rounded-full border border-transparent p-2 text-gray-400 hover:text-gray-500">
@@ -306,6 +310,10 @@ function generateDays () {
 
 function getEventsForDay (date: Date): EventData[] {
   return props.events.filter((e) => {
+    if (e.is_recurring) {
+      return false;
+    }
+
     const start = new Date(e.start_date).setHours(0, 0, 0, 0);
     const end = new Date(e.end_date).setHours(0, 0, 0, 0);
     const toCheck = date.setHours(0, 0, 0, 0);
@@ -325,13 +333,19 @@ function getEventsForDay (date: Date): EventData[] {
       title = `(${e.event_index}/${e.event_count}) ${e.title}`;
     }
 
+    let href = `/events/${e.parent_event || e.id}`;
+
+    if (e.instance) {
+      href += "?instance=" + e.instance;
+    }
+
     return {
       id: e.id,
       name: title,
       time: format(date, "H:mmaa"),
       datetime: `${format(date, "yyyy-MM-dd")}T${format(date, "H:mm")}`,
       parentId: e.parent_event,
-      href: `/events/${e.parent_event || e.id}`
+      href
     };
   });
 }
@@ -343,6 +357,9 @@ watch(() => props.events, () => {
 onMounted(() => {
   prepareMonths();
 });
+
+const user = useDirectusUser();
+const canAddEvent = computed(() => hasRole(user.value, "Member"));
 
 </script>
 
