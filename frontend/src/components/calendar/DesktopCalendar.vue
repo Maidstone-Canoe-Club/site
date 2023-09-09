@@ -61,10 +61,14 @@
           <!--              </HeadlessMenuItems>-->
           <!--            </transition>-->
           <!--          </HeadlessMenu>-->
-          <div class="ml-6 h-6 w-px bg-gray-300" />
-          <nuxt-link to="/events/new" class="ml-6 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500">
-            Add event
-          </nuxt-link>
+          <template v-if="canAddEvent">
+            <div class="ml-6 h-6 w-px bg-gray-300" />
+            <nuxt-link
+              to="/events/new"
+              class="ml-6 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500">
+              Add event
+            </nuxt-link>
+          </template>
         </div>
         <HeadlessMenu as="div" class="relative ml-6 md:hidden">
           <HeadlessMenuButton class="-mx-2 flex items-center rounded-full border border-transparent p-2 text-gray-400 hover:text-gray-500">
@@ -144,13 +148,13 @@
       <div class="flex bg-gray-200 text-xs leading-6 text-gray-700 lg:flex-auto">
         <div class="hidden w-full lg:grid lg:grid-cols-7 lg:gap-px">
           <div
-            v-for="day in days"
-            :key="day.date + '-day'"
+            v-for="(day, dayIndex) in days"
+            :key="dayIndex"
             class="min-h-[80px]"
             :class="[day.isCurrentMonth ? 'bg-white' : 'bg-gray-50 text-gray-500', 'relative px-3 py-2']">
             <time :datetime="day.date" :class="day.isToday ? 'flex h-6 w-6 items-center justify-center rounded-full bg-indigo-600 font-semibold text-white' : undefined">{{ day.date.split('-').pop().replace(/^0/, '') }}</time>
             <ol v-if="day.events.length > 0" class="mt-2">
-              <li v-for="event in day.events.slice(0, 2)" :key="event.id">
+              <li v-for="(event, eventIndex) in day.events.slice(0, 2)" :key="eventIndex">
                 <nuxt-link :to="event.href" class="flex group">
                   <p class="flex-auto truncate font-medium text-gray-900 group-hover:text-indigo-600">
                     {{ event.name }}
@@ -166,15 +170,15 @@
         </div>
         <div class="isolate grid w-full grid-cols-7 gap-px lg:hidden">
           <button
-            v-for="day in days"
-            :key="day.date + '-day-small'"
+            v-for="(day, daySmallIndex) in days"
+            :key="daySmallIndex"
             type="button"
             :class="[day.isCurrentMonth ? 'bg-white' : 'bg-gray-50', (day.isSelected || day.isToday) && 'font-semibold', day.isSelected && 'text-white', !day.isSelected && day.isToday && 'text-indigo-600', !day.isSelected && day.isCurrentMonth && !day.isToday && 'text-gray-900', !day.isSelected && !day.isCurrentMonth && !day.isToday && 'text-gray-500', 'flex h-14 flex-col px-3 py-2 hover:bg-gray-100 focus:z-10']"
             @click="selectDay(day)">
             <time :datetime="day.date" :class="[day.isSelected && 'flex h-6 w-6 items-center justify-center rounded-full', day.isSelected && day.isToday && 'bg-indigo-600', day.isSelected && !day.isToday && 'bg-gray-900', 'ml-auto']">{{ day.date.split('-').pop().replace(/^0/, '') }}</time>
             <span class="sr-only">{{ day.events.length }} events</span>
             <span v-if="day.events.length > 0" class="mt-auto flex flex-wrap-reverse -mx-0.5">
-              <span v-for="event in day.events" :key="event.id" class="mb-1 rounded-full bg-gray-400 mx-0.5 h-1.5 w-1.5" />
+              <span v-for="event in day.events" :key="event.id + '-small'" class="mb-1 rounded-full bg-gray-400 mx-0.5 h-1.5 w-1.5" />
             </span>
           </button>
         </div>
@@ -306,19 +310,44 @@ function generateDays () {
 
 function getEventsForDay (date: Date): EventData[] {
   return props.events.filter((e) => {
-    return new Date(e.start_date).setHours(0, 0, 0, 0) === date.setHours(0, 0, 0, 0);
-  })
-    .map((e) => {
-      const date = new Date(e.start_date);
-      console.log("e", e, e.parent_event || e.id);
-      return {
-        id: e.id,
-        name: e.title,
-        time: format(date, "H:mmaa"),
-        datetime: `${format(date, "yyyy-MM-dd")}T${format(date, "H:mm")}`,
-        href: `/events/${e.parent_event || e.id}`
-      };
-    });
+    if (e.is_recurring) {
+      return false;
+    }
+
+    const start = new Date(e.start_date).setHours(0, 0, 0, 0);
+    const end = new Date(e.end_date).setHours(0, 0, 0, 0);
+    const toCheck = date.setHours(0, 0, 0, 0);
+    const dayMatches = start === toCheck;
+
+    if (toCheck >= start && toCheck <= end) {
+      return true;
+    }
+
+    return dayMatches;
+  }).map((e) => {
+    const date = new Date(e.start_date);
+
+    let title = e.title;
+
+    if (e.event_index && e.event_count) {
+      title = `(${e.event_index}/${e.event_count}) ${e.title}`;
+    }
+
+    let href = `/events/${e.parent_event || e.id}`;
+
+    if (e.instance) {
+      href += "?instance=" + e.instance;
+    }
+
+    return {
+      id: e.id,
+      name: title,
+      time: format(date, "H:mmaa"),
+      datetime: `${format(date, "yyyy-MM-dd")}T${format(date, "H:mm")}`,
+      parentId: e.parent_event,
+      href
+    };
+  });
 }
 
 watch(() => props.events, () => {
@@ -328,6 +357,9 @@ watch(() => props.events, () => {
 onMounted(() => {
   prepareMonths();
 });
+
+const user = useDirectusUser();
+const canAddEvent = computed(() => hasRole(user.value, "Member"));
 
 </script>
 
