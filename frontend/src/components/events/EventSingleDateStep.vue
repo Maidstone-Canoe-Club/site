@@ -4,7 +4,7 @@
       <div class="flex justify-center gap-3 sm:gap-6 w-full flex-col sm:flex-row">
         <input-date
           id="start-date"
-          v-model="eventItem.start_date"
+          v-model="eventItem.startDate"
           class="w-full sm:w-auto"
           label="Start date"
           enable-time-picker
@@ -14,7 +14,7 @@
         </div>
         <input-date
           id="end-date"
-          v-model="eventItem.end_date"
+          v-model="eventItem.endDate"
           class="w-full sm:w-auto"
           enable-time-picker
           label="End date"

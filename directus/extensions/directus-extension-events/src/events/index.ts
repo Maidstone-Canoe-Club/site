@@ -56,7 +56,7 @@ async function createSingleEvent(eventItem, eventService, res) {
             description: eventItem.description,
             location: eventItem.location,
             start_date: eventItem.startDate,
-            end_date: eventItem.end_date,
+            end_date: eventItem.endDate,
             price: eventItem.price,
             junior_price: eventItem.junior_price
         });

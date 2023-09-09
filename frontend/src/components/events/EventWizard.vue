@@ -1,7 +1,6 @@
 ﻿<template>
-  <div class="mt-10">
-    <strong>Event wizard</strong>
-
+  <div class="mt-20">
+    <pre>This create new event tool is still under construction</pre>
     <nav
       aria-label="Progress"
       class="flex justify-center items-center">
@@ -55,13 +54,6 @@
       :is-last="currentStepIndex === steps.length - 1"
       @prev="goToPrevStep"
       @next="goToNextStep" />
-    <pre>
-      {{ eventType }}
-    </pre>
-    <pre>
-      {{ eventItem }}
-    </pre>
-    <pre>{{ eventDates }}</pre>
   </div>
 </template>
 
