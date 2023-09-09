@@ -8,7 +8,7 @@
           class="w-full sm:w-auto"
           label="Start date"
           enable-time-picker
-          :v="v$.start_date" />
+          :v="v$.startDate" />
         <div class="h-full justify-center items-center hidden sm:flex">
           <ArrowRightIcon class="w-6 h-6 text-gray-400" />
         </div>
@@ -18,7 +18,7 @@
           class="w-full sm:w-auto"
           enable-time-picker
           label="End date"
-          :v="v$.end_date" />
+          :v="v$.endDate" />
       </div>
     </div>
     <event-wizard-footer
@@ -54,8 +54,8 @@ watch(eventItem, (val) => {
 }, { deep: true, immediate: true });
 
 const rules = {
-  start_date: { required },
-  end_date: { required }
+  startDate: { required },
+  endDate: { required }
 };
 
 const v$: Ref<Validation> = useVuelidate(rules, eventItem);
