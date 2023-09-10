@@ -1,7 +1,5 @@
 ﻿<template>
-  <div>
-    booking for event!
-  </div>
+  <div>payment success!</div>
 </template>
 
 <script setup lang="ts">

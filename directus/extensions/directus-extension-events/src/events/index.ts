@@ -6,13 +6,86 @@ import {
     getDate,
     getMonth,
     setDefaultOptions,
-    getDefaultOptions,
     addDays, addWeeks, addMonths, addYears
 } from "date-fns";
 import enGB from "date-fns/locale/en-GB/index.js";
 
 export default defineEndpoint((router, {services, database}) => {
     const {ItemsService} = services;
+
+    router.post("/book", async (req, res) => {
+        try {
+
+            const eventId = req.query.eventId;
+            const userId = req.query.userId;
+            const instance = req.query.instance;
+
+            if (!eventId) {
+                return res.status(400).send("missing event id");
+            }
+
+            if (!userId) {
+                return res.status(400).send("missing user id");
+            }
+
+            const eventsService = new ItemsService("events", {
+                knex: database,
+                schema: req.schema,
+                accountability: req.accountability
+            });
+
+            const eventBookingService = new ItemsService("event_bookings", {
+                knex: database,
+                schema: req.schema,
+                accountability: req.accountability
+            });
+
+            const event = eventsService.readOne(eventId);
+
+            const existingBookings = await eventBookingService.readByQuery({
+                filter: {
+                    event: {
+                        _eq: eventId
+                    }
+                }
+            });
+
+            const currentBookings = existingBookings.length;
+            const maxBookings = event.max_spaces;
+
+            if (currentBookings + 1 > maxBookings) {
+                return res.json({
+                    result: false,
+                    statusCode: 101,
+                    message: "Event is full"
+                });
+            }
+
+            const selfBooking = existingBookings?.filter(x => x.user === userId);
+            if (selfBooking?.length) {
+                return res.json({
+                    result: false,
+                    statusCode: 102,
+                    message: "That user is already booked"
+                });
+            }
+
+            const bookingId = await eventBookingService.createOne({
+                user: userId,
+                event: eventId,
+                instance: instance
+            });
+
+            return res.json({
+                result: true,
+                statusCode: 100,
+                data: bookingId
+            });
+        } catch (e) {
+            console.log("error booking on to event", e);
+            return res.status(500).send("something went wrong");
+        }
+    });
 
     router.post('/create', async (req, res) => {
         const eventType = req.body.eventType;

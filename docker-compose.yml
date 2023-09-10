@@ -53,6 +53,8 @@ services:
       EMAIL_SMTP_PASSWORD: ${EMAIL_SMTP_PASSWORD}
       PASSWORD_RESET_URL_ALLOW_LIST: 'http://localhost:3000/reset-password'
       IGNORE_MAIL: 'true'
+      STRIPE_KEY: ${STRIPE_KEY}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
 
   frontend:
     container_name: mcc-frontend
@@ -64,6 +66,7 @@ services:
       NODE_ENV: 'development'
       BASE_URL: 'http://localhost:3000'
       NUXT_DIRECTUS_URL: 'http://host.docker.internal:8055'
+      STRIPE_KEY: ${STRIPE_KEY}
     restart: unless-stopped
     extra_hosts:
       - "host.docker.internal:host-gateway"

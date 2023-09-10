@@ -64,40 +64,43 @@
           </div>
 
           <div class="mb-5 mt-5">
-            <button
-              type="button"
-              class="w-full rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-              Book now
-            </button>
+            <event-booker
+              :event-id="route.params.id"
+              :juniors-can-book="false"
+              :price="event.price"
+              :junior-price="event.junior_price"
+              :instance="instance"
+              :already-booked="alreadyBooked"
+              @booked="onBooked" />
           </div>
           <div class="mt-2 flex items-center font-semibold">
             <UsersIcon class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
-            6/8 attendees
+            {{ bookings.length }}/{{ event.max_spaces }}
           </div>
-          <!--          <ul role="list" class="divide-y divide-gray-100">-->
-          <!--            <li v-for="person in people" :key="person.email" class="flex items-center justify-between gap-x-6 py-5">-->
-          <!--              <div class="flex min-w-0 gap-x-4">-->
-          <!--                <img-->
-          <!--                  v-if="person.imageUrl"-->
-          <!--                  class="h-12 w-12 flex-none rounded-full bg-gray-50"-->
-          <!--                  :src="person.imageUrl"-->
-          <!--                  alt="">-->
-          <!--                <UserCircleIcon-->
-          <!--                  v-else-->
-          <!--                  class="h-12 w-12 text-gray-300"-->
-          <!--                  aria-hidden="true" />-->
-          <!--                <div class="min-w-0 flex-auto">-->
-          <!--                  <p class="text-sm font-semibold leading-6 text-gray-900">-->
-          <!--                    {{ person.name }}-->
-          <!--                  </p>-->
-          <!--                  <p class="mt-1 truncate text-xs leading-5 text-gray-500">-->
-          <!--                    {{ person.email }}-->
-          <!--                  </p>-->
-          <!--                </div>-->
-          <!--              </div>-->
-          <!--              <a :href="person.href" class="rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">View</a>-->
-          <!--            </li>-->
-          <!--          </ul>-->
+          <ul role="list" class="divide-y divide-gray-100">
+            <li v-for="booking in bookings" :key="booking.email" class="flex items-center justify-between gap-x-6 py-5">
+              <div class="flex min-w-0 gap-x-4">
+                <img
+                  v-if="booking.user.avatar"
+                  class="h-12 w-12 flex-none rounded-full bg-gray-50"
+                  :src="getAvatarUrl(booking.user)"
+                  alt="">
+                <UserCircleIcon
+                  v-else
+                  class="h-12 w-12 text-gray-300"
+                  aria-hidden="true" />
+                <div class="min-w-0 flex-auto">
+                  <p class="text-sm font-semibold leading-6 text-gray-900">
+                    {{ booking.user.first_name }} {{ booking.user.last_name }}
+                  </p>
+                  <p class="mt-1 truncate text-xs leading-5 text-gray-500">
+                    {{ booking.user.email }}
+                  </p>
+                </div>
+              </div>
+              <a href="#" class="rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">View</a>
+            </li>
+          </ul>
         </div>
       </div>
     </div>
@@ -134,7 +137,32 @@ const { data: event } = await useAsyncData(`event-item-${route.params.id}`, asyn
   });
 });
 
-if (event.value?.has_multiple) {
+if (!event.value) {
+  throw createError({
+    statusCode: 404,
+    statusMessage: "Event not found"
+  });
+}
+
+const { data: bookings } = await useAsyncData("event-bookings" + event.value.id, async () => {
+  return await loadBookings();
+});
+
+async function loadBookings () {
+  return await getItems({
+    collection: "event_bookings",
+    params: {
+      fields: ["*", "user.id", "user.email", "user.first_name", "user.last_name"],
+      filter: {
+        event: {
+          _eq: event.value.id
+        }
+      }
+    }
+  });
+}
+
+if (event.value.has_multiple) {
   const { data: events } = await useAsyncData("event-item" + event.value.id + "-children", async () => {
     return await getItems({
       collection: "events",
@@ -246,6 +274,12 @@ function renderSessionDate (date) {
 function formatDate (date: string) {
   return format(new Date(date), "do MMM, h:mmaa");
 }
+
+async function onBooked () {
+  bookings.value = await loadBookings();
+}
+
+const alreadyBooked = computed(() => !!bookings.value.filter(x => x.user.id === user.value.id).length);
 
 </script>
 

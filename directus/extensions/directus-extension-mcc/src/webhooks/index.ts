@@ -8,17 +8,66 @@ import {
   FullAddress,
   OutboundEmail, Subscriber
 } from "../types";
+import Stripe from "stripe";
 
 const postmarkUrl = "https://api.postmarkapp.com";
 
 const nanoid = customAlphabet(alphanumeric, 11);
 
 
+const stripe = new Stripe(process.env.STRIPE_KEY);
+const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
+
 export default defineEndpoint((router, {services}) => {
   const {ItemsService} = services;
   const adminAccountability = {
     admin: true
   };
+
+  router.post("/payment", async (req, res) => {
+    try {
+      if (!endpointSecret) {
+        console.error("Webhook error: No endpoint secret");
+        return res.status(500).send("Webhook error: No endpoint secret");
+      }
+
+      const sig = req.header("Stripe-Signature");
+      if (!sig) {
+        console.error("Webhook error: No stripe signature in header");
+        return res.send(400).send("Webhook error: No stripe signature in header");
+      }
+
+      const rawBody = req.body;
+      if (!rawBody) {
+        console.error("Webhook error: No body");
+        return res.send(400).send("Webhook error: No body");
+      }
+
+      const bodyBuffer = Buffer.from(rawBody, "utf-8");
+      const stripeEvent: Stripe.Event = stripe.webhooks.constructEvent(bodyBuffer, sig, endpointSecret);
+
+      if (stripeEvent.type === "checkout.session.completed") {
+        console.log("checkout completed!");
+
+        const sessionWithLineItems = await stripe.checkout.sessions.retrieve(stripeEvent.data.object.id,
+          {
+            expand: ["line_items"]
+          });
+
+        const metadata = sessionWithLineItems.metadata;
+
+        console.log("checkout data", sessionWithLineItems, metadata);
+
+      // TODO: add user to event booking
+      // TODO: add new line to orders collection
+      }
+
+      return res.send(`handled ${stripeEvent.type}`);
+    } catch (e) {
+      console.error("Webhook error: Error validating webhook event");
+      return res.status(400).send("Webhook error: Error validating webhook event");
+    }
+  });
 
   router.post("/mail-inbound", async (req, res) => {
     try {
@@ -139,7 +188,7 @@ async function handleMailingList(data: InboundEmail, toAddress: FullAddress, mai
               },
               {
                 name: "List-Unsubscribe",
-                value:  `<${process.env.PUBLIC_URL}/unsubscribe?list=${mailingList.email_name}>`
+                value: `<${process.env.PUBLIC_URL}/unsubscribe?list=${mailingList.email_name}>`
               },
               {
                 name: "Original-Sender",
@@ -157,7 +206,7 @@ async function handleMailingList(data: InboundEmail, toAddress: FullAddress, mai
     } else {
       console.log("could not find mailing list:", emailName);
     }
-  }catch(e){
+  } catch (e) {
     console.log("something went wrong handling mailing list email", e, e.message, e.data);
   }
 }
