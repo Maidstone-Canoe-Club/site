@@ -10,7 +10,7 @@
             </nuxt-link>
           </div>
           <div class="hidden sm:space-x-8 sm:-my-px sm:ml-6 sm:flex">
-            <template v-for="item in navigation" :key="item.name">
+            <template v-for="item in navigation.filter(x => x.visible())" :key="item.name">
               <template v-if="item.childPages && item.childPages.length">
                 <Menu
                   as="div"
@@ -189,7 +189,6 @@
             as="a"
             href="javascript:;"
             class="block px-4 py-2 text-base font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-800"
-            data-umami-event="Login button"
             @click="navigateTo(loginUrl)">
             Login
           </DisclosureButton>
@@ -209,6 +208,7 @@ const NuxtLink = resolveComponent("nuxt-link");
 
 const route = useRoute();
 const user = useDirectusUser();
+
 const { logout } = useDirectusAuth();
 
 const loginUrl = computed(() => `/login?redirect=${route.fullPath}`);
@@ -216,10 +216,16 @@ const directusUrl = useDirectusUrl();
 
 const navigation = computed(() => {
   return [
-    { name: "Home", href: "/", current: route.path === "/" },
+    {
+      name: "Home",
+      href: "/",
+      visible: () => true,
+      current: route.path === "/"
+    },
     {
       name: "About us",
       current: route.path.startsWith("/about-us"),
+      visible: () => true,
       childPages: [
         {
           name: "About us",
@@ -251,6 +257,7 @@ const navigation = computed(() => {
       name: "Come & paddle",
       href: "/come-paddle",
       current: route.path === "/come-paddle",
+      visible: () => true,
       childPages: [
         {
           name: "Paddle with us",
@@ -275,12 +282,13 @@ const navigation = computed(() => {
     {
       name: "Coaching",
       href: "/coaching",
-      visible: () => hasRole(user, "coach"),
+      visible: () => hasRole(user.value, "coach"),
       current: route.path.startsWith("/coaching")
     },
     {
       name: "Calendar",
       href: "/calendar",
+      visible: () => true,
       current: route.path.startsWith("/calendar")
     }
   ];
@@ -315,7 +323,7 @@ if (user.value && isAdmin.value) {
 }
 
 const hasAvatar = computed(() => !!user.value?.avatar);
-const avatarUrl = getAvatarUrl(user);
+const avatarUrl = getAvatarUrl(user.value);
 
 async function closeSubItem (href: string, close: any) {
   close();
