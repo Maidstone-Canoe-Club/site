@@ -171,6 +171,14 @@ if (event.value?.is_recurring) {
 const sessionDates = computed(() => {
   let result = null;
 
+  if (!event.value.has_multiple && !event.value.is_recurring) {
+    result = [];
+    result.push({
+      start: event.value.start_date,
+      end: event.value.end_date
+    });
+  }
+
   if (event.value?.has_multiple && childEvents.value?.length) {
     result = [];
     result.push({
