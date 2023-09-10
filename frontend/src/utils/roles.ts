@@ -23,7 +23,6 @@ function getRoleLevel (role: string) {
 }
 
 export function hasRole (user: DirectusUser, role: string) {
-  console.log("checking role for", user);
   if (!user) {
     return false;
   }
