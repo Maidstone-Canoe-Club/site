@@ -14,7 +14,7 @@ function getRoleLevel (role: string) {
     return null;
   }
 
-  const level : number | null | undefined = roleLevels[role.toLowerCase()];
+  const level : number | null | undefined = roleLevels[role.trim().toLowerCase()];
   if (level === null || level === undefined) {
     return null;
   }
@@ -35,14 +35,14 @@ export function hasRole (user: DirectusUser, role: string) {
   const userLevel = getRoleLevel(user.role.name);
 
   if (!userLevel) {
-    console.warn("Unknown user role:", user.role.name);
+    console.warn(`Unknown user role: '${user.role.name}'`);
     return false;
   }
 
   const targetLevel = getRoleLevel(role);
 
   if (!targetLevel) {
-    console.warn("Unknown target role:", role);
+    console.warn(`Unknown target role: '${role}'`);
     return false;
   }
 

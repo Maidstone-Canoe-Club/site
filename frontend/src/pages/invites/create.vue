@@ -20,7 +20,8 @@
         <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
           <button
             type="button"
-            class="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+            class="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+            @click="createInvites">
             Create {{ people.length }} invites
           </button>
         </div>
@@ -99,7 +100,7 @@ const people = computed(() => {
         lastName: split[1],
         email: split[2],
         clubNumber: split[3],
-        bcNumber: split[4].trim() === "---" ? null : split[4]
+        bcNumber: split[4].includes("-") ? null : split[4]
       });
     }
   });
@@ -111,6 +112,27 @@ watch(input, (val) => {
   const lines = val.split("\n");
   console.log("found ", lines.length, "lines");
 });
+
+const { createItems } = useDirectusItems();
+
+async function createInvites () {
+  console.log("creating invites...");
+  try {
+    await createItems({
+      collection: "member_invites",
+      items: people.value.map(p => ({
+        first_name: p.firstName,
+        last_name: p.lastName,
+        email: p.email,
+        club_number: p.clubNumber,
+        bc_number: p.bcNumber
+      }))
+    });
+    console.log("created invites!");
+  } catch (e) {
+    console.error("error creating invites", e);
+  }
+}
 
 </script>
 

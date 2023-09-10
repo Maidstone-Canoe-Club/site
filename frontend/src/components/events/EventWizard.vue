@@ -1,6 +1,6 @@
 ﻿<template>
   <div class="mt-20">
-    <pre>This create new event tool is still under construction</pre>
+    <pre class="mb-5 text-gray-800">This create new event tool is still under construction</pre>
     <nav
       aria-label="Progress"
       class="flex justify-center items-center">
@@ -92,14 +92,22 @@ const eventItem = ref({
   location: "Maidstone Canoe Club",
   allowedRole: []
 });
-const eventDates = ref({
-  multiple: [],
-  recurring: {
-    recurringType: { id: "daily", name: "Daily" }
-  }
-});
+const eventDates = ref(blankEventDates());
 
 const showBackButton = computed(() => currentStepIndex.value >= 1);
+
+watch(eventType, () => {
+  eventDates.value = blankEventDates();
+});
+
+function blankEventDates () {
+  return {
+    multiple: [],
+    recurring: {
+      recurringType: { id: "daily", name: "Daily" }
+    }
+  };
+}
 
 function goToPrevStep () {
   currentStepIndex.value = currentStepIndex.value - 1;
