@@ -66,6 +66,7 @@
         <login-details-step
           v-model="user"
           :invite-id="inviteId"
+          @invite="setInviteId"
           @on-next="nextStep" />
       </template>
       <template v-if="currentStep === 2">
@@ -103,7 +104,7 @@ definePageMeta({
 });
 
 const route = useRoute();
-const inviteId = route.query.inviteId as string;
+const inviteId = ref(route.query.inviteId as string);
 const directus = useDirectus();
 const { login } = useDirectusAuth();
 
@@ -135,9 +136,9 @@ const medicalInfo = ref<MedicalInfo>({
 
 const emergencyContacts = ref<EmergencyContact[]>([]);
 
-if (inviteId) {
+if (inviteId.value) {
   const directus = useDirectus();
-  const inviteInfo = await directus<InviteData>(`/invites?id=${inviteId}`);
+  const inviteInfo = await directus<InviteData>(`/invites?id=${inviteId.value}`);
   user.value.email = inviteInfo.email;
   user.value.bc_number = inviteInfo.bc_number;
   user.value.club_number = inviteInfo.club_number;
@@ -179,7 +180,7 @@ async function onCompleteRegistration () {
     const submitResponse = await directus("/registration", {
       method: "POST",
       body: {
-        inviteId,
+        inviteId: inviteId.value,
         user: user.value,
         emergencyContacts: emergencyContacts.value,
         medicalInfo: medicalInfo.value
@@ -197,6 +198,10 @@ async function onCompleteRegistration () {
   } catch (e) {
     console.log("something went wrong", e);
   }
+}
+
+function setInviteId (newInviteId: string) {
+  inviteId.value = newInviteId;
 }
 
 </script>
