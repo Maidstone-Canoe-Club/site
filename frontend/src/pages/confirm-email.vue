@@ -35,13 +35,14 @@
 
 <script setup lang="ts">
 import { ShieldCheckIcon, ExclamationTriangleIcon } from "@heroicons/vue/20/solid";
-import { definePageMeta } from "#imports";
+import { definePageMeta, useDirectusAuth } from "#imports";
 
 definePageMeta({
   middleware: ["auth"]
 });
 
 const user = useDirectusUser();
+const { fetchUser } = useDirectusAuth();
 
 if (!user.value) {
   throw new Error("Unable to fetch user");
@@ -73,6 +74,10 @@ const expired = computed(() => res.data.value?.statusCode === 103 ?? false);
 const alreadyConfirmed = computed(() => res.data.value?.statusCode === 102 ?? false);
 const unknownToken = computed(() => res.data.value?.statusCode === 101 ?? false);
 const hasError = computed(() => !!res.error.value);
+
+if (result.value) {
+  await fetchUser();
+}
 
 const message = computed(() => {
   if (result.value) {

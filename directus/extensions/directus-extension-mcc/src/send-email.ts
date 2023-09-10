@@ -3,7 +3,12 @@ import {createError} from "@directus/errors";
 
 const MailSendError = createError("VERIFY_MAIL_SEND_ERROR", "Unable to send verify email address email");
 
-async function sendNew (services: any, input: any, schema: any, database: any) {
+async function sendConfirmAccountEmail (services: any, input: any, schema: any, database: any) {
+
+  if(input.email_confirmed){
+    return input;
+  }
+
   const {MailService} = services;
   const mailService = new MailService({schema, knex: database});
   const token = nanoid(34);
@@ -14,6 +19,11 @@ async function sendNew (services: any, input: any, schema: any, database: any) {
 
   const publicUrl = process.env.PUBLIC_URL;
   const url = `${publicUrl}/confirm-email?t=${token}`;
+
+  if(process.env.IGNORE_MAIL){
+    console.log("not sending mail");
+    return input;
+  }
 
   try {
     await mailService.send({
@@ -34,4 +44,4 @@ async function sendNew (services: any, input: any, schema: any, database: any) {
   return input;
 }
 
-export default sendNew;
+export default sendConfirmAccountEmail;

@@ -52,6 +52,7 @@ services:
       EMAIL_SMTP_USER: ${EMAIL_SMTP_USER}
       EMAIL_SMTP_PASSWORD: ${EMAIL_SMTP_PASSWORD}
       PASSWORD_RESET_URL_ALLOW_LIST: 'http://localhost:3000/reset-password'
+      IGNORE_MAIL: 'true'
 
   frontend:
     container_name: mcc-frontend

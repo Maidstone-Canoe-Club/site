@@ -41,7 +41,7 @@ import { minLength, required, email as emailValidator } from "@vuelidate/validat
 import { DirectusUser } from "nuxt-directus/dist/runtime/types";
 import { InviteData } from "~/types";
 
-const emits = defineEmits(["update:modelValue", "onNext"]);
+const emits = defineEmits(["update:modelValue", "onNext", "invite"]);
 
 const props = defineProps<{
   modelValue: DirectusUser,
@@ -87,6 +87,7 @@ async function onSubmit () {
           internalValue.value!.club_number = inviteInfo.club_number;
           internalValue.value!.first_name = inviteInfo.first_name;
           internalValue.value!.last_name = inviteInfo.last_name;
+          emits("invite", inviteInfo.id);
         }
       } catch (e) {
         console.log("could not load invite");

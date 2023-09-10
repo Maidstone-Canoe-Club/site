@@ -10,6 +10,10 @@ const roleLevels : Record<string, number> = {
 };
 
 function getRoleLevel (role: string) {
+  if (!role) {
+    return null;
+  }
+
   const level : number | null | undefined = roleLevels[role.toLowerCase()];
   if (level === null || level === undefined) {
     return null;
@@ -20,6 +24,11 @@ function getRoleLevel (role: string) {
 
 export function hasRole (user: DirectusUser, role: string) {
   if (!user) {
+    return false;
+  }
+
+  if (!user.role) {
+    console.error("No role object on user");
     return false;
   }
 
