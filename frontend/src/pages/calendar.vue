@@ -31,7 +31,14 @@ async function fetchEvents () {
         filter: {
           _and: [
             {
-              is_recurring: { _eq: false }
+              _or: [
+                {
+                  is_recurring: { _eq: false }
+                },
+                {
+                  is_recurring: { _null: true }
+                }
+              ]
             },
             {
               start_date: { _lte: end.value }
