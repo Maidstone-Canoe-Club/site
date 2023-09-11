@@ -1,7 +1,6 @@
 ﻿import Stripe from "stripe";
 import { Directus } from "@directus/sdk";
 import { format } from "date-fns";
-import { getHeader } from "../../../.nuxt/types/nitro-imports";
 
 const stripe = new Stripe(process.env.STRIPE_KEY);
 
@@ -19,8 +18,7 @@ async function getOrCreateCustomer (user: any) {
     }
   });
 
-  const customer = existingCustomers && existingCustomers.length ? existingCustomers[0] : null;
-  console.log("customer", customer);
+  const customer = existingCustomers.data && existingCustomers.data.length ? existingCustomers.data[0] : null;
   if (customer) {
     return customer.customer_id;
   }
@@ -74,6 +72,7 @@ export default defineEventHandler(async (event) => {
       customer: customerId,
       metadata: {
         date: eventDate,
+        event_name: eventItem.title,
         event_id: eventItem.id,
         user_id: userId,
         event_instance: instance

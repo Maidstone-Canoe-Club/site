@@ -14,7 +14,6 @@ const postmarkUrl = "https://api.postmarkapp.com";
 
 const nanoid = customAlphabet(alphanumeric, 11);
 
-
 const stripe = new Stripe(process.env.STRIPE_KEY);
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
@@ -37,13 +36,7 @@ export default defineEndpoint((router, {services}) => {
         return res.send(400).send("Webhook error: No stripe signature in header");
       }
 
-      const rawBody = req.body;
-      if (!rawBody) {
-        console.error("Webhook error: No body");
-        return res.send(400).send("Webhook error: No body");
-      }
-
-      const bodyBuffer = Buffer.from(rawBody, "utf-8");
+      const bodyBuffer = req.rawBody;
       const stripeEvent: Stripe.Event = stripe.webhooks.constructEvent(bodyBuffer, sig, endpointSecret);
 
       if (stripeEvent.type === "checkout.session.completed") {
@@ -58,13 +51,43 @@ export default defineEndpoint((router, {services}) => {
 
         console.log("checkout data", sessionWithLineItems, metadata);
 
-      // TODO: add user to event booking
-      // TODO: add new line to orders collection
+        // TODO: payments will be for different things like memberships, boats, ect, need to handle for them
+
+        const bookingService = new ItemsService("event_bookings", {
+          schema: req.schema,
+          accountability: adminAccountability
+        });
+
+        // TODO: status paid?
+        await bookingService.createOne({
+          user: metadata.user_id,
+          event: metadata.event_id,
+          instance: metadata.event_instance
+        });
+
+        const ordersService = new ItemsService("orders", {
+          schema: req.schema,
+          accountability: adminAccountability
+        });
+
+        await ordersService.createOne({
+          user: metadata.user_id,
+          amount: sessionWithLineItems.amount_total,
+          customer_id: sessionWithLineItems.customer,
+          description: `${metadata.event_name} - ${metadata.date}`,
+          payment_intent: sessionWithLineItems.payment_intent,
+          metadata: JSON.stringify({
+            event_id: metadata.event_id,
+            instance: metadata.event_instance,
+          })
+        });
+
+        // TODO: send payment complete email to user
       }
 
       return res.send(`handled ${stripeEvent.type}`);
     } catch (e) {
-      console.error("Webhook error: Error validating webhook event");
+      console.error("Webhook error: Error validating webhook event", e);
       return res.status(400).send("Webhook error: Error validating webhook event");
     }
   });
