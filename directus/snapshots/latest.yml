@@ -1536,6 +1536,46 @@ fields:
       foreign_key_table: null
       foreign_key_column: null
   - collection: directus_users
+    field: parent
+    type: uuid
+    meta:
+      collection: directus_users
+      conditions: null
+      display: null
+      display_options: null
+      field: parent
+      group: null
+      hidden: false
+      interface: select-dropdown-m2o
+      note: null
+      options:
+        enableCreate: false
+      readonly: false
+      required: false
+      sort: 15
+      special:
+        - m2o
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: parent
+      table: directus_users
+      data_type: uuid
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: directus_users
+      foreign_key_column: id
+  - collection: directus_users
     field: postcode
     type: string
     meta:
@@ -6460,6 +6500,27 @@ relations:
       constraint_name: content_paths_content_foreign
       on_update: NO ACTION
       on_delete: SET NULL
+  - collection: directus_users
+    field: parent
+    related_collection: directus_users
+    meta:
+      junction_field: null
+      many_collection: directus_users
+      many_field: parent
+      one_allowed_collections: null
+      one_collection: directus_users
+      one_collection_field: null
+      one_deselect_action: nullify
+      one_field: null
+      sort_field: null
+    schema:
+      table: directus_users
+      column: parent
+      foreign_key_table: directus_users
+      foreign_key_column: id
+      constraint_name: directus_users_parent_foreign
+      on_update: NO ACTION
+      on_delete: NO ACTION
   - collection: emergency_contacts
     field: user
     related_collection: directus_users

@@ -2,6 +2,9 @@
 	"name": "directus-extension-mcc",
 	"version": "1.0.0",
 	"type": "module",
+	"dependencies": {
+		"stripe": "^13.5.0"
+	},
 	"directus:extension": {
 		"host": "^10.1.9",
 		"type": "bundle",
@@ -44,6 +47,11 @@
 				"type": "endpoint",
 				"name": "content",
 				"source": "src/content/index.ts"
+			},
+			{
+				"type": "endpoint",
+				"name": "juniors",
+				"source": "src/juniors/index.ts"
 			}
 		]
 	},
@@ -72,9 +80,7 @@
 		"nanoid": "^4.0.2",
 		"nanoid-dictionary": "^4.3.0",
 		"ofetch": "^1.3.3",
-		"typescript": "^5.2.2"
-	},
-	"dependencies": {
+		"typescript": "^5.2.2",
 		"stripe": "^13.5.0"
 	}
 }
