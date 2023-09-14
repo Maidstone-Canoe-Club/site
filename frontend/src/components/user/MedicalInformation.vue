@@ -76,7 +76,7 @@ const internalValue = ref<MedicalInformation>({
 watch(() => props.modelValue, (val) => {
   internalValue.value.hasData = checkHasData(val);
   internalValue.value = val;
-}, { deep: true });
+}, { deep: true, immediate: true });
 
 watch(internalValue, (val) => {
   internalValue.value.hasData = checkHasData(val);

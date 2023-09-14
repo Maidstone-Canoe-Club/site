@@ -68,6 +68,11 @@ export default defineEventHandler(async (event) => {
 
     const customerId = await getOrCreateCustomer(user);
 
+    let redirectUrl = `/events/${eventItem.id}`;
+    if (instance) {
+      redirectUrl += `&instance=${instance}`;
+    }
+
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       metadata: {
@@ -90,8 +95,8 @@ export default defineEventHandler(async (event) => {
         }
       ],
       mode: "payment",
-      success_url: `${baseUrl}/payments/success`,
-      cancel_url: `${baseUrl}/payments/cancel`
+      success_url: `${baseUrl}/payments/success?redirect=${redirectUrl}`,
+      cancel_url: `${baseUrl}/payments/cancel?redirect=${redirectUrl}`
     });
 
     return sendRedirect(event, session.url, 302);

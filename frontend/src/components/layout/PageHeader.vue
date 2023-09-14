@@ -1,12 +1,12 @@
 ﻿<template>
   <Disclosure v-slot="{ open }" as="nav" class="border-b border-gray-200 bg-white">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-      <div class="flex h-16 justify-between">
+      <div class="flex h-20 justify-between">
         <div class="flex">
           <div class="flex flex-shrink-0 items-center">
             <nuxt-link to="/">
-              <img class="block h-8 w-auto lg:hidden" src="/images/logo-no-text.svg" alt="Maidstone Canoe Club logo">
-              <img class="hidden h-8 w-auto lg:block" src="/images/logo-no-text.svg" alt="Maidstone Canoe Club logo">
+              <img class="block h-12 w-auto lg:hidden" src="/images/logo-no-text.svg" alt="Maidstone Canoe Club logo">
+              <img class="hidden h-12 w-auto lg:block" src="/images/logo-no-text.svg" alt="Maidstone Canoe Club logo">
             </nuxt-link>
           </div>
           <div class="hidden sm:space-x-8 sm:-my-px sm:ml-6 sm:flex">
@@ -244,15 +244,16 @@ const navigation = computed(() => {
           href: "/about-us/club-history",
           target: null,
           current: route.path.endsWith("/club-history")
-        },
-        {
-          name: "Governance",
-          href: "/about-us/governance",
-          target: null,
-          current: route.path.endsWith("/governance")
         }
       ]
     },
+    // {
+    //   name: "Governance",
+    //   href: "/governance",
+    //   target: null,
+    //   visible: () => true,
+    //   current: route.path.startsWith("/governance")
+    // },
     {
       name: "Come & paddle",
       href: "/come-paddle",
@@ -283,7 +284,45 @@ const navigation = computed(() => {
       name: "Coaching",
       href: "/coaching",
       visible: () => hasRole(user.value, "coach"),
-      current: route.path.startsWith("/coaching")
+      current: route.path.startsWith("/coaching"),
+      childPages: [
+        {
+          name: "CPD resources",
+          href: "/coaching/cpd-resources",
+          target: null,
+          current: route.path.endsWith("/cpd-resources")
+        },
+        {
+          name: "Beginners course resources",
+          href: "/coaching/beginners-course-resources",
+          target: null,
+          current: route.path.endsWith("/beginners-course-resources")
+        },
+        {
+          name: "Explore award resources",
+          href: "/coaching/explore-award-resources",
+          target: null,
+          current: route.path.endsWith("/explore-award-resources")
+        },
+        {
+          name: "PAA resources",
+          href: "/coaching/paa-resources",
+          target: null,
+          current: route.path.endsWith("/paa-resources")
+        },
+        {
+          name: "BC certification",
+          href: "/coaching/bc-certification",
+          target: null,
+          current: route.path.endsWith("/bc-certification")
+        },
+        {
+          name: "GDPR for coaches",
+          href: "/coaching/gdpr-for-coaches",
+          target: null,
+          current: route.path.endsWith("/gdpr-for-coaches")
+        }
+      ]
     },
     {
       name: "Calendar",

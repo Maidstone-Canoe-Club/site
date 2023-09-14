@@ -45,10 +45,10 @@
         </custom-button>
       </template>
     </div>
-    <div v-else class="w-full">
+    <div v-else class="w-full flex">
       <nuxt-link
         :to="loginUrl"
-        class="w-full rounded-md bg-indigo-600 px-2.5 py-3 font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+        class="w-full flex justify-center items-center rounded-md bg-indigo-600 px-2.5 py-3 font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
         Login to book
       </nuxt-link>
     </div>
@@ -69,7 +69,7 @@ const props = defineProps<{
   price?: number,
   juniorPrice?: number,
   instance?: number,
-  alreadyBooked: boolean
+  alreadyBooked: boolean,
 }>();
 
 const loginUrl = computed(() => `/login?redirect=/events/${props.eventId}`);
@@ -95,10 +95,6 @@ const bookNowLabel = computed(() => {
 const bookJuniorLabel = computed(() => {
   return props.juniorPrice ? "Pay for a junior" : "Book for a junior";
 });
-
-function wait () {
-  return new Promise(resolve => setTimeout(resolve(), 2000));
-}
 
 async function onBookNow () {
   if (!props.price) {

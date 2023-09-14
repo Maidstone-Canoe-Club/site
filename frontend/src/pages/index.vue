@@ -1,31 +1,31 @@
 ﻿<template>
-  <main class="mt-16">
-    <div class="mx-auto w-full max-w-7xl flex-grow px-4 sm:px-6 lg-px-8">
-      <h1 class="text-4xl font-bold">
-        Maidstone Canoe Club
-      </h1>
-      <p class="sm:w-2/3 mt-3">
-        Lorem ipsum dolor sit amet. Et sunt libero qui laborum impedit qui perferendis velit qui fugiat numquam. Eum
-        rerum quia aut quia laudantium At beatae voluptatem et ipsum nemo non impedit quisquam. Sit cumque dolorem aut
-        unde eligendi qui sunt soluta. Sit nemo dolores hic voluptates quam est aliquid soluta ab aliquam nostrum ea
-        nihil unde aut magni laudantium.
-      </p>
-    </div>
+  <main class="mt-[1000px]">
+    <!--    <div class="mx-auto w-full max-w-7xl flex-grow px-4 sm:px-6 lg-px-8">-->
+    <!--      <h1 class="text-4xl font-bold">-->
+    <!--        Maidstone Canoe Club-->
+    <!--      </h1>-->
+    <!--      <p class="sm:w-2/3 mt-3">-->
+    <!--        Lorem ipsum dolor sit amet. Et sunt libero qui laborum impedit qui perferendis velit qui fugiat numquam. Eum-->
+    <!--        rerum quia aut quia laudantium At beatae voluptatem et ipsum nemo non impedit quisquam. Sit cumque dolorem aut-->
+    <!--        unde eligendi qui sunt soluta. Sit nemo dolores hic voluptates quam est aliquid soluta ab aliquam nostrum ea-->
+    <!--        nihil unde aut magni laudantium.-->
+    <!--      </p>-->
+    <!--    </div>-->
 
-    <div class="mt-16">
-      <div class="flex px-4 md:justify-center gap-5 md:gap-14 overflow-auto md:overflow-hidden pb-11 pt-3">
-        <div
-          v-for="(image, index) in images"
-          :key="index"
-          class="relative w-44 sm:w-72 aspect-[9/14] flex-none">
-          <img
-            class="absolute inset-0 w-full h-full object-cover rounded-2xl"
-            :class="index % 2 !== 0 ? 'mt-8 rotate-2': '-rotate-2'"
-            alt="alt text goes here"
-            :src="image">
-        </div>
-      </div>
-    </div>
+    <!--    <div class="mt-16">-->
+    <!--      <div class="flex px-4 md:justify-center gap-5 md:gap-14 overflow-auto md:overflow-hidden pb-11 pt-3">-->
+    <!--        <div-->
+    <!--          v-for="(image, index) in images"-->
+    <!--          :key="index"-->
+    <!--          class="relative w-44 sm:w-72 aspect-[9/14] flex-none">-->
+    <!--          <img-->
+    <!--            class="absolute inset-0 w-full h-full object-cover rounded-2xl"-->
+    <!--            :class="index % 2 !== 0 ? 'mt-8 rotate-2': '-rotate-2'"-->
+    <!--            alt="alt text goes here"-->
+    <!--            :src="image">-->
+    <!--        </div>-->
+    <!--      </div>-->
+    <!--    </div>-->
 
     <div class="mx-auto w-full max-w-7xl flex-grow px-4 sm:px-6 lg-px-8 mt-16">
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-y-10">
@@ -86,19 +86,37 @@
 import { EnvelopeIcon } from "@heroicons/vue/24/outline";
 import { ChevronRightIcon } from "@heroicons/vue/24/solid";
 import { format, subDays } from "date-fns";
+import { useDirectusItems } from "#imports";
 
 definePageMeta({
   layout: "no-container"
 });
 
+// const { getSingletonItem } = useDirectusItems();
+//
+// const { data: home } = await useAsyncData("home", async () => {
+//   return await getSingletonItem({
+//     collection: "home",
+//     params: {
+//       fields: ["*", "hero_images.*"]
+//     }
+//   });
+// });
+//
+// const images = computed(() => home.value.hero_images.map(x => generateImageUrlOptions(x.directus_files_id, {
+//   quality: 80,
+//   height: 500,
+//   format: "webp"
+// })));
+
 const newsletterEmail = ref("");
 
-const images = [
-  "https://images.unsplash.com/photo-1516817153573-7b617832a471?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjZ8fGtheWFrfGVufDB8fDB8fHww&auto=format&fit=crop&h=500&q=60",
-  "https://images.unsplash.com/photo-1595960684234-49d2a004e753?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8a2F5YWt8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&h=500&q=60",
-  "https://images.unsplash.com/photo-1620903669944-de50fbe78210?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&h=500&q=80",
-  "https://images.unsplash.com/photo-1602883437331-4399aa921a58?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&h=500&q=80"
-];
+// const images = [
+//   "https://images.unsplash.com/photo-1516817153573-7b617832a471?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjZ8fGtheWFrfGVufDB8fDB8fHww&auto=format&fit=crop&h=500&q=60",
+//   "https://images.unsplash.com/photo-1595960684234-49d2a004e753?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8a2F5YWt8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&h=500&q=60",
+//   "https://images.unsplash.com/photo-1620903669944-de50fbe78210?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&h=500&q=80",
+//   "https://images.unsplash.com/photo-1602883437331-4399aa921a58?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&h=500&q=80"
+// ];
 
 const newsItems = [
   {

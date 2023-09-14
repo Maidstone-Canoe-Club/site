@@ -4,7 +4,10 @@
       <table class="min-w-full divide-y divide-gray-300">
         <thead>
           <tr>
-            <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
+            <th scope="col" class="py-3.5 pl-4 text-left text-sm font-semibold text-gray-900 sm:pl-0">
+              Order ID
+            </th>
+            <th scope="col" class="py-3.5 pl-4 text-left text-sm font-semibold text-gray-900">
               Amount
             </th>
             <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
@@ -18,7 +21,10 @@
         </thead>
         <tbody class="divide-y divide-gray-200">
           <tr v-for="payment in payments" :key="payment.id">
-            <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
+            <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 sm:pl-0">
+              {{ formatId(payment.id) }}
+            </td>
+            <td class="whitespace-nowrap py-3 pl-4 text-sm font-medium text-gray-900">
               {{ formatPrice(payment.amount) }}
             </td>
             <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
@@ -116,6 +122,10 @@ function formatPrice (amount?: number) {
 
 function formatDate (input: string) {
   return format(new Date(input), "do MMMM yyyy, hh:mmaaa");
+}
+
+function formatId (id: string) {
+  return id.substring(0, 7);
 }
 
 </script>
