@@ -183,10 +183,6 @@ const { data: eventInfo } = await useAsyncData(`event-info-${event.value.id}`, a
 const alreadyBooked = computed(() => eventInfo.value.alreadyBooked);
 const bookings = computed(() => eventInfo.value.bookings);
 
-const canBook = computed(() => {
-  return new Date() < new Date(event.value.start_date) || false;
-});
-
 async function loadInfo () {
   return await directus(`/events/info?eventId=${event.value.id}`);
 }
@@ -279,6 +275,14 @@ const sessionDates = computed(() => {
   }
 
   return result;
+});
+
+const canBook = computed(() => {
+  if (sessionDates.value && sessionDates.value.length) {
+    const firstDate = sessionDates.value[0].start;
+    return new Date() < new Date(firstDate) || false;
+  }
+  return false;
 });
 
 function formatPrice (amount?: number) {

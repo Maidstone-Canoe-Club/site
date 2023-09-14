@@ -1,7 +1,9 @@
 ﻿<template>
   <div>
     <div>
-      <table class="min-w-full divide-y divide-gray-300">
+      <table
+        v-if="payments && payments.length"
+        class="min-w-full divide-y divide-gray-300">
         <thead>
           <tr>
             <th scope="col" class="py-3.5 pl-4 text-left text-sm font-semibold text-gray-900 sm:pl-0">
@@ -44,6 +46,9 @@
           </tr>
         </tbody>
       </table>
+      <div>
+        No payments made yet
+      </div>
     </div>
   </div>
 </template>
