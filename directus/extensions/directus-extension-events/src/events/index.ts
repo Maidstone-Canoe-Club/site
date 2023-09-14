@@ -15,6 +15,7 @@ export default defineEndpoint((router, {services, database}) => {
         ItemsService,
         UsersService
     } = services;
+
     const adminAccountability = {
         admin: true
     };
@@ -182,7 +183,7 @@ export default defineEndpoint((router, {services, database}) => {
             const currentBookings = existingBookings.length;
             const maxBookings = event.max_spaces;
 
-            if (currentBookings + 1 > maxBookings) {
+            if (maxBookings && currentBookings + 1 > maxBookings) {
                 return res.json({
                     result: false,
                     statusCode: 101,

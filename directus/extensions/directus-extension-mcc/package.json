@@ -52,6 +52,11 @@
 				"type": "endpoint",
 				"name": "juniors",
 				"source": "src/juniors/index.ts"
+			},
+			{
+				"type": "endpoint",
+				"name": "checkout",
+				"source": "src/checkout/index.ts"
 			}
 		]
 	},
