@@ -1,13 +1,16 @@
 ﻿import Stripe from "stripe";
 import { Directus } from "@directus/sdk";
 import { format } from "date-fns";
+import { ofetch } from "ofetch";
 
 const stripe = new Stripe(process.env.STRIPE_KEY);
 
-const directus = new Directus<Types>(process.env.NUXT_DIRECTUS_URL!);
-const events = directus.items("events");
+const directus = new Directus<Types>(process.env.NUXT_DIRECTUS_URL!, {
+  auth: {
+    staticToken: process.env.NUXT_DIRECTUS_STATIC_TOKEN
+  }
+});
 const customers = directus.items("stripe_customers");
-const users = directus.items("directus_users");
 
 async function getOrCreateCustomer (user: any) {
   const existingCustomers = await customers.readByQuery({
@@ -45,18 +48,13 @@ export default defineEventHandler(async (event) => {
   const instance = query.instance;
 
   try {
-    // TODO: Move call to load data needed for the checkout session create to an extension
+    const checkoutData = await ofetch(`/checkout/data?eventId=${eventId}&userId=${userId}`, {
+      method: "GET",
+      baseURL: process.env.NUXT_DIRECTUS_URL
+    });
 
-    const eventItem = await events.readOne(eventId);
-
-    if (!eventItem) {
-      throw new Error("Could not load event");
-    }
-
-    const user = await users.readOne(userId);
-    if (!user) {
-      throw new Error("Could not load user");
-    }
+    const eventItem = checkoutData.event;
+    const user = checkoutData.user;
 
     // TODO: if recurring event, calculate event date from recurring_event_pattern
     const eventDate = format(new Date(eventItem.start_date), "do MMMM yyyy");
@@ -64,7 +62,7 @@ export default defineEventHandler(async (event) => {
 
     const price = eventItem.price;
 
-    // if user role === junior && junior query flag passed, set price to event.junior
+    // TODO: if user role === junior && junior query flag passed, set price to event.junior
 
     const customerId = await getOrCreateCustomer(user);
 
