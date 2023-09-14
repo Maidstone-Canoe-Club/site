@@ -6,13 +6,215 @@ import {
     getDate,
     getMonth,
     setDefaultOptions,
-    getDefaultOptions,
     addDays, addWeeks, addMonths, addYears
 } from "date-fns";
 import enGB from "date-fns/locale/en-GB/index.js";
 
 export default defineEndpoint((router, {services, database}) => {
-    const {ItemsService} = services;
+    const {
+        ItemsService,
+        UsersService
+    } = services;
+    const adminAccountability = {
+        admin: true
+    };
+
+    router.get("/info", async (req, res) => {
+        try{
+            const eventId = req.query.eventId;
+            const userId = req.accountability.user;
+
+            let user;
+
+            if(userId) {
+                const userService = new UsersService({knex: database, schema: req.schema, accountability: adminAccountability});
+                user = await userService.readOne(userId, {
+                    fields: ["*", "role.name"]
+                });
+            }
+
+            const eventsService = new ItemsService("events", {
+                knex: database,
+                schema: req.schema,
+                accountability: adminAccountability
+            });
+
+            const eventBookingService = new ItemsService("event_bookings", {
+                knex: database,
+                schema: req.schema,
+                accountability: adminAccountability
+            });
+
+            const event = await eventsService.readOne(eventId);
+
+            if (!event) {
+                return res.status(404).send("could not find event");
+            }
+
+            const eventBookings = await eventBookingService
+                .readByQuery({
+                    fields: ["*", "user.first_name", "user.last_name", "user.email", "user.id", "user.role.name"],
+                    filter: {
+                        event: {
+                            _eq: eventId
+                        }
+                    }
+                });
+
+            let spacesLeft = null;
+            if(event.max_spaces){
+                spacesLeft = event.max_spaces;
+                if(eventBookings && eventBookings.length){
+                    spacesLeft -= eventBookings.length;
+                }
+            }
+
+            let alreadyBooked = false;
+            if(eventBookings && eventBookings.length){
+                alreadyBooked = eventBookings.filter(x => x.user === userId).length > 0;
+            }
+
+            let bookings = null;
+            const allowedRoles = ["coach", "committee", "administrator"];
+            if(user && allowedRoles.includes(user.role.name.toLowerCase())){
+                bookings = eventBookings;
+            }
+
+            return res.json({
+                spacesLeft,
+                alreadyBooked,
+                bookings,
+            });
+        }catch(e){
+            console.error("error getting event info", e);
+            return res.status(500).send("error getting event info");
+        }
+    })
+
+    // router.get("/bookings/count/", async (req, res) => {
+    //     try {
+    //         const eventId = req.query.eventId;
+    //
+    //         if (!eventId) {
+    //             return res.status(400).send("missing event id");
+    //         }
+    //
+    //         const eventsService = new ItemsService("events", {
+    //             knex: database,
+    //             schema: req.schema,
+    //             accountability: adminAccountability
+    //         });
+    //
+    //         const eventBookingService = new ItemsService("event_bookings", {
+    //             knex: database,
+    //             schema: req.schema,
+    //             accountability: adminAccountability
+    //         });
+    //
+    //         const event = await eventsService.readOne(eventId);
+    //
+    //         if (!event) {
+    //             return res.status(404).send("could not find event");
+    //         }
+    //
+    //         if (!event.max_spaces) {
+    //             return res.send(null);
+    //         }
+    //
+    //         const existingBookings = await eventBookingService.readByQuery({
+    //             filter: {
+    //                 event: {
+    //                     _eq: eventId
+    //                 }
+    //             }
+    //         });
+    //
+    //         const currentBookings = existingBookings.length;
+    //
+    //         console.log("existing bookings", existingBookings)
+    //         const count = event.max_spaces - currentBookings;
+    //         console.log("count", count)
+    //
+    //         return res.send(count + "");
+    //     } catch (e) {
+    //         console.error("error fetching booking count", e);
+    //         return res.status(500).send("error fetching booking count");
+    //     }
+    // })
+
+    router.post("/book", async (req, res) => {
+        try {
+
+            const eventId = req.query.eventId;
+            const userId = req.query.userId;
+            const instance = req.query.instance;
+
+            if (!eventId) {
+                return res.status(400).send("missing event id");
+            }
+
+            if (!userId) {
+                return res.status(400).send("missing user id");
+            }
+
+            const eventsService = new ItemsService("events", {
+                knex: database,
+                schema: req.schema,
+                accountability: req.accountability
+            });
+
+            const eventBookingService = new ItemsService("event_bookings", {
+                knex: database,
+                schema: req.schema,
+                accountability: req.accountability
+            });
+
+            const event = await eventsService.readOne(eventId);
+
+            const existingBookings = await eventBookingService.readByQuery({
+                filter: {
+                    event: {
+                        _eq: eventId
+                    }
+                }
+            });
+
+            const currentBookings = existingBookings.length;
+            const maxBookings = event.max_spaces;
+
+            if (currentBookings + 1 > maxBookings) {
+                return res.json({
+                    result: false,
+                    statusCode: 101,
+                    message: "Event is full"
+                });
+            }
+
+            const selfBooking = existingBookings?.filter(x => x.user === userId);
+            if (selfBooking?.length) {
+                return res.json({
+                    result: false,
+                    statusCode: 102,
+                    message: "That user is already booked"
+                });
+            }
+
+            const bookingId = await eventBookingService.createOne({
+                user: userId,
+                event: eventId,
+                instance: instance
+            });
+
+            return res.json({
+                result: true,
+                statusCode: 100,
+                data: bookingId
+            });
+        } catch (e) {
+            console.log("error booking on to event", e);
+            return res.status(500).send("something went wrong");
+        }
+    });
 
     router.post('/create', async (req, res) => {
         const eventType = req.body.eventType;

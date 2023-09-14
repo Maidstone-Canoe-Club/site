@@ -41,6 +41,13 @@
         v-model="internalValue.junior_price"
         label="Junior price"
         name="junior-price" />
+
+      <input-field
+        id="max-spaces"
+        v-model="internalValue.max_spaces"
+        type="number"
+        label="Max spaces"
+        name="max-spaces" />
     </div>
     <event-wizard-footer
       :show-back-button="showBackButton"

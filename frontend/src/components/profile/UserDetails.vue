@@ -12,6 +12,9 @@
       <form class="bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl" @submit.prevent>
         <div class="px-4 py-6 sm:p-8">
           <div class="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+            <div class="sm:col-span-full">
+              <role-badge :user="user" />
+            </div>
             <div class="sm:col-span-3">
               <input-field
                 id="first-name"

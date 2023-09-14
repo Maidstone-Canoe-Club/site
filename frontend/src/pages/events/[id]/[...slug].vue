@@ -11,6 +11,12 @@
             {{ event.location }}
           </div>
           <div
+            v-if="event.max_spaces"
+            class="mt-2 flex items-center text-sm text-gray-500">
+            <UsersIcon class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
+            {{ event.max_spaces }} max spaces
+          </div>
+          <div
             v-if="event.price || event.junior_price"
             class="mt-2 flex items-center text-sm text-gray-500">
             <CurrencyPoundIcon class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
@@ -64,40 +70,68 @@
           </div>
 
           <div class="mb-5 mt-5">
-            <button
-              type="button"
-              class="w-full rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-              Book now
-            </button>
+            <event-booker
+              v-if="canBook"
+              :event-id="route.params.id"
+              :juniors-can-book="false"
+              :price="event.price"
+              :junior-price="event.junior_price"
+              :instance="instance"
+              :already-booked="alreadyBooked"
+              :start-date="event.start_date"
+              @booked="onBooked" />
+            <div
+              v-else
+              class="rounded-md bg-blue-50 p-4">
+              <div class="flex">
+                <div class="flex-shrink-0">
+                  <InformationCircleIcon class="h-5 w-5 text-blue-400" aria-hidden="true" />
+                </div>
+                <div class="ml-3 flex-1 md:flex md:justify-between">
+                  <p class="text-sm text-blue-700">
+                    Bookings are now closed for this event
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="mt-2 flex items-center font-semibold">
-            <UsersIcon class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
-            6/8 attendees
+          <div
+            v-if="spacesLeftLabel && canBook"
+            class="flex items-center justify-center">
+            {{ spacesLeftLabel }}
           </div>
-          <!--          <ul role="list" class="divide-y divide-gray-100">-->
-          <!--            <li v-for="person in people" :key="person.email" class="flex items-center justify-between gap-x-6 py-5">-->
-          <!--              <div class="flex min-w-0 gap-x-4">-->
-          <!--                <img-->
-          <!--                  v-if="person.imageUrl"-->
-          <!--                  class="h-12 w-12 flex-none rounded-full bg-gray-50"-->
-          <!--                  :src="person.imageUrl"-->
-          <!--                  alt="">-->
-          <!--                <UserCircleIcon-->
-          <!--                  v-else-->
-          <!--                  class="h-12 w-12 text-gray-300"-->
-          <!--                  aria-hidden="true" />-->
-          <!--                <div class="min-w-0 flex-auto">-->
-          <!--                  <p class="text-sm font-semibold leading-6 text-gray-900">-->
-          <!--                    {{ person.name }}-->
-          <!--                  </p>-->
-          <!--                  <p class="mt-1 truncate text-xs leading-5 text-gray-500">-->
-          <!--                    {{ person.email }}-->
-          <!--                  </p>-->
-          <!--                </div>-->
-          <!--              </div>-->
-          <!--              <a :href="person.href" class="rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">View</a>-->
-          <!--            </li>-->
-          <!--          </ul>-->
+          <ul
+            v-if="bookings"
+            role="list"
+            class="divide-y divide-gray-100">
+            <li v-for="booking in bookings" :key="booking.email" class="flex items-center justify-between gap-x-6 py-5">
+              <div class="flex min-w-0 gap-x-4 items-center">
+                <img
+                  v-if="booking.user.avatar"
+                  class="h-12 w-12 flex-none rounded-full bg-gray-50"
+                  :src="getAvatarUrl(booking.user)"
+                  alt="">
+                <UserCircleIcon
+                  v-else
+                  class="h-12 w-12 text-gray-300"
+                  aria-hidden="true" />
+                <div class="min-w-0 flex-auto">
+                  <span class="flex gap-3 items-center">
+                    <p class="text-sm font-semibold leading-6 text-gray-900">
+                      {{ booking.user.first_name }} {{ booking.user.last_name }}
+                    </p>
+                    <role-badge :user="booking.user" />
+                  </span>
+                  <p
+                    v-if="booking.user.email"
+                    class="mt-1 truncate text-xs leading-5 text-gray-500">
+                    {{ booking.user.email }}
+                  </p>
+                </div>
+              </div>
+              <!--              <a href="#" class="rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">View</a>-->
+            </li>
+          </ul>
         </div>
       </div>
     </div>
@@ -107,11 +141,11 @@
 <script setup lang="ts">
 import {
   CalendarIcon,
-  ChevronDownIcon,
   CurrencyPoundIcon,
   MapPinIcon,
   PencilIcon,
-  UsersIcon
+  UsersIcon,
+  InformationCircleIcon
 } from "@heroicons/vue/20/solid";
 import { UserCircleIcon } from "@heroicons/vue/24/outline";
 // @ts-ignore
@@ -119,6 +153,7 @@ import Dinero from "dinero.js";
 import { addDays, addMonths, addWeeks, addYears, format, isSameDay } from "date-fns";
 
 const { getItemById, getItems } = useDirectusItems();
+const directus = useDirectus();
 const route = useRoute();
 const user = useDirectusUser();
 
@@ -134,7 +169,29 @@ const { data: event } = await useAsyncData(`event-item-${route.params.id}`, asyn
   });
 });
 
-if (event.value?.has_multiple) {
+if (!event.value) {
+  throw createError({
+    statusCode: 404,
+    statusMessage: "Event not found"
+  });
+}
+
+const { data: eventInfo } = await useAsyncData(`event-info-${event.value.id}`, async () => {
+  return await loadInfo();
+});
+
+const alreadyBooked = computed(() => eventInfo.value.alreadyBooked);
+const bookings = computed(() => eventInfo.value.bookings);
+
+const canBook = computed(() => {
+  return new Date() < new Date(event.value.start_date) || false;
+});
+
+async function loadInfo () {
+  return await directus(`/events/info?eventId=${event.value.id}`);
+}
+
+if (event.value.has_multiple) {
   const { data: events } = await useAsyncData("event-item" + event.value.id + "-children", async () => {
     return await getItems({
       collection: "events",
@@ -246,6 +303,26 @@ function renderSessionDate (date) {
 function formatDate (date: string) {
   return format(new Date(date), "do MMM, h:mmaa");
 }
+
+async function onBooked () {
+  eventInfo.value = await loadInfo();
+}
+
+const spacesLeftLabel = computed(() => {
+  let result = null;
+
+  if (eventInfo.value.spacesLeft) {
+    if (eventInfo.value.spacesLeft === 0) {
+      result = "There are no spaces left";
+    } else if (eventInfo.value.spacesLeft === 1) {
+      result = "There is one space left!";
+    } else {
+      result = `There are ${eventInfo.value.spacesLeft} spaces left`;
+    }
+  }
+
+  return result;
+});
 
 </script>
 
