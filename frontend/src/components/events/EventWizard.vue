@@ -104,7 +104,7 @@ function blankEventDates () {
   return {
     multiple: [],
     recurring: {
-      recurringType: { id: "daily", name: "Daily" }
+      recurringType: { id: "weekly", name: "Weekly" }
     }
   };
 }
