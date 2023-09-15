@@ -184,7 +184,11 @@ const alreadyBooked = computed(() => eventInfo.value.alreadyBooked);
 const bookings = computed(() => eventInfo.value.bookings);
 
 async function loadInfo () {
-  return await directus(`/events/info?eventId=${event.value.id}`);
+  let url = `/events/info?eventId=${event.value.id}`;
+  if (instance) {
+    url += "?instance=" + instance;
+  }
+  return await directus(url);
 }
 
 if (event.value.has_multiple) {
