@@ -6,8 +6,7 @@ export default defineEndpoint((router, {services}) => {
     admin: true
   };
 
-  router.get("/handle/event", async (req, res) => {
-
+  router.post("/handle/event", async (req, res) => {
     try {
       const sessionWithLineItems = req.body.sessionWithLineItems;
       const metadata = sessionWithLineItems.metadata;
