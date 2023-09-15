@@ -46,7 +46,7 @@
           </tr>
         </tbody>
       </table>
-      <div>
+      <div v-else>
         No payments made yet
       </div>
     </div>
@@ -95,8 +95,8 @@ function getLink (payment) {
   if (metadata.event_id) {
     let result = "/events/" + metadata.event_id;
 
-    if (metadata.event_instance) {
-      result += "?instance=" + metadata.event_instance;
+    if (metadata.instance) {
+      result += "?instance=" + metadata.instance;
     }
 
     return result;
