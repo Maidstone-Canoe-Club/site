@@ -36,7 +36,7 @@ export default defineEndpoint((router, {services}) => {
         return res.send(400).send("Webhook error: No stripe signature in header");
       }
 
-      const bodyBuffer = req.rawBody;
+      const bodyBuffer = req.body;
       const stripeEvent: Stripe.Event = stripe.webhooks.constructEvent(bodyBuffer, sig, endpointSecret);
 
       if (stripeEvent.type === "checkout.session.completed") {
