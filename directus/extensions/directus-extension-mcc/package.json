@@ -57,6 +57,11 @@
 				"type": "endpoint",
 				"name": "checkout",
 				"source": "src/checkout/index.ts"
+			},
+			{
+				"type": "endpoint",
+				"name": "payments",
+				"source": "src/payments/index.ts"
 			}
 		]
 	},
