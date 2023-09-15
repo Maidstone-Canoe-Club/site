@@ -1,5 +1,5 @@
 ﻿<template>
-  <main class="mt-[1000px]">
+  <main class="mt-[1100px]">
     <!--    <div class="mx-auto w-full max-w-7xl flex-grow px-4 sm:px-6 lg-px-8">-->
     <!--      <h1 class="text-4xl font-bold">-->
     <!--        Maidstone Canoe Club-->
