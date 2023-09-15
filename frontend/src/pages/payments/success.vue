@@ -19,7 +19,7 @@
 import { CheckCircleIcon } from "@heroicons/vue/24/outline";
 
 const route = useRoute();
-const redirect = route.query.redirect;
+const redirect = atob(route.query.redirect);
 
 </script>
 

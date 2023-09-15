@@ -5,40 +5,6 @@ import { ofetch } from "ofetch";
 
 const stripe = new Stripe(process.env.STRIPE_KEY);
 
-const directus = new Directus<Types>(process.env.NUXT_DIRECTUS_URL!, {
-  auth: {
-    staticToken: process.env.NUXT_DIRECTUS_STATIC_TOKEN
-  }
-});
-const customers = directus.items("stripe_customers");
-
-async function getOrCreateCustomer (user: any) {
-  const existingCustomers = await customers.readByQuery({
-    filter: {
-      user: {
-        _eq: user.id
-      }
-    }
-  });
-
-  const customer = existingCustomers.data && existingCustomers.data.length ? existingCustomers.data[0] : null;
-  if (customer) {
-    return customer.customer_id;
-  }
-
-  const newCustomer = await stripe.customers.create({
-    name: `${user.first_name} ${user.last_name}`,
-    email: user.email
-  });
-
-  await customers.createOne({
-    customer_id: newCustomer.id,
-    user: user.id
-  });
-
-  return newCustomer.id;
-}
-
 export default defineEventHandler(async (event) => {
   const query = getQuery(event);
   const baseUrl = process.env.BASE_URL ?? "http://localhost:3000";
@@ -46,6 +12,9 @@ export default defineEventHandler(async (event) => {
   const eventId = query.eventId;
   const userId = query.userId;
   const instance = query.instance;
+
+  // const headers = getHeaders(event);
+  // console.log("HEADERS", headers);
 
   try {
     const checkoutData = await ofetch(`/checkout/data?eventId=${eventId}&userId=${userId}`, {
@@ -64,12 +33,20 @@ export default defineEventHandler(async (event) => {
 
     // TODO: if user role === junior && junior query flag passed, set price to event.junior
 
-    const customerId = await getOrCreateCustomer(user);
+    const authToken = getCookie(event, "directus_token");
+    const customerId = await ofetch(`/checkout/customer?userId=${user.id}`, {
+      method: "GET",
+      baseURL: process.env.NUXT_DIRECTUS_URL,
+      headers: {
+        Authorization: `Bearer ${authToken}`
+      }
+    });
 
     let redirectUrl = `/events/${eventItem.id}`;
     if (instance) {
-      redirectUrl += `&instance=${instance}`;
+      redirectUrl += `?instance=${instance}`;
     }
+    redirectUrl = encodeURIComponent(btoa(redirectUrl));
 
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
