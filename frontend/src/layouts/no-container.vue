@@ -6,7 +6,7 @@
     <email-verification-banner
       v-if="showVerificationBanner" />
 
-    <div class="absolute z-0 h-[1000px] top-16 w-full object-cover overflow-hidden ">
+    <div class="absolute z-0 h-[1100px] top-16 w-full object-cover overflow-hidden ">
       <div class="bg-gradient-to-t from-gray-50 to-30% to-black/[.35] inset-0 absolute" />
       <img
         :src="heroImage"

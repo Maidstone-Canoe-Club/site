@@ -19,10 +19,10 @@
                     class="flex items-center border-b-2 px-1 pt-1 text-sm font-medium cursor-pointer"
                     :class="[item.current ? 'border-indigo-500 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700']">
                     <MenuButton class="flex flex-grow h-full items-center justify-center gap-2">
-                      <ChevronDownIcon class="w-5 h-5" />
                       <span class="flex">
                         {{ item.name }}
                       </span>
+                      <ChevronDownIcon class="w-5 h-5" />
                     </MenuButton>
                   </div>
                   <transition

@@ -295,7 +295,8 @@ function formatPrice (amount?: number) {
 const directusUrl = useDirectusUrl();
 const editLink = computed(() => `${directusUrl}/admin/content/events/${route.params.id}`);
 
-const canEdit = computed(() => hasRole(user.value, "Committee"));
+// const canEdit = computed(() => hasRole(user.value, "Committee"));
+const canEdit = computed(() => false);
 
 function renderSessionDate (date) {
   if (isSameDay(new Date(date.start), new Date(date.end))) {
