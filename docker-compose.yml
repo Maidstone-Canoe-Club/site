@@ -67,7 +67,6 @@ services:
       BASE_URL: 'http://localhost:3000'
       NUXT_DIRECTUS_URL: 'http://host.docker.internal:8055'
       STRIPE_KEY: ${STRIPE_KEY}
-      NUXT_DIRECTUS_STATIC_TOKEN: ${NUXT_DIRECTUS_STATIC_TOKEN}
     restart: unless-stopped
     extra_hosts:
       - "host.docker.internal:host-gateway"
