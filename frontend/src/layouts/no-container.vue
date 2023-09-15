@@ -59,8 +59,14 @@ const { data: home } = await useAsyncData("home", async () => {
   });
 });
 
+const width = process.client ? window.innerWidth : 1920;
+const height = 1100;
+
 const heroImage = computed(() => generateImageUrlOptions(home.value?.hero_image.id, {
   quality: 60,
+  width,
+  height,
+  fit: "cover",
   format: "webp"
 }));
 
