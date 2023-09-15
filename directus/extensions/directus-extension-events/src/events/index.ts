@@ -21,13 +21,14 @@ export default defineEndpoint((router, {services, database}) => {
     };
 
     router.get("/info", async (req, res) => {
-        try{
+        try {
             const eventId = req.query.eventId;
+            const eventInstance = req.query.instance;
             const userId = req.accountability.user;
 
             let user;
 
-            if(userId) {
+            if (userId) {
                 const userService = new UsersService({knex: database, schema: req.schema, accountability: adminAccountability});
                 user = await userService.readOne(userId, {
                     fields: ["*", "role.name"]
@@ -56,28 +57,37 @@ export default defineEndpoint((router, {services, database}) => {
                 .readByQuery({
                     fields: ["*", "user.first_name", "user.last_name", "user.email", "user.id", "user.role.name"],
                     filter: {
-                        event: {
-                            _eq: eventId
-                        }
+                        _and: [
+                            {
+                                event: {
+                                    _eq: eventId
+                                }
+                            },
+                            {
+                                instance: {
+                                    _eq: eventInstance
+                                }
+                            }
+                        ]
                     }
                 });
 
             let spacesLeft = null;
-            if(event.max_spaces){
+            if (event.max_spaces) {
                 spacesLeft = event.max_spaces;
-                if(eventBookings && eventBookings.length){
+                if (eventBookings && eventBookings.length) {
                     spacesLeft -= eventBookings.length;
                 }
             }
 
             let alreadyBooked = false;
-            if(eventBookings && eventBookings.length){
-                alreadyBooked = eventBookings.filter(x => x.user === userId).length > 0;
+            if (eventBookings && eventBookings.length) {
+                alreadyBooked = eventBookings.filter(x => x.user.id === userId).length > 0;
             }
 
             let bookings = null;
             const allowedRoles = ["coach", "committee", "administrator"];
-            if(user && allowedRoles.includes(user.role.name.toLowerCase())){
+            if (user && allowedRoles.includes(user.role.name.toLowerCase())) {
                 bookings = eventBookings;
             }
 
@@ -86,7 +96,7 @@ export default defineEndpoint((router, {services, database}) => {
                 alreadyBooked,
                 bookings,
             });
-        }catch(e){
+        } catch (e) {
             console.error("error getting event info", e);
             return res.status(500).send("error getting event info");
         }
