@@ -186,7 +186,7 @@ const bookings = computed(() => eventInfo.value.bookings);
 async function loadInfo () {
   let url = `/events/info?eventId=${event.value.id}`;
   if (instance) {
-    url += "?instance=" + instance;
+    url += "&instance=" + instance;
   }
   return await directus(url);
 }
