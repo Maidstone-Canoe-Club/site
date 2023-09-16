@@ -2,11 +2,12 @@
 
 const roleLevels : Record<string, number> = {
   unverified: 0,
-  unapproved: 1,
-  member: 2,
-  coach: 3,
-  committee: 4,
-  administrator: 5
+  junior: 1,
+  unapproved: 2,
+  member: 3,
+  coach: 4,
+  committee: 5,
+  administrator: 6
 };
 
 function getRoleLevel (role: string) {
@@ -20,6 +21,19 @@ function getRoleLevel (role: string) {
   }
 
   return level;
+}
+
+export function hasExactRole (user: DirectusUser, role: string) {
+  if (!user) {
+    return false;
+  }
+
+  if (!user.role) {
+    console.error("No role object on user");
+    return false;
+  }
+
+  return user.role.name.toLowerCase() === role.trim().toLowerCase();
 }
 
 export function hasRole (user: DirectusUser, role: string) {

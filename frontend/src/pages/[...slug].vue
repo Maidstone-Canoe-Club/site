@@ -40,6 +40,8 @@ const { data: item } = await useAsyncData(`content-${slug}`, async () => {
   return await loadContent();
 });
 
+useHead({ title: item.value?.title });
+
 async function loadContent () {
   try {
     const items = await getItems<ContentItem>({

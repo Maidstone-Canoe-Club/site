@@ -1,6 +1,6 @@
 ﻿<template>
   <div>
-    <div>
+    <div class="space-y-4">
       <input-field
         id="title"
         v-model="internalValue.title"
@@ -23,13 +23,14 @@
         :v="v$.location" />
 
       <input-dropdown
-        v-model="internalValue.allowedRole"
+        v-model="internalValue.allowedRoles"
         multiple
         :options="allowedRoles"
         label="Who can join this event?"
         :v="v$.allowedRole" />
 
       <input-currency
+        v-if="showPrice"
         id="price"
         v-model="internalValue.price"
         label="Price"
@@ -81,29 +82,30 @@ const internalValue = computed({
 });
 
 const allowedRoles = [
-  { id: 1, name: "Non-members" },
-  { id: 2, name: "Members" },
-  { id: 3, name: "Juniors" },
-  { id: 4, name: "No one" }
+  { id: "non-members", name: "Non-members" },
+  { id: "members", name: "Members" },
+  { id: "juniors", name: "Juniors" },
+  { id: "none", name: "No one" }
 ];
 
-watch(() => internalValue.value.allowedRole, (val, oldVal) => {
-  if (oldVal.length === 1 && oldVal[0].id === 4 && val.length > 1) {
-    internalValue.value.allowedRole = val.filter(x => x.id !== 4);
+watch(() => internalValue.value.allowedRoles, (val, oldVal) => {
+  if (oldVal.length === 1 && oldVal[0].id === "none" && val.length > 1) {
+    internalValue.value.allowedRoles = val.filter(x => x.id !== "none");
   } else {
-    const noOne = val.find(x => x.id === 4);
+    const noOne = val.find(x => x.id === "none");
     if (noOne && val.length > 1) {
-      internalValue.value.allowedRole.value = [noOne];
+      internalValue.value.allowedRoles.value = [noOne];
     }
   }
 }, { deep: true });
 
-const juniorsAllowed = computed(() => !!internalValue.value.allowedRole.find(x => x.id === 3));
+const juniorsAllowed = computed(() => !!internalValue.value.allowedRoles.find(x => x.id === 3));
+const showPrice = computed(() => !internalValue.value.allowedRoles.find(x => x.id === 4));
 
 const rules = {
   title: { required },
   location: { required },
-  allowedRole: { required }
+  allowedRoles: { required }
 };
 
 const v$: Ref<Validation> = useVuelidate(rules, internalValue);
