@@ -22,11 +22,13 @@ export default defineEndpoint((router, {services}) => {
         accountability: adminAccountability
       });
 
-      // TODO: status paid?
+      // TODO: Check for pre-existing cancelled booking and update to paid if found
+
       await bookingService.createOne({
         user: metadata.user_id,
         event: metadata.event_id,
-        instance: metadata.event_instance
+        instance: metadata.event_instance,
+        status: "paid"
       });
 
       const ordersService = new ItemsService("orders", {

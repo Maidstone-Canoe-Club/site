@@ -90,7 +90,7 @@ const currentStep = computed(() => steps.value[currentStepIndex.value].component
 const eventType = ref("");
 const eventItem = ref({
   location: "Maidstone Canoe Club",
-  allowedRole: []
+  allowedRoles: []
 });
 const eventDates = ref(blankEventDates());
 
@@ -123,11 +123,17 @@ function goToNextStep () {
 
 async function onSubmit () {
   try {
+    const newEventItem = {
+      ...eventItem.value
+    };
+
+    newEventItem.allowedRoles = newEventItem.allowedRoles.map(x => x.id);
+
     await directus("/events/create", {
       method: "POST",
       body: {
         eventType: eventType.value,
-        eventItem: eventItem.value,
+        eventItem: newEventItem,
         eventDates: eventDates.value
       }
     });

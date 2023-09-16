@@ -35,6 +35,9 @@
             <payment-history />
           </TabPanel>
           <TabPanel>
+            <event-bookings />
+          </TabPanel>
+          <TabPanel>
             <user-notification />
           </TabPanel>
           <TabPanel>
@@ -48,7 +51,7 @@
 
 <script setup lang="ts">
 import { TabGroup, TabList, TabPanels, TabPanel, Tab } from "@headlessui/vue";
-import { UserCircleIcon, UsersIcon, CreditCardIcon, EnvelopeIcon } from "@heroicons/vue/24/outline";
+import { CalendarDaysIcon, UserCircleIcon, UsersIcon, CreditCardIcon, EnvelopeIcon } from "@heroicons/vue/24/outline";
 import { useDirectusUser, definePageMeta } from "#imports";
 
 definePageMeta({
@@ -70,6 +73,7 @@ const user = useDirectusUser();
 const navigation = [
   { name: "General", href: "#", icon: UserCircleIcon, current: true },
   { name: "Payment history", href: "#", icon: CreditCardIcon, current: false },
+  { name: "Event bookings", href: "#", icon: CalendarDaysIcon, current: false },
   { name: "Notifications", href: "#", icon: EnvelopeIcon, current: false },
   { name: "Child accounts", href: "#", icon: UsersIcon, current: false }
 ];

@@ -72,14 +72,16 @@
           <div class="mb-5 mt-5">
             <event-booker
               v-if="canBook"
-              :event-id="route.params.id"
+              :event="event"
               :juniors-can-book="false"
               :price="event.price"
+              :user-id="user?.id"
               :junior-price="event.junior_price"
               :instance="instance"
+              :pattern-type="eventInfo.patternType"
               :already-booked="alreadyBooked"
               :start-date="event.start_date"
-              @booked="onBooked" />
+              @refresh="onRefresh" />
             <div
               v-else
               class="rounded-md bg-blue-50 p-4">
@@ -150,14 +152,15 @@ import {
 import { UserCircleIcon } from "@heroicons/vue/24/outline";
 // @ts-ignore
 import Dinero from "dinero.js";
-import { addDays, addMonths, addWeeks, addYears, format, isSameDay } from "date-fns";
+import { format, isSameDay } from "date-fns";
+import { getDateFromInstance } from "~/utils/events";
 
 const { getItemById, getItems } = useDirectusItems();
 const directus = useDirectus();
 const route = useRoute();
 const user = useDirectusUser();
 
-const instance = route.query.instance;
+const instance = parseInt(route.query.instance, 10);
 
 const childEvents = ref();
 const recurringPattern = ref();
@@ -175,6 +178,8 @@ if (!event.value) {
     statusMessage: "Event not found"
   });
 }
+
+useHead({ title: event.value.title });
 
 const { data: eventInfo } = await useAsyncData(`event-info-${event.value.id}`, async () => {
   return await loadInfo();
@@ -255,27 +260,10 @@ const sessionDates = computed(() => {
     result = [];
     const type = recurringPattern.value.type;
 
-    if (type === "0") { // daily
-      result.push({
-        start: addDays(new Date(event.value.start_date), instance - 1),
-        end: addDays(new Date(event.value.end_date), instance - 1)
-      });
-    } else if (type === "1") { // weekly
-      result.push({
-        start: addWeeks(new Date(event.value.start_date), instance - 1),
-        end: addWeeks(new Date(event.value.end_date), instance - 1)
-      });
-    } else if (type === "2") { // monthly
-      result.push({
-        start: addMonths(new Date(event.value.start_date), instance - 1),
-        end: addMonths(new Date(event.value.end_date), instance - 1)
-      });
-    } else if (type === "3") { // yearly
-      result.push({
-        start: addYears(new Date(event.value.start_date), instance - 1),
-        end: addYears(new Date(event.value.end_date), instance - 1)
-      });
-    }
+    result.push({
+      start: getDateFromInstance(event.value.start_date, instance, type),
+      end: getDateFromInstance(event.value.end_date, instance, type)
+    });
   }
 
   return result;
@@ -284,7 +272,7 @@ const sessionDates = computed(() => {
 const canBook = computed(() => {
   if (sessionDates.value && sessionDates.value.length) {
     const firstDate = sessionDates.value[0].start;
-    return new Date() < new Date(firstDate) || false;
+    return new Date() < new Date(firstDate);
   }
   return false;
 });
@@ -313,7 +301,7 @@ function formatDate (date: string) {
   return format(new Date(date), "do MMM, h:mmaa");
 }
 
-async function onBooked () {
+async function onRefresh () {
   eventInfo.value = await loadInfo();
 }
 

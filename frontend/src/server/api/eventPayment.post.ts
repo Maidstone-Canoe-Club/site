@@ -1,9 +1,32 @@
 ﻿import Stripe from "stripe";
-import { Directus } from "@directus/sdk";
-import { format } from "date-fns";
+import { addDays, addMonths, addWeeks, addYears, format } from "date-fns";
 import { ofetch } from "ofetch";
 
 const stripe = new Stripe(process.env.STRIPE_KEY);
+
+export function getDateFromInstance (date: string, instance: number, recurringType?: string) {
+  let result = new Date(date);
+  if (instance && recurringType) {
+    switch (recurringType) {
+    case "0": // daily
+      result = addDays(new Date(date), instance - 1);
+      break;
+    case "1": // weekly
+      result = addWeeks(new Date(date), instance - 1);
+      break;
+    case "2": // monthly
+      result = addMonths(new Date(date), instance - 1);
+      break;
+    case "3": // yearly
+      result = addYears(new Date(date), instance - 1);
+      break;
+    default:
+      throw new Error("Invalid recurring pattern type: " + recurringType);
+    }
+  }
+
+  return result;
+}
 
 export default defineEventHandler(async (event) => {
   const query = getQuery(event);
@@ -12,9 +35,7 @@ export default defineEventHandler(async (event) => {
   const eventId = query.eventId;
   const userId = query.userId;
   const instance = query.instance;
-
-  // const headers = getHeaders(event);
-  // console.log("HEADERS", headers);
+  const patternType = query.patternType;
 
   try {
     const checkoutData = await ofetch(`/checkout/data?eventId=${eventId}&userId=${userId}`, {
@@ -25,8 +46,8 @@ export default defineEventHandler(async (event) => {
     const eventItem = checkoutData.event;
     const user = checkoutData.user;
 
-    // TODO: if recurring event, calculate event date from recurring_event_pattern
-    const eventDate = format(new Date(eventItem.start_date), "do MMMM yyyy");
+    const date = getDateFromInstance(eventItem.start_date, instance, patternType);
+    const eventDate = format(date, "do MMMM yyyy");
     const productName = `${eventItem.title}: ${eventDate}`;
 
     const price = eventItem.price;
