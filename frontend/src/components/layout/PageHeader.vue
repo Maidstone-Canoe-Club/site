@@ -5,8 +5,18 @@
         <div class="flex">
           <div class="flex flex-shrink-0 items-center">
             <nuxt-link to="/">
-              <img class="block h-12 w-auto lg:hidden" src="/images/logo-no-text.svg" alt="Maidstone Canoe Club logo">
-              <img class="hidden h-12 w-auto lg:block" src="/images/logo-no-text.svg" alt="Maidstone Canoe Club logo">
+              <img
+                class="block h-12 w-auto lg:hidden"
+                width="52"
+                height="48"
+                src="/images/logo-no-text.svg"
+                alt="Maidstone Canoe Club logo">
+              <img
+                class="hidden h-12 w-auto lg:block"
+                width="52"
+                height="48"
+                src="/images/logo-no-text.svg"
+                alt="Maidstone Canoe Club logo">
             </nuxt-link>
           </div>
           <div class="hidden sm:space-x-8 sm:-my-px sm:ml-6 sm:flex">
