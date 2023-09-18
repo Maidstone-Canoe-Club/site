@@ -87,6 +87,16 @@ export default defineNuxtConfig({
     }
   },
 
+  nitro: {
+    publicAssets: [
+      {
+        baseURL: "images",
+        dir: "public/images",
+        maxAge: 31622400
+      }
+    ]
+  },
+
   vite: {
     build: {
       sourcemap: true
