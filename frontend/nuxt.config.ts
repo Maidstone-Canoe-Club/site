@@ -67,7 +67,8 @@ export default defineNuxtConfig({
     "@nuxtjs/google-fonts",
     "@nuxtjs/tailwindcss",
     "nuxt-headlessui",
-    "@pinia/nuxt"
+    "@pinia/nuxt",
+    "@nuxt/image"
   ],
 
   directus: {

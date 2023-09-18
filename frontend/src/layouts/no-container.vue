@@ -8,12 +8,19 @@
 
     <div class="absolute z-0 h-[1100px] top-16 w-full object-cover overflow-hidden ">
       <div class="bg-gradient-to-t from-gray-50 to-30% to-black/[.35] inset-0 absolute" />
-      <img
+      <!--      <img-->
+      <!--        src="/images/hero_small.webp"-->
+      <!--        width="1920"-->
+      <!--        height="1203"-->
+      <!--        class="h-full object-cover w-full z-5"-->
+      <!--        alt="hero image">-->
+
+      <nuxt-img
         src="/images/hero_small.webp"
-        width="1920"
-        height="1203"
-        class="h-full object-cover w-full z-5"
-        alt="hero image">
+        height="1100"
+        :width="width"
+        :placeholder="[Math.floor(width / 100), 100, 50, 5]"
+        class="h-full object-cover w-full z-5" />
     </div>
 
     <div class="w-full absolute h-[460px] sm:h-[460px] top-16 flex justify-center items-center">
