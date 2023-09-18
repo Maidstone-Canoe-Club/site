@@ -15,7 +15,9 @@
 </template>
 
 <script setup lang="ts">
+import "@vueup/vue-quill/dist/vue-quill.snow.css";
 import ImageUploader from "quill-image-uploader";
+const { QuillEditor } = await import("@vueup/vue-quill");
 
 const emits = defineEmits(["update:modelValue"]);
 const props = defineProps<{
