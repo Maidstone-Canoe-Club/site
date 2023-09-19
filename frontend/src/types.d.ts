@@ -14,6 +14,12 @@ export type EmergencyContact = {
     user: string | null
 }
 
+export type InviteCheckResult = {
+    result: boolean,
+    statusCode: number,
+    invite?: InviteData
+}
+
 export type InviteData = {
     id: string,
     email: string,

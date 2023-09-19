@@ -87,9 +87,16 @@ export default defineEndpoint((router, {services, database}) => {
     }
 
     if (!invite) {
-      return res.status(404).send();
+      return res.json({
+        result: false,
+        statusCode: 101
+      });
     }
 
-    return res.json(invite);
+    return res.json({
+      result: true,
+      statusCode: 100,
+      invite: invite
+    });
   });
 });
