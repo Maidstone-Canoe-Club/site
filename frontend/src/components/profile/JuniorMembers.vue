@@ -61,7 +61,6 @@ import { format } from "date-fns";
 const user = useDirectusUser();
 const { getUsers } = useDirectusUsers();
 const { getItems } = useDirectusItems();
-const directus = useDirectus();
 
 const mode = ref<"create" | "edit" | null>(null);
 
