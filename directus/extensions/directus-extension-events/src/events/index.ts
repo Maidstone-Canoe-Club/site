@@ -13,8 +13,7 @@ import enGB from "date-fns/locale/en-GB/index.js";
 export default defineEndpoint((router, {services, database}) => {
   const {
     ItemsService,
-    UsersService,
-    RolesService
+    UsersService
   } = services;
 
   const adminAccountability = {

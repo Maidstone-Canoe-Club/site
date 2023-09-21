@@ -15,6 +15,7 @@
     "@nuxtjs/eslint-config-typescript": "^12.0.0",
     "@nuxtjs/google-fonts": "^3.0.0",
     "@nuxtjs/tailwindcss": "^6.8.0",
+    "@nuxtjs/turnstile": "^0.6.3",
     "@sentry/vite-plugin": "^2.7.0",
     "@tailwindcss/forms": "^0.5.4",
     "@types/node": "^18.17.3",
