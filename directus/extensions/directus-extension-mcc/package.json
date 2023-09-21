@@ -62,6 +62,11 @@
 				"type": "endpoint",
 				"name": "payments",
 				"source": "src/payments/index.ts"
+			},
+			{
+				"type": "endpoint",
+				"name": "contact-us",
+				"source": "src/contact-us/index.ts"
 			}
 		]
 	},

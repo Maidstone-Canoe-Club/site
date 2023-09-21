@@ -15,7 +15,7 @@ const events = ref([]);
 const { getItems } = useDirectusItems();
 
 const start = computed(() => new Date(calendarStore.year, calendarStore.month, 1));
-const end = computed(() => new Date(calendarStore.year, calendarStore.getMonth + 1, 0));
+const end = computed(() => new Date(calendarStore.year, calendarStore.getMonth + 1, 0, 23, 59, 59));
 
 watch(() => calendarStore.month, async () => {
   await fetchEvents();

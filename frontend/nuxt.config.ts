@@ -68,7 +68,8 @@ export default defineNuxtConfig({
     "@nuxtjs/tailwindcss",
     "nuxt-headlessui",
     "@pinia/nuxt",
-    "@nuxt/image"
+    "@nuxt/image",
+    "@nuxtjs/turnstile"
   ],
 
   directus: {

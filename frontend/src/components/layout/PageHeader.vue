@@ -339,6 +339,18 @@ const navigation = computed(() => {
       href: "/calendar",
       visible: () => true,
       current: route.path.startsWith("/calendar")
+    },
+    {
+      name: "Contact us",
+      href: "/contact-us",
+      visible: () => true,
+      current: route.path.startsWith("/contact-us")
+    },
+    {
+      name: "FAQs",
+      href: "/faqs",
+      visible: () => true,
+      current: route.path.startsWith("/faqs")
     }
   ];
 });

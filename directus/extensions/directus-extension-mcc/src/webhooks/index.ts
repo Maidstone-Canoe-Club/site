@@ -182,7 +182,6 @@ async function handleMailingList(data: InboundEmail, toAddress: FullAddress, mai
         console.log("found subscribers", subscribers);
         const subscriberChunks = chunkArray<Subscriber>(subscribers, 50);
 
-
         for (let j = 0; j < subscriberChunks.length; j++) {
           const chunk = subscriberChunks[j];
           if (!chunk) {
@@ -366,7 +365,7 @@ async function sendBatchEmail(data: any) {
     baseURL: postmarkUrl,
     body: data,
     headers: {
-      "X-Postmark-Server-Token": process.env.EMAIL_SMTP_PASSWORD
+      "X-Postmark-Server-Token": process.env.EMAIL_SMTP_PASSWORD!
     }
   }).catch((err) => {
     console.log("send mail error: ", err.data);

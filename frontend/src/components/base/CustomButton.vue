@@ -2,10 +2,9 @@
   <button
     ref="button"
     :type="type"
-    :class="buttonClass"
     :style="{ 'width': width }"
     :disabled="buttonDisabled"
-    class="relative overflow-hidden rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+    :class="computedClass"
     @click="onClick">
     <slot />
     <div
@@ -18,7 +17,6 @@
 
 <script setup lang="ts">
 const props = defineProps<{
-  class?: string,
   disabled?: boolean,
   action: Function,
   type?: "button" | "submit" | "reset" | undefined
@@ -28,8 +26,6 @@ const buttonDisabled = computed(() => {
   return props.disabled || loading.value;
 });
 
-const buttonClass = ref(props.class);
-
 const loading = ref(false);
 
 const button = ref(null);
@@ -37,6 +33,16 @@ const width = ref<string | null>(null);
 
 onMounted(() => {
   width.value = `${button.value.clientWidth}px`;
+});
+
+const computedClass = computed(() => {
+  let result = "relative overflow-hidden rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600";
+
+  if (props.disabled) {
+    result = "relative overflow-hidden rounded-md bg-indigo-300 text-gray-500 px-3 py-2 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600";
+  }
+
+  return result;
 });
 
 async function onClick () {

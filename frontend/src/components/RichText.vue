@@ -12,6 +12,9 @@ defineProps<{
 
 <style scoped lang="postcss">
 ::v-deep(p) {
+  @apply leading-6;
+}
+::v-deep(p:not(:last-child)) {
   @apply mb-6 leading-6;
 }
 
