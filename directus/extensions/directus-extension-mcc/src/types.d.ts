@@ -1,7 +1,7 @@
 ﻿export type FullAddress = {
     Email: string,
-    Name: string,
-    MailboxHash: string
+    Name?: string,
+    MailboxHash?: string
 }
 
 export type Header = {
