@@ -1177,33 +1177,35 @@ fields:
       foreign_key_table: null
       foreign_key_column: null
   - collection: contact_us_options
-    field: send_to_email
-    type: string
+    field: send_to
+    type: uuid
     meta:
       collection: contact_us_options
       conditions: null
       display: null
       display_options: null
-      field: send_to_email
+      field: send_to
       group: null
       hidden: false
-      interface: input
+      interface: select-dropdown-m2o
       note: null
-      options: null
+      options:
+        template: '{{name}} ({{target_email}})'
       readonly: false
       required: true
       sort: 8
-      special: null
+      special:
+        - m2o
       translations: null
       validation: null
       validation_message: null
       width: full
     schema:
-      name: send_to_email
+      name: send_to
       table: contact_us_options
-      data_type: character varying
+      data_type: uuid
       default_value: null
-      max_length: 255
+      max_length: null
       numeric_precision: null
       numeric_scale: null
       is_nullable: true
@@ -1212,8 +1214,8 @@ fields:
       is_generated: false
       generation_expression: null
       has_auto_increment: false
-      foreign_key_table: null
-      foreign_key_column: null
+      foreign_key_table: mail_forwards
+      foreign_key_column: id
   - collection: contact_us_options
     field: sort
     type: integer
@@ -8034,6 +8036,27 @@ relations:
       foreign_key_table: contact_us_options
       foreign_key_column: id
       constraint_name: contact_us_message_to_foreign
+      on_update: NO ACTION
+      on_delete: SET NULL
+  - collection: contact_us_options
+    field: send_to
+    related_collection: mail_forwards
+    meta:
+      junction_field: null
+      many_collection: contact_us_options
+      many_field: send_to
+      one_allowed_collections: null
+      one_collection: mail_forwards
+      one_collection_field: null
+      one_deselect_action: nullify
+      one_field: null
+      sort_field: null
+    schema:
+      table: contact_us_options
+      column: send_to
+      foreign_key_table: mail_forwards
+      foreign_key_column: id
+      constraint_name: contact_us_options_send_to_foreign
       on_update: NO ACTION
       on_delete: SET NULL
   - collection: contact_us_options

@@ -1,8 +1,6 @@
 import {defineEndpoint} from "@directus/extensions-sdk";
-import {OutboundEmail} from "../types";
-import {ofetch} from "ofetch";
-
-const postmarkUrl = "https://api.postmarkapp.com";
+import {InboundEmail} from "../types";
+import {handleMailForward} from "../mail-forwards";
 
 export default defineEndpoint((router, {services, database}) => {
   const {
@@ -17,7 +15,7 @@ export default defineEndpoint((router, {services, database}) => {
     try {
       const data = req.body;
 
-      console.log("got contact us message");
+      console.log("got contact us message:", data);
 
       if (!data) {
         return res.status(400).send("missing data");
@@ -33,17 +31,28 @@ export default defineEndpoint((router, {services, database}) => {
         message: data.message
       });
 
-      const contactUsOptions = new ItemsService("contact_us_options", {knex: database, schema: req.schema, accountability: adminAccountability});
+      const mailForwardsService = new ItemsService("mail_forwards", {knex: database, schema: req.schema, accountability: adminAccountability});
 
-      const option = await contactUsOptions.readOne(data.to.id);
+      const forward = await mailForwardsService.readOne(data.to.send_to);
 
-      const email: OutboundEmail= {
-        To: option.send_to_email,
+      if(!forward){
+        return res.status(500).send("unknown mail forward");
+      }
+
+      const mailThreadsService = new ItemsService("mail_threads", {knex: database, schema: req.schema, accountability: adminAccountability});
+
+      const inboundEmail: InboundEmail = {
+        From: data.fromEmail,
+        FromName: data.fromName,
         Subject: data.subject,
-        TextBody: data.message
+        TextBody: data.message,
+        FromFull: {
+          Email: data.fromEmail,
+          Name: data.fromName
+        }
       };
 
-      await sendEmail(email);
+      await handleMailForward(inboundEmail, null, forward, mailThreadsService, mailForwardsService);
 
       return res.send(true);
     } catch (e) {
@@ -52,16 +61,3 @@ export default defineEndpoint((router, {services, database}) => {
     }
   });
 });
-
-async function sendEmail(email: OutboundEmail) {
-  return await ofetch("/email", {
-    baseURL: postmarkUrl,
-    method: "POST",
-    headers: {
-      "X-Postmark-Server-Token": process.env.EMAIL_SMTP_PASSWORD!
-    },
-    body: email
-  }).catch((err) => {
-    console.log("send mail error: ", err.data);
-  });
-}

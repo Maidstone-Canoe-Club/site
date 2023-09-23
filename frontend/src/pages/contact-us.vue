@@ -123,6 +123,12 @@ const v$: Ref<Validation> = useVuelidate(rules, formData);
 const errorMessage = ref<string | null>(null);
 const success = ref(false);
 
+watch(() => formData.value.to, (val) => {
+  if (val && val.default_subject) {
+    formData.value.subject = val.default_subject;
+  }
+}, { deep: true });
+
 async function onSubmit () {
   errorMessage.value = null;
 

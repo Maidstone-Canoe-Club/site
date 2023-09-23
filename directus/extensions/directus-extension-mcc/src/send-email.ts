@@ -17,13 +17,13 @@ async function sendConfirmAccountEmail (services: any, input: any, schema: any, 
   input.confirm_token_create_date = new Date();
   input.email_confirmed = false;
 
-  const publicUrl = process.env.PUBLIC_URL;
-  const url = `${publicUrl}/confirm-email?t=${token}`;
-
   if(process.env.IGNORE_MAIL){
     console.log("not sending mail");
     return input;
   }
+
+  const publicUrl = process.env.PUBLIC_URL;
+  const url = `${publicUrl}/confirm-email?t=${token}`;
 
   try {
     await mailService.send({

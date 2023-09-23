@@ -1,18 +1,15 @@
 import {defineEndpoint} from "@directus/extensions-sdk";
 import {ofetch} from "ofetch";
-import {customAlphabet} from "nanoid";
-import {alphanumeric} from "nanoid-dictionary";
 import {
   MailingList,
   InboundEmail,
   FullAddress,
-  OutboundEmail, Subscriber
+  Subscriber
 } from "../types";
 import Stripe from "stripe";
+import {handleMailForward} from "../mail-forwards";
 
 const postmarkUrl = "https://api.postmarkapp.com";
-
-const nanoid = customAlphabet(alphanumeric, 11);
 
 const stripe = new Stripe(process.env.STRIPE_KEY);
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
@@ -126,7 +123,7 @@ export default defineEndpoint((router, {services}) => {
       for (let i = 0; i < toAddresses.length; i++) {
         const toAddress = toAddresses[i]!;
         await handleMailingList(data, toAddress, mailingListsService, mailingListSubscribersService);
-        await handleMailForward(data, toAddress, mailThreadsService, mailForwardsService);
+        await handleMailForward(data, toAddress, null, mailThreadsService, mailForwardsService);
       }
 
       return res.status(200).send("ok");
@@ -231,132 +228,6 @@ async function handleMailingList(data: InboundEmail, toAddress: FullAddress, mai
   } catch (e) {
     console.log("something went wrong handling mailing list email", e, e.message, e.data);
   }
-}
-
-async function handleMailForward(data: InboundEmail, toAddress: FullAddress, mailThreadsService: any, mailForwardsService: any) {
-
-  if (toAddress.Email.startsWith("reply+")) {
-    const threadId = toAddress.MailboxHash;
-
-    try {
-      const existingThread = await mailThreadsService.readOne(threadId);
-
-      if (existingThread) {
-        if (data.FromFull.Email.toLowerCase() === existingThread.target_email.toLowerCase()) {
-          let fromName = `forwards@${process.env.EMAIL_DOMAIN}`;
-
-          const forwards = await mailForwardsService.readByQuery({
-            filter: {
-              target_email: {
-                _eq: data.FromFull.Email.toLowerCase()
-              }
-            }
-          });
-
-          const forward = forwards.length ? forwards[0] : null;
-
-          if (forward && forward.from_name) {
-            fromName = `${forward.from_name} <${fromName}>`;
-          }
-
-          await sendEmail({
-            From: fromName,
-            To: existingThread.sender_email,
-            HtmlBody: data.HtmlBody,
-            Subject: data.Subject,
-            ReplyTo: `reply+${existingThread.id}@${process.env.EMAIL_DOMAIN}`,
-            TrackLinks: "None",
-            Tag: "forwards",
-            Attachments: data.Attachments
-          });
-        } else if (data.FromFull.Email.toLowerCase() === existingThread.sender_email.toLowerCase()) {
-          let fromName = `forwards@${process.env.EMAIL_DOMAIN}`;
-
-          if (data.FromName) {
-            fromName = `${data.FromName} <${fromName}>`;
-          }
-
-          await sendEmail({
-            From: fromName,
-            To: existingThread.target_email,
-            HtmlBody: data.HtmlBody,
-            Subject: data.Subject,
-            ReplyTo: `reply+${existingThread.id}@${process.env.EMAIL_DOMAIN}`,
-            TrackLinks: "None",
-            Tag: "forwards",
-            Attachments: data.Attachments
-          });
-        } else {
-          console.log("no thread found for", threadId);
-        }
-      } else {
-        console.log("something went wrong, unknown from address for thread");
-      }
-    } catch (e) {
-      console.log("something went wrong continuing mail thread", threadId, e, e.message, e.data);
-    }
-  } else {
-    // We have received a new email to forward
-    try {
-      const name = toAddress.Email.split("@")[0];
-
-      // if toAddress is to a forward address
-      const forwards = await mailForwardsService.readByQuery({
-        filter: {
-          name: {
-            _eq: name
-          }
-        }
-      });
-
-      const forward = forwards && forwards.length ? forwards[0] : null;
-
-      if (forward) {
-        const newThreadId = nanoid();
-
-        await mailThreadsService.createOne({
-          id: newThreadId,
-          target_email: forward.target_email,
-          sender_email: data.FromFull.Email
-        });
-
-        let fromAddress = `<forwards@${process.env.EMAIL_DOMAIN}>`;
-
-        if (data.FromName) {
-          fromAddress = `${data.FromName} ${fromAddress}`;
-        }
-
-        // send email to target
-        await sendEmail({
-          From: fromAddress,
-          To: forward.target_email,
-          HtmlBody: data.HtmlBody,
-          Subject: data.Subject,
-          ReplyTo: `reply+${newThreadId}@${process.env.EMAIL_DOMAIN}`,
-          TrackLinks: "None",
-          Tag: "forwards",
-          Attachments: data.Attachments
-        });
-      } else {
-        console.log("no forward found for", name);
-      }
-    } catch (e) {
-      console.log("something went wrong creating a new mail thread", e, e.message, e.data);
-    }
-  }
-}
-
-async function sendEmail(email: OutboundEmail) {
-  return await ofetch("/email", {
-    baseURL: postmarkUrl,
-    method: "POST",
-    headers: {
-      "X-Postmark-Server-Token": process.env.EMAIL_SMTP_PASSWORD!
-    },
-    body: email
-  }).catch((err) => {
-    console.log("send mail error: ", err.data);
-  });
 }
 
 async function sendBatchEmail(data: any) {
