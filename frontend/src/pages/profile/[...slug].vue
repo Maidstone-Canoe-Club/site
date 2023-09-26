@@ -1,6 +1,6 @@
 ﻿<template>
   <div class="mx-auto max-w-7xl pt-16 lg:flex lg:gap-x-16">
-    <TabGroup>
+    <TabGroup :selected-index="selectedTab" @change="changeTab">
       <aside
         class="flex overflow-x-auto border-b border-gray-900/5 py-4 lg:block lg:w-64 lg:flex-none lg:border-0 lg:py-20">
         <nav class="flex-none px-2 sm:px-6 lg:px-0">
@@ -70,13 +70,22 @@ const user = useDirectusUser();
  * Can change email notification preferences
  */
 
-const navigation = [
+const route = useRoute();
+const hash = computed(() => route.hash);
+
+const navigation = computed(() => [
   { name: "General", href: "#", icon: UserCircleIcon, current: true },
-  { name: "Payment history", href: "#", icon: CreditCardIcon, current: false },
-  { name: "Event bookings", href: "#", icon: CalendarDaysIcon, current: false },
-  { name: "Notifications", href: "#", icon: EnvelopeIcon, current: false },
-  { name: "Child accounts", href: "#", icon: UsersIcon, current: false }
-];
+  { name: "Event bookings", href: "#events", icon: CalendarDaysIcon, current: hash.value === "#events" },
+  { name: "Payment history", href: "#payments", icon: CreditCardIcon, current: hash.value === "#payments" },
+  { name: "Email preferences", href: "#mail", icon: EnvelopeIcon, current: hash.value === "#mail" },
+  { name: "Junior accounts", href: "#juniors", icon: UsersIcon, current: hash.value === "#juniors" }
+]);
+
+const selectedTab = ref(navigation.value.findIndex(x => x.href === hash.value));
+
+function changeTab (index) {
+  selectedTab.value = index;
+}
 
 </script>
 

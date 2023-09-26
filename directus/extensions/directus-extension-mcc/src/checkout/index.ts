@@ -66,18 +66,18 @@ export default defineEndpoint((router, {services, database}) => {
     }
   });
 
-  router.get("/data", async (req, res) => {
+  router.post("/data", async (req, res) => {
 
     try {
       const eventId = req.query.eventId;
-      const userId = req.query.userId;
+      const userIds = req.body.userIds;
 
       if (!eventId) {
         return res.status(400).send("missing event id");
       }
 
-      if (!userId) {
-        return res.status(400).send("missing user id");
+      if (!userIds || !userIds.length) {
+        return res.status(400).send("missing user ids");
       }
 
       const eventsService = new ItemsService("events", {knex: database, schema: req.schema, accountability: adminAccountability});
@@ -89,15 +89,22 @@ export default defineEndpoint((router, {services, database}) => {
         return res.status(404).send("could not load event");
       }
 
-      const user = await usersService.readOne(userId);
+      const users = await usersService.readByQuery({
+        fields: ["*", "role.name"],
+        filter: {
+          id: {
+            _in: userIds
+          }
+        }
+      });
 
-      if (!user) {
-        return res.status(404).send("could not load user");
+      if (!users) {
+        return res.status(404).send("could not load users");
       }
 
       return res.json({
         event,
-        user
+        users
       });
     } catch (e) {
       console.error("error loading checkout data", e);

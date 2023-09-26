@@ -2,6 +2,48 @@ version: 1
 directus: 12.1.3
 vendor: postgres
 collections:
+  - collection: Content
+    meta:
+      accountability: all
+      archive_app_filter: true
+      archive_field: null
+      archive_value: null
+      collapse: open
+      collection: Content
+      color: '#FF99DD'
+      display_template: null
+      group: null
+      hidden: false
+      icon: folder_special
+      item_duplication_fields: null
+      note: null
+      preview_url: null
+      singleton: false
+      sort: 1
+      sort_field: null
+      translations: null
+      unarchive_value: null
+  - collection: Ecommerce
+    meta:
+      accountability: all
+      archive_app_filter: true
+      archive_field: null
+      archive_value: null
+      collapse: open
+      collection: Ecommerce
+      color: '#FFA439'
+      display_template: null
+      group: null
+      hidden: false
+      icon: attach_money
+      item_duplication_fields: null
+      note: null
+      preview_url: null
+      singleton: false
+      sort: 4
+      sort_field: null
+      translations: null
+      unarchive_value: null
   - collection: Events
     meta:
       accountability: all
@@ -10,16 +52,16 @@ collections:
       archive_value: null
       collapse: open
       collection: Events
-      color: null
+      color: '#2ECDA7'
       display_template: null
       group: null
       hidden: false
-      icon: folder
+      icon: calendar_add_on
       item_duplication_fields: null
       note: null
       preview_url: null
       singleton: false
-      sort: 9
+      sort: 2
       sort_field: null
       translations: null
       unarchive_value: null
@@ -35,7 +77,7 @@ collections:
       display_template: null
       group: null
       hidden: false
-      icon: folder
+      icon: mark_email_read
       item_duplication_fields: null
       note: null
       preview_url: null
@@ -84,7 +126,7 @@ collections:
       note: null
       preview_url: null
       singleton: false
-      sort: 15
+      sort: 13
       sort_field: null
       translations: null
       unarchive_value: null
@@ -105,7 +147,7 @@ collections:
       note: null
       preview_url: null
       singleton: false
-      sort: 16
+      sort: 8
       sort_field: null
       translations: null
       unarchive_value: null
@@ -128,7 +170,7 @@ collections:
       note: null
       preview_url: null
       singleton: false
-      sort: 17
+      sort: 9
       sort_field: sort
       translations: null
       unarchive_value: null
@@ -142,16 +184,16 @@ collections:
       archive_value: archived
       collapse: open
       collection: content_page
-      color: null
+      color: '#FF99DD'
       display_template: null
-      group: null
+      group: Content
       hidden: false
-      icon: newspaper
+      icon: web_asset
       item_duplication_fields: null
       note: null
       preview_url: null
       singleton: false
-      sort: 4
+      sort: 2
       sort_field: null
       translations: null
       unarchive_value: draft
@@ -168,13 +210,13 @@ collections:
       color: null
       display_template: null
       group: null
-      hidden: false
+      hidden: true
       icon: import_export
       item_duplication_fields: null
       note: null
       preview_url: null
       singleton: false
-      sort: 10
+      sort: 11
       sort_field: null
       translations: null
       unarchive_value: null
@@ -191,13 +233,13 @@ collections:
       color: null
       display_template: null
       group: null
-      hidden: false
-      icon: null
+      hidden: true
+      icon: conversion_path
       item_duplication_fields: null
       note: null
       preview_url: null
       singleton: false
-      sort: 11
+      sort: 10
       sort_field: null
       translations: null
       unarchive_value: null
@@ -211,7 +253,7 @@ collections:
       archive_value: null
       collapse: open
       collection: emergency_contacts
-      color: null
+      color: '#E35169'
       display_template: null
       group: null
       hidden: false
@@ -234,7 +276,7 @@ collections:
       archive_value: null
       collapse: open
       collection: event_bookings
-      color: null
+      color: '#2ECDA7'
       display_template: null
       group: Events
       hidden: false
@@ -257,7 +299,7 @@ collections:
       archive_value: archived
       collapse: open
       collection: events
-      color: null
+      color: '#2ECDA7'
       display_template: null
       group: Events
       hidden: false
@@ -280,16 +322,16 @@ collections:
       archive_value: null
       collapse: open
       collection: faqs
-      color: null
+      color: '#FF99DD'
       display_template: null
-      group: null
+      group: Content
       hidden: false
       icon: question_mark
       item_duplication_fields: null
       note: null
       preview_url: null
       singleton: true
-      sort: 2
+      sort: 4
       sort_field: null
       translations: null
       unarchive_value: null
@@ -312,7 +354,7 @@ collections:
       note: null
       preview_url: null
       singleton: false
-      sort: 18
+      sort: 14
       sort_field: null
       translations: null
       unarchive_value: null
@@ -326,9 +368,9 @@ collections:
       archive_value: null
       collapse: open
       collection: home
-      color: null
+      color: '#FF99DD'
       display_template: null
-      group: null
+      group: Content
       hidden: false
       icon: house
       item_duplication_fields: null
@@ -464,7 +506,7 @@ collections:
       archive_value: null
       collapse: open
       collection: medical_info
-      color: null
+      color: '#E35169'
       display_template: null
       group: null
       hidden: false
@@ -502,6 +544,52 @@ collections:
       unarchive_value: null
     schema:
       name: member_invites
+  - collection: navigation
+    meta:
+      accountability: all
+      archive_app_filter: true
+      archive_field: null
+      archive_value: null
+      collapse: open
+      collection: navigation
+      color: '#3399FF'
+      display_template: null
+      group: null
+      hidden: false
+      icon: menu_open
+      item_duplication_fields: null
+      note: null
+      preview_url: null
+      singleton: true
+      sort: 15
+      sort_field: null
+      translations: null
+      unarchive_value: null
+    schema:
+      name: navigation
+  - collection: navigation_item
+    meta:
+      accountability: all
+      archive_app_filter: true
+      archive_field: null
+      archive_value: null
+      collapse: open
+      collection: navigation_item
+      color: '#3399FF'
+      display_template: null
+      group: navigation
+      hidden: false
+      icon: keyboard_arrow_left
+      item_duplication_fields: null
+      note: null
+      preview_url: null
+      singleton: false
+      sort: 1
+      sort_field: sort
+      translations: null
+      unarchive_value: null
+    schema:
+      name: navigation_item
   - collection: news
     meta:
       accountability: all
@@ -510,16 +598,16 @@ collections:
       archive_value: archived
       collapse: open
       collection: news
-      color: null
+      color: '#FF99DD'
       display_template: null
-      group: null
+      group: Content
       hidden: false
       icon: newspaper
       item_duplication_fields: null
       note: null
       preview_url: null
       singleton: false
-      sort: 8
+      sort: 3
       sort_field: sort
       translations: null
       unarchive_value: draft
@@ -533,16 +621,16 @@ collections:
       archive_value: null
       collapse: open
       collection: orders
-      color: null
+      color: '#FFA439'
       display_template: null
-      group: null
+      group: Ecommerce
       hidden: false
       icon: currency_pound
       item_duplication_fields: null
       note: null
       preview_url: null
       singleton: false
-      sort: 13
+      sort: 1
       sort_field: null
       translations: null
       unarchive_value: null
@@ -556,7 +644,7 @@ collections:
       archive_value: null
       collapse: open
       collection: recurring_event_patterns
-      color: null
+      color: '#2ECDA7'
       display_template: null
       group: Events
       hidden: false
@@ -579,16 +667,16 @@ collections:
       archive_value: null
       collapse: open
       collection: stripe_customers
-      color: null
+      color: '#FFA439'
       display_template: null
-      group: null
+      group: Ecommerce
       hidden: false
-      icon: null
+      icon: person_search
       item_duplication_fields: null
       note: null
       preview_url: null
       singleton: false
-      sort: 14
+      sort: 2
       sort_field: null
       translations: null
       unarchive_value: null
@@ -3317,7 +3405,7 @@ fields:
             value: Members
       readonly: false
       required: false
-      sort: 22
+      sort: 23
       special:
         - cast-json
       translations: null
@@ -3460,7 +3548,7 @@ fields:
       foreign_key_column: null
   - collection: events
     field: end_date
-    type: dateTime
+    type: timestamp
     meta:
       collection: events
       conditions: null
@@ -3483,7 +3571,7 @@ fields:
     schema:
       name: end_date
       table: events
-      data_type: timestamp without time zone
+      data_type: timestamp with time zone
       default_value: null
       max_length: null
       numeric_precision: null
@@ -3512,7 +3600,7 @@ fields:
       options: null
       readonly: false
       required: false
-      sort: 19
+      sort: 20
       special: null
       translations: null
       validation: null
@@ -3550,7 +3638,7 @@ fields:
       options: null
       readonly: false
       required: false
-      sort: 20
+      sort: 21
       special: null
       translations: null
       validation: null
@@ -3588,7 +3676,7 @@ fields:
       options: null
       readonly: false
       required: false
-      sort: 17
+      sort: 18
       special:
         - cast-boolean
       translations: null
@@ -3666,7 +3754,7 @@ fields:
       options: null
       readonly: false
       required: false
-      sort: 14
+      sort: 15
       special:
         - cast-boolean
       translations: null
@@ -3705,7 +3793,7 @@ fields:
       options: null
       readonly: false
       required: false
-      sort: 15
+      sort: 16
       special:
         - cast-boolean
       translations: null
@@ -3745,7 +3833,7 @@ fields:
         iconLeft: currency_pound
       readonly: false
       required: false
-      sort: 13
+      sort: 14
       special: null
       translations: null
       validation: null
@@ -3783,7 +3871,7 @@ fields:
       options: null
       readonly: false
       required: false
-      sort: 16
+      sort: 17
       special: null
       translations: null
       validation: null
@@ -3859,7 +3947,7 @@ fields:
       options: null
       readonly: false
       required: false
-      sort: 21
+      sort: 22
       special: null
       translations: null
       validation: null
@@ -3898,7 +3986,7 @@ fields:
         enableCreate: false
       readonly: false
       required: false
-      sort: 18
+      sort: 19
       special:
         - m2o
       translations: null
@@ -3938,7 +4026,7 @@ fields:
         iconLeft: currency_pound
       readonly: false
       required: false
-      sort: 12
+      sort: 13
       special: null
       translations: null
       validation: null
@@ -3962,7 +4050,7 @@ fields:
       foreign_key_column: null
   - collection: events
     field: start_date
-    type: dateTime
+    type: timestamp
     meta:
       collection: events
       conditions: null
@@ -3985,7 +4073,7 @@ fields:
     schema:
       name: start_date
       table: events
-      data_type: timestamp without time zone
+      data_type: timestamp with time zone
       default_value: null
       max_length: null
       numeric_precision: null
@@ -4081,6 +4169,63 @@ fields:
       width: full
     schema:
       name: title
+      table: events
+      data_type: character varying
+      default_value: null
+      max_length: 255
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: events
+    field: type
+    type: string
+    meta:
+      collection: events
+      conditions: null
+      display: null
+      display_options: null
+      field: type
+      group: null
+      hidden: false
+      interface: select-dropdown
+      note: null
+      options:
+        choices:
+          - text: Pool session
+            value: pool_session
+          - text: Regular club paddle
+            value: club_paddle
+          - text: Race training
+            value: race_training
+          - text: Coaching
+            value: coaching
+          - text: Paddles, trips & tours
+            value: paddles_trips_tours
+          - text: Social events
+            value: social_events
+          - text: Fun session
+            value: fun_session
+          - text: Race
+            value: race
+          - text: Beginners course
+            value: beginners_course
+      readonly: false
+      required: true
+      sort: 12
+      special: null
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: type
       table: events
       data_type: character varying
       default_value: null
@@ -6705,6 +6850,556 @@ fields:
       has_auto_increment: false
       foreign_key_table: directus_users
       foreign_key_column: id
+  - collection: navigation
+    field: date_updated
+    type: timestamp
+    meta:
+      collection: navigation
+      conditions: null
+      display: datetime
+      display_options:
+        relative: true
+      field: date_updated
+      group: null
+      hidden: true
+      interface: datetime
+      note: null
+      options: null
+      readonly: true
+      required: false
+      sort: 3
+      special:
+        - date-updated
+      translations: null
+      validation: null
+      validation_message: null
+      width: half
+    schema:
+      name: date_updated
+      table: navigation
+      data_type: timestamp with time zone
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: navigation
+    field: id
+    type: integer
+    meta:
+      collection: navigation
+      conditions: null
+      display: null
+      display_options: null
+      field: id
+      group: null
+      hidden: true
+      interface: input
+      note: null
+      options: null
+      readonly: true
+      required: false
+      sort: 1
+      special: null
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: id
+      table: navigation
+      data_type: integer
+      default_value: nextval('navigation_id_seq'::regclass)
+      max_length: null
+      numeric_precision: 32
+      numeric_scale: 0
+      is_nullable: false
+      is_unique: true
+      is_primary_key: true
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: true
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: navigation
+    field: items
+    type: alias
+    meta:
+      collection: navigation
+      conditions: null
+      display: related-values
+      display_options:
+        template: '{{title}}'
+      field: items
+      group: null
+      hidden: false
+      interface: list-o2m
+      note: null
+      options:
+        template: '{{title}}'
+      readonly: false
+      required: false
+      sort: 4
+      special:
+        - o2m
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+  - collection: navigation
+    field: user_updated
+    type: uuid
+    meta:
+      collection: navigation
+      conditions: null
+      display: user
+      display_options: null
+      field: user_updated
+      group: null
+      hidden: true
+      interface: select-dropdown-m2o
+      note: null
+      options:
+        template: '{{avatar.$thumbnail}} {{first_name}} {{last_name}}'
+      readonly: true
+      required: false
+      sort: 2
+      special:
+        - user-updated
+      translations: null
+      validation: null
+      validation_message: null
+      width: half
+    schema:
+      name: user_updated
+      table: navigation
+      data_type: uuid
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: directus_users
+      foreign_key_column: id
+  - collection: navigation_item
+    field: children
+    type: alias
+    meta:
+      collection: navigation_item
+      conditions: null
+      display: null
+      display_options: null
+      field: children
+      group: null
+      hidden: false
+      interface: list-o2m
+      note: null
+      options:
+        template: '{{title}}'
+      readonly: false
+      required: false
+      sort: 9
+      special:
+        - o2m
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+  - collection: navigation_item
+    field: id
+    type: uuid
+    meta:
+      collection: navigation_item
+      conditions: null
+      display: null
+      display_options: null
+      field: id
+      group: null
+      hidden: true
+      interface: input
+      note: null
+      options: null
+      readonly: true
+      required: false
+      sort: 1
+      special:
+        - uuid
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: id
+      table: navigation_item
+      data_type: uuid
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: false
+      is_unique: true
+      is_primary_key: true
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: navigation_item
+    field: navigation
+    type: integer
+    meta:
+      collection: navigation_item
+      conditions: null
+      display: null
+      display_options: null
+      field: navigation
+      group: null
+      hidden: true
+      interface: select-dropdown-m2o
+      note: null
+      options: null
+      readonly: false
+      required: false
+      sort: 3
+      special: null
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: navigation
+      table: navigation_item
+      data_type: integer
+      default_value: null
+      max_length: null
+      numeric_precision: 32
+      numeric_scale: 0
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: navigation
+      foreign_key_column: id
+  - collection: navigation_item
+    field: open_in_new_tab
+    type: boolean
+    meta:
+      collection: navigation_item
+      conditions:
+        - name: Show
+          rule:
+            _and:
+              - type:
+                  _eq: url
+          hidden: false
+          options:
+            iconOn: check_box
+            iconOff: check_box_outline_blank
+            label: Enabled
+      display: null
+      display_options: null
+      field: open_in_new_tab
+      group: null
+      hidden: true
+      interface: boolean
+      note: null
+      options: null
+      readonly: false
+      required: false
+      sort: 6
+      special:
+        - cast-boolean
+      translations: null
+      validation: null
+      validation_message: null
+      width: half
+    schema:
+      name: open_in_new_tab
+      table: navigation_item
+      data_type: boolean
+      default_value: false
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: navigation_item
+    field: page
+    type: integer
+    meta:
+      collection: navigation_item
+      conditions:
+        - name: Show page select
+          rule:
+            _and:
+              - type:
+                  _eq: page
+          hidden: false
+          options:
+            enableCreate: true
+            enableSelect: true
+      display: related-values
+      display_options:
+        template: '{{title}}'
+      field: page
+      group: null
+      hidden: true
+      interface: select-dropdown-m2o
+      note: null
+      options:
+        template: '{{title}}'
+      readonly: false
+      required: false
+      sort: 7
+      special:
+        - m2o
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: page
+      table: navigation_item
+      data_type: integer
+      default_value: null
+      max_length: null
+      numeric_precision: 32
+      numeric_scale: 0
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: content_page
+      foreign_key_column: id
+  - collection: navigation_item
+    field: parent
+    type: uuid
+    meta:
+      collection: navigation_item
+      conditions: null
+      display: null
+      display_options: null
+      field: parent
+      group: null
+      hidden: true
+      interface: select-dropdown-m2o
+      note: null
+      options: null
+      readonly: false
+      required: false
+      sort: 10
+      special: null
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: parent
+      table: navigation_item
+      data_type: uuid
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: navigation_item
+      foreign_key_column: id
+  - collection: navigation_item
+    field: sort
+    type: integer
+    meta:
+      collection: navigation_item
+      conditions: null
+      display: null
+      display_options: null
+      field: sort
+      group: null
+      hidden: true
+      interface: input
+      note: null
+      options: null
+      readonly: false
+      required: false
+      sort: 2
+      special: null
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: sort
+      table: navigation_item
+      data_type: integer
+      default_value: null
+      max_length: null
+      numeric_precision: 32
+      numeric_scale: 0
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: navigation_item
+    field: title
+    type: string
+    meta:
+      collection: navigation_item
+      conditions: null
+      display: null
+      display_options: null
+      field: title
+      group: null
+      hidden: false
+      interface: input
+      note: null
+      options: null
+      readonly: false
+      required: true
+      sort: 4
+      special: null
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: title
+      table: navigation_item
+      data_type: character varying
+      default_value: null
+      max_length: 255
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: navigation_item
+    field: type
+    type: string
+    meta:
+      collection: navigation_item
+      conditions: null
+      display: null
+      display_options: null
+      field: type
+      group: null
+      hidden: false
+      interface: select-radio
+      note: null
+      options:
+        choices:
+          - text: Page
+            value: page
+          - text: URL
+            value: url
+      readonly: false
+      required: false
+      sort: 5
+      special: null
+      translations: null
+      validation: null
+      validation_message: null
+      width: half
+    schema:
+      name: type
+      table: navigation_item
+      data_type: character varying
+      default_value: null
+      max_length: 255
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: navigation_item
+    field: url
+    type: string
+    meta:
+      collection: navigation_item
+      conditions:
+        - name: Show URL input
+          rule:
+            _and:
+              - type:
+                  _eq: url
+          hidden: false
+          options:
+            font: sans-serif
+            trim: false
+            masked: false
+            clear: false
+            slug: false
+      display: null
+      display_options: null
+      field: url
+      group: null
+      hidden: true
+      interface: input
+      note: null
+      options: null
+      readonly: false
+      required: false
+      sort: 8
+      special: null
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: url
+      table: navigation_item
+      data_type: character varying
+      default_value: null
+      max_length: 255
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
   - collection: news
     field: content
     type: text
@@ -8890,6 +9585,90 @@ relations:
       foreign_key_table: directus_users
       foreign_key_column: id
       constraint_name: member_invites_user_updated_foreign
+      on_update: NO ACTION
+      on_delete: NO ACTION
+  - collection: navigation
+    field: user_updated
+    related_collection: directus_users
+    meta:
+      junction_field: null
+      many_collection: navigation
+      many_field: user_updated
+      one_allowed_collections: null
+      one_collection: directus_users
+      one_collection_field: null
+      one_deselect_action: nullify
+      one_field: null
+      sort_field: null
+    schema:
+      table: navigation
+      column: user_updated
+      foreign_key_table: directus_users
+      foreign_key_column: id
+      constraint_name: navigation_user_updated_foreign
+      on_update: NO ACTION
+      on_delete: NO ACTION
+  - collection: navigation_item
+    field: navigation
+    related_collection: navigation
+    meta:
+      junction_field: null
+      many_collection: navigation_item
+      many_field: navigation
+      one_allowed_collections: null
+      one_collection: navigation
+      one_collection_field: null
+      one_deselect_action: nullify
+      one_field: items
+      sort_field: sort
+    schema:
+      table: navigation_item
+      column: navigation
+      foreign_key_table: navigation
+      foreign_key_column: id
+      constraint_name: navigation_item_navigation_foreign
+      on_update: NO ACTION
+      on_delete: SET NULL
+  - collection: navigation_item
+    field: page
+    related_collection: content_page
+    meta:
+      junction_field: null
+      many_collection: navigation_item
+      many_field: page
+      one_allowed_collections: null
+      one_collection: content_page
+      one_collection_field: null
+      one_deselect_action: nullify
+      one_field: null
+      sort_field: null
+    schema:
+      table: navigation_item
+      column: page
+      foreign_key_table: content_page
+      foreign_key_column: id
+      constraint_name: navigation_item_page_foreign
+      on_update: NO ACTION
+      on_delete: SET NULL
+  - collection: navigation_item
+    field: parent
+    related_collection: navigation_item
+    meta:
+      junction_field: null
+      many_collection: navigation_item
+      many_field: parent
+      one_allowed_collections: null
+      one_collection: navigation_item
+      one_collection_field: null
+      one_deselect_action: nullify
+      one_field: children
+      sort_field: sort
+    schema:
+      table: navigation_item
+      column: parent
+      foreign_key_table: navigation_item
+      foreign_key_column: id
+      constraint_name: navigation_item_parent_foreign
       on_update: NO ACTION
       on_delete: NO ACTION
   - collection: news

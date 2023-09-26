@@ -38,6 +38,7 @@
     "@zxcvbn-ts/core": "^3.0.3",
     "@zxcvbn-ts/language-common": "^2.0.1",
     "date-fns": "^2.30.0",
+    "date-fns-tz": "^2.0.0",
     "dinero.js": "^1.9.1",
     "nuxt-directus": "^5.5.0",
     "nuxt-umami": "^2.5.3",

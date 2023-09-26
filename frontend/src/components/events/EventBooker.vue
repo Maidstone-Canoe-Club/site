@@ -4,53 +4,112 @@
       <div
         v-if="user"
         class="flex flex-col items-center gap-3">
-        <template v-if="alreadyBooked">
+        <!--        <template v-if="alreadyBooked && juniorsToBook">-->
+        <!--          <div-->
+        <!--            class="flex justify-center items-center gap-2 p-4 rounded-md border w-full">-->
+        <!--            <CheckCircleIcon class="h-6 w-6 text-green-400" aria-hidden="true" />-->
+        <!--            <p class="text-sm font-medium text-gray-900">-->
+        <!--              You're booked on!-->
+        <!--            </p>-->
+        <!--          </div>-->
+        <!--          <button-->
+        <!--            class="w-full rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"-->
+        <!--            @click="onCancelBooking">-->
+        <!--            Cancel event booking-->
+        <!--          </button>-->
+        <!--        </template>-->
+        <component
+          :is="!!price ?'form' : 'div'"
+          :action="paymentUrl"
+          class="flex flex-col gap-2 w-full"
+          method="post">
           <div
-            class="flex justify-center items-center gap-2 p-4 rounded-md border w-full">
-            <CheckCircleIcon class="h-6 w-6 text-green-400" aria-hidden="true" />
-            <p class="text-sm font-medium text-gray-900">
-              You're booked on!
-            </p>
+            v-if="eventCanBookJuniors && juniors && juniors.length"
+            class="flex flex-col gap-2 w-full">
+            <input v-if="bookMyself" id="userIds" :value="user.id" name="userIds">
+            <input
+              v-for="j in juniors.filter(x => x.shouldBook)"
+              id="userIds"
+              :key="j.id + '-input'"
+              :value="j.id"
+              name="userIds">
+            <span class="block text-sm leading-6 text-gray-900">Who would you like to book onto this event?</span>
+            <ul class="flex flex-col gap-3 mb-4">
+              <li v-if="!alreadyBooked">
+                <input-toggle
+                  v-model="bookMyself"
+                  :label="bookMyselfLabel" />
+              </li>
+              <li v-for="junior in juniorsToBook" :key="junior.id">
+                <input-toggle
+                  v-model="junior.shouldBook"
+                  :label="juniorLabel(junior)" />
+              </li>
+            </ul>
+
+            <div>
+              <nuxt-link
+                to="/profile#juniors"
+                class="rounded bg-white px-2 py-1 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+                Add new junior
+              </nuxt-link>
+            </div>
           </div>
           <button
-            class="w-full rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-            @click="onCancelBooking">
-            Cancel event booking
-          </button>
-        </template>
-        <template v-else>
-          <form
             v-if="!!price"
-            :action="paymentUrl"
-            class="w-full"
-            method="post">
-            <button
-              type="submit"
-              class="w-full rounded-md bg-indigo-600 px-2.5 py-3 font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-              {{ bookNowLabel }}
-            </button>
-          </form>
-
+            type="submit"
+            :disabled="disableBookNowButton"
+            class="w-full rounded-md bg-indigo-600 px-2.5 py-3 font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+            {{ bookNowLabel }}
+          </button>
           <custom-button
             v-else
-            class="w-full rounded-md bg-indigo-600 px-2.5 py-3 font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+            class="w-full font-semibold px-2.5 py-3"
+            :disabled="disableBookNowButton"
             :action="onBookNow">
             {{ bookNowLabel }}
           </custom-button>
-        </template>
+        </component>
 
-        <template v-if="juniorsCanBook">
-          <span
-            v-if="!alreadyBooked"
-            class="text-gray-500 font-semibold text-sm">
-            or
-          </span>
-          <custom-button
-            class="w-full rounded-md bg-indigo-600 px-2.5 py-3 font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-            :action="onBookJunior">
-            {{ bookJuniorLabel }}
-          </custom-button>
-        </template>
+        <!--          <template v-else>-->
+        <!--            <div-->
+        <!--              v-if="eventCanBookJuniors && juniors && juniors.length"-->
+        <!--              class="flex flex-col gap-2 w-full">-->
+        <!--              <span class="block text-sm leading-6 text-gray-900">Who would you like to book onto this event?</span>-->
+        <!--              <ul class="flex flex-col gap-3 px-4">-->
+        <!--                <li>-->
+        <!--                  <input-toggle-->
+        <!--                    v-model="bookMyself"-->
+        <!--                    :label="bookMyselfLabel" />-->
+        <!--                </li>-->
+        <!--                <li v-for="junior in juniors" :key="junior.id">-->
+        <!--                  <input-toggle-->
+        <!--                    v-model="junior.shouldBook"-->
+        <!--                    :label="`${junior.first_name} ${junior.last_name}`" />-->
+        <!--                </li>-->
+        <!--              </ul>-->
+        <!--            </div>-->
+
+        <!--            <custom-button-->
+        <!--              class="w-full font-semibold px-2.5 py-3"-->
+        <!--              :disabled="disableBookNowButton"-->
+        <!--              :action="onBookNow">-->
+        <!--              {{ bookNowLabel }}-->
+        <!--            </custom-button>-->
+        <!--          </template>-->
+
+        <!--        <template v-if="eventCanBookJuniors">-->
+        <!--          <span-->
+        <!--            v-if="!alreadyBooked"-->
+        <!--            class="text-gray-500 font-semibold text-sm">-->
+        <!--            or-->
+        <!--          </span>-->
+        <!--          <custom-button-->
+        <!--            class="w-full rounded-md bg-indigo-600 px-2.5 py-3 font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"-->
+        <!--            :action="onBookJunior">-->
+        <!--            {{ bookJuniorLabel }}-->
+        <!--          </custom-button>-->
+        <!--        </template>-->
       </div>
       <div v-else class="w-full flex">
         <nuxt-link
@@ -74,6 +133,8 @@
 
 <script setup lang="ts">
 import { CheckCircleIcon } from "@heroicons/vue/24/outline";
+// @ts-ignore
+import Dinero from "dinero.js";
 
 const user = useDirectusUser();
 const directus = useDirectus();
@@ -82,12 +143,12 @@ const emits = defineEmits(["refresh"]);
 
 const props = defineProps<{
   event: any,
-  juniorsCanBook: boolean
   price?: number,
   juniorPrice?: number,
   instance?: number,
   patternType?: string,
   alreadyBooked: boolean,
+  bookings: any,
   userId: string
 }>();
 
@@ -95,8 +156,40 @@ const showCancelModal = ref(false);
 
 const loginUrl = computed(() => `/login?redirect=/events/${props.event.id}`);
 
+const { getUsers } = useDirectusUsers();
+
+const eventCanBookJuniors = computed(() => {
+  return props.event.allowed_roles.includes("juniors");
+});
+
+const { data: juniors } = await useAsyncData(`event-juniors-${props.event.id}-${props.userId}`, async () => {
+  return await loadJuniors();
+});
+
+async function loadJuniors () {
+  let result = null;
+  if (eventCanBookJuniors.value) {
+    result = await getUsers({
+      params: {
+        fields: ["id", "first_name", "last_name"],
+        filter: {
+          parent: {
+            _eq: props.userId
+          }
+        }
+      }
+    });
+  }
+
+  return result;
+}
+
+const juniorsToBook = computed(() => {
+  return juniors.value.filter(x => props.bookings.filter(b => b.user.id === x.id).length === 0);
+});
+
 const paymentUrl = computed(() => {
-  let result = `/api/eventPayment?eventId=${props.event.id}&userId=${user.value.id}`;
+  let result = `/api/eventPayment?eventId=${props.event.id}&userId=${props.userId}`;
 
   if (props.instance) {
     result += `&instance=${props.instance}`;
@@ -104,6 +197,29 @@ const paymentUrl = computed(() => {
 
   if (props.patternType) {
     result += `&patternType=${props.patternType}`;
+  }
+
+  return result;
+});
+
+const bookMyself = ref(false);
+
+const bookMyselfLabel = computed(() => {
+  let result = "Myself";
+
+  if (props.event.price) {
+    result += " - " + renderPrice(props.event.price);
+  }
+
+  return result;
+});
+
+const disableBookNowButton = computed(() => {
+  let result = false;
+
+  if (juniors.value && juniors.value.length) {
+    const juniorIsBooked = juniors.value.filter(x => x.shouldBook).length;
+    result = !juniorIsBooked && !bookMyself.value;
   }
 
   return result;
@@ -137,26 +253,56 @@ const userHasAllowedRole = computed(() => {
 });
 
 function mapAllowedRoleToUserRole (allowedRole: string) {
-  switch (allowedRole) {
-  case "Non-members": return "Unapproved";
-  case "Juniors": return "Junior";
-  case "Members": return "Member";
-  case "No one": return null;
+  switch (allowedRole.toLowerCase()) {
+  case "non-members": return "Unapproved";
+  case "juniors": return "Junior";
+  case "members": return "Member";
+  case "no one": return null;
   default: throw new Error("Unknown allowed role: " + allowedRole);
   }
 }
 
 const bookNowLabel = computed(() => {
-  if (props.juniorsCanBook) {
-    return props.price ? "Pay for myself" : "Book now";
+  if (eventCanBookJuniors.value) {
+    if (!props.event.price && !props.event.junior_price) {
+      return "Book now";
+    }
+
+    let result = 0;
+
+    if (props.event.price && bookMyself.value) {
+      result += props.event.price;
+    }
+
+    if (props.event.junior_price) {
+      console.log("juniors", juniors.value);
+      for (const junior of juniors.value) {
+        console.log("junior", junior);
+        if (junior.shouldBook) {
+          result += props.event.junior_price;
+        }
+      }
+    }
+
+    return result === 0 ? "Pay now" : `Pay ${renderPrice(result)} now`;
   } else {
-    return props.price ? "Pay now" : "Book now";
+    return props.price ? "Pay for myself" : "Book now";
   }
 });
 
 const bookJuniorLabel = computed(() => {
   return props.juniorPrice ? "Pay for a junior" : "Book for a junior";
 });
+
+function juniorLabel (junior) {
+  let result = `${junior.first_name} ${junior.last_name}`;
+
+  if (props.event.junior_price) {
+    result += " - " + renderPrice(props.event.junior_price);
+  }
+
+  return result;
+}
 
 async function onBookNow () {
   if (!props.price) {
@@ -166,9 +312,20 @@ async function onBookNow () {
       url += `&instance=${props.instance}`;
     }
 
+    const userIds = juniorsToBook.value.filter(x => x.shouldBook).map(x => x.id);
+
+    if (bookMyself.value) {
+      userIds.push(props.userId);
+    }
+
     const bookingResult = await directus(url, {
-      method: "POST"
+      method: "POST",
+      body: {
+        userIds
+      }
     });
+
+    emits("refresh");
 
     if (bookingResult.result) {
       emits("refresh");
@@ -209,6 +366,13 @@ async function cancelBooking () {
     method: "POST"
   });
   emits("refresh");
+}
+
+function renderPrice (amount: number) {
+  if (!amount) {
+    return null;
+  }
+  return `£${Dinero({ amount, currency: "GBP" }).toFormat(amount % 100 === 0 ? "0" : "0.00")}`;
 }
 
 </script>
