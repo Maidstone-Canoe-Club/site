@@ -51,9 +51,9 @@
     <div class="mt-5">
       <div class="grid md:grid-cols-12 gap-10">
         <div class="md:col-span-8 mt-5">
-          <div
+          <rich-text
             v-if="event.description"
-            v-html="event.description" />
+            :content="event.description" />
         </div>
         <div class="md:col-span-4">
           <div>
@@ -73,14 +73,13 @@
             <event-booker
               v-if="canBook"
               :event="event"
-              :juniors-can-book="false"
               :price="event.price"
               :user-id="user?.id"
               :junior-price="event.junior_price"
               :instance="instance"
               :pattern-type="eventInfo.patternType"
               :already-booked="alreadyBooked"
-              :start-date="event.start_date"
+              :bookings="bookings"
               @refresh="onRefresh" />
             <div
               v-else
@@ -102,38 +101,11 @@
             class="flex items-center justify-center">
             {{ spacesLeftLabel }}
           </div>
-          <ul
-            v-if="bookings"
-            role="list"
-            class="divide-y divide-gray-100">
-            <li v-for="booking in bookings" :key="booking.email" class="flex items-center justify-between gap-x-6 py-5">
-              <div class="flex min-w-0 gap-x-4 items-center">
-                <img
-                  v-if="booking.user.avatar"
-                  class="h-12 w-12 flex-none rounded-full bg-gray-50"
-                  :src="getAvatarUrl(booking.user)"
-                  alt="">
-                <UserCircleIcon
-                  v-else
-                  class="h-12 w-12 text-gray-300"
-                  aria-hidden="true" />
-                <div class="min-w-0 flex-auto">
-                  <span class="flex gap-3 items-center">
-                    <p class="text-sm font-semibold leading-6 text-gray-900">
-                      {{ booking.user.first_name }} {{ booking.user.last_name }}
-                    </p>
-                    <role-badge :user="booking.user" />
-                  </span>
-                  <p
-                    v-if="booking.user.email"
-                    class="mt-1 truncate text-xs leading-5 text-gray-500">
-                    {{ booking.user.email }}
-                  </p>
-                </div>
-              </div>
-              <!--              <a href="#" class="rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">View</a>-->
-            </li>
-          </ul>
+          <event-attendees
+            :bookings="bookings"
+            :event-id="event.id"
+            :instance="instance"
+            @refresh="onRefresh" />
         </div>
       </div>
     </div>
@@ -149,7 +121,6 @@ import {
   UsersIcon,
   InformationCircleIcon
 } from "@heroicons/vue/20/solid";
-import { UserCircleIcon } from "@heroicons/vue/24/outline";
 // @ts-ignore
 import Dinero from "dinero.js";
 import { format, isSameDay } from "date-fns";
@@ -160,7 +131,7 @@ const directus = useDirectus();
 const route = useRoute();
 const user = useDirectusUser();
 
-const instance = parseInt(route.query.instance, 10);
+const instance = route.query.instance ? parseInt(route.query.instance, 10) : null;
 
 const childEvents = ref();
 const recurringPattern = ref();
@@ -193,7 +164,11 @@ async function loadInfo () {
   if (instance) {
     url += "&instance=" + instance;
   }
-  return await directus(url);
+  return await directus(url, {
+    headers: {
+      "Cache-Control": "no-cache"
+    }
+  });
 }
 
 if (event.value.has_multiple) {
@@ -302,6 +277,7 @@ function formatDate (date: string) {
 }
 
 async function onRefresh () {
+  console.log("refreshing");
   eventInfo.value = await loadInfo();
 }
 

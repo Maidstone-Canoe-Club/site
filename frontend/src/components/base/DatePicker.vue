@@ -6,6 +6,7 @@
     auto-apply
     :close-on-auto-apply="false"
     :enable-time-picker="enableTimePicker ?? false"
+    utc
     locale="en-GB">
     <template #calendar-icon>
       <span class="dp__clock-icon">
@@ -39,7 +40,7 @@ const props = defineProps<{
 const internalValue = ref(props.modelValue);
 
 watch(() => props.modelValue, (val) => {
-  internalValue.valueOf = props.modelValue;
+  internalValue.value = props.modelValue;
 });
 
 watch(internalValue, (val) => {

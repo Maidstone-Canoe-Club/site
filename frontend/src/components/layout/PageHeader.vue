@@ -224,136 +224,204 @@ const { logout } = useDirectusAuth();
 const loginUrl = computed(() => `/login?redirect=${route.fullPath}`);
 const directusUrl = useDirectusUrl();
 
-const navigation = computed(() => {
-  return [
-    {
-      name: "Home",
-      href: "/",
-      visible: () => true,
-      current: route.path === "/"
-    },
-    {
-      name: "About us",
-      current: route.path.startsWith("/about-us"),
-      visible: () => true,
-      childPages: [
-        {
-          name: "About us",
-          href: "/about-us",
-          target: null,
-          current: route.path.endsWith("/about-the-club")
-        },
-        {
-          name: "What we do",
-          href: "/about-us/what-we-do",
-          target: null,
-          current: route.path.endsWith("/what-we-do")
-        },
-        {
-          name: "Club history",
-          href: "/about-us/club-history",
-          target: null,
-          current: route.path.endsWith("/club-history")
-        }
-      ]
-    },
-    // {
-    //   name: "Governance",
-    //   href: "/governance",
-    //   target: null,
-    //   visible: () => true,
-    //   current: route.path.startsWith("/governance")
-    // },
-    {
-      name: "Come & paddle",
-      href: "/come-paddle",
-      current: route.path === "/come-paddle",
-      visible: () => true,
-      childPages: [
-        {
-          name: "Paddle with us",
-          href: "/come-paddle/paddle-with-us",
-          target: null,
-          current: route.path.endsWith("/paddle-with-us")
-        },
-        {
-          name: "Memberships",
-          href: "/come-paddle/memberships",
-          target: null,
-          current: route.path.endsWith("/memberships")
-        },
-        {
-          name: "Fun sessions",
-          href: "/come-paddle/fun-sessions",
-          target: null,
-          current: route.path.endsWith("/fun-sessions")
-        }
-      ]
-    },
-    {
-      name: "Coaching",
-      href: "/coaching",
-      visible: () => hasRole(user.value, "coach"),
-      current: route.path.startsWith("/coaching"),
-      childPages: [
-        {
-          name: "CPD resources",
-          href: "/coaching/cpd-resources",
-          target: null,
-          current: route.path.endsWith("/cpd-resources")
-        },
-        {
-          name: "Beginners course resources",
-          href: "/coaching/beginners-course-resources",
-          target: null,
-          current: route.path.endsWith("/beginners-course-resources")
-        },
-        {
-          name: "Explore award resources",
-          href: "/coaching/explore-award-resources",
-          target: null,
-          current: route.path.endsWith("/explore-award-resources")
-        },
-        {
-          name: "PAA resources",
-          href: "/coaching/paa-resources",
-          target: null,
-          current: route.path.endsWith("/paa-resources")
-        },
-        {
-          name: "BC certification",
-          href: "/coaching/bc-certification",
-          target: null,
-          current: route.path.endsWith("/bc-certification")
-        },
-        {
-          name: "GDPR for coaches",
-          href: "/coaching/gdpr-for-coaches",
-          target: null,
-          current: route.path.endsWith("/gdpr-for-coaches")
-        }
-      ]
-    },
-    {
-      name: "Calendar",
-      href: "/calendar",
-      visible: () => true,
-      current: route.path.startsWith("/calendar")
-    },
-    {
-      name: "Contact us",
-      href: "/contact-us",
-      visible: () => true,
-      current: route.path.startsWith("/contact-us")
-    },
-    {
-      name: "FAQs",
-      href: "/faqs",
-      visible: () => true,
-      current: route.path.startsWith("/faqs")
+const { getSingletonItem } = useDirectusItems();
+
+const { data: pages } = await useAsyncData("navigation", async () => {
+  return await getSingletonItem({
+    collection: "navigation",
+    params: {
+      fields: ["items.*", "items.children.*", "items.children.page.slug"]
     }
-  ];
+  });
 });
+
+const navigation = computed(() => {
+  const result = [];
+
+  for (const page of pages.value.items) {
+    const item = {
+      name: page.title,
+      target: null,
+      visible: () => true,
+      current: false,
+      childPages: null
+    };
+
+    if (page.page) {
+      item.href = `/${page.page.slug}`;
+    } else if (page.url) {
+      item.href = page.url;
+    }
+
+    if (page.open_in_new_tab) {
+      item.target = "_blank";
+    }
+
+    if (page.children?.length) {
+      item.childPages = [];
+
+      for (const child of page.children) {
+        const childItem = {
+          name: child.title,
+          href: null,
+          target: null,
+          current: route.path === "/"
+        };
+
+        if (child.page) {
+          childItem.href = `/${child.page.slug}`;
+        } else if (child.url) {
+          childItem.href = child.url;
+        }
+
+        if (child.open_in_new_tab) {
+          childItem.target = "_blank";
+        }
+
+        childItem.current = route.path === childItem.href;
+
+        item.childPages.push(childItem);
+      }
+
+      item.current = item.childPages.filter(x => x.current).length > 0;
+    }
+
+    result.push(item);
+  }
+
+  return result;
+});
+
+// const navigation = computed(() => {
+//   return [
+//     {
+//       name: "Home",
+//       href: "/",
+//       visible: () => true,
+//       current: route.path === "/"
+//     },
+//     {
+//       name: "About us",
+//       current: route.path.startsWith("/about-us"),
+//       visible: () => true,
+//       childPages: [
+//         {
+//           name: "About us",
+//           href: "/about-us",
+//           target: null,
+//           current: route.path.endsWith("/about-the-club")
+//         },
+//         {
+//           name: "What we do",
+//           href: "/about-us/what-we-do",
+//           target: null,
+//           current: route.path.endsWith("/what-we-do")
+//         },
+//         {
+//           name: "Club history",
+//           href: "/about-us/club-history",
+//           target: null,
+//           current: route.path.endsWith("/club-history")
+//         }
+//       ]
+//     },
+//     // {
+//     //   name: "Governance",
+//     //   href: "/governance",
+//     //   target: null,
+//     //   visible: () => true,
+//     //   current: route.path.startsWith("/governance")
+//     // },
+//     {
+//       name: "Come & paddle",
+//       href: "/come-paddle",
+//       current: route.path === "/come-paddle",
+//       visible: () => true,
+//       childPages: [
+//         {
+//           name: "Paddle with us",
+//           href: "/come-paddle/paddle-with-us",
+//           target: null,
+//           current: route.path.endsWith("/paddle-with-us")
+//         },
+//         {
+//           name: "Memberships",
+//           href: "/come-paddle/memberships",
+//           target: null,
+//           current: route.path.endsWith("/memberships")
+//         },
+//         {
+//           name: "Fun sessions",
+//           href: "/come-paddle/fun-sessions",
+//           target: null,
+//           current: route.path.endsWith("/fun-sessions")
+//         }
+//       ]
+//     },
+//     {
+//       name: "Coaching",
+//       href: "/coaching",
+//       visible: () => hasRole(user.value, "coach"),
+//       current: route.path.startsWith("/coaching"),
+//       childPages: [
+//         {
+//           name: "CPD resources",
+//           href: "/coaching/cpd-resources",
+//           target: null,
+//           current: route.path.endsWith("/cpd-resources")
+//         },
+//         {
+//           name: "Beginners course resources",
+//           href: "/coaching/beginners-course-resources",
+//           target: null,
+//           current: route.path.endsWith("/beginners-course-resources")
+//         },
+//         {
+//           name: "Explore award resources",
+//           href: "/coaching/explore-award-resources",
+//           target: null,
+//           current: route.path.endsWith("/explore-award-resources")
+//         },
+//         {
+//           name: "PAA resources",
+//           href: "/coaching/paa-resources",
+//           target: null,
+//           current: route.path.endsWith("/paa-resources")
+//         },
+//         {
+//           name: "BC certification",
+//           href: "/coaching/bc-certification",
+//           target: null,
+//           current: route.path.endsWith("/bc-certification")
+//         },
+//         {
+//           name: "GDPR for coaches",
+//           href: "/coaching/gdpr-for-coaches",
+//           target: null,
+//           current: route.path.endsWith("/gdpr-for-coaches")
+//         }
+//       ]
+//     },
+//     {
+//       name: "Calendar",
+//       href: "/calendar",
+//       visible: () => true,
+//       current: route.path.startsWith("/calendar")
+//     },
+//     {
+//       name: "Contact us",
+//       href: "/contact-us",
+//       visible: () => true,
+//       current: route.path.startsWith("/contact-us")
+//     },
+//     {
+//       name: "FAQs",
+//       href: "/faqs",
+//       visible: () => true,
+//       current: route.path.startsWith("/faqs")
+//     }
+//   ];
+// });
 
 const userNavigation = ref([
   { name: "Profile", href: "/profile" },

@@ -20,74 +20,75 @@ export default defineEndpoint((router, {services}) => {
     admin: true
   };
 
-  router.post("/payment", async (req, res) => {
-    try {
-      if (!endpointSecret) {
-        console.error("Webhook error: No endpoint secret");
-        return res.status(500).send("Webhook error: No endpoint secret");
-      }
-
-      const sig = req.header("Stripe-Signature");
-      if (!sig) {
-        console.error("Webhook error: No stripe signature in header");
-        return res.send(400).send("Webhook error: No stripe signature in header");
-      }
-
-      const bodyBuffer = req.rawBody;
-      const stripeEvent: Stripe.Event = stripe.webhooks.constructEvent(bodyBuffer, sig, endpointSecret);
-
-      if (stripeEvent.type === "checkout.session.completed") {
-        console.log("checkout completed!");
-
-        const sessionWithLineItems = await stripe.checkout.sessions.retrieve(stripeEvent.data.object.id,
-          {
-            expand: ["line_items"]
-          });
-
-        const metadata = sessionWithLineItems.metadata;
-
-        console.log("checkout data", sessionWithLineItems, metadata);
-
-        // TODO: payments will be for different things like memberships, boats, ect, need to handle for them
-
-        const bookingService = new ItemsService("event_bookings", {
-          schema: req.schema,
-          accountability: adminAccountability
-        });
-
-        // TODO: status paid?
-        await bookingService.createOne({
-          user: metadata.user_id,
-          event: metadata.event_id,
-          instance: metadata.event_instance
-        });
-
-        const ordersService = new ItemsService("orders", {
-          schema: req.schema,
-          accountability: adminAccountability
-        });
-
-        await ordersService.createOne({
-          user: metadata.user_id,
-          amount: sessionWithLineItems.amount_total,
-          customer_id: sessionWithLineItems.customer,
-          description: `${metadata.event_name} - ${metadata.date}`,
-          payment_intent: sessionWithLineItems.payment_intent,
-          metadata: JSON.stringify({
-            event_id: metadata.event_id,
-            instance: metadata.event_instance,
-          })
-        });
-
-        // TODO: send payment complete email to user
-      }
-
-      return res.send(`handled ${stripeEvent.type}`);
-    } catch (e) {
-      console.error("Webhook error: Error validating webhook event", e);
-      return res.status(400).send("Webhook error: Error validating webhook event");
-    }
-  });
+  // REPLACED with nuxt server endpoint
+  // router.post("/payment", async (req, res) => {
+  //   try {
+  //     if (!endpointSecret) {
+  //       console.error("Webhook error: No endpoint secret");
+  //       return res.status(500).send("Webhook error: No endpoint secret");
+  //     }
+  //
+  //     const sig = req.header("Stripe-Signature");
+  //     if (!sig) {
+  //       console.error("Webhook error: No stripe signature in header");
+  //       return res.send(400).send("Webhook error: No stripe signature in header");
+  //     }
+  //
+  //     const bodyBuffer = req.rawBody;
+  //     const stripeEvent: Stripe.Event = stripe.webhooks.constructEvent(bodyBuffer, sig, endpointSecret);
+  //
+  //     if (stripeEvent.type === "checkout.session.completed") {
+  //       console.log("checkout completed!");
+  //
+  //       const sessionWithLineItems = await stripe.checkout.sessions.retrieve(stripeEvent.data.object.id,
+  //         {
+  //           expand: ["line_items"]
+  //         });
+  //
+  //       const metadata = sessionWithLineItems.metadata;
+  //
+  //       console.log("checkout data", sessionWithLineItems, metadata);
+  //
+  //       // TODO: payments will be for different things like memberships, boats, ect, need to handle for them
+  //
+  //       const bookingService = new ItemsService("event_bookings", {
+  //         schema: req.schema,
+  //         accountability: adminAccountability
+  //       });
+  //
+  //       // TODO: status paid?
+  //       await bookingService.createOne({
+  //         user: metadata.user_id,
+  //         event: metadata.event_id,
+  //         instance: metadata.event_instance
+  //       });
+  //
+  //       const ordersService = new ItemsService("orders", {
+  //         schema: req.schema,
+  //         accountability: adminAccountability
+  //       });
+  //
+  //       await ordersService.createOne({
+  //         user: metadata.user_id,
+  //         amount: sessionWithLineItems.amount_total,
+  //         customer_id: sessionWithLineItems.customer,
+  //         description: `${metadata.event_name} - ${metadata.date}`,
+  //         payment_intent: sessionWithLineItems.payment_intent,
+  //         metadata: JSON.stringify({
+  //           event_id: metadata.event_id,
+  //           instance: metadata.event_instance,
+  //         })
+  //       });
+  //
+  //       // TODO: send payment complete email to user
+  //     }
+  //
+  //     return res.send(`handled ${stripeEvent.type}`);
+  //   } catch (e) {
+  //     console.error("Webhook error: Error validating webhook event", e);
+  //     return res.status(400).send("Webhook error: Error validating webhook event");
+  //   }
+  // });
 
   router.post("/mail-inbound", async (req, res) => {
     try {

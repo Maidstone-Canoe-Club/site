@@ -23,25 +23,40 @@
         :v="v$.location" />
 
       <input-dropdown
+        v-model="internalValue.type"
+        :options="eventTypes"
+        label="Event type"
+        :v="v$.type" />
+
+      <input-dropdown
         v-model="internalValue.allowedRoles"
         multiple
         :options="allowedRoles"
         label="Who can join this event?"
-        :v="v$.allowedRole" />
+        :v="v$.allowedRoles" />
 
-      <input-currency
-        v-if="showPrice"
-        id="price"
-        v-model="internalValue.price"
-        label="Price"
-        name="price" />
+      <template v-if="showPrice">
+        <input-currency
+          id="price"
+          v-model="internalValue.price"
+          label="Price"
+          name="price" />
+        <span class="text-sm text-gray-500">
+          Leave blank for the event to be free
+        </span>
+      </template>
 
-      <input-currency
-        v-if="juniorsAllowed"
-        id="junior-price"
-        v-model="internalValue.junior_price"
-        label="Junior price"
-        name="junior-price" />
+      <template v-if="juniorsAllowed">
+        <input-currency
+          id="junior-price"
+          v-model="internalValue.junior_price"
+          placeholder=""
+          label="Junior price"
+          name="junior-price" />
+        <span class="text-sm text-gray-500">
+          Leave blank for the event to be free for juniors
+        </span>
+      </template>
 
       <input-field
         id="max-spaces"
@@ -49,6 +64,9 @@
         type="number"
         label="Max spaces"
         name="max-spaces" />
+      <span class="text-sm text-gray-500">
+        Leave blank for no limit on spaces for this event
+      </span>
     </div>
     <event-wizard-footer
       :show-back-button="showBackButton"
@@ -88,6 +106,18 @@ const allowedRoles = [
   { id: "none", name: "No one" }
 ];
 
+const eventTypes = [
+  { id: "beginners_course", name: "Beginners course" },
+  { id: "club_paddle", name: "Regular club paddle" },
+  { id: "pool_session", name: "Pool session" },
+  { id: "paddles_trips_tours", name: "Paddles, trips & tours" },
+  { id: "race_training", name: "Race training" },
+  { id: "coaching", name: "Coaching" },
+  { id: "social_event", name: "Social event" },
+  { id: "fun_session", name: "Fun session" },
+  { id: "race", name: "Race" }
+];
+
 watch(() => internalValue.value.allowedRoles, (val, oldVal) => {
   if (oldVal.length === 1 && oldVal[0].id === "none" && val.length > 1) {
     internalValue.value.allowedRoles = val.filter(x => x.id !== "none");
@@ -99,13 +129,14 @@ watch(() => internalValue.value.allowedRoles, (val, oldVal) => {
   }
 }, { deep: true });
 
-const juniorsAllowed = computed(() => !!internalValue.value.allowedRoles.find(x => x.id === 3));
-const showPrice = computed(() => !internalValue.value.allowedRoles.find(x => x.id === 4));
+const juniorsAllowed = computed(() => !!internalValue.value.allowedRoles.find(x => x.id === "juniors"));
+const showPrice = computed(() => !internalValue.value.allowedRoles.find(x => x.id === "none"));
 
 const rules = {
   title: { required },
   location: { required },
-  allowedRoles: { required }
+  allowedRoles: { required },
+  type: { required }
 };
 
 const v$: Ref<Validation> = useVuelidate(rules, internalValue);

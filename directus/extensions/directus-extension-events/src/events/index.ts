@@ -26,7 +26,6 @@ export default defineEndpoint((router, {services, database}) => {
       const eventInstance = req.query.instance;
       const userId = req.accountability.user;
 
-
       let user;
 
       if (userId) {
@@ -72,7 +71,11 @@ export default defineEndpoint((router, {services, database}) => {
 
       const eventBookings = await eventBookingService
         .readByQuery({
-          fields: ["*", "user.first_name", "user.last_name", "user.email", "user.id", "user.role.name"],
+          fields: [
+            "*",
+            "user.*",
+            "user.role.name"
+          ],
           filter: {
             _and: [
               {
@@ -107,11 +110,24 @@ export default defineEndpoint((router, {services, database}) => {
         alreadyBooked = eventBookings.filter(x => x.user.id === userId).length > 0;
       }
 
-      let bookings = null;
       const allowedRoles = ["coach", "committee", "administrator"];
-      if (user && allowedRoles.includes(user.role.name.toLowerCase())) {
-        bookings = eventBookings;
+      // const canViewAllBookings = user && allowedRoles.includes(user.role.name.toLowerCase());
+      // const bookings = eventBookings.filter(b => (!!user && (b.user === userId || b.parent === userId)) || canViewAllBookings);
+      let bookings=  [];
+
+      if(user){
+        if(allowedRoles.includes(user.role.name.toLowerCase())){
+          bookings = eventBookings;
+        }else {
+          console.log("user isn't coach, comittee or admin, just fetching own bookings", eventBookings);
+          bookings = eventBookings.filter(b => b.user.id === userId || b.user.parent === userId);
+          console.log("bookings!", bookings);
+        }
       }
+
+      // if (user && allowedRoles.includes(user.role.name.toLowerCase())) {
+      //   bookings = eventBookings;
+      // }
 
       return res.json({
         patternType: pattern?.type,
@@ -151,8 +167,14 @@ export default defineEndpoint((router, {services, database}) => {
         fields: ["*", "role.name"]
       });
 
+      const bookedUser = await userService.readOne(userId, {
+        fields: ["*", "role.name"]
+      });
+
       const allowedRoles = ["committee", "administrator"];
-      if (loggedInUser.id === userId || allowedRoles.includes(loggedInUser.role.name)) {
+      const isParentOfBookedUser = bookedUser.role.name === "Junior" && bookedUser.parent === loggedInUserId;
+
+      if (isParentOfBookedUser || loggedInUser.id === userId || allowedRoles.includes(loggedInUser.role.name)) {
         const eventBookingService = new ItemsService("event_bookings", {
           knex: database,
           schema: req.schema,
@@ -214,15 +236,16 @@ export default defineEndpoint((router, {services, database}) => {
     try {
 
       const eventId = req.query.eventId;
-      const userId = req.query.userId;
+      const loggedInUserId = req.query.userId;
       const instance = req.query.instance;
+      const userIds = req.body.userIds;
 
       if (!eventId) {
         return res.status(400).send("missing event id");
       }
 
-      if (!userId) {
-        return res.status(400).send("missing user id");
+      if (!loggedInUserId) {
+        return res.status(400).send("missing logged in user id");
       }
 
       const eventsService = new ItemsService("events", {
@@ -255,8 +278,9 @@ export default defineEndpoint((router, {services, database}) => {
 
       const currentBookings = existingBookings.length;
       const maxBookings = event.max_spaces;
+      const usersToBook = userIds.length;
 
-      if (maxBookings && currentBookings + 1 > maxBookings) {
+      if (maxBookings && currentBookings + usersToBook > maxBookings) {
         return res.json({
           result: false,
           statusCode: 101,
@@ -264,36 +288,40 @@ export default defineEndpoint((router, {services, database}) => {
         });
       }
 
-      const selfBooking = existingBookings?.filter(x => x.user === userId && x.status !== "cancelled");
-      if (selfBooking?.length) {
-        return res.json({
-          result: false,
-          statusCode: 102,
-          message: "That user is already booked"
-        });
-      }
-
-      const alreadyCancelledBookings = existingBookings?.filter(x => x.user === userId && x.status === "cancelled");
-      if (alreadyCancelledBookings?.length) {
-        const cancelledBooking = alreadyCancelledBookings[0];
-        await eventBookingService.updateOne(cancelledBooking.id, {
-          status: "booked"
-        });
-
-        return res.json({
-          result: true,
-          statusCode: 100,
-          message: "Your cancelled booking has been re-added",
-          data: cancelledBooking.id
-        });
-      } else {
-        const patterns = await recurringPatternService.readByQuery({
-          filter: {
-            event: {
-              _eq: eventId
-            }
+      const patterns = await recurringPatternService.readByQuery({
+        filter: {
+          event: {
+            _eq: eventId
           }
-        });
+        }
+      });
+
+      const bookingResults = [];
+
+      for(const userId of userIds){
+        const alreadyBooked = existingBookings?.filter(x => x.user === userId && x.status !== "cancelled");
+        if (alreadyBooked?.length) {
+          bookingResults.push({
+            message: "That user is already booked",
+            userId
+          });
+          continue;
+        }
+
+        const alreadyCancelledBookings = existingBookings?.filter(x => x.user === userId && x.status === "cancelled");
+        if (alreadyCancelledBookings?.length) {
+          const cancelledBooking = alreadyCancelledBookings[0];
+          await eventBookingService.updateOne(cancelledBooking.id, {
+            status: "booked"
+          });
+
+          bookingResults.push({
+            message: "Your cancelled booking has been re-added",
+            bookingId: cancelledBooking.id,
+            userId
+          });
+          continue;
+        }
 
         const recurringPattern = patterns && patterns.length ? patterns[0] : null;
 
@@ -305,12 +333,69 @@ export default defineEndpoint((router, {services, database}) => {
           status: "booked"
         });
 
-        return res.json({
-          result: true,
-          statusCode: 100,
-          data: bookingId
+        bookingResults.push({
+          message: "User has been booked",
+          bookingId,
+          userId,
         });
+
+        // return res.json({
+        //   result: true,
+        //   statusCode: 100,
+        //   data: bookingId
+        // });
       }
+
+      // const selfBooking = existingBookings?.filter(x => x.user === userId && x.status !== "cancelled");
+      // if (selfBooking?.length) {
+      //   return res.json({
+      //     result: false,
+      //     statusCode: 102,
+      //     message: "That user is already booked"
+      //   });
+      // }
+
+      // const alreadyCancelledBookings = existingBookings?.filter(x => x.user === userId && x.status === "cancelled");
+      // if (alreadyCancelledBookings?.length) {
+      //   const cancelledBooking = alreadyCancelledBookings[0];
+      //   await eventBookingService.updateOne(cancelledBooking.id, {
+      //     status: "booked"
+      //   });
+      //
+      //   return res.json({
+      //     result: true,
+      //     statusCode: 100,
+      //     message: "Your cancelled booking has been re-added",
+      //     data: cancelledBooking.id
+      //   });
+      // }
+      // else {
+      //   const patterns = await recurringPatternService.readByQuery({
+      //     filter: {
+      //       event: {
+      //         _eq: eventId
+      //       }
+      //     }
+      //   });
+      //
+      //   const recurringPattern = patterns && patterns.length ? patterns[0] : null;
+      //
+      //   const bookingId = await eventBookingService.createOne({
+      //     user: userId,
+      //     event: eventId,
+      //     instance: instance,
+      //     recurring_pattern: recurringPattern?.id,
+      //     status: "booked"
+      //   });
+      //
+      //   return res.json({
+      //     result: true,
+      //     statusCode: 100,
+      //     data: bookingId
+      //   });
+      // }
+
+      return res.json(bookingResults);
     } catch (e) {
       console.log("error booking on to event", e);
       return res.status(500).send("something went wrong");
@@ -362,7 +447,8 @@ async function createSingleEvent(eventItem, eventService, res) {
       end_date: eventItem.endDate,
       price: eventItem.price,
       junior_price: eventItem.junior_price,
-      allowed_roles: eventItem.allowedRoles
+      allowed_roles: eventItem.allowedRoles,
+      type: eventItem.type
     });
 
     return res.send(result);
@@ -391,7 +477,8 @@ async function createMultiEvent(eventItem, eventDates, eventService, res) {
       price: eventItem.price,
       junior_price: eventItem.junior_price,
       allowed_roles: eventItem.allowedRoles,
-      has_multiple: true
+      has_multiple: true,
+      type: eventItem.type
     });
 
     for (let i = 1; i < eventDates.multiple.length; i++) {
@@ -452,6 +539,7 @@ async function createRecurringEvent(eventItem, eventDates, eventService, recurri
       allowed_roles: eventItem.allowedRoles,
       last_occurance: endDate,
       is_recurring: true,
+      type: eventItem.type
     });
 
     const recurringPattern = {

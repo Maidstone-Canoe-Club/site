@@ -31,8 +31,7 @@
 
 <script setup lang="ts">
 import { useVuelidate, Validation } from "@vuelidate/core";
-import { required } from "@vuelidate/validators";
-
+import { required, helpers } from "@vuelidate/validators";
 import { ArrowRightIcon } from "@heroicons/vue/24/outline";
 import { Ref } from "vue";
 
@@ -53,8 +52,12 @@ watch(eventItem, (val) => {
   emits("update:eventItem", val);
 }, { deep: true, immediate: true });
 
+function beforeEndDate (value, siblings) {
+  return value < siblings.endDate;
+}
+
 const rules = {
-  startDate: { required },
+  startDate: { required, before: helpers.withMessage("Start date must be before end date", beforeEndDate) },
   endDate: { required }
 };
 

@@ -55,7 +55,7 @@ const props = defineProps<{
 }>();
 
 const eventDates = ref(props.eventDates);
-const errorMessage = ref(null);
+const errorMessage = ref<string | null>(null);
 
 watch(() => props.eventDates, (val) => {
   eventDates.value = val;
@@ -89,6 +89,11 @@ function isValid () {
     const day = eventDates.value.multiple[i];
     if (!day.startDate || !day.endDate) {
       errorMessage.value = `Day ${i + 1} is missing a start or end date`;
+      return false;
+    }
+
+    if (day.startDate > day.endDate) {
+      errorMessage.value = `Day ${i + 1} start date cannot be after the end date`;
       return false;
     }
   }

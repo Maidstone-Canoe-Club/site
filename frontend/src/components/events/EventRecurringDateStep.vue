@@ -41,8 +41,8 @@
 </template>
 
 <script setup lang="ts">
-import { useVuelidate, Validation } from "@vuelidate/core/dist";
-import { required } from "@vuelidate/validators";
+import { useVuelidate, Validation } from "@vuelidate/core";
+import { required, helpers } from "@vuelidate/validators";
 import { Ref } from "vue";
 
 const emits = defineEmits(["update:eventDates", "prev", "next"]);
@@ -73,8 +73,12 @@ function onPrev () {
   emits("prev");
 }
 
+function beforeEndDate (value, siblings) {
+  return value < siblings.endDate;
+}
+
 const rules = {
-  startDate: { required },
+  startDate: { required, before: helpers.withMessage("Start date must be before end date", beforeEndDate) },
   endDate: { required }
 };
 

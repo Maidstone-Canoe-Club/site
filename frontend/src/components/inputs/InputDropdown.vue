@@ -99,7 +99,7 @@ const currentLabel = computed(() => {
     } else {
       return "Select multiple options";
     }
-  } else if (internalValue.value) {
+  } else if (internalValue.value && internalValue.value.name) {
     return internalValue.value.name;
   } else {
     return "Select an option";

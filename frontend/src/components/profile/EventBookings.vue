@@ -12,6 +12,9 @@
               <th scope="col" class="py-3.5 pl-4 text-left text-sm font-semibold text-gray-900">
                 Date
               </th>
+              <th scope="col" class="py-3.5 pl-4 text-left text-sm font-semibold text-gray-900">
+                User
+              </th>
               <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
                 Status
               </th>
@@ -30,6 +33,9 @@
               </td>
               <td class="whitespace-nowrap py-3 pl-4 text-sm text-gray-900">
                 {{ formatDate(booking.date) }}
+              </td>
+              <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-900">
+                {{ booking.user.first_name }} {{ booking.user.last_name }}
               </td>
               <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-900">
                 {{ formatStatus(booking.status) }}
@@ -80,7 +86,7 @@ async function loadData () {
   const result = await getItems({
     collection: "event_bookings",
     params: {
-      fields: ["*", "user.parent.id", "user.id", "recurring_pattern.*", "event.id", "event.title", "event.start_date"],
+      fields: ["*", "user.parent.id", "user.id", "user.first_name", "user.last_name", "recurring_pattern.*", "event.id", "event.title", "event.start_date"],
       sort: ["-date_created"],
       filters: {
         _or: [
