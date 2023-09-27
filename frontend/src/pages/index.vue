@@ -40,10 +40,10 @@
                 <span class="relative">{{ news.title }}</span>
               </nuxt-link>
             </h2>
-            <time class="relative order-first text-sm text-gray-500 mb-3">{{ formatDate(news.date) }}</time>
-            <p class="relative mt-2 text-sm">
-              {{ news.content }}
-            </p>
+            <time class="relative order-first text-sm text-gray-500 mb-3">{{ formatDate(news.date_created) }}</time>
+            <div
+              class="relative mt-2 text-sm line-clamp-4 overflow-hidden overflow-ellipsis"
+              v-html="news.content" />
             <div class="mt-4 font-medium text-sm text-indigo-500 flex flex-row gap-2 items-center">
               Continue reading
               <ChevronRightIcon class="w-5 h-5" />
@@ -73,9 +73,9 @@
             </div>
           </div>
 
-          <div class="mt-10 p-5 border border-gray-200 rounded-2xl">
-            <small>List of events this week</small>
-          </div>
+          <!--          <div class="mt-10 p-5 border border-gray-200 rounded-2xl">-->
+          <!--            <small>List of events this week</small>-->
+          <!--          </div>-->
         </div>
       </div>
     </div>
@@ -85,70 +85,35 @@
 <script setup lang="ts">
 import { EnvelopeIcon } from "@heroicons/vue/24/outline";
 import { ChevronRightIcon } from "@heroicons/vue/24/solid";
-import { format, subDays } from "date-fns";
+import { format } from "date-fns";
 import { useDirectusItems } from "#imports";
+import { NewsItem } from "~/types";
 
 definePageMeta({
   layout: "no-container"
 });
 
-// const { getSingletonItem } = useDirectusItems();
-//
-// const { data: home } = await useAsyncData("home", async () => {
-//   return await getSingletonItem({
-//     collection: "home",
-//     params: {
-//       fields: ["*", "hero_images.*"]
-//     }
-//   });
-// });
-//
-// const images = computed(() => home.value.hero_images.map(x => generateImageUrlOptions(x.directus_files_id, {
-//   quality: 80,
-//   height: 500,
-//   format: "webp"
-// })));
+const { getItems } = useDirectusItems();
 
 const newsletterEmail = ref("");
 
-// const images = [
-//   "https://images.unsplash.com/photo-1516817153573-7b617832a471?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjZ8fGtheWFrfGVufDB8fDB8fHww&auto=format&fit=crop&h=500&q=60",
-//   "https://images.unsplash.com/photo-1595960684234-49d2a004e753?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8a2F5YWt8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&h=500&q=60",
-//   "https://images.unsplash.com/photo-1620903669944-de50fbe78210?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&h=500&q=80",
-//   "https://images.unsplash.com/photo-1602883437331-4399aa921a58?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&h=500&q=80"
-// ];
+const { data: newsItems } = await useAsyncData("news-items-home", async () => {
+  const items = await getItems<NewsItem>({
+    collection: "news",
+    params: {
+      limit: 3,
+      sort: ["-date_created"]
+    }
+  });
 
-const newsItems = [
-  {
-    title: "Last minute spaces!",
-    content: limitAndAddEllipsis("A couple of last-minute spaces have opened up on our beginner course starting this Thursday! Opportunities like this don't come around very often - book your place online now!"),
-    date: subDays(new Date(), 3),
-    href: "#"
-  },
-  {
-    title: "Intro to whitewater",
-    content: limitAndAddEllipsis("If you fancy moving on to moving water (see what I did there?), then our amazing Intro to Whitewater weekend on the lovely River Dee in North Wales is for you!  We'll spend the weekend working on techniques to have fun on the rapids while staying in control.  You should ideally have done the Flatwater Skills for Dynamic Water Progression course beforehand (or have the skills covered), but drop me a line if you haven't and we can have a chat."),
-    date: subDays(new Date(), 12),
-    href: "#"
-  },
-  {
-    title: "Kent and beyond",
-    content: limitAndAddEllipsis("Beult. The Swale. Stour. Hammer Stream. Rother. And there are dozens more besides just in Kent! If you'd like to stretch your paddling legs but aren't sure where to start, then sign up for the Explore or Touring Awards running in the next few weeks. They'll give you the knowledge and confidence you need to paddle further afield - and teach you some skills to boot!  See the calendar for dates and to book."),
-    date: subDays(new Date(), 26),
-    href: "#"
-  }
-];
+  return items.map(x => ({
+    ...x,
+    href: `/news/${x.id}/${x.slug}`
+  }));
+});
 
-function limitAndAddEllipsis (input: string) {
-  const maxLength = 256;
-  if (input.length < maxLength) {
-    return input;
-  }
-  return input.substring(0, maxLength) + "...";
-}
-
-function formatDate (date: Date) {
-  return format(date, "MMMM dd, yyyy");
+function formatDate (date: string) {
+  return format(new Date(date), "MMMM dd, yyyy");
 }
 
 </script>

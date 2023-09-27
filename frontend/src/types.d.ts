@@ -47,3 +47,15 @@ export interface EventItem {
     max_attendees?: number,
     price?: number
 }
+
+export interface NewsItem {
+    id: number | undefined,
+    title: string,
+    content: string,
+    slug: string,
+    date_created: string,
+    user_created: {
+        first_name: string,
+        last_name: string
+    }
+}

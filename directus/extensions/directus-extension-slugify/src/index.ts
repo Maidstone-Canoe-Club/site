@@ -1,7 +1,7 @@
 import {defineHook} from '@directus/extensions-sdk';
 
 const events = ["items.create", "items.update"];
-const collections = ["content_page"];
+const collections = ["news"];
 
 type Content = {
     title?: string,
@@ -13,7 +13,7 @@ export default defineHook(({filter, action}, {services}) => {
         admin: true
     };
 
-    const handleChange = async (itemId: string, schema: any) => {
+    const handleContentChange = async (itemId: string, schema: any) => {
         try {
             const contentService = new ItemsService("content_page", {schema, accountability});
             const path = await buildPath(itemId, contentService)
@@ -40,7 +40,7 @@ export default defineHook(({filter, action}, {services}) => {
                 if (item.child_pages && item.child_pages.length) {
 
                     for (let i = 0; i < item.child_pages.length; i++) {
-                        await handleChange(item.child_pages[i], schema);
+                        await handleContentChange(item.child_pages[i], schema);
                     }
                 }
 
@@ -56,8 +56,7 @@ export default defineHook(({filter, action}, {services}) => {
         }
     };
 
-    const handleDelete = async (keys: any, schema: any) =>
-    {
+    const handleContentDelete = async (keys: any, schema: any) => {
         console.log("handling delete!")
         try {
             const pathService = new ItemsService("content_paths", {schema, accountability});
@@ -69,36 +68,39 @@ export default defineHook(({filter, action}, {services}) => {
                 const item = contentService.readOne(key);
 
                 if (item.child_pages && item.child_pages.length) {
-                    await handleDelete(item.child_pages, schema);
+                    await handleContentDelete(item.child_pages, schema);
                 }
             }
-        }catch(e){
+        } catch (e) {
             console.log("something went wrong deleting paths", e);
         }
     };
 
     action("items.create", async ({key, collection}, {schema}) => {
-        if (collections.includes(collection)) {
+        if (collection === "content_page") {
+            // if (collections.includes(collection)) {
             console.log("handling create!")
-            await handleChange(key, schema);
+            await handleContentChange(key, schema);
         }
     });
 
     action("items.update", async ({keys, collection}, {schema}) => {
-        if (collections.includes(collection)) {
+        if (collection === "content_page") {
+            // if (collections.includes(collection)) {
             console.log("handling update!")
-            await handleChange(keys[0], schema);
+            await handleContentChange(keys[0], schema);
         }
     });
 
     action("items.delete", async ({keys, collection}, {schema}) => {
-        if (collections.includes(collection)) {
-            await handleDelete(keys, schema);
+        if (collection === "content_page") {
+            // if (collections.includes(collection)) {
+            await handleContentDelete(keys, schema);
         }
     });
 
     filter("*.*", async (payload, meta) => {
-        if (events.includes(meta.event) && collections.includes(meta.collection)) {
+        if (events.includes(meta.event) && (collections.includes(meta.collection) || meta.collection === "content_page")) {
             const item = payload as Content;
 
             if (item.title) {
