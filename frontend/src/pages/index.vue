@@ -1,5 +1,5 @@
 ﻿<template>
-  <main class="mt-[75vh]">
+  <main class="mt-[77vh]">
     <!--    <div class="mx-auto w-full max-w-7xl flex-grow px-4 sm:px-6 lg-px-8">-->
     <!--      <h1 class="text-4xl font-bold">-->
     <!--        Maidstone Canoe Club-->
@@ -29,26 +29,31 @@
 
     <div class="mx-auto w-full max-w-7xl flex-grow px-4 sm:px-6 lg-px-8 mt-16">
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-y-10">
-        <div class="flex flex-col gap-10">
-          <article
-            v-for="(news, index) in newsItems"
-            :key="index"
-            class="relative flex flex-col items-start">
-            <h2 class="text-base font-semibold tracking-tight">
-              <nuxt-link :to="news.href">
-                <span class="absolute inset-0 z-20" />
-                <span class="relative">{{ news.title }}</span>
-              </nuxt-link>
-            </h2>
-            <time class="relative order-first text-sm text-gray-500 mb-3">{{ formatDate(news.date_created) }}</time>
-            <div
-              class="relative mt-2 text-sm line-clamp-4 overflow-hidden overflow-ellipsis"
-              v-html="news.content" />
-            <div class="mt-4 font-medium text-sm text-indigo-500 flex flex-row gap-2 items-center">
-              Continue reading
-              <ChevronRightIcon class="w-5 h-5" />
-            </div>
-          </article>
+        <div class="flex flex-col gap-3">
+          <h3 class="text-xl font-bold">
+            Latest News
+          </h3>
+          <div class="flex flex-col gap-10">
+            <article
+              v-for="(news, index) in newsItems"
+              :key="index"
+              class="relative flex flex-col items-start">
+              <h2 class="text-base font-semibold tracking-tight">
+                <nuxt-link :to="news.href">
+                  <span class="absolute inset-0 z-20" />
+                  <span class="relative">{{ news.title }}</span>
+                </nuxt-link>
+              </h2>
+              <time class="relative order-first text-sm text-gray-500 mb-3">{{ formatDate(news.date_created) }}</time>
+              <div
+                class="relative mt-2 text-sm line-clamp-4 overflow-hidden overflow-ellipsis"
+                v-html="news.content" />
+              <div class="mt-4 font-medium text-sm text-indigo-500 flex flex-row gap-2 items-center">
+                Continue reading
+                <ChevronRightIcon class="w-5 h-5" />
+              </div>
+            </article>
+          </div>
         </div>
         <div class="space-y-10 lg:pl-16 xl:pl-32">
           <div class="p-6 border border-gray-200 rounded-2xl">

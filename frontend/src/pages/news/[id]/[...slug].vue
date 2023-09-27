@@ -6,7 +6,7 @@
       <h1 class="mb-3 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
         {{ item.title }}
       </h1>
-      <p class="font-semibold">
+      <p v-if="item.user_created.first_name || item.user_created.last_name" class="font-semibold">
         By {{ item.user_created.first_name }} {{ item.user_created.last_name }}
       </p>
       <p class="text-base text-gray-700">
@@ -30,7 +30,7 @@ const { data: item } = await useAsyncData(`news-item-${route.params.id}`, async 
     id: route.params.id,
     params: {
       fields: [
-        "*", "title", "content", "slug", "date_created", "user_created.id", "user_created.first_name", "user_created.last_name"
+        "title", "content", "slug", "date_created", "user_created.id", "user_created.first_name", "user_created.last_name"
       ]
     }
   });
