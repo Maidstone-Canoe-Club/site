@@ -24,7 +24,7 @@
             </div>
             <p
               v-if="booking.user.email"
-              class="mt-1 truncate text-xs leading-5 text-gray-500">
+              class="truncate text-xs leading-5 text-gray-500">
               {{ booking.user.email }}
             </p>
           </div>
@@ -340,6 +340,7 @@ async function viewUser (user) {
     medicalInfo.value = results?.length ? results[0] : null;
   } catch (e) {
     console.error("error loading medical info", e);
+    showModal.value = false;
   } finally {
     loading.value = false;
   }

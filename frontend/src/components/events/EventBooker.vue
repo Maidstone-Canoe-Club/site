@@ -159,7 +159,7 @@ const loginUrl = computed(() => `/login?redirect=/events/${props.event.id}`);
 const { getUsers } = useDirectusUsers();
 
 const eventCanBookJuniors = computed(() => {
-  return props.event.allowed_roles.includes("juniors");
+  return props.event.allowed_roles?.includes("juniors") ?? false;
 });
 
 const { data: juniors } = await useAsyncData(`event-juniors-${props.event.id}-${props.userId}`, async () => {
@@ -241,7 +241,7 @@ const userHasAllowedRole = computed(() => {
     }
 
     for (const allowedRole of allowed) {
-      if (hasExactRole(user.value, mapAllowedRoleToUserRole(allowedRole))) {
+      if (hasRole(user.value, mapAllowedRoleToUserRole(allowedRole))) {
         return true;
       }
     }
