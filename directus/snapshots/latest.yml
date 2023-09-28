@@ -360,6 +360,29 @@ collections:
       unarchive_value: null
     schema:
       name: faqs_blocks
+  - collection: footer
+    meta:
+      accountability: all
+      archive_app_filter: true
+      archive_field: null
+      archive_value: null
+      collapse: open
+      collection: footer
+      color: '#FF99DD'
+      display_template: null
+      group: Content
+      hidden: false
+      icon: dock_to_bottom
+      item_duplication_fields: null
+      note: null
+      preview_url: null
+      singleton: true
+      sort: 5
+      sort_field: null
+      translations: null
+      unarchive_value: null
+    schema:
+      name: footer
   - collection: home
     meta:
       accountability: all
@@ -4614,6 +4637,124 @@ fields:
       has_auto_increment: false
       foreign_key_table: null
       foreign_key_column: null
+  - collection: footer
+    field: date_updated
+    type: timestamp
+    meta:
+      collection: footer
+      conditions: null
+      display: datetime
+      display_options:
+        relative: true
+      field: date_updated
+      group: null
+      hidden: true
+      interface: datetime
+      note: null
+      options: null
+      readonly: true
+      required: false
+      sort: 3
+      special:
+        - date-updated
+      translations: null
+      validation: null
+      validation_message: null
+      width: half
+    schema:
+      name: date_updated
+      table: footer
+      data_type: timestamp with time zone
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: footer
+    field: id
+    type: integer
+    meta:
+      collection: footer
+      conditions: null
+      display: null
+      display_options: null
+      field: id
+      group: null
+      hidden: true
+      interface: input
+      note: null
+      options: null
+      readonly: true
+      required: false
+      sort: 1
+      special: null
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: id
+      table: footer
+      data_type: integer
+      default_value: nextval('footer_id_seq'::regclass)
+      max_length: null
+      numeric_precision: 32
+      numeric_scale: 0
+      is_nullable: false
+      is_unique: true
+      is_primary_key: true
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: true
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: footer
+    field: user_updated
+    type: uuid
+    meta:
+      collection: footer
+      conditions: null
+      display: user
+      display_options: null
+      field: user_updated
+      group: null
+      hidden: true
+      interface: select-dropdown-m2o
+      note: null
+      options:
+        template: '{{avatar.$thumbnail}} {{first_name}} {{last_name}}'
+      readonly: true
+      required: false
+      sort: 2
+      special:
+        - user-updated
+      translations: null
+      validation: null
+      validation_message: null
+      width: half
+    schema:
+      name: user_updated
+      table: footer
+      data_type: uuid
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: directus_users
+      foreign_key_column: id
   - collection: home
     field: date_updated
     type: timestamp
@@ -4655,69 +4796,6 @@ fields:
       foreign_key_table: null
       foreign_key_column: null
   - collection: home
-    field: hero_image
-    type: uuid
-    meta:
-      collection: home
-      conditions: null
-      display: null
-      display_options: null
-      field: hero_image
-      group: null
-      hidden: false
-      interface: file-image
-      note: null
-      options: null
-      readonly: false
-      required: false
-      sort: 5
-      special:
-        - file
-      translations: null
-      validation: null
-      validation_message: null
-      width: full
-    schema:
-      name: hero_image
-      table: home
-      data_type: uuid
-      default_value: null
-      max_length: null
-      numeric_precision: null
-      numeric_scale: null
-      is_nullable: true
-      is_unique: false
-      is_primary_key: false
-      is_generated: false
-      generation_expression: null
-      has_auto_increment: false
-      foreign_key_table: directus_files
-      foreign_key_column: id
-  - collection: home
-    field: hero_images
-    type: alias
-    meta:
-      collection: home
-      conditions: null
-      display: null
-      display_options: null
-      field: hero_images
-      group: null
-      hidden: false
-      interface: files
-      note: null
-      options:
-        limit: 4
-      readonly: false
-      required: false
-      sort: 4
-      special:
-        - files
-      translations: null
-      validation: null
-      validation_message: null
-      width: full
-  - collection: home
     field: id
     type: integer
     meta:
@@ -4753,6 +4831,82 @@ fields:
       is_generated: false
       generation_expression: null
       has_auto_increment: true
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: home
+    field: tagline
+    type: text
+    meta:
+      collection: home
+      conditions: null
+      display: null
+      display_options: null
+      field: tagline
+      group: null
+      hidden: false
+      interface: input-multiline
+      note: null
+      options: null
+      readonly: false
+      required: false
+      sort: 5
+      special: null
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: tagline
+      table: home
+      data_type: text
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: home
+    field: title
+    type: string
+    meta:
+      collection: home
+      conditions: null
+      display: null
+      display_options: null
+      field: title
+      group: null
+      hidden: false
+      interface: input
+      note: null
+      options: null
+      readonly: false
+      required: false
+      sort: 4
+      special: null
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: title
+      table: home
+      data_type: character varying
+      default_value: null
+      max_length: 255
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
       foreign_key_table: null
       foreign_key_column: null
   - collection: home
@@ -9268,27 +9422,27 @@ relations:
       one_deselect_action: nullify
       one_field: null
       sort_field: null
-  - collection: home
-    field: hero_image
-    related_collection: directus_files
+  - collection: footer
+    field: user_updated
+    related_collection: directus_users
     meta:
       junction_field: null
-      many_collection: home
-      many_field: hero_image
+      many_collection: footer
+      many_field: user_updated
       one_allowed_collections: null
-      one_collection: directus_files
+      one_collection: directus_users
       one_collection_field: null
       one_deselect_action: nullify
       one_field: null
       sort_field: null
     schema:
-      table: home
-      column: hero_image
-      foreign_key_table: directus_files
+      table: footer
+      column: user_updated
+      foreign_key_table: directus_users
       foreign_key_column: id
-      constraint_name: home_hero_image_foreign
+      constraint_name: footer_user_updated_foreign
       on_update: NO ACTION
-      on_delete: SET NULL
+      on_delete: NO ACTION
   - collection: home
     field: user_updated
     related_collection: directus_users
@@ -9342,7 +9496,7 @@ relations:
       one_collection: home
       one_collection_field: null
       one_deselect_action: nullify
-      one_field: hero_images
+      one_field: null
       sort_field: null
     schema:
       table: home_files

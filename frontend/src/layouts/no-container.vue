@@ -8,13 +8,6 @@
 
     <div class="absolute z-0 h-[75vh] top-16 w-full object-cover overflow-hidden ">
       <div class="bg-gradient-to-t from-gray-50 to-30% to-black/[.35] inset-0 absolute" />
-      <!--      <img-->
-      <!--        src="/images/hero_small.webp"-->
-      <!--        width="1920"-->
-      <!--        height="1203"-->
-      <!--        class="h-full object-cover w-full z-5"-->
-      <!--        alt="hero image">-->
-
       <nuxt-img
         src="/images/hero_small.webp"
         height="1100"
@@ -31,12 +24,12 @@
           class="w-[150px] sm:w-[200px] h-[150px] sm:h-[200px] drop-shadow-[0_2px_2px_black]">
         <div class="flex flex-col flex-shrink justify-center max-w-[666px]">
           <h1 class="text-4xl font-bold text-white drop-shadow-[0_1px_1px_black]">
-            Maidstone Canoe Club
+            {{ home?.title }}
           </h1>
-          <p class="sm:w-full mt-3 text-white drop-shadow-[0_1px_2px_black]">
-            Lorem ipsum dolor sit amet. Et sunt libero qui laborum impedit qui perferendis velit qui fugiat numquam. Eum
-            rerum quia aut quia laudantium At beatae voluptatem et ipsum nemo non impedit quisquam. Sit cumque dolorem aut
-            unde eligendi qui sunt soluta.
+          <p
+            v-if="home?.tagline"
+            class="sm:w-full mt-3 text-white drop-shadow-[0_1px_2px_black]">
+            {{ home?.tagline }}
           </p>
         </div>
       </div>
@@ -45,11 +38,13 @@
     <div>
       <slot />
     </div>
-    <page-footer />
+    <page-footer class="mt-8" />
   </div>
 </template>
 
 <script setup lang="ts">
+import { Home } from "~/types";
+
 useHead({
   titleTemplate: title => title ? `${title} | MCC` : "Maidstone Canoe Club"
 });
@@ -60,24 +55,13 @@ const showVerificationBanner = computed(() => !route.path.startsWith("/confirm-e
 const { getSingletonItem } = useDirectusItems();
 
 const { data: home } = await useAsyncData("home", async () => {
-  return await getSingletonItem({
-    collection: "home",
-    params: {
-      fields: ["*", "hero_image.*"]
-    }
+  return await getSingletonItem<Home>({
+    collection: "home"
   });
 });
 
 const width = process.client ? window.innerWidth : 1920;
 const height = 1100;
-
-const heroImage = computed(() => generateImageUrlOptions(home.value?.hero_image.id, {
-  quality: 60,
-  width,
-  height,
-  fit: "cover",
-  format: "webp"
-}));
 
 </script>
 
