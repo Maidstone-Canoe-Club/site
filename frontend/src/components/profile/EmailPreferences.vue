@@ -85,7 +85,7 @@ const unsubscribeId = ref(null);
 const unsubscribeListName = ref(null);
 const showUnsubscribeModal = ref(false);
 
-const newSubscription = ref(null);
+const newSubscription = ref({});
 
 const { data: mailingLists } = await useAsyncData("mailing-lists", async () => {
   return await loadMailingLists();
@@ -106,9 +106,18 @@ async function loadSubscriptions () {
     collection: "mailing_list_subscriber",
     params: {
       filter: {
-        user: {
-          _eq: user.value.id
-        }
+        _or: [
+          {
+            user: {
+              _eq: user.value.id
+            }
+          },
+          {
+            email: {
+              _eq: user.value.email
+            }
+          }
+        ]
       }
     }
   });
@@ -141,7 +150,7 @@ async function onSubscribe () {
     });
 
     subscriptions.value = await loadSubscriptions();
-    newSubscription.value = null;
+    newSubscription.value = {};
   } catch (e) {
     console.error("Error subscribing to mailing list", e);
   }

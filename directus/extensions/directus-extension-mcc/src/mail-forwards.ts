@@ -6,6 +6,31 @@ import {customAlphabet} from "nanoid";
 const postmarkUrl = "https://api.postmarkapp.com";
 const nanoid = customAlphabet(alphanumeric, 11);
 
+async function extractForwardTarget(targetName: string, mailForwardsService: any){
+
+  const forwards = await mailForwardsService.readByQuery({
+    filter: {
+      name: {
+        _eq: targetName
+      }
+    }
+  });
+
+  let foundForward = forwards && forwards.length ? forwards[0] : null;
+
+  if(foundForward){
+    if(foundForward.target_email.endsWith("@maidstonecanoeclub.net")){
+      console.log("Mail forward target is another mail forward, searching for target email: " + foundForward.target_email);
+      // this email points to a different mail forward
+      // find the target email THAT mail forward points to
+      const name = foundForward.target_email.split("@")[0];
+      foundForward = await extractForwardTarget(name, mailForwardsService);
+    }
+  }
+
+  return foundForward;
+}
+
 export async function handleMailForward(data: InboundEmail, toAddress?: FullAddress, forward?: any, mailThreadsService: any, mailForwardsService: any) {
 
   if (toAddress && toAddress.Email.startsWith("reply+")) {
@@ -77,17 +102,7 @@ export async function handleMailForward(data: InboundEmail, toAddress?: FullAddr
       let foundForward = forward;
       if(!forward && toAddress) {
         const name = toAddress.Email.split("@")[0];
-
-        // if toAddress is to a forward address
-        const forwards = await mailForwardsService.readByQuery({
-          filter: {
-            name: {
-              _eq: name
-            }
-          }
-        });
-
-        foundForward = forwards && forwards.length ? forwards[0] : null;
+        foundForward = await extractForwardTarget(name, mailForwardsService);
       }
 
       if (foundForward) {
