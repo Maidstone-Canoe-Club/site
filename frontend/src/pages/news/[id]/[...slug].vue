@@ -51,6 +51,7 @@ if (!route.params.slug && item.value.slug) {
 
   redirect += item.value.slug;
   await navigateTo(redirect, {
+    replace: true,
     redirectCode: 301
   });
 } else if (route.params.slug && route.params.slug[0] !== item.value.slug) {

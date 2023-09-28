@@ -95,7 +95,7 @@ export default defineEventHandler(async (event) => {
         quantity: 1,
         price_data: {
           currency: "GBP",
-          unit_amount: price,
+          unit_amount: price ?? 0,
           product_data: {
             name,
             metadata: {

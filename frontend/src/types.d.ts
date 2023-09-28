@@ -46,6 +46,7 @@ export interface EventItem {
 
     max_attendees?: number,
     price?: number
+    junior_price?: number
 }
 
 export interface NewsItem {

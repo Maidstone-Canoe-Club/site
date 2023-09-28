@@ -29,11 +29,6 @@
                   Find us
                 </nuxt-link>
               </li>
-              <li>
-                <nuxt-link to="/calendar" class="hover:underline">
-                  Calendar
-                </nuxt-link>
-              </li>
             </ul>
           </div>
           <div>

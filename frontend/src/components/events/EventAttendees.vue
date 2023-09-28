@@ -1,7 +1,7 @@
 ﻿<template>
-  <div>
+  <div v-if="internalBookings && internalBookings.length">
+    <strong>Bookings</strong>
     <ul
-      v-if="internalBookings"
       role="list"
       class="divide-y divide-gray-100">
       <li v-for="booking in internalBookings" :key="booking.email" class="flex items-center justify-between gap-x-6 py-5">
@@ -144,7 +144,7 @@
                                 </div>
                                 <div class="ml-3 flex-1 md:flex md:justify-between">
                                   <p class="text-sm text-blue-700">
-                                    This user is a junior, click the button below to view parent contact details.
+                                    This user is a junior, click below to view parent contact details.
                                   </p>
                                 </div>
                               </div>

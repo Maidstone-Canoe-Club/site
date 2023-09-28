@@ -80,6 +80,7 @@
               :pattern-type="eventInfo.patternType"
               :already-booked="alreadyBooked"
               :bookings="bookings"
+              :spaces-left="eventInfo.spacesLeft"
               @refresh="onRefresh" />
             <div
               v-else
@@ -147,6 +148,26 @@ if (!event.value) {
   throw createError({
     statusCode: 404,
     statusMessage: "Event not found"
+  });
+}
+
+const slug = slugify(event.value.title);
+
+if (!route.params.slug && slug) {
+  let redirect = route.path;
+  if (!redirect.endsWith("/")) {
+    redirect += "/";
+  }
+
+  redirect += slug;
+  await navigateTo(redirect, {
+    replace: true,
+    redirectCode: 301
+  });
+} else if (route.params.slug && route.params.slug[0] !== slug) {
+  throw createError({
+    statusCode: 404,
+    statusMessage: "News post not found"
   });
 }
 
