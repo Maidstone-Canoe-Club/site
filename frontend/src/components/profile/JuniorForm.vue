@@ -41,10 +41,9 @@
 </template>
 
 <script setup lang="ts">
-
 import { required } from "@vuelidate/validators";
 import { Ref } from "vue";
-import { useVuelidate, Validation } from "@vuelidate/core/dist/index";
+import { useVuelidate, Validation } from "@vuelidate/core";
 
 export type Junior = {
   id?: string,
