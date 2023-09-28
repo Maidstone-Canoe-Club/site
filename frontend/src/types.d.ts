@@ -59,3 +59,8 @@ export interface NewsItem {
         last_name: string
     }
 }
+
+export interface Home {
+  title?: string
+  tagline?: string
+}

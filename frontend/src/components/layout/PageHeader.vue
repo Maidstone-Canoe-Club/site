@@ -230,7 +230,7 @@ const { data: pages } = await useAsyncData("navigation", async () => {
   return await getSingletonItem({
     collection: "navigation",
     params: {
-      fields: ["items.*", "items.children.*", "items.children.page.slug"]
+      fields: ["items.*", "items.children.*", "items.children.page.slug", "items.children.children.*", "items.children.children.page.slug"]
     }
   });
 });
