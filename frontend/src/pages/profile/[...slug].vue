@@ -32,10 +32,10 @@
             <user-details v-model="user" />
           </TabPanel>
           <TabPanel>
-            <payment-history />
+            <event-bookings />
           </TabPanel>
           <TabPanel>
-            <event-bookings />
+            <payment-history />
           </TabPanel>
           <TabPanel>
             <user-notification />
