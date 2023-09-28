@@ -5618,6 +5618,44 @@ fields:
       foreign_key_table: null
       foreign_key_column: null
   - collection: mailing_list_subscriber
+    field: email
+    type: string
+    meta:
+      collection: mailing_list_subscriber
+      conditions: null
+      display: null
+      display_options: null
+      field: email
+      group: null
+      hidden: false
+      interface: input
+      note: null
+      options: null
+      readonly: false
+      required: true
+      sort: 7
+      special: null
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: email
+      table: mailing_list_subscriber
+      data_type: character varying
+      default_value: null
+      max_length: 255
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: mailing_list_subscriber
     field: id
     type: uuid
     meta:
@@ -5704,7 +5742,7 @@ fields:
     meta:
       collection: mailing_list_subscriber
       conditions: null
-      display: user
+      display: null
       display_options: null
       field: user
       group: null
@@ -5712,10 +5750,10 @@ fields:
       interface: select-dropdown-m2o
       note: null
       options:
-        enableCreate: false
+        template: "{{first_name}}\_{{last_name}}"
       readonly: false
-      required: true
-      sort: 7
+      required: false
+      sort: 8
       special:
         - m2o
       translations: null
@@ -6005,6 +6043,45 @@ fields:
       data_type: character varying
       default_value: null
       max_length: 255
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: mailing_lists
+    field: public
+    type: boolean
+    meta:
+      collection: mailing_lists
+      conditions: null
+      display: null
+      display_options: null
+      field: public
+      group: null
+      hidden: false
+      interface: boolean
+      note: Whether users can subscribe to this list through their user profile
+      options: null
+      readonly: false
+      required: false
+      sort: 8
+      special:
+        - cast-boolean
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: public
+      table: mailing_lists
+      data_type: boolean
+      default_value: true
+      max_length: null
       numeric_precision: null
       numeric_scale: null
       is_nullable: true

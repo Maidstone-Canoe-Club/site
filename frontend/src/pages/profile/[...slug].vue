@@ -38,7 +38,7 @@
             <payment-history />
           </TabPanel>
           <TabPanel>
-            <user-notification />
+            <email-preferences />
           </TabPanel>
           <TabPanel>
             <junior-members />
@@ -70,8 +70,8 @@ const user = useDirectusUser();
  * Can change email notification preferences
  */
 
-const route = useRoute();
-const hash = computed(() => route.hash);
+// const route = useRoute();
+const hash = ref();
 
 const navigation = computed(() => [
   { name: "General", href: "#", icon: UserCircleIcon, current: true },
