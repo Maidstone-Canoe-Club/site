@@ -3409,8 +3409,9 @@ fields:
     meta:
       collection: events
       conditions: null
-      display: null
-      display_options: null
+      display: labels
+      display_options:
+        choices: null
       field: allowed_roles
       group: null
       hidden: false
@@ -3418,14 +3419,15 @@ fields:
       note: null
       options:
         choices:
-          - text: none
-            value: No one
-          - text: non-members
-            value: Non-members
-          - text: juniors
-            value: Juniors
-          - text: members
-            value: Members
+          - text: No one
+            value: none
+          - text: Non-members
+            value: non-members
+          - text: Juniors
+            value: juniors
+          - text: Members
+            value: members
+        previewThreshold: 4
       readonly: false
       required: false
       sort: 23

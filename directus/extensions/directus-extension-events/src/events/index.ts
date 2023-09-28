@@ -134,6 +134,7 @@ export default defineEndpoint((router, {services, database}) => {
         spacesLeft,
         alreadyBooked,
         bookings,
+        bookingsCount: eventBookings.length
       });
     } catch (e) {
       console.error("error getting event info", e);
@@ -302,6 +303,7 @@ export default defineEndpoint((router, {services, database}) => {
         const alreadyBooked = existingBookings?.filter(x => x.user === userId && x.status !== "cancelled");
         if (alreadyBooked?.length) {
           bookingResults.push({
+            result: false,
             message: "That user is already booked",
             userId
           });
@@ -316,6 +318,7 @@ export default defineEndpoint((router, {services, database}) => {
           });
 
           bookingResults.push({
+            result: true,
             message: "Your cancelled booking has been re-added",
             bookingId: cancelledBooking.id,
             userId
@@ -334,6 +337,7 @@ export default defineEndpoint((router, {services, database}) => {
         });
 
         bookingResults.push({
+          result: true,
           message: "User has been booked",
           bookingId,
           userId,

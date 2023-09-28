@@ -4,9 +4,14 @@
       v-if="label"
       as="span"
       class="text-sm flex-grow">
-      <span class="font-medium text-gray-900">{{ label }}</span>
+      <span
+        class="font-medium"
+        :class="[disabled ? 'text-gray-500' : 'text-gray-900']">{{ label }}</span>
     </SwitchLabel>
-    <Switch v-model="internalValue" :class="[internalValue ? 'bg-indigo-600' : 'bg-gray-200', 'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2']">
+    <Switch
+      v-model="internalValue"
+      :disabled="disabled"
+      :class="switchClass">
       <span aria-hidden="true" :class="[internalValue ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out']" />
     </Switch>
   </SwitchGroup>
@@ -19,13 +24,35 @@ const emits = defineEmits(["update:modelValue"]);
 
 const props = defineProps<{
   modelValue: boolean,
-  label?: string
+  label?: string,
+  disabled?: boolean
 }>();
 
 const internalValue = ref(props.modelValue);
 
 watch(() => props.modelValue, (val: boolean) => internalValue.value = val);
 watch(internalValue, (val: boolean) => emits("update:modelValue", val));
+
+const switchClass = computed(() => {
+  const result = [
+    "relative inline-flex h-6 w-11 flex-shrink-0 rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2"
+  ];
+
+  if (!props.disabled) {
+    result.push("cursor-pointer");
+  } else {
+    result.push("cursor-not-allowed");
+  }
+
+  if (internalValue.value) {
+    result.push("bg-indigo-600");
+  } else {
+    result.push("bg-gray-200");
+  }
+
+  return result;
+});
+
 </script>
 
 <style scoped lang="scss">
