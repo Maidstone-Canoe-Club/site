@@ -232,6 +232,7 @@ async function handleMailingList(data: InboundEmail, toAddress: FullAddress, mai
 }
 
 async function sendBatchEmail(data: any) {
+  console.log("Sending batch emails");
   return await ofetch("/email/batch", {
     method: "POST",
     baseURL: postmarkUrl,

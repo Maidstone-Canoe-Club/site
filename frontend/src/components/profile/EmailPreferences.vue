@@ -20,7 +20,7 @@
                   <div class="min-w-0 flex-auto">
                     <div class="flex items-center gap-x-3">
                       <h2 class="min-w-0 text-sm font-semibold leading-6">
-                        {{ getListName(subscription.list) }}
+                        {{ subscription.list.name }}
                       </h2>
                     </div>
                     <div class="flex items-center gap-x-2.5 text-xs leading-5 text-gray-600">
@@ -31,7 +31,7 @@
                   </div>
                   <button
                     class="rounded bg-white px-2 py-1 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-                    @click="tryUnsubscribe(subscription.id, subscription.list)">
+                    @click="tryUnsubscribe(subscription.id, subscription.list.name)">
                     Unsubscribe
                   </button>
                 </li>
@@ -93,7 +93,14 @@ const { data: mailingLists } = await useAsyncData("mailing-lists", async () => {
 
 async function loadMailingLists () {
   return await getItems({
-    collection: "mailing_lists"
+    collection: "mailing_lists",
+    params: {
+      filter: {
+        public: {
+          _eq: true
+        }
+      }
+    }
   });
 }
 
@@ -105,6 +112,7 @@ async function loadSubscriptions () {
   return await getItems({
     collection: "mailing_list_subscriber",
     params: {
+      fields: ["*", "list.name"],
       filter: {
         _or: [
           {
@@ -169,13 +177,9 @@ async function onUnsubscribe () {
   }
 }
 
-function getListName (id: string) {
-  return mailingLists.value?.find(x => x.id === id)?.name ?? "UNKNOWN LIST";
-}
-
-function tryUnsubscribe (subscriptionId: string, listId: string) {
+function tryUnsubscribe (subscriptionId: string, listName: string) {
   unsubscribeId.value = subscriptionId;
-  unsubscribeListName.value = getListName(listId);
+  unsubscribeListName.value = listName;
   showUnsubscribeModal.value = true;
 }
 
