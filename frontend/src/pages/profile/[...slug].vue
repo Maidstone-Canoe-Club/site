@@ -9,8 +9,8 @@
               <li v-for="item in navigation" :key="item.name">
                 <Tab
                   v-slot="{selected}"
-                  as="a"
-                  :href="item.href"
+                  :as="NuxtLink"
+                  :to="item.href"
                   :class="['ui-selected:bg-gray-50 ui-selected:text-indigo-600', 'ui-not-selected:text-gray-700 ui-not-selected:hover:text-indigo-600 ui-not-selected:hover:bg-gray-50', 'group flex gap-x-3 rounded-md py-2 pl-2 pr-3 text-sm leading-6 font-semibold']">
                   <component
                     :is="item.icon"
@@ -43,6 +43,9 @@
           <TabPanel>
             <junior-members />
           </TabPanel>
+          <TabPanel>
+            <admin-tools />
+          </TabPanel>
         </TabPanels>
       </main>
     </TabGroup>
@@ -51,8 +54,9 @@
 
 <script setup lang="ts">
 import { TabGroup, TabList, TabPanels, TabPanel, Tab } from "@headlessui/vue";
-import { CalendarDaysIcon, UserCircleIcon, UsersIcon, CreditCardIcon, EnvelopeIcon } from "@heroicons/vue/24/outline";
+import { CalendarDaysIcon, UserCircleIcon, UsersIcon, CreditCardIcon, EnvelopeIcon, Cog6ToothIcon } from "@heroicons/vue/24/outline";
 import { useDirectusUser, definePageMeta } from "#imports";
+import { NuxtLink } from "#components";
 
 definePageMeta({
   middleware: ["auth"]
@@ -70,18 +74,26 @@ const user = useDirectusUser();
  * Can change email notification preferences
  */
 
-// const route = useRoute();
-const hash = ref();
+const route = useRoute();
+const hash = ref(route.params.slug);
 
-const navigation = computed(() => [
-  { name: "General", href: "#", icon: UserCircleIcon, current: true },
-  { name: "Event bookings", href: "#events", icon: CalendarDaysIcon, current: hash.value === "#events" },
-  { name: "Payment history", href: "#payments", icon: CreditCardIcon, current: hash.value === "#payments" },
-  { name: "Email preferences", href: "#mail", icon: EnvelopeIcon, current: hash.value === "#mail" },
-  { name: "Junior accounts", href: "#juniors", icon: UsersIcon, current: hash.value === "#juniors" }
-]);
+const navigation = computed(() => {
+  const items = [
+    { name: "General", href: "/profile", icon: UserCircleIcon, current: true },
+    { name: "Event bookings", href: "/profile/events", icon: CalendarDaysIcon, current: hash.value === "events" },
+    { name: "Payment history", href: "/profile/payments", icon: CreditCardIcon, current: hash.value === "payments" },
+    { name: "Email preferences", href: "/profile/mail", icon: EnvelopeIcon, current: hash.value === "mail" },
+    { name: "Junior accounts", href: "/profile/juniors", icon: UsersIcon, current: hash.value === "juniors" }
+  ];
 
-const selectedTab = ref(navigation.value.findIndex(x => x.href === hash.value));
+  if (hasRole(user.value, "committee")) {
+    items.push({ name: "Admin tools", href: "/profile/admin", icon: Cog6ToothIcon, current: hash.value === "admin" });
+  }
+
+  return items;
+});
+
+const selectedTab = ref(navigation.value.findIndex(x => x.href === `/profile/${hash.value}`));
 
 function changeTab (index) {
   selectedTab.value = index;
