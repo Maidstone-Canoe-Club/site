@@ -2,11 +2,14 @@ import {FullAddress, InboundEmail, MailForward, OutboundEmail} from "./types";
 import {ofetch} from "ofetch";
 import {alphanumeric} from "nanoid-dictionary";
 import {customAlphabet} from "nanoid";
+import {resolveObjectURL} from "buffer";
 
 const postmarkUrl = "https://api.postmarkapp.com";
 const nanoid = customAlphabet(alphanumeric, 11);
 
-async function extractForwardTarget(targetName: string, mailForwardsService: any){
+async function extractForwardTarget(targetName: string, mailForwardsService: any) {
+
+  console.log("extracting mail forward target email for", targetName);
 
   const results: MailForward[] = [];
 
@@ -18,31 +21,34 @@ async function extractForwardTarget(targetName: string, mailForwardsService: any
     }
   });
 
-  if(forwards && forwards.length){
-    for(const forward of forwards){
-      if(forward.target_email.endsWith("@maidstonecanoeclub.net")){
+  if (forwards && forwards.length) {
+    for (const forward of forwards) {
+      if (forward.target_email.endsWith("@maidstonecanoeclub.net")) {
         console.log("Mail forward target is another mail forward, searching for target email: " + forward.target_email);
         // this email points to a different mail forward
         // find the target email THAT mail forward points to
         const split = forward.target_email.split("@");
-        if(!split || split.length !== 2){
+        if (!split || split.length !== 2) {
           console.error("Invalid target email address: " + forward.target_email);
           continue;
         }
         const name = split[0]!;
         const found = await extractForwardTarget(name, mailForwardsService);
         results.push(...found);
-      }else{
+      } else {
         results.push(forward);
       }
     }
   }
+
+  console.log("found extracted targets", results.map(x => x.target_email));
 
   return results;
 }
 
 export async function handleMailForward(data: InboundEmail, toAddress?: FullAddress, forward?: MailForward, mailThreadsService: any, mailForwardsService: any) {
 
+  console.log("handing mail forward", toAddress.Email, data.From);
   if (toAddress && toAddress.Email.startsWith("reply+")) {
     const threadId = toAddress.MailboxHash;
 
@@ -50,9 +56,9 @@ export async function handleMailForward(data: InboundEmail, toAddress?: FullAddr
       const existingThread = await mailThreadsService.readOne(threadId);
 
       if (existingThread) {
+        console.log("found an existing thread");
         if (data.FromFull.Email.toLowerCase() === existingThread.target_email.toLowerCase()) {
-
-
+          console.log("sending to " + existingThread.sender_email);
           const forwards = await mailForwardsService.readByQuery({
             filter: {
               target_email: {
@@ -61,8 +67,8 @@ export async function handleMailForward(data: InboundEmail, toAddress?: FullAddr
             }
           });
 
-          if(forwards && forwards.length){
-            for(const forward of forwards){
+          if (forwards && forwards.length) {
+            for (const forward of forwards) {
               let fromName = `forwards@${process.env.EMAIL_DOMAIN}`;
 
               if (forward && forward.from_name) {
@@ -83,6 +89,7 @@ export async function handleMailForward(data: InboundEmail, toAddress?: FullAddr
             }
           }
         } else if (data.FromFull.Email.toLowerCase() === existingThread.sender_email.toLowerCase()) {
+          console.log("sending to " + existingThread.target_email);
           let fromName = `forwards@${process.env.EMAIL_DOMAIN}`;
 
           if (data.FromName) {
@@ -114,12 +121,12 @@ export async function handleMailForward(data: InboundEmail, toAddress?: FullAddr
     try {
 
       let foundForwards: MailForward[] = [];
-      if(forward){
+      if (forward) {
         foundForwards.push(forward);
       }
-      if(!forward && toAddress) {
+      if (!forward && toAddress) {
         const split = toAddress.Email.split("@");
-        if(!split || split.length !== 2){
+        if (!split || split.length !== 2) {
           console.error("Invalid to address: " + toAddress.Email);
           return;
         }
@@ -128,7 +135,7 @@ export async function handleMailForward(data: InboundEmail, toAddress?: FullAddr
       }
 
       if (foundForwards && foundForwards.length) {
-        for(const foundForward of foundForwards) {
+        for (const foundForward of foundForwards) {
           const newThreadId = nanoid();
 
           await mailThreadsService.createOne({
@@ -160,17 +167,19 @@ export async function handleMailForward(data: InboundEmail, toAddress?: FullAddr
         console.log("no mail forward found or provided");
       }
     } catch (e) {
-      console.log("something went wrong creating a new mail thread", e, e.message, e.data);
+      console.error("something went wrong creating a new mail thread", e, e.message, e.data);
     }
   }
 }
 
 export async function sendEmail(email: OutboundEmail) {
 
-  if(process.env.IGNORE_MAIL){
+  if (process.env.IGNORE_MAIL) {
     console.log("not sending email:", email);
     return;
   }
+
+  console.log("Sending email to " + email.To + " from: " + email.From);
 
   return await ofetch("/email", {
     baseURL: postmarkUrl,
