@@ -170,7 +170,7 @@ async function onUnsubscribe () {
 }
 
 function getListName (id: string) {
-  return mailingLists.value.find(x => x.id === id).name;
+  return mailingLists.value?.find(x => x.id === id)?.name ?? "UNKNOWN LIST";
 }
 
 function tryUnsubscribe (subscriptionId: string, listId: string) {
