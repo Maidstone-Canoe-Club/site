@@ -4844,6 +4844,44 @@ fields:
       foreign_key_table: null
       foreign_key_column: null
   - collection: home
+    field: holding_page_content
+    type: text
+    meta:
+      collection: home
+      conditions: null
+      display: null
+      display_options: null
+      field: holding_page_content
+      group: null
+      hidden: false
+      interface: input-rich-text-html
+      note: null
+      options: null
+      readonly: false
+      required: false
+      sort: 6
+      special: null
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: holding_page_content
+      table: home
+      data_type: text
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: home
     field: id
     type: integer
     meta:
@@ -4879,6 +4917,84 @@ fields:
       is_generated: false
       generation_expression: null
       has_auto_increment: true
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: home
+    field: show_holding_page
+    type: boolean
+    meta:
+      collection: home
+      conditions: null
+      display: null
+      display_options: null
+      field: show_holding_page
+      group: null
+      hidden: false
+      interface: boolean
+      note: null
+      options: null
+      readonly: false
+      required: false
+      sort: 7
+      special:
+        - cast-boolean
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: show_holding_page
+      table: home
+      data_type: boolean
+      default_value: false
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: home
+    field: show_welcome_message
+    type: boolean
+    meta:
+      collection: home
+      conditions: null
+      display: null
+      display_options: null
+      field: show_welcome_message
+      group: null
+      hidden: false
+      interface: boolean
+      note: null
+      options: null
+      readonly: false
+      required: false
+      sort: 9
+      special:
+        - cast-boolean
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: show_welcome_message
+      table: home
+      data_type: boolean
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
       foreign_key_table: null
       foreign_key_column: null
   - collection: home
@@ -4997,6 +5113,44 @@ fields:
       has_auto_increment: false
       foreign_key_table: directus_users
       foreign_key_column: id
+  - collection: home
+    field: welcome_message
+    type: text
+    meta:
+      collection: home
+      conditions: null
+      display: null
+      display_options: null
+      field: welcome_message
+      group: null
+      hidden: false
+      interface: input-rich-text-html
+      note: null
+      options: null
+      readonly: false
+      required: false
+      sort: 8
+      special: null
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: welcome_message
+      table: home
+      data_type: text
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
   - collection: home_files
     field: directus_files_id
     type: uuid

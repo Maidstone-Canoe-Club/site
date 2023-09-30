@@ -1,5 +1,18 @@
 ﻿<template>
-  <div class="flex min-h-full flex-col bg-gray-50 relative">
+  <div
+    v-if="home.show_holding_page"
+    class="mx-auto max-w-3xl mt-8 px-3 sm:px-0">
+    <div class="flex justify-center items-center mb-12 mt-12">
+      <nuxt-img
+        src="/images/logo.svg"
+        width="200px"
+        height="200px" />
+    </div>
+    <rich-text :content="holdingPage" />
+  </div>
+  <div
+    v-else
+    class="flex min-h-full flex-col bg-gray-50 relative">
     <nuxt-loading-indicator />
     <page-header
       class="z-10" />
@@ -62,6 +75,8 @@ const { data: home } = await useAsyncData("home", async () => {
 
 const width = process.client ? window.innerWidth : 1920;
 const height = 1100;
+
+const holdingPage = computed(() => home.value?.holding_page_content);
 
 </script>
 
