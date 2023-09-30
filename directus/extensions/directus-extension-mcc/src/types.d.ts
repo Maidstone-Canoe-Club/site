@@ -72,3 +72,9 @@ export type MailingList = {
     name: string,
     email_name: string
 }
+
+export interface MailForward {
+    name: string,
+    from_name?: string,
+    target_email: string
+}
