@@ -60,7 +60,8 @@ export type InboundEmail = {
 
 export type Subscriber = {
     mailing_list: number,
-    user: {
+    email: string,
+    user?: {
         email: string,
         first_name: string,
         last_name: string

@@ -159,7 +159,7 @@ async function handleMailingList(data: InboundEmail, toAddress: FullAddress, mai
     if (mailingList) {
       const subscribers: Subscriber[] = await mailingListSubscribersService
         .readByQuery({
-          fields: ["list", "user.email"],
+          fields: ["list", "email"],
           filter: {
             _and: [
               {
@@ -168,7 +168,7 @@ async function handleMailingList(data: InboundEmail, toAddress: FullAddress, mai
                 }
               },
               {
-                "user.email": {
+                email: {
                   _neq: data.From
                 }
               }
@@ -187,7 +187,7 @@ async function handleMailingList(data: InboundEmail, toAddress: FullAddress, mai
           }
 
           const emailsToSend = chunk.map(subscriber => ({
-            To: subscriber.user.email,
+            To: subscriber.email,
             From: `${data.FromName} via ${mailingList.name} <${mailingList.email_name}@${process.env.EMAIL_DOMAIN}>`,
             Subject: data.Subject,
             TextBody: data.StrippedTextReply,
@@ -245,7 +245,7 @@ async function sendBatchEmail(data: any) {
 }
 
 function chunkArray<T>(input: T[], size: number): T[][] {
-  const result = [];
+  const result : T[][] = [];
 
   for (let i = 0; i < input.length; i += size) {
     result.push(input.slice(i, i + size));
