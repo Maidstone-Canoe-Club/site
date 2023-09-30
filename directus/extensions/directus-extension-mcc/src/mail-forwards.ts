@@ -23,7 +23,7 @@ async function extractForwardTarget(targetName: string, mailForwardsService: any
 
   if (forwards && forwards.length) {
     for (const forward of forwards) {
-      if (forward.target_email.endsWith("@maidstonecanoeclub.net")) {
+      if (forward.target_email.endsWith("@maidstonecanoeclub.net") || forward.target_email.endsWith("@mccdev.co.uk")) {
         console.log("Mail forward target is another mail forward, searching for target email: " + forward.target_email);
         // this email points to a different mail forward
         // find the target email THAT mail forward points to
