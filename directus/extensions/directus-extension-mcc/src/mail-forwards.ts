@@ -1,4 +1,4 @@
-import {FullAddress, InboundEmail, OutboundEmail} from "./types";
+import {FullAddress, InboundEmail, MailForward, OutboundEmail} from "./types";
 import {ofetch} from "ofetch";
 import {alphanumeric} from "nanoid-dictionary";
 import {customAlphabet} from "nanoid";
@@ -8,7 +8,9 @@ const nanoid = customAlphabet(alphanumeric, 11);
 
 async function extractForwardTarget(targetName: string, mailForwardsService: any){
 
-  const forwards = await mailForwardsService.readByQuery({
+  const results: MailForward[] = [];
+
+  const forwards: MailForward[] = await mailForwardsService.readByQuery({
     filter: {
       name: {
         _eq: targetName
@@ -16,22 +18,30 @@ async function extractForwardTarget(targetName: string, mailForwardsService: any
     }
   });
 
-  let foundForward = forwards && forwards.length ? forwards[0] : null;
-
-  if(foundForward){
-    if(foundForward.target_email.endsWith("@maidstonecanoeclub.net")){
-      console.log("Mail forward target is another mail forward, searching for target email: " + foundForward.target_email);
-      // this email points to a different mail forward
-      // find the target email THAT mail forward points to
-      const name = foundForward.target_email.split("@")[0];
-      foundForward = await extractForwardTarget(name, mailForwardsService);
+  if(forwards && forwards.length){
+    for(const forward of forwards){
+      if(forward.target_email.endsWith("@maidstonecanoeclub.net")){
+        console.log("Mail forward target is another mail forward, searching for target email: " + forward.target_email);
+        // this email points to a different mail forward
+        // find the target email THAT mail forward points to
+        const split = forward.target_email.split("@");
+        if(!split || split.length !== 2){
+          console.error("Invalid target email address: " + forward.target_email);
+          continue;
+        }
+        const name = split[0]!;
+        const found = await extractForwardTarget(name, mailForwardsService);
+        results.push(...found);
+      }else{
+        results.push(forward);
+      }
     }
   }
 
-  return foundForward;
+  return results;
 }
 
-export async function handleMailForward(data: InboundEmail, toAddress?: FullAddress, forward?: any, mailThreadsService: any, mailForwardsService: any) {
+export async function handleMailForward(data: InboundEmail, toAddress?: FullAddress, forward?: MailForward, mailThreadsService: any, mailForwardsService: any) {
 
   if (toAddress && toAddress.Email.startsWith("reply+")) {
     const threadId = toAddress.MailboxHash;
@@ -41,7 +51,7 @@ export async function handleMailForward(data: InboundEmail, toAddress?: FullAddr
 
       if (existingThread) {
         if (data.FromFull.Email.toLowerCase() === existingThread.target_email.toLowerCase()) {
-          let fromName = `forwards@${process.env.EMAIL_DOMAIN}`;
+
 
           const forwards = await mailForwardsService.readByQuery({
             filter: {
@@ -51,23 +61,27 @@ export async function handleMailForward(data: InboundEmail, toAddress?: FullAddr
             }
           });
 
-          const forward = forwards.length ? forwards[0] : null;
+          if(forwards && forwards.length){
+            for(const forward of forwards){
+              let fromName = `forwards@${process.env.EMAIL_DOMAIN}`;
 
-          if (forward && forward.from_name) {
-            fromName = `${forward.from_name} <${fromName}>`;
+              if (forward && forward.from_name) {
+                fromName = `${forward.from_name} <${fromName}>`;
+              }
+
+              await sendEmail({
+                From: fromName,
+                To: existingThread.sender_email,
+                HtmlBody: data.HtmlBody,
+                TextBody: data.TextBody,
+                Subject: data.Subject,
+                ReplyTo: `reply+${existingThread.id}@${process.env.EMAIL_DOMAIN}`,
+                TrackLinks: "None",
+                Tag: "forwards",
+                Attachments: data.Attachments
+              });
+            }
           }
-
-          await sendEmail({
-            From: fromName,
-            To: existingThread.sender_email,
-            HtmlBody: data.HtmlBody,
-            TextBody: data.TextBody,
-            Subject: data.Subject,
-            ReplyTo: `reply+${existingThread.id}@${process.env.EMAIL_DOMAIN}`,
-            TrackLinks: "None",
-            Tag: "forwards",
-            Attachments: data.Attachments
-          });
         } else if (data.FromFull.Email.toLowerCase() === existingThread.sender_email.toLowerCase()) {
           let fromName = `forwards@${process.env.EMAIL_DOMAIN}`;
 
@@ -99,39 +113,49 @@ export async function handleMailForward(data: InboundEmail, toAddress?: FullAddr
     // We have received a new email to forward
     try {
 
-      let foundForward = forward;
+      let foundForwards: MailForward[] = [];
+      if(forward){
+        foundForwards.push(forward);
+      }
       if(!forward && toAddress) {
-        const name = toAddress.Email.split("@")[0];
-        foundForward = await extractForwardTarget(name, mailForwardsService);
+        const split = toAddress.Email.split("@");
+        if(!split || split.length !== 2){
+          console.error("Invalid to address: " + toAddress.Email);
+          return;
+        }
+        const name = split[0]!;
+        foundForwards = await extractForwardTarget(name, mailForwardsService);
       }
 
-      if (foundForward) {
-        const newThreadId = nanoid();
+      if (foundForwards && foundForwards.length) {
+        for(const foundForward of foundForwards) {
+          const newThreadId = nanoid();
 
-        await mailThreadsService.createOne({
-          id: newThreadId,
-          target_email: foundForward.target_email,
-          sender_email: data.FromFull.Email
-        });
+          await mailThreadsService.createOne({
+            id: newThreadId,
+            target_email: foundForward.target_email,
+            sender_email: data.FromFull.Email
+          });
 
-        let fromAddress = `<forwards@${process.env.EMAIL_DOMAIN}>`;
+          let fromAddress = `<forwards@${process.env.EMAIL_DOMAIN}>`;
 
-        if (data.FromName) {
-          fromAddress = `${data.FromName} ${fromAddress}`;
+          if (data.FromName) {
+            fromAddress = `${data.FromName} ${fromAddress}`;
+          }
+
+          // send email to target
+          await sendEmail({
+            From: fromAddress,
+            To: foundForward.target_email,
+            HtmlBody: data.HtmlBody,
+            TextBody: data.TextBody,
+            Subject: data.Subject,
+            ReplyTo: `reply+${newThreadId}@${process.env.EMAIL_DOMAIN}`,
+            TrackLinks: "None",
+            Tag: "forwards",
+            Attachments: data.Attachments
+          });
         }
-
-        // send email to target
-        await sendEmail({
-          From: fromAddress,
-          To: foundForward.target_email,
-          HtmlBody: data.HtmlBody,
-          TextBody: data.TextBody,
-          Subject: data.Subject,
-          ReplyTo: `reply+${newThreadId}@${process.env.EMAIL_DOMAIN}`,
-          TrackLinks: "None",
-          Tag: "forwards",
-          Attachments: data.Attachments
-        });
       } else {
         console.log("no mail forward found or provided");
       }
