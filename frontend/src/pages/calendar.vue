@@ -1,6 +1,8 @@
 ﻿<template>
   <div>
-    <desktop-calendar :events="events" />
+    <desktop-calendar
+      :events="events"
+      :loading="loading" />
   </div>
 </template>
 
@@ -11,6 +13,7 @@ import { useCalendarStore } from "~/store/calendarStore";
 const calendarStore = useCalendarStore();
 
 const events = ref([]);
+const loading = ref(false);
 
 const { getItems } = useDirectusItems();
 
@@ -24,6 +27,7 @@ watch(() => calendarStore.month, async () => {
 await fetchEvents();
 
 async function fetchEvents () {
+  loading.value = true;
   try {
     const foundEvents = await getItems({
       collection: "events",
@@ -222,6 +226,8 @@ async function fetchEvents () {
     events.value = foundEvents;
   } catch (e) {
     console.error("unable to fetch events", e);
+  } finally {
+    loading.value = false;
   }
 }
 
