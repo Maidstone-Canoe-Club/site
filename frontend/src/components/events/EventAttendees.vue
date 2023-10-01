@@ -92,7 +92,7 @@
                         </span>
                       </DialogTitle>
 
-                      <div class="mt-2">
+                      <div class="mt-4">
                         <dl class="space-y-4 sm:space-y-5">
                           <div>
                             <dt class="text-sm font-medium text-gray-500 sm:w-40 sm:flex-shrink-0">
@@ -199,7 +199,7 @@
                               </dd>
                             </div>
                           </template>
-                          <div>
+                          <div v-else>
                             <div class="rounded-md bg-red-50 p-4">
                               <div class="flex">
                                 <div class="flex-shrink-0">
@@ -362,7 +362,7 @@ async function viewUser (user) {
       }
     });
 
-    // medicalInfo.value = results?.length ? results[0] : null;
+    medicalInfo.value = results?.length ? results[0] : null;
   } catch (e) {
     console.error("error loading medical info", e);
     showModal.value = false;
