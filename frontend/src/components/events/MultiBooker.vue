@@ -16,9 +16,15 @@
     </ul>
 
     <div
-      v-if="spacesLeft"
-      class="flex justify-end mb-6">
+      class="flex justify-between mb-6">
+      <nuxt-link
+        to="/profile/juniors"
+        class="rounded flex items-center gap-1 bg-white px-2 py-1 text-xs font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+        Add new junior
+        <PlusIcon class="h-4" />
+      </nuxt-link>
       <span
+        v-if="spacesLeft"
         class="inline-flex items-center rounded-full bg-indigo-50 px-1.5 py-0.5 text-xs font-semibold text-indigo-700 ring-1 ring-inset ring-indigo-700/10">
         <UsersIcon class="h-5 mr-1" />
         {{ usersToBook.length }}/{{ spacesLeft }}
@@ -130,7 +136,7 @@
 
 <script setup lang="ts">
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from "@headlessui/vue";
-import { CheckIcon, ExclamationTriangleIcon, UsersIcon } from "@heroicons/vue/24/outline";
+import { CheckIcon, ExclamationTriangleIcon, UsersIcon, PlusIcon } from "@heroicons/vue/24/outline";
 import Dinero from "dinero.js";
 import { DirectusUser } from "nuxt-directus/dist/runtime/types";
 import { EventItem } from "~/types";
@@ -212,8 +218,8 @@ const usersThatCanBook = computed(() => {
     result.push(user.value);
   }
 
-  if (juniors.value && juniors.value.length) {
-    for (const j of juniors.value) {
+  if (props.juniors && props.juniors.length) {
+    for (const j of props.juniors) {
       if (!userAlreadyBooked(j.id)) {
         result.push(j);
       }
