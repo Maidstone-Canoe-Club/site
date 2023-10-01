@@ -28,6 +28,7 @@ async function sendConfirmAccountEmail (services: any, input: any, schema: any, 
   try {
     await mailService.send({
       to: input.email,
+      from: `confirm@${process.env.EMAIL_DOMAIN}`,
       subject: "Confirm email",
       template: {
         name: "confirm-email",

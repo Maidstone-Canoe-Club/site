@@ -14,6 +14,26 @@
           <div class="grid max-w-2xl grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
             <div class="sm:col-span-full">
               <role-badge :user="user" />
+              <div
+                v-if="hasExactRole(user, 'unapproved')"
+                class="rounded-md bg-blue-50 p-4 mt-5">
+                <div class="flex">
+                  <div class="flex-shrink-0">
+                    <InformationCircleIcon class="h-5 w-5 text-blue-400" aria-hidden="true" />
+                  </div>
+                  <div class="ml-3 flex-1 md:flex md:justify-between">
+                    <p class="text-sm text-blue-700">
+                      You aren't a member yet!
+                    </p>
+                    <p class="mt-3 text-sm md:ml-6 md:mt-0">
+                      <nuxt-link to="/come-paddle/memberships" class="whitespace-nowrap font-medium text-blue-700 hover:text-blue-600">
+                        Click here to see how to join
+                        <span aria-hidden="true"> &rarr;</span>
+                      </nuxt-link>
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
             <div class="sm:col-span-3">
               <input-field
@@ -186,6 +206,7 @@
 
 <script setup lang="ts">
 import { DirectusUser } from "nuxt-directus/dist/runtime/types";
+import { InformationCircleIcon } from "@heroicons/vue/20/solid";
 import { useDirectusUser, useDirectusUsers } from "#imports";
 import { useFileUploader } from "~/composables/useFileUploader";
 import { UploadableFile } from "~/composables/useFileManager";
