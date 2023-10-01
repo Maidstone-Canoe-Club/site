@@ -18,7 +18,7 @@
       class="z-10" />
     <email-verification-banner
       v-if="showVerificationBanner"
-      class="z-10" />
+      class="z-[9]" />
 
     <div class="absolute z-0 h-[75vh] top-16 w-full object-cover overflow-hidden ">
       <div class="bg-gradient-to-t from-gray-50 to-30% to-black/[.35] inset-0 absolute" />
