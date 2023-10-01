@@ -49,7 +49,7 @@ const modules = {
             body: formData
           })
           .then((res) => {
-            resolve(directusUrl + "/assets/" + res.data.data.id);
+            resolve(directusUrl + "/assets/" + res.data.id);
           })
           .catch((err) => {
             reject(new Error("Upload failed"));
