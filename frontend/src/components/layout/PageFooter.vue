@@ -4,8 +4,14 @@
       <div class="md:flex md:justify-between">
         <div class="mb-6 md:mb-0">
           <div class="flex items-center">
-            <img src="/images/logo.svg" class="h-14 mr-3" alt="FlowBite Logo">
-            <span class="self-center font-semibold whitespace-nowrap">Maidstone Canoe Club</span>
+            <nuxt-img
+              src="/images/logo.svg"
+              class="mr-3"
+              width="60"
+              height="60"
+              alt="Maidstone Canoe Club logo">
+              <span class="self-center font-semibold whitespace-nowrap">Maidstone Canoe Club</span>
+            </nuxt-img>
           </div>
         </div>
         <div class="grid grid-cols-2 gap-8 sm:gap-6 sm:grid-cols-3">

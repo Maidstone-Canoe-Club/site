@@ -8,6 +8,7 @@ function scripts () {
   if (process.env.NUXT_PUBLIC_UMAMI_HOST && process.env.NUXT_PUBLIC_UMAMI_ID) {
     result.push({
       src: `${process.env.NUXT_PUBLIC_UMAMI_HOST}/script.js`,
+      type: "text/partytown",
       async: true,
       "data-website-id": process.env.NUXT_PUBLIC_UMAMI_ID
     });
@@ -38,7 +39,11 @@ export default defineNuxtConfig({
 
   app: {
     head: {
+      charset: "utf-8",
       script: scripts(),
+      htmlAttrs: {
+        lang: "en"
+      },
       meta: [
         { name: "apple-mobile-web-app-title", content: "Maidstone Canoe Club" },
         { name: "application-name", content: "Maidstone Canoe Club" },
@@ -69,7 +74,8 @@ export default defineNuxtConfig({
     "nuxt-headlessui",
     "@pinia/nuxt",
     "@nuxt/image",
-    "@nuxtjs/turnstile"
+    "@nuxtjs/turnstile",
+    "@nuxtjs/partytown"
   ],
 
   directus: {
@@ -95,6 +101,10 @@ export default defineNuxtConfig({
         maxAge: 31536000
       }
     }
+  },
+
+  partytown: {
+    /* any partytown-specific configuration */
   },
 
   nitro: {
