@@ -37,6 +37,7 @@ const modules = {
       return new Promise((resolve, reject) => {
         const formData = new FormData();
         formData.append("title", file.name);
+        formData.append("type", file.type);
         formData.append("image", file);
 
         $fetch(directusUrl + "/files",
@@ -45,7 +46,7 @@ const modules = {
             headers: {
               Authorization: `Bearer ${token.value}`
             },
-            formData
+            body: formData
           })
           .then((res) => {
             resolve(directusUrl + "/assets/" + res.data.data.id);
