@@ -8,7 +8,6 @@ function scripts () {
   if (process.env.NUXT_PUBLIC_UMAMI_HOST && process.env.NUXT_PUBLIC_UMAMI_ID) {
     result.push({
       src: `${process.env.NUXT_PUBLIC_UMAMI_HOST}/script.js`,
-      type: "text/partytown",
       async: true,
       "data-website-id": process.env.NUXT_PUBLIC_UMAMI_ID
     });
@@ -74,8 +73,7 @@ export default defineNuxtConfig({
     "nuxt-headlessui",
     "@pinia/nuxt",
     "@nuxt/image",
-    "@nuxtjs/turnstile",
-    "@nuxtjs/partytown"
+    "@nuxtjs/turnstile"
   ],
 
   directus: {
@@ -101,10 +99,6 @@ export default defineNuxtConfig({
         maxAge: 31536000
       }
     }
-  },
-
-  partytown: {
-    /* any partytown-specific configuration */
   },
 
   nitro: {
