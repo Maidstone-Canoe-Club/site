@@ -160,6 +160,10 @@ if (!route.params.slug && slug) {
   }
 
   redirect += slug;
+
+  if (instance) {
+    redirect += `?instance=${instance}`;
+  }
   await navigateTo(redirect, {
     replace: true,
     redirectCode: 301

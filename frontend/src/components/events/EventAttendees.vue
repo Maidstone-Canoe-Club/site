@@ -164,40 +164,64 @@
                               <span class="bg-white px-2 text-sm text-gray-700">Medical Information</span>
                             </div>
                           </div>
-                          <div>
-                            <dt class="text-sm font-medium text-gray-500 sm:w-40 sm:flex-shrink-0">
-                              Conditions
-                            </dt>
-                            <dd class="mt-1 text-sm text-gray-900 sm:col-span-2">
-                              <div class="flex flex-wrap gap-2">
-                                <medical-badge
-                                  label="Allergies"
-                                  :value="medicalInfo.allergies" />
-                                <medical-badge
-                                  label="Asthma"
-                                  :value="medicalInfo.asthma" />
-                                <medical-badge
-                                  label="Epilepsy"
-                                  :value="medicalInfo.epilepsy" />
-                                <medical-badge
-                                  label="Diabetes"
-                                  :value="medicalInfo.diabetes" />
-                                <medical-badge
-                                  label="Other"
-                                  :value="medicalInfo.other" />
-                              </div>
-                            </dd>
-                          </div>
+                          <template v-if="medicalInfo">
+                            <div>
+                              <dt class="text-sm font-medium text-gray-500 sm:w-40 sm:flex-shrink-0">
+                                Conditions
+                              </dt>
+                              <dd class="mt-1 text-sm text-gray-900 sm:col-span-2">
+                                <div class="flex flex-wrap gap-2">
+                                  <medical-badge
+                                    label="Allergies"
+                                    :value="medicalInfo.allergies" />
+                                  <medical-badge
+                                    label="Asthma"
+                                    :value="medicalInfo.asthma" />
+                                  <medical-badge
+                                    label="Epilepsy"
+                                    :value="medicalInfo.epilepsy" />
+                                  <medical-badge
+                                    label="Diabetes"
+                                    :value="medicalInfo.diabetes" />
+                                  <medical-badge
+                                    label="Other"
+                                    :value="medicalInfo.other" />
+                                </div>
+                              </dd>
+                            </div>
 
+                            <div>
+                              <dt class="text-sm font-medium text-gray-500 sm:w-40 sm:flex-shrink-0">
+                                Other details
+                              </dt>
+                              <dd class="mt-1 text-sm text-gray-900 sm:col-span-2">
+                                {{ medicalInfo.details ?? "No other details" }}
+                              </dd>
+                            </div>
+                          </template>
                           <div>
-                            <dt class="text-sm font-medium text-gray-500 sm:w-40 sm:flex-shrink-0">
-                              Other details
-                            </dt>
-                            <dd class="mt-1 text-sm text-gray-900 sm:col-span-2">
-                              {{ medicalInfo.details ?? "No other details" }}
-                            </dd>
+                            <div class="rounded-md bg-red-50 p-4">
+                              <div class="flex">
+                                <div class="flex-shrink-0">
+                                  <XCircleIcon class="h-5 w-5 text-red-400" aria-hidden="true" />
+                                </div>
+                                <div class="ml-3">
+                                  <h3 class="text-sm font-medium text-red-800">
+                                    No medical information could be loaded for this user
+                                  </h3>
+                                </div>
+                              </div>
+                            </div>
                           </div>
                         </dl>
+                      </div>
+                      <div class="relative mt-6">
+                        <div class="absolute inset-0 flex items-center" aria-hidden="true">
+                          <div class="w-full border-t border-gray-300" />
+                        </div>
+                        <div class="relative flex justify-center">
+                          <span class="bg-white px-2 text-sm text-gray-700">Emergency contacts</span>
+                        </div>
                       </div>
                       <div
                         v-if="!isJunior(viewingUser)"
@@ -282,7 +306,8 @@
 
 <script setup lang="ts">
 import { InformationCircleIcon } from "@heroicons/vue/20/solid";
-import { UserCircleIcon, ExclamationTriangleIcon, HeartIcon, TrashIcon } from "@heroicons/vue/24/outline";
+import { XCircleIcon } from "@heroicons/vue/20/solid";
+import { UserCircleIcon, ExclamationTriangleIcon, TrashIcon } from "@heroicons/vue/24/outline";
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from "@headlessui/vue";
 import { format } from "date-fns";
 import { utcToZonedTime } from "date-fns-tz";
@@ -337,7 +362,7 @@ async function viewUser (user) {
       }
     });
 
-    medicalInfo.value = results?.length ? results[0] : null;
+    // medicalInfo.value = results?.length ? results[0] : null;
   } catch (e) {
     console.error("error loading medical info", e);
     showModal.value = false;
