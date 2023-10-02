@@ -2,7 +2,6 @@ import {FullAddress, InboundEmail, MailForward, OutboundEmail} from "./types";
 import {ofetch} from "ofetch";
 import {alphanumeric} from "nanoid-dictionary";
 import {customAlphabet} from "nanoid";
-import {resolveObjectURL} from "buffer";
 
 const postmarkUrl = "https://api.postmarkapp.com";
 const nanoid = customAlphabet(alphanumeric, 11);
@@ -59,35 +58,39 @@ export async function handleMailForward(data: InboundEmail, toAddress?: FullAddr
         console.log("found an existing thread");
         if (data.FromFull.Email.toLowerCase() === existingThread.target_email.toLowerCase()) {
           console.log("sending to " + existingThread.sender_email);
+
+          // TODO: Filter forwards by from email AND the mailForwardId from the existing thread
           const forwards = await mailForwardsService.readByQuery({
             filter: {
-              target_email: {
-                _eq: data.FromFull.Email.toLowerCase()
-              }
+              forward: {
+                _eq: existingThread.forward
+              },
             }
           });
 
-          if (forwards && forwards.length) {
-            for (const forward of forwards) {
-              let fromName = `forwards@${process.env.EMAIL_DOMAIN}`;
+          const forward = forwards && forwards.length ? forwards[0] : null;
 
-              if (forward && forward.from_name) {
-                fromName = `${forward.from_name} <${fromName}>`;
-              }
+          // if (forwards && forwards.length) {
+          //   for (const forward of forwards) {
+          let fromName = `forwards@${process.env.EMAIL_DOMAIN}`;
 
-              await sendEmail({
-                From: fromName,
-                To: existingThread.sender_email,
-                HtmlBody: data.HtmlBody,
-                TextBody: data.TextBody,
-                Subject: data.Subject,
-                ReplyTo: `reply+${existingThread.id}@${process.env.EMAIL_DOMAIN}`,
-                TrackLinks: "None",
-                Tag: "forwards",
-                Attachments: data.Attachments
-              });
-            }
+          if (forward && forward.from_name) {
+            fromName = `${forward.from_name} <${fromName}>`;
           }
+
+          await sendEmail({
+            From: fromName,
+            To: existingThread.sender_email,
+            HtmlBody: data.HtmlBody,
+            TextBody: data.TextBody,
+            Subject: data.Subject,
+            ReplyTo: `reply+${existingThread.id}@${process.env.EMAIL_DOMAIN}`,
+            TrackLinks: "None",
+            Tag: "forwards",
+            Attachments: data.Attachments
+          });
+          //   }
+          // }
         } else if (data.FromFull.Email.toLowerCase() === existingThread.sender_email.toLowerCase()) {
           console.log("sending to " + existingThread.target_email);
           let fromName = `forwards@${process.env.EMAIL_DOMAIN}`;
@@ -141,7 +144,8 @@ export async function handleMailForward(data: InboundEmail, toAddress?: FullAddr
           await mailThreadsService.createOne({
             id: newThreadId,
             target_email: foundForward.target_email,
-            sender_email: data.FromFull.Email
+            sender_email: data.FromFull.Email,
+            forward: foundForward.id
           });
 
           let fromAddress = `<forwards@${process.env.EMAIL_DOMAIN}>`;
