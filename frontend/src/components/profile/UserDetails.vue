@@ -214,6 +214,7 @@ import { UploadableFile } from "~/composables/useFileManager";
 const { uploadFile } = useFileUploader();
 const { updateUser } = useDirectusUsers();
 const user = useDirectusUser();
+const { fetchUser } = useDirectusAuth();
 const directus = useDirectus();
 
 const newPassword = ref("");
@@ -235,10 +236,11 @@ const emergencyContacts = [
 
 async function onSave (type: string) {
   try {
-    user.value = await updateUser<DirectusUser>({
+    await updateUser<DirectusUser>({
       id: user.value!.id,
       user: cleanUser(user.value, type)
     });
+    await fetchUser();
   } catch (e) {
     console.log("details not saved", e);
   }
@@ -248,7 +250,13 @@ function cleanUser (user: DirectusUser, type: string): object {
   if (type === "details") {
     return {
       first_name: user!.first_name,
-      last_name: user!.last_name
+      last_name: user!.last_name,
+      home_tel: user!.home_tel,
+      mobile: user!.mobile,
+      street_address: user!.street_address,
+      city: user!.city,
+      county: user!.county,
+      postcode: user!.postcode
     };
   } else if (type === "avatar") {
     return {
@@ -292,12 +300,13 @@ async function avatarChanged (event) {
 
 async function removeAvatar () {
   const oldId = user.value!.avatar;
-  user.value = await updateUser<DirectusUser>({
+  await updateUser<DirectusUser>({
     id: user.value!.id,
     user: {
       avatar: null
     }
   });
+  await fetchUser();
   await directus(`/files/${oldId}`, {
     method: "DELETE"
   });

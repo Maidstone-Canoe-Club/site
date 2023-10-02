@@ -14,6 +14,10 @@ const props = defineProps<{
 }>();
 
 const roleLabel = computed(() => {
+  if (!props.user || !props.user.role) {
+    return null;
+  }
+
   switch (props.user.role.name) {
   case "Administrator": return "Admin";
   case "Coach": return "Coach/PAA";
