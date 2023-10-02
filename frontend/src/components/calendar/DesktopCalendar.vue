@@ -168,7 +168,10 @@
               </time>
               <ol v-if="day.events.length > 0" class="mt-2">
                 <li v-for="(event, eventIndex) in day.events.slice(0, 2)" :key="eventIndex">
-                  <nuxt-link :to="event.href" class="flex group">
+                  <nuxt-link
+                    :to="event.href"
+                    class="flex group"
+                    :title="event.name">
                     <p class="flex-auto truncate font-medium text-gray-900 group-hover:text-indigo-600">
                       {{ event.name }}
                     </p>
