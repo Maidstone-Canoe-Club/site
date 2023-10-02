@@ -59,10 +59,9 @@ export async function handleMailForward(data: InboundEmail, toAddress?: FullAddr
         if (data.FromFull.Email.toLowerCase() === existingThread.target_email.toLowerCase()) {
           console.log("sending to " + existingThread.sender_email);
 
-          // TODO: Filter forwards by from email AND the mailForwardId from the existing thread
           const forwards = await mailForwardsService.readByQuery({
             filter: {
-              forward: {
+              id: {
                 _eq: existingThread.forward
               },
             }
@@ -70,27 +69,27 @@ export async function handleMailForward(data: InboundEmail, toAddress?: FullAddr
 
           const forward = forwards && forwards.length ? forwards[0] : null;
 
-          // if (forwards && forwards.length) {
-          //   for (const forward of forwards) {
-          let fromName = `forwards@${process.env.EMAIL_DOMAIN}`;
+          if(forward) {
+            let fromName = `forwards@${process.env.EMAIL_DOMAIN}`;
 
-          if (forward && forward.from_name) {
-            fromName = `${forward.from_name} <${fromName}>`;
+            if (forward && forward.from_name) {
+              fromName = `${forward.from_name} <${fromName}>`;
+            }
+
+            await sendEmail({
+              From: fromName,
+              To: existingThread.sender_email,
+              HtmlBody: data.HtmlBody,
+              TextBody: data.TextBody,
+              Subject: data.Subject,
+              ReplyTo: `reply+${existingThread.id}@${process.env.EMAIL_DOMAIN}`,
+              TrackLinks: "None",
+              Tag: "forwards",
+              Attachments: data.Attachments
+            });
+          }else{
+            console.error("unable to find mail forward for thread: ", existingThread.id, existingThread.forward);
           }
-
-          await sendEmail({
-            From: fromName,
-            To: existingThread.sender_email,
-            HtmlBody: data.HtmlBody,
-            TextBody: data.TextBody,
-            Subject: data.Subject,
-            ReplyTo: `reply+${existingThread.id}@${process.env.EMAIL_DOMAIN}`,
-            TrackLinks: "None",
-            Tag: "forwards",
-            Attachments: data.Attachments
-          });
-          //   }
-          // }
         } else if (data.FromFull.Email.toLowerCase() === existingThread.sender_email.toLowerCase()) {
           console.log("sending to " + existingThread.target_email);
           let fromName = `forwards@${process.env.EMAIL_DOMAIN}`;
@@ -111,7 +110,8 @@ export async function handleMailForward(data: InboundEmail, toAddress?: FullAddr
             Attachments: data.Attachments
           });
         } else {
-          console.log("no thread found for", threadId);
+          console.log(`no thread found for: ${threadId} creating new thread`);
+          await handleNewMailThread(data, toAddress, forward, mailThreadsService, mailForwardsService);
         }
       } else {
         console.log("something went wrong, unknown from address for thread");
@@ -121,58 +121,62 @@ export async function handleMailForward(data: InboundEmail, toAddress?: FullAddr
     }
   } else {
     // We have received a new email to forward
-    try {
+    await handleNewMailThread(data, toAddress, forward, mailThreadsService, mailForwardsService);
+  }
+}
 
-      let foundForwards: MailForward[] = [];
-      if (forward) {
-        foundForwards.push(forward);
-      }
-      if (!forward && toAddress) {
-        const split = toAddress.Email.split("@");
-        if (!split || split.length !== 2) {
-          console.error("Invalid to address: " + toAddress.Email);
-          return;
-        }
-        const name = split[0]!;
-        foundForwards = await extractForwardTarget(name, mailForwardsService);
-      }
+async function handleNewMailThread(data: InboundEmail, toAddress?: FullAddress, forward?: MailForward, mailThreadsService: any, mailForwardsService: any){
+  try {
 
-      if (foundForwards && foundForwards.length) {
-        for (const foundForward of foundForwards) {
-          const newThreadId = nanoid();
-
-          await mailThreadsService.createOne({
-            id: newThreadId,
-            target_email: foundForward.target_email,
-            sender_email: data.FromFull.Email,
-            forward: foundForward.id
-          });
-
-          let fromAddress = `<forwards@${process.env.EMAIL_DOMAIN}>`;
-
-          if (data.FromName) {
-            fromAddress = `${data.FromName} ${fromAddress}`;
-          }
-
-          // send email to target
-          await sendEmail({
-            From: fromAddress,
-            To: foundForward.target_email,
-            HtmlBody: data.HtmlBody,
-            TextBody: data.TextBody,
-            Subject: data.Subject,
-            ReplyTo: `reply+${newThreadId}@${process.env.EMAIL_DOMAIN}`,
-            TrackLinks: "None",
-            Tag: "forwards",
-            Attachments: data.Attachments
-          });
-        }
-      } else {
-        console.log("no mail forward found or provided");
-      }
-    } catch (e) {
-      console.error("something went wrong creating a new mail thread", e, e.message, e.data);
+    let foundForwards: MailForward[] = [];
+    if (forward) {
+      foundForwards.push(forward);
     }
+    if (!forward && toAddress) {
+      const split = toAddress.Email.split("@");
+      if (!split || split.length !== 2) {
+        console.error("Invalid to address: " + toAddress.Email);
+        return;
+      }
+      const name = split[0]!;
+      foundForwards = await extractForwardTarget(name, mailForwardsService);
+    }
+
+    if (foundForwards && foundForwards.length) {
+      for (const foundForward of foundForwards) {
+        const newThreadId = nanoid();
+
+        await mailThreadsService.createOne({
+          id: newThreadId,
+          target_email: foundForward.target_email,
+          sender_email: data.FromFull.Email,
+          forward: foundForward.id
+        });
+
+        let fromAddress = `<forwards@${process.env.EMAIL_DOMAIN}>`;
+
+        if (data.FromName) {
+          fromAddress = `${data.FromName} ${fromAddress}`;
+        }
+
+        // send email to target
+        await sendEmail({
+          From: fromAddress,
+          To: foundForward.target_email,
+          HtmlBody: data.HtmlBody,
+          TextBody: data.TextBody,
+          Subject: data.Subject,
+          ReplyTo: `reply+${newThreadId}@${process.env.EMAIL_DOMAIN}`,
+          TrackLinks: "None",
+          Tag: "forwards",
+          Attachments: data.Attachments
+        });
+      }
+    } else {
+      console.log("no mail forward found or provided");
+    }
+  } catch (e) {
+    console.error("something went wrong creating a new mail thread", e, e.message, e.data);
   }
 }
 
