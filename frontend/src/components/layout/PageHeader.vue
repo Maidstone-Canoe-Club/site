@@ -107,7 +107,9 @@
             </Menu>
           </template>
           <template v-else>
-            <nuxt-link :to="loginUrl" class="ml-6 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500" data-umami-event="Login button">
+            <nuxt-link
+              :to="loginUrl"
+              class="ml-6 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500">
               Login
             </nuxt-link>
           </template>

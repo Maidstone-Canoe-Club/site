@@ -1,37 +1,25 @@
 ﻿import * as Sentry from "@sentry/vue";
-import type { Router } from "vue-router";
 
 export default defineNuxtPlugin((nuxtApp) => {
   const config = useRuntimeConfig();
+  const router = useRouter();
+
+  if (!config.public.sentry.dsn) {
+    return;
+  }
 
   Sentry.init({
-    enabled: config.public.SENTRY_ENABLED,
     app: nuxtApp.vueApp,
     autoSessionTracking: true,
     debug: config.public.ENV !== "production",
-    dsn: config.public.SENTRY_DSN,
-    release: config.public.SENTRY_RELEASE,
-    environment: config.public.SENTRY_ENVIRONMENT,
+    dsn: config.public.sentry.dsn,
+    environment: config.public.sentry.environment,
     integrations: [
       new Sentry.BrowserTracing({
-        routingInstrumentation: Sentry.vueRouterInstrumentation(nuxtApp.$router as Router)
+        routingInstrumentation: Sentry.vueRouterInstrumentation(router)
       })
     ],
-    trackComponents: true,
-    hooks: ["activate", "create", "destroy", "mount", "update"],
-    // Set tracesSampleRate to 1.0 to capture 100%
-    // of transactions for performance monitoring.
-    // We recommend adjusting this value in production
-    tracesSampleRate: 0.2
+    tracePropagationTargets: ["localhost", config.public.BASE_URL],
+    tracesSampleRate: 0.1
   });
-
-  return {
-    provide: {
-      sentrySetContext: Sentry.setContext,
-      sentrySetUser: Sentry.setUser,
-      sentrySetTag: Sentry.setTag,
-      sentryAddBreadcrumb: Sentry.addBreadcrumb,
-      sentryCaptureException: Sentry.captureException
-    }
-  };
 });
