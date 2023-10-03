@@ -50,7 +50,7 @@ export default defineEndpoint((router, {services}) => {
 
       for(const lineItem of sessionWithLineItems.line_items.data){
         orders.push({
-          user: lineItem.price.metadata.user_id,
+          user: lineItem.price.metadata.customer_user_id,
           amount: lineItem.amount_total,
           customer_id: sessionWithLineItems.customer,
           description: lineItem.description,

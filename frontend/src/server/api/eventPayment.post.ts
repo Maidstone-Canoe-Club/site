@@ -115,6 +115,7 @@ export default defineEventHandler(async (event) => {
         date: eventDate,
         event_name: eventItem.title,
         event_id: eventItem.id,
+        customer_user_id: userIds,
         user_ids: Array.isArray(userIds) ? userIds.join(",") : userIds,
         event_instance: instance
       },
