@@ -24,10 +24,10 @@ export default defineNuxtConfig({
     public: {
       BASE_URL: process.env.BASE_URL,
       ENV: process.env.NODE_ENV ?? "production",
-      SENTRY_ENABLED: (process.env.NODE_ENV ?? "production") === "production",
-      SENTRY_DSN: process.env.SENTRY_DSN,
-      SENTRY_ENVIRONMENT: process.env.SENTRY_ENVIRONMENT,
-      SENTRY_RELEASE: process.env.SENTRY_RELEASE
+      sentry: {
+        dsn: process.env.SENTRY_DSN,
+        environment: process.env.SENTRY_ENVIRONMENT
+      }
     }
   },
 
@@ -73,7 +73,8 @@ export default defineNuxtConfig({
     "nuxt-headlessui",
     "@pinia/nuxt",
     "@nuxt/image",
-    "@nuxtjs/turnstile"
+    "@nuxtjs/turnstile",
+    "floating-vue/nuxt"
   ],
 
   directus: {
