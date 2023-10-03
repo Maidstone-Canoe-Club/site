@@ -37,7 +37,7 @@ export default defineNitroPlugin((nitroApp) => {
     event.context.$sentry = Sentry;
   });
 
-  nitroApp.hooks.once("close", async () => {
+  nitroApp.hooks.hookOnce("close", async () => {
     await Sentry.close(2000);
   });
 });
