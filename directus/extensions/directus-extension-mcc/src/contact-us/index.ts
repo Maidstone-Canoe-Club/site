@@ -42,6 +42,7 @@ export default defineEndpoint((router, {services, database}) => {
       const extractedForwards = await extractForwardTarget(forward.name, mailForwardsService);
       const extractedForward = extractedForwards && extractedForwards.length ? extractedForwards[0] : null;
 
+      // TODO: possibly handle multiple forwards?
       if (!extractedForward) {
         return res.status(500).send("could not extract mail forward target");
       }
