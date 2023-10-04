@@ -6,7 +6,7 @@ import {customAlphabet} from "nanoid";
 const postmarkUrl = "https://api.postmarkapp.com";
 const nanoid = customAlphabet(alphanumeric, 11);
 
-async function extractForwardTarget(targetName: string, mailForwardsService: any) {
+export async function extractForwardTarget(targetName: string, mailForwardsService: any) {
 
   console.log("extracting mail forward target email for", targetName);
 
