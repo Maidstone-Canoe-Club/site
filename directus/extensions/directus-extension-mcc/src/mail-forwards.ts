@@ -47,7 +47,7 @@ async function extractForwardTarget(targetName: string, mailForwardsService: any
 
 export async function handleMailForward(data: InboundEmail, toAddress?: FullAddress, forward?: MailForward, mailThreadsService: any, mailForwardsService: any) {
 
-  console.log("handing mail forward", toAddress.Email, data.From);
+  console.log("handing mail forward", toAddress?.Email, data.From);
   if (toAddress && toAddress.Email.startsWith("reply+")) {
     const threadId = toAddress.MailboxHash;
 
