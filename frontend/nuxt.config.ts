@@ -44,6 +44,7 @@ export default defineNuxtConfig({
         lang: "en"
       },
       meta: [
+        { name: "description", content: "Maidstone Canoe Club - Kayak, Canoe and SUP Club in Maidstone, Kent, UK" },
         { name: "apple-mobile-web-app-title", content: "Maidstone Canoe Club" },
         { name: "application-name", content: "Maidstone Canoe Club" },
         { name: "msapplication-TileColor", content: "#cbeeff" },
