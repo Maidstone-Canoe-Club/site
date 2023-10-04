@@ -56,25 +56,7 @@
           </div>
         </div>
         <div class="space-y-10 lg:pl-16 xl:pl-32">
-          <!--          <div class="bg-white shadow sm:rounded-lg mt-12">-->
-          <!--            <div class="px-4 py-5 sm:p-6">-->
-          <!--              <h3 class="text-base font-semibold leading-6 text-gray-900">-->
-          <!--                Stay up to date-->
-          <!--              </h3>-->
-          <!--              <div class="mt-2 max-w-xl text-sm text-gray-500">-->
-          <!--                <p>Subscribe to the MCC newsletter</p>-->
-          <!--              </div>-->
-          <!--              <form class="mt-5 sm:flex sm:items-center">-->
-          <!--                <div class="w-full sm:max-w-xs">-->
-          <!--                  <label for="email" class="sr-only">Email</label>-->
-          <!--                  <input id="email" type="email" name="email" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" placeholder="you@example.com">-->
-          <!--                </div>-->
-          <!--                <button type="submit" class="mt-3 inline-flex w-full items-center justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:ml-3 sm:mt-0 sm:w-auto">-->
-          <!--                  Subscribe-->
-          <!--                </button>-->
-          <!--              </form>-->
-          <!--            </div>-->
-          <!--          </div>-->
+          <lazy-newsletter-subscriber />
 
           <!--          <div class="mt-10 p-5 border border-gray-200 rounded-2xl">-->
           <!--            <small>List of events this week</small>-->
@@ -155,8 +137,6 @@ definePageMeta({
 });
 
 const { getItems, getSingletonItem } = useDirectusItems();
-
-const newsletterEmail = ref("");
 
 const { data: home } = await useAsyncData("home", async () => {
   return await getSingletonItem<Home>({

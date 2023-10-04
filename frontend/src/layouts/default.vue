@@ -7,7 +7,7 @@
     <div class="mx-auto w-full max-w-7xl flex-grow px-2 sm:px-6 lg-px-8">
       <slot />
     </div>
-    <page-footer class="mt-8" />
+    <lazy-page-footer class="mt-8" />
   </div>
 </template>
 
