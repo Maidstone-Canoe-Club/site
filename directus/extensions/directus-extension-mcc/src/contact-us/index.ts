@@ -1,6 +1,6 @@
 import {defineEndpoint} from "@directus/extensions-sdk";
 import {InboundEmail} from "../types";
-import {handleMailForward} from "../mail-forwards";
+import {extractForwardTarget, handleMailForward} from "../mail-forwards";
 
 export default defineEndpoint((router, {services, database}) => {
   const {
@@ -35,8 +35,15 @@ export default defineEndpoint((router, {services, database}) => {
 
       const forward = await mailForwardsService.readOne(data.to.send_to);
 
-      if(!forward){
+      if (!forward) {
         return res.status(500).send("unknown mail forward");
+      }
+
+      const extractedForwards = await extractForwardTarget(forward.name, mailForwardsService);
+      const extractedForward = extractedForwards && extractedForwards.length ? extractedForwards[0] : null;
+
+      if (!extractedForward) {
+        return res.status(500).send("could not extract mail forward target");
       }
 
       const mailThreadsService = new ItemsService("mail_threads", {knex: database, schema: req.schema, accountability: adminAccountability});
@@ -52,7 +59,7 @@ export default defineEndpoint((router, {services, database}) => {
         }
       };
 
-      await handleMailForward(inboundEmail, null, forward, mailThreadsService, mailForwardsService);
+      await handleMailForward(inboundEmail, undefined, extractedForward, mailThreadsService, mailForwardsService);
 
       return res.send(true);
     } catch (e) {
