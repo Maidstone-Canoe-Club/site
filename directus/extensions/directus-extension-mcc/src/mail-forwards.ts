@@ -127,12 +127,14 @@ export async function handleMailForward(data: InboundEmail, toAddress?: FullAddr
 
 async function handleNewMailThread(data: InboundEmail, toAddress?: FullAddress, forward?: MailForward, mailThreadsService: any, mailForwardsService: any){
   try {
-
+    console.log("handling new mail thread", data, toAddress, forward);
     let foundForwards: MailForward[] = [];
     if (forward) {
       foundForwards.push(forward);
     }
+
     if (!forward && toAddress) {
+      // we haven't got a mail forward but we do have a to address
       const split = toAddress.Email.split("@");
       if (!split || split.length !== 2) {
         console.error("Invalid to address: " + toAddress.Email);
@@ -144,6 +146,7 @@ async function handleNewMailThread(data: InboundEmail, toAddress?: FullAddress, 
 
     if (foundForwards && foundForwards.length) {
       for (const foundForward of foundForwards) {
+        console.log("found a forward", foundForward);
         const newThreadId = nanoid();
 
         await mailThreadsService.createOne({
