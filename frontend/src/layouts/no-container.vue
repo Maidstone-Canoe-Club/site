@@ -5,6 +5,7 @@
     <div class="flex justify-center items-center mb-12 mt-12">
       <nuxt-img
         src="/images/logo.svg"
+        alt="MCC logo"
         width="200px"
         height="200px" />
     </div>
@@ -27,6 +28,7 @@
         height="1100"
         :width="width"
         :placeholder="15"
+        alt="Hero background image"
         class="h-full object-cover w-full z-5" />
     </div>
 
@@ -34,7 +36,7 @@
       <div class="mx-auto w-full max-w-7xl flex flex-grow px-4 sm:px-6 lg-px-8 flex-col sm:flex-row gap-4 sm:gap-8 justify-center">
         <img
           src="/images/logo-white.svg"
-          alt="logo"
+          alt="MCC logo"
           class="w-[150px] sm:w-[200px] h-[150px] sm:h-[200px] drop-shadow-[0_2px_2px_black]">
         <div class="flex flex-col flex-shrink justify-center max-w-[666px]">
           <h1 class="text-4xl font-bold text-white drop-shadow-[0_1px_1px_black]">
