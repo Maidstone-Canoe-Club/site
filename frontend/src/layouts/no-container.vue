@@ -52,7 +52,7 @@
     <div>
       <slot />
     </div>
-    <page-footer class="mt-8" />
+    <lazy-page-footer class="mt-8" />
   </div>
 </template>
 

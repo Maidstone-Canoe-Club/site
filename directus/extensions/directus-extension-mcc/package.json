@@ -67,6 +67,11 @@
 				"type": "endpoint",
 				"name": "contact-us",
 				"source": "src/contact-us/index.ts"
+			},
+			{
+				"type": "endpoint",
+				"name": "newsletters",
+				"source": "src/newsletters/index.ts"
 			}
 		]
 	},
