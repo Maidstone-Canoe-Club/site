@@ -56,7 +56,10 @@
         <span class="text-sm text-gray-500 sm:text-center ">© 2023 Maidstone Canoe Club. All Rights Reserved.
         </span>
         <div class="flex mt-4 space-x-5 sm:justify-center sm:mt-0">
-          <nuxt-link to="https://www.facebook.com/MaidstoneCanoeClub/" class="text-gray-500 hover:text-gray-900 e">
+          <nuxt-link
+            to="https://www.facebook.com/MaidstoneCanoeClub/"
+            target="_blank"
+            class="text-gray-500 hover:text-gray-900 e">
             <svg
               class="w-4 h-4"
               aria-hidden="true"
@@ -70,7 +73,10 @@
             </svg>
             <span class="sr-only">Facebook page</span>
           </nuxt-link>
-          <nuxt-link to="https://www.facebook.com/MaidstoneCanoeClub/" class="text-gray-500 hover:text-gray-900 e">
+          <nuxt-link
+            to="https://www.facebook.com/MaidstoneCanoeClub/"
+            target="_blank"
+            class="text-gray-500 hover:text-gray-900 e">
             <svg
               class="w-4 h-4"
               aria-hidden="true"
@@ -84,7 +90,10 @@
             </svg>
             <span class="sr-only">Twitter page</span>
           </nuxt-link>
-          <nuxt-link to="https://www.youtube.com/MaidstoneCanoeClub/" class="text-gray-500 hover:text-gray-900 e">
+          <nuxt-link
+            to="https://www.youtube.com/MaidstoneCanoeClub/"
+            target="_blank"
+            class="text-gray-500 hover:text-gray-900 e">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               height="1em"
@@ -95,7 +104,10 @@
             </svg>
             <span class="sr-only">YouTube channel</span>
           </nuxt-link>
-          <nuxt-link to="https://www.instagram.com/maidstonecanoeclub/" class="text-gray-500 hover:text-gray-900 e">
+          <nuxt-link
+            to="https://www.instagram.com/maidstonecanoeclub/"
+            target="_blank"
+            class="text-gray-500 hover:text-gray-900 e">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               height="1em"
