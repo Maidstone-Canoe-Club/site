@@ -160,34 +160,43 @@
               v-for="(day, dayIndex) in days"
               :key="dayIndex"
               class="min-h-[120px]"
-              :class="[day.isCurrentMonth ? 'bg-white' : 'bg-gray-50 text-gray-500', 'relative px-3 py-2']">
+              :class="[day.isCurrentMonth ? 'bg-white' : 'bg-gray-50 text-gray-500', 'relative px-1 py-2']">
               <time
                 :datetime="day.date"
+                class="ml-2"
                 :class="day.isToday ? 'flex h-6 w-6 items-center justify-center rounded-full bg-indigo-600 font-semibold text-white' : undefined">
                 {{ day.date.split('-').pop().replace(/^0/, '') }}
               </time>
               <ol v-if="day.events.length > 0" class="mt-2">
-                <li v-for="(event, eventIndex) in day.events.slice(0, 2)" :key="eventIndex">
+                <li
+                  v-for="(event, eventIndex) in day.events.slice(0, displayEventsPerDay)"
+                  :key="eventIndex"
+                  class="mb-1">
                   <nuxt-link
                     v-tooltip="event.name"
                     :to="event.href"
-                    class="flex group">
-                    <p class="flex-auto truncate font-medium text-gray-900 group-hover:text-indigo-600">
+                    :class="getEventBorderColor(event)"
+                    class="flex group border-l-4 border-blue-500 pl-1"
+                    @mouseenter="hoveringEnter(event)"
+                    @mouseleave="hoveringLeave()">
+                    <p
+                      class="flex-auto truncate font-medium text-gray-900 group-hover:text-indigo-600"
+                      :class="getHoverState(event)">
                       {{ event.name }}
                     </p>
                     <time
+                      v-if="event.time"
                       :datetime="event.datetime"
-                      class="ml-3 hidden flex-none text-gray-500 group-hover:text-indigo-600 xl:block">{{
-                        event.time
-                      }}
+                      class="ml-3 hidden flex-none text-gray-500 group-hover:text-indigo-600 xl:block">
+                      {{ event.time }}
                     </time>
                   </nuxt-link>
                 </li>
                 <button
-                  v-if="day.events.length > 2"
-                  class="text-indigo-500 hover:text-indigo-600"
+                  v-if="day.events.length > displayEventsPerDay"
+                  class="text-indigo-500 hover:text-indigo-600 ml-2"
                   @click="openDay(day)">
-                  + {{ day.events.length - 2 }} more
+                  + {{ day.events.length - displayEventsPerDay }} more
                 </button>
               </ol>
             </div>
@@ -296,7 +305,7 @@
                               {{ event.name }}
                             </p>
                             <time :datetime="event.datetime" class="mt-2 flex items-center text-gray-700">
-                              <!--                  <ClockIcon class="mr-2 h-5 w-5 text-gray-400" aria-hidden="true" />-->
+                              <ClockIcon class="mr-2 h-5 w-5 text-gray-400" aria-hidden="true" />
                               {{ event.time }}
                             </time>
                           </div>
@@ -334,17 +343,44 @@
 </template>
 
 <script setup lang="ts">
-import { ChevronLeftIcon, ChevronRightIcon, EllipsisHorizontalIcon, XMarkIcon } from "@heroicons/vue/24/outline";
+import {
+  ClockIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  EllipsisHorizontalIcon,
+  XMarkIcon
+} from "@heroicons/vue/24/outline";
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from "@headlessui/vue";
 import enGB from "date-fns/locale/en-GB/index.js";
 import { format, getISODay, setDefaultOptions } from "date-fns";
 import { useCalendarStore } from "~/store/calendarStore";
 import { EventItem } from "~/types";
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   events: EventItem[],
   loading: boolean
-}>();
+  displayEventsPerDay: number
+}>(), {
+  displayEventsPerDay: 3
+});
+
+const eventHovering = ref<string | null>(null);
+
+function hoveringEnter (event: EventItem) {
+  eventHovering.value = event.href;
+}
+
+function hoveringLeave () {
+  eventHovering.value = null;
+}
+
+function getHoverState (event: EventItem) {
+  if (eventHovering.value === event.href) {
+    return "underline  group-hover:text-indigo-600";
+  }
+
+  return null;
+}
 
 setDefaultOptions({
   locale: enGB,
@@ -468,8 +504,7 @@ function getEventsForDay (date: Date): EventData[] {
 
       return dayMatches;
     }).map((e) => {
-      const date = new Date(e.start_date);
-
+      const startDate = new Date(e.start_date);
       let title = e.title;
 
       if (e.event_index && e.event_count) {
@@ -482,12 +517,20 @@ function getEventsForDay (date: Date): EventData[] {
         href += "?instance=" + e.instance;
       }
 
+      const eventStart = new Date(e.start_date).setHours(0, 0, 0, 0);
+      const toCheck = date.setHours(0, 0, 0, 0);
+
+      // Only show the time value is the event start date is the day we are loading events for
+      // eg single events that span multiple days
+      const showTime = eventStart === toCheck;
+
       return {
         id: e.id,
         name: title,
-        time: format(date, "H:mmaa"),
-        datetime: `${format(date, "yyyy-MM-dd")}T${format(date, "H:mm")}`,
+        time: showTime ? format(startDate, "h:mmaa") : null,
+        datetime: `${format(startDate, "yyyy-MM-dd")}T${format(startDate, "H:mm")}`,
         parentId: e.parent_event,
+        type: e.type,
         href
       };
     });
@@ -506,6 +549,31 @@ const canAddEvent = computed(() => hasRole(user.value, "Committee"));
 
 function formatDate (input: Date) {
   return format(new Date(input), "do MMMM");
+}
+
+function getEventBorderColor (event: EventItem) {
+  switch (event.type) {
+  case "club_paddle":
+    return "border-blue-500";
+  case "pool_session":
+    return "border-cyan-500";
+  case "paddles_trips_tours":
+    return "border-orange-500";
+  case "fun_session":
+    return "border-violet-500";
+  case "social_events":
+    return "border-rose-500";
+  case "beginners_course":
+    return "border-green-500";
+  case "race_training":
+    return "border-yellow-500";
+  case "race":
+    return "border-line-500";
+  case "coaching":
+    return "border-red-500";
+  default:
+    return "border-gray-300";
+  }
 }
 
 </script>
