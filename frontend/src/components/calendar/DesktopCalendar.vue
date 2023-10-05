@@ -176,7 +176,7 @@
                     v-tooltip="event.name"
                     :to="event.href"
                     :class="getEventBorderColor(event)"
-                    class="flex group border-l-4 border-blue-500 pl-1"
+                    class="flex group border-l-4 border-blue-500 pl-1 transition-colors"
                     @mouseenter="hoveringEnter(event)"
                     @mouseleave="hoveringLeave()">
                     <p
@@ -218,7 +218,8 @@
                 <span
                   v-for="event in day.events"
                   :key="event.id + '-small'"
-                  class="mb-1 rounded-full bg-gray-400 mx-0.5 h-1.5 w-1.5" />
+                  :class="getEventDotColor(event)"
+                  class="mb-1 rounded-full mx-0.5 h-1.5 w-1.5" />
               </span>
             </button>
           </div>
@@ -231,11 +232,17 @@
             :key="event.id"
             class="flex p-4 pr-6 group focus-within:bg-gray-50 hover:bg-gray-50">
             <div class="flex-auto">
-              <p class="font-semibold text-gray-900">
-                {{ event.name }}
-              </p>
-              <time :datetime="event.datetime" class="mt-2 flex items-center text-gray-700">
-                <!--                  <ClockIcon class="mr-2 h-5 w-5 text-gray-400" aria-hidden="true" />-->
+              <div class="flex flex-row gap-2 items-center">
+                <p
+                  class="font-semibold text-gray-900 border-l-4 pl-2"
+                  :class="getEventBorderColor(event)">
+                  {{ event.name }}
+                </p>
+              </div>
+              <time
+                v-if="event.time"
+                :datetime="event.datetime"
+                class="mt-2 flex items-center text-gray-700">
                 {{ event.time }}
               </time>
             </div>
@@ -301,11 +308,15 @@
                           :key="event.id"
                           class="flex p-4 pr-6 group focus-within:bg-gray-50 hover:bg-gray-50">
                           <div class="flex-auto">
-                            <p class="font-semibold text-gray-900">
+                            <p
+                              class="font-semibold text-gray-900 border-l-4 pl-2"
+                              :class="getEventBorderColor(event)">
                               {{ event.name }}
                             </p>
-                            <time :datetime="event.datetime" class="mt-2 flex items-center text-gray-700">
-                              <ClockIcon class="mr-2 h-5 w-5 text-gray-400" aria-hidden="true" />
+                            <time
+                              v-if="event.time"
+                              :datetime="event.datetime"
+                              class="mt-2 flex items-center text-gray-700">
                               {{ event.time }}
                             </time>
                           </div>
@@ -552,6 +563,12 @@ function formatDate (input: Date) {
 }
 
 function getEventBorderColor (event: EventItem) {
+  const hover = getHoverState(event);
+
+  if (eventHovering.value && !hover) {
+    return "border-gray-300";
+  }
+
   switch (event.type) {
   case "club_paddle":
     return "border-blue-500";
@@ -573,6 +590,37 @@ function getEventBorderColor (event: EventItem) {
     return "border-red-500";
   default:
     return "border-gray-300";
+  }
+}
+
+function getEventDotColor (event: EventItem) {
+  const hover = getHoverState(event);
+
+  if (eventHovering.value && !hover) {
+    return "bg-gray-300";
+  }
+
+  switch (event.type) {
+  case "club_paddle":
+    return "bg-blue-500";
+  case "pool_session":
+    return "bg-cyan-500";
+  case "paddles_trips_tours":
+    return "bg-orange-500";
+  case "fun_session":
+    return "bg-violet-500";
+  case "social_events":
+    return "bg-rose-500";
+  case "beginners_course":
+    return "bg-green-500";
+  case "race_training":
+    return "bg-yellow-500";
+  case "race":
+    return "bg-line-500";
+  case "coaching":
+    return "bg-red-500";
+  default:
+    return "bg-gray-300";
   }
 }
 
