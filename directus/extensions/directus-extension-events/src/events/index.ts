@@ -499,7 +499,8 @@ async function createMultiEvent(eventItem, eventDates, eventService, res) {
         price: eventItem.price,
         junior_price: eventItem.junior_price,
         allowed_roles: eventItem.allowedRoles,
-        parent_event: firstEventId
+        parent_event: firstEventId,
+        type: eventItem.type
       });
     }
 
