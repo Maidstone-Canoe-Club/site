@@ -383,10 +383,7 @@ export default defineEndpoint((router, {services, database}) => {
       accountability: req.accountability
     });
 
-    // if the event has a price or a junior price AND the user is not a committee or admin role
-    // set status to draft
-    // else set to published
-
+    eventItem.status = "published";
 
     if (eventItem.price || eventItem.junior_price) {
       const loggedInUserId = req.accountability.user;
@@ -398,9 +395,7 @@ export default defineEndpoint((router, {services, database}) => {
       // roles that are allowed to create an event with a price
       const allowedRoles = ["committee", "administrator"];
 
-      if (allowedRoles.includes(user.role.name.toLowerCase())) {
-        eventItem.status = "published";
-      } else {
+      if (!allowedRoles.includes(user.role.name.toLowerCase())) {
         eventItem.status = "draft";
       }
     }
