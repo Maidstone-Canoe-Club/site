@@ -186,9 +186,17 @@ async function handleMailingList(data: InboundEmail, toAddress: FullAddress, mai
             continue;
           }
 
+          let from: string;
+          if(!data.FromName || data.FromName === ""){
+            const emailNamePart = data.From.split("@")[0];
+            from = `${emailNamePart} via ${mailingList.name} <${mailingList.email_name}@${process.env.EMAIL_DOMAIN}>`;
+          }else{
+            from = `${data.FromName} via ${mailingList.name} <${mailingList.email_name}@${process.env.EMAIL_DOMAIN}>`;
+          }
+
           const emailsToSend = chunk.map(subscriber => ({
             To: subscriber.email,
-            From: `${data.FromName} via ${mailingList.name} <${mailingList.email_name}@${process.env.EMAIL_DOMAIN}>`,
+            From: from,
             Subject: data.Subject,
             TextBody: data.StrippedTextReply,
             HtmlBody: data.HtmlBody,

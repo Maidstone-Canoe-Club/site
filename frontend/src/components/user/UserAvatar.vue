@@ -1,11 +1,13 @@
 ﻿<template>
   <template v-if="user">
-    <img
+    <nuxt-img
       v-if="hasAvatar"
       class="rounded-full"
+      :width="imageSize"
+      :height="imageSize"
       :class="sizeClass"
       :src="avatarUrl!"
-      alt="User avatar">
+      alt="User avatar" />
     <UserCircleIcon
       v-else
       class="text-gray-300"

@@ -1,32 +1,21 @@
 ﻿<template>
   <div v-if="internalBookings && internalBookings.length">
-    <strong>Bookings</strong>
+    <strong>Attendees</strong>
     <ul
       role="list"
       class="divide-y divide-gray-100">
       <li v-for="booking in internalBookings" :key="booking.email" class="flex items-center justify-between gap-x-6 py-5">
         <div class="flex min-w-0 gap-x-2 items-center">
-          <img
-            v-if="booking.user.avatar"
-            class="h-12 w-12 flex-none rounded-full bg-gray-50"
-            :src="getAvatarUrl(booking.user)"
-            alt="">
-          <UserCircleIcon
-            v-else
-            class="h-12 w-12 text-gray-300"
-            aria-hidden="true" />
+          <user-avatar
+            size-class="w-12 h-12"
+            :user="booking.user" />
           <div class="min-w-0 flex-auto">
             <div class="flex gap-3 items-center">
               <p class="text-sm font-semibold leading-6 text-gray-900">
                 {{ booking.user.first_name }} {{ booking.user.last_name }}
               </p>
-              <role-badge :user="booking.user" />
             </div>
-            <p
-              v-if="booking.user.email"
-              class="truncate text-xs leading-5 text-gray-500">
-              {{ booking.user.email }}
-            </p>
+            <role-badge :user="booking.user" />
           </div>
         </div>
         <button
@@ -190,7 +179,7 @@
                               </dd>
                             </div>
 
-                            <div>
+                            <div v-if="medicalInfo.details && medicalInfo.details !== ''">
                               <dt class="text-sm font-medium text-gray-500 sm:w-40 sm:flex-shrink-0">
                                 Other details
                               </dt>
@@ -273,6 +262,7 @@
                 </div>
                 <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                   <button
+                    v-if="userIsLeader"
                     type="button"
                     class="inline-flex w-full gap-2 items-center justify-center rounded-md bg-red-50 px-3 py-2 text-sm font-semibold ring-1 ring-inset ring-red-300 text-red-600 shadow-sm hover:bg-red-100 sm:ml-3 sm:w-auto"
                     @click="cancelBooking(viewingUser)">
@@ -317,7 +307,8 @@ const emits = defineEmits(["refresh"]);
 const props = defineProps<{
   bookings: any,
   eventId: string,
-  instance?: string
+  instance?: string,
+  userIsLeader: boolean
 }>();
 
 const internalBookings = ref(props.bookings);
@@ -400,7 +391,7 @@ async function onCancelBooking () {
 }
 
 function canViewBooking () {
-  return hasRole(user.value, "coach");
+  return hasRole(user.value, "coach") || props.userIsLeader;
 }
 
 function formatDate (input: string) {

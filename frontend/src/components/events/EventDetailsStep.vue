@@ -58,6 +58,32 @@
         </span>
       </template>
 
+      <template v-if="showPriceWarning">
+        <div class="rounded-md bg-yellow-50 p-4">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <ExclamationTriangleIcon class="h-5 w-5 text-yellow-400" aria-hidden="true" />
+            </div>
+            <div class="ml-3">
+              <h3 class="text-sm font-medium text-yellow-800">
+                Event will be hidden
+              </h3>
+              <div class="mt-2 text-sm text-yellow-700">
+                <p>This event will be hidden if you give this event a price, and will need to be approved before it becomes visible</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </template>
+
+      <div v-show="canChangeLeaders">
+        <user-search
+          v-model="internalValue.leaders"
+          label="Event leaders"
+          placeholder="Start typing the name of the club member"
+          multiple />
+      </div>
+
       <input-field
         id="max-spaces"
         v-model="internalValue.max_spaces"
@@ -72,6 +98,7 @@
       :show-back-button="showBackButton"
       can-go-next
       :is-last="isLast"
+      :loading="loading"
       @prev="onPrev"
       @next="onNext" />
   </div>
@@ -79,15 +106,19 @@
 
 <script setup lang="ts">
 import { useVuelidate, Validation } from "@vuelidate/core";
+import { ExclamationTriangleIcon } from "@heroicons/vue/20/solid";
 import { required } from "@vuelidate/validators";
 import { Ref } from "vue";
 
 const emits = defineEmits(["update:modelValue", "prev", "next"]);
 
+const user = useDirectusUser();
+
 const props = defineProps<{
   eventItem: any,
   showBackButton: boolean,
-  isLast: boolean
+  isLast: boolean,
+  loading: boolean
 }>();
 
 const internalValue = computed({
@@ -131,6 +162,18 @@ watch(() => internalValue.value.allowedRoles, (val, oldVal) => {
 
 const juniorsAllowed = computed(() => !!internalValue.value.allowedRoles.find(x => x.id === "juniors"));
 const showPrice = computed(() => !internalValue.value.allowedRoles.find(x => x.id === "none"));
+
+const showPriceWarning = computed(() => {
+  if ((showPrice.value || juniorsAllowed.value) && hasExactRole(user.value, "member")) {
+    return internalValue.value.price || internalValue.value.junior_price;
+  }
+
+  return false;
+});
+
+const canChangeLeaders = computed(() => {
+  return hasRole(user.value, "committee");
+});
 
 const rules = {
   title: { required },

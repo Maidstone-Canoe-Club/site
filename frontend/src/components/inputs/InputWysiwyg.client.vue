@@ -9,6 +9,7 @@
       :modules="modules"
       class="shadow-sm"
       :class="{'mt-2': !!label}"
+      style="min-height: 300px"
       content-type="html"
       toolbar="full" />
   </div>
@@ -82,6 +83,14 @@ const content = computed({
   border-bottom-left-radius: 5px;
   border-bottom-right-radius: 5px;
   background-color: #fff;
-  min-height: 200px;
 }
+
+::v-deep(.ql-container) {
+  min-height: inherit;
+}
+
+::v-deep(.ql-editor){
+  min-height: inherit;
+}
+
 </style>

@@ -8,7 +8,7 @@
     </button>
     <button
       class="ml-auto rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-      :disabled="!canGoNext"
+      :disabled="!canGoNext || loading"
       @click="goToNextStep">
       {{ isLast ? "Submit" : "Next" }}
     </button>
@@ -22,7 +22,8 @@ const emits = defineEmits(["prev", "next"]);
 defineProps<{
   showBackButton: boolean,
   isLast?: boolean,
-  canGoNext: boolean
+  canGoNext: boolean,
+  loading?: boolean
 }>();
 
 function goToPrevStep () {
