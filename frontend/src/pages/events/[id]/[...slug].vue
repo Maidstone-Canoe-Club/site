@@ -50,7 +50,7 @@
 
     <div class="mt-5">
       <div class="grid md:grid-cols-12 gap-10">
-        <div class="md:col-span-8 mt-5">
+        <div class="md:col-span-8 mt-5 min-w-0">
           <rich-text
             v-if="event.description"
             :content="event.description" />
