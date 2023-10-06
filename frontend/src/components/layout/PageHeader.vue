@@ -141,7 +141,9 @@
             <nuxt-link
               v-if="!item.childPages"
               :to="item.href"
-              :class="[item.current ? 'border-indigo-500 bg-indigo-50 text-indigo-700' : 'border-transparent text-gray-600 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-800', 'block border-l-4 py-2 pl-3 pr-4 text-base font-medium']">
+              :class="[item.current ? 'border-indigo-500 bg-indigo-50 text-indigo-700' : 'border-transparent text-gray-600 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-800', 'block border-l-4 py-2 pl-3 pr-4 text-base font-medium']"
+              @mouseup="closeSubItem(item.href, close)"
+              @touchend="closeSubItem(item.href, close)">
               {{ item.name }}
             </nuxt-link>
             <Disclosure v-else v-slot="{ open }" as="div">
@@ -293,137 +295,6 @@ const navigation = computed(() => {
 
   return result;
 });
-
-// const navigation = computed(() => {
-//   return [
-//     {
-//       name: "Home",
-//       href: "/",
-//       visible: () => true,
-//       current: route.path === "/"
-//     },
-//     {
-//       name: "About us",
-//       current: route.path.startsWith("/about-us"),
-//       visible: () => true,
-//       childPages: [
-//         {
-//           name: "About us",
-//           href: "/about-us",
-//           target: null,
-//           current: route.path.endsWith("/about-the-club")
-//         },
-//         {
-//           name: "What we do",
-//           href: "/about-us/what-we-do",
-//           target: null,
-//           current: route.path.endsWith("/what-we-do")
-//         },
-//         {
-//           name: "Club history",
-//           href: "/about-us/club-history",
-//           target: null,
-//           current: route.path.endsWith("/club-history")
-//         }
-//       ]
-//     },
-//     // {
-//     //   name: "Governance",
-//     //   href: "/governance",
-//     //   target: null,
-//     //   visible: () => true,
-//     //   current: route.path.startsWith("/governance")
-//     // },
-//     {
-//       name: "Come & paddle",
-//       href: "/come-paddle",
-//       current: route.path === "/come-paddle",
-//       visible: () => true,
-//       childPages: [
-//         {
-//           name: "Paddle with us",
-//           href: "/come-paddle/paddle-with-us",
-//           target: null,
-//           current: route.path.endsWith("/paddle-with-us")
-//         },
-//         {
-//           name: "Memberships",
-//           href: "/come-paddle/memberships",
-//           target: null,
-//           current: route.path.endsWith("/memberships")
-//         },
-//         {
-//           name: "Fun sessions",
-//           href: "/come-paddle/fun-sessions",
-//           target: null,
-//           current: route.path.endsWith("/fun-sessions")
-//         }
-//       ]
-//     },
-//     {
-//       name: "Coaching",
-//       href: "/coaching",
-//       visible: () => hasRole(user.value, "coach"),
-//       current: route.path.startsWith("/coaching"),
-//       childPages: [
-//         {
-//           name: "CPD resources",
-//           href: "/coaching/cpd-resources",
-//           target: null,
-//           current: route.path.endsWith("/cpd-resources")
-//         },
-//         {
-//           name: "Beginners course resources",
-//           href: "/coaching/beginners-course-resources",
-//           target: null,
-//           current: route.path.endsWith("/beginners-course-resources")
-//         },
-//         {
-//           name: "Explore award resources",
-//           href: "/coaching/explore-award-resources",
-//           target: null,
-//           current: route.path.endsWith("/explore-award-resources")
-//         },
-//         {
-//           name: "PAA resources",
-//           href: "/coaching/paa-resources",
-//           target: null,
-//           current: route.path.endsWith("/paa-resources")
-//         },
-//         {
-//           name: "BC certification",
-//           href: "/coaching/bc-certification",
-//           target: null,
-//           current: route.path.endsWith("/bc-certification")
-//         },
-//         {
-//           name: "GDPR for coaches",
-//           href: "/coaching/gdpr-for-coaches",
-//           target: null,
-//           current: route.path.endsWith("/gdpr-for-coaches")
-//         }
-//       ]
-//     },
-//     {
-//       name: "Calendar",
-//       href: "/calendar",
-//       visible: () => true,
-//       current: route.path.startsWith("/calendar")
-//     },
-//     {
-//       name: "Contact us",
-//       href: "/contact-us",
-//       visible: () => true,
-//       current: route.path.startsWith("/contact-us")
-//     },
-//     {
-//       name: "FAQs",
-//       href: "/faqs",
-//       visible: () => true,
-//       current: route.path.startsWith("/faqs")
-//     }
-//   ];
-// });
 
 const userNavigation = ref([
   { name: "Profile", href: "/profile" },

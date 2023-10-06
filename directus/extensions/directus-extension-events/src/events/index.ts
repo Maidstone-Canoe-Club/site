@@ -53,7 +53,22 @@ export default defineEndpoint((router, {services, database}) => {
         accountability: adminAccountability
       });
 
+      const eventLeadersService = new ItemsService("events_directus_users", {
+        knex: database,
+        schema: req.schema,
+        accountability: adminAccountability
+      });
+
       const event = await eventsService.readOne(eventId);
+
+      const leaders = await eventLeadersService.readByQuery({
+        fields: ["*", "directus_users_id.first_name", "directus_users_id.last_name", "directus_users_id.avatar", "directus_users_id.id"],
+        filter: {
+          events_id: {
+            _eq: event.id
+          }
+        }
+      });
 
       const patterns = await recurringPatternService.readByQuery({
         filter: {
@@ -111,30 +126,25 @@ export default defineEndpoint((router, {services, database}) => {
       }
 
       const allowedRoles = ["coach", "committee", "administrator"];
-      // const canViewAllBookings = user && allowedRoles.includes(user.role.name.toLowerCase());
-      // const bookings = eventBookings.filter(b => (!!user && (b.user === userId || b.parent === userId)) || canViewAllBookings);
-      let bookings=  [];
+      let bookings = [];
 
-      if(user){
-        if(allowedRoles.includes(user.role.name.toLowerCase())){
+      const userIsLeader = leaders.find(x => x.directus_users_id.id === userId);
+
+      if (user) {
+        if (allowedRoles.includes(user.role.name.toLowerCase()) || userIsLeader) {
           bookings = eventBookings;
-        }else {
-          console.log("user isn't coach, comittee or admin, just fetching own bookings", eventBookings);
+        } else {
           bookings = eventBookings.filter(b => b.user.id === userId || b.user.parent === userId);
-          console.log("bookings!", bookings);
         }
       }
-
-      // if (user && allowedRoles.includes(user.role.name.toLowerCase())) {
-      //   bookings = eventBookings;
-      // }
 
       return res.json({
         patternType: pattern?.type,
         spacesLeft,
         alreadyBooked,
         bookings,
-        bookingsCount: eventBookings.length
+        bookingsCount: eventBookings.length,
+        leaders
       });
     } catch (e) {
       console.error("error getting event info", e);
@@ -299,7 +309,7 @@ export default defineEndpoint((router, {services, database}) => {
 
       const bookingResults = [];
 
-      for(const userId of userIds){
+      for (const userId of userIds) {
         const alreadyBooked = existingBookings?.filter(x => x.user === userId && x.status !== "cancelled");
         if (alreadyBooked?.length) {
           bookingResults.push({
@@ -342,62 +352,7 @@ export default defineEndpoint((router, {services, database}) => {
           bookingId,
           userId,
         });
-
-        // return res.json({
-        //   result: true,
-        //   statusCode: 100,
-        //   data: bookingId
-        // });
       }
-
-      // const selfBooking = existingBookings?.filter(x => x.user === userId && x.status !== "cancelled");
-      // if (selfBooking?.length) {
-      //   return res.json({
-      //     result: false,
-      //     statusCode: 102,
-      //     message: "That user is already booked"
-      //   });
-      // }
-
-      // const alreadyCancelledBookings = existingBookings?.filter(x => x.user === userId && x.status === "cancelled");
-      // if (alreadyCancelledBookings?.length) {
-      //   const cancelledBooking = alreadyCancelledBookings[0];
-      //   await eventBookingService.updateOne(cancelledBooking.id, {
-      //     status: "booked"
-      //   });
-      //
-      //   return res.json({
-      //     result: true,
-      //     statusCode: 100,
-      //     message: "Your cancelled booking has been re-added",
-      //     data: cancelledBooking.id
-      //   });
-      // }
-      // else {
-      //   const patterns = await recurringPatternService.readByQuery({
-      //     filter: {
-      //       event: {
-      //         _eq: eventId
-      //       }
-      //     }
-      //   });
-      //
-      //   const recurringPattern = patterns && patterns.length ? patterns[0] : null;
-      //
-      //   const bookingId = await eventBookingService.createOne({
-      //     user: userId,
-      //     event: eventId,
-      //     instance: instance,
-      //     recurring_pattern: recurringPattern?.id,
-      //     status: "booked"
-      //   });
-      //
-      //   return res.json({
-      //     result: true,
-      //     statusCode: 100,
-      //     data: bookingId
-      //   });
-      // }
 
       return res.json(bookingResults);
     } catch (e) {
@@ -428,6 +383,28 @@ export default defineEndpoint((router, {services, database}) => {
       accountability: req.accountability
     });
 
+    // if the event has a price or a junior price AND the user is not a committee or admin role
+    // set status to draft
+    // else set to published
+
+
+    if (eventItem.price || eventItem.junior_price) {
+      const loggedInUserId = req.accountability.user;
+      const userService = new UsersService({knex: database, schema: req.schema, accountability: adminAccountability});
+      const user = await userService.readOne(loggedInUserId, {
+        fields: ["role.name"]
+      });
+
+      // roles that are allowed to create an event with a price
+      const allowedRoles = ["committee", "administrator"];
+
+      if (allowedRoles.includes(user.role.name.toLowerCase())) {
+        eventItem.status = "published";
+      } else {
+        eventItem.status = "draft";
+      }
+    }
+
     if (eventType === "single") {
       return await createSingleEvent(eventItem, eventService, res);
     } else if (eventType === "multi") {
@@ -452,7 +429,8 @@ async function createSingleEvent(eventItem, eventService, res) {
       price: eventItem.price,
       junior_price: eventItem.junior_price,
       allowed_roles: eventItem.allowedRoles,
-      type: eventItem.type
+      type: eventItem.type,
+      status: eventItem.status
     });
 
     return res.send(result);
@@ -482,7 +460,8 @@ async function createMultiEvent(eventItem, eventDates, eventService, res) {
       junior_price: eventItem.junior_price,
       allowed_roles: eventItem.allowedRoles,
       has_multiple: true,
-      type: eventItem.type
+      type: eventItem.type,
+      status: eventItem.status
     });
 
     for (let i = 1; i < eventDates.multiple.length; i++) {
@@ -500,7 +479,8 @@ async function createMultiEvent(eventItem, eventDates, eventService, res) {
         junior_price: eventItem.junior_price,
         allowed_roles: eventItem.allowedRoles,
         parent_event: firstEventId,
-        type: eventItem.type
+        type: eventItem.type,
+        status: eventItem.status
       });
     }
 
@@ -544,7 +524,8 @@ async function createRecurringEvent(eventItem, eventDates, eventService, recurri
       allowed_roles: eventItem.allowedRoles,
       last_occurance: endDate,
       is_recurring: true,
-      type: eventItem.type
+      type: eventItem.type,
+      status: eventItem.status
     });
 
     const recurringPattern = {

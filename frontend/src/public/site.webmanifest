@@ -15,6 +15,6 @@
     ],
     "theme_color": "#cdeeff",
     "background_color": "#cdeeff",
-    "display": "standalone",
+    "display": "mininal-ui",
     "orientation": "natural"
 }

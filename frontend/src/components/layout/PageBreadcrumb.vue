@@ -34,7 +34,7 @@
 </template>
 
 <script setup lang="ts">
-import { ChevronRightIcon, HomeIcon } from "@heroicons/vue/20/solid";
+import { HomeIcon } from "@heroicons/vue/20/solid";
 
 const route = useRoute();
 

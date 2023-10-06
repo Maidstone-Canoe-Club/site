@@ -56,9 +56,27 @@
             :content="event.description" />
         </div>
         <div class="md:col-span-4">
+          <div v-if="leaders && leaders.length" class="mb-4">
+            <strong>Leaders</strong>
+            <ul
+              class="mt-2 flex flex-col gap-2">
+              <li
+                v-for="leader in leaders"
+                :key="leader.id">
+                <div class="flex items-center gap-2">
+                  <user-avatar
+                    :user="leader.directus_users_id"
+                    size-class="w-12 h-12" />
+                  <span class="truncate">
+                    {{ leader.directus_users_id.first_name }} {{ leader.directus_users_id.last_name }}
+                  </span>
+                </div>
+              </li>
+            </ul>
+          </div>
+
           <div>
             <strong>Dates</strong>
-
             <div
               v-for="(date, index) in sessionDates"
               :key="index">
@@ -68,6 +86,10 @@
               </div>
             </div>
           </div>
+
+          <!--          <div class="my-5">-->
+          <!--            <admin-controls :event="event" />-->
+          <!--          </div>-->
 
           <div class="mb-5 mt-5">
             <event-booker
@@ -106,6 +128,7 @@
             :bookings="bookings"
             :event-id="event.id"
             :instance="instance"
+            :user-is-leader="userIsLeader"
             @refresh="onRefresh" />
         </div>
       </div>
@@ -181,8 +204,17 @@ const { data: eventInfo } = await useAsyncData(`event-info-${event.value.id}`, a
   return await loadInfo();
 });
 
-const alreadyBooked = computed(() => eventInfo.value.alreadyBooked);
+const alreadyBooked = computed(() => eventInfoeventInfo.value.alreadyBooked);
 const bookings = computed(() => eventInfo.value.bookings);
+const leaders = computed(() => eventInfo.value.leaders);
+
+const userIsLeader = computed(() => {
+  if (leaders.value && leaders.value.length && user.value) {
+    return !!leaders.value.find(x => x.directus_users_id.id === user.value.id);
+  }
+
+  return false;
+});
 
 async function loadInfo () {
   let url = `/events/info?eventId=${event.value.id}`;

@@ -370,7 +370,7 @@ import { EventItem } from "~/types";
 const props = withDefaults(defineProps<{
   events: EventItem[],
   loading: boolean
-  displayEventsPerDay: number
+  displayEventsPerDay?: number
 }>(), {
   displayEventsPerDay: 3
 });
@@ -537,6 +537,7 @@ function getEventsForDay (date: Date): EventData[] {
 
       return {
         id: e.id,
+        status: e.status,
         name: title,
         time: showTime ? format(startDate, "h:mmaa") : null,
         datetime: `${format(startDate, "yyyy-MM-dd")}T${format(startDate, "H:mm")}`,
@@ -556,7 +557,7 @@ onMounted(() => {
 });
 
 const user = useDirectusUser();
-const canAddEvent = computed(() => hasRole(user.value, "Committee"));
+const canAddEvent = computed(() => hasRole(user.value, "Member"));
 
 function formatDate (input: Date) {
   return format(new Date(input), "do MMMM");

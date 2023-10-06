@@ -1,6 +1,5 @@
 ﻿<template>
-  <div class="mt-20">
-    <pre class="mb-5 text-gray-800">This create new event tool is still under construction</pre>
+  <div class="mt-20 mx-auto max-w-4xl px-3 sm:px-0">
     <nav
       aria-label="Progress"
       class="flex justify-center items-center">
@@ -52,6 +51,7 @@
       class="mt-10"
       :show-back-button="showBackButton"
       :is-last="currentStepIndex === steps.length - 1"
+      :loading="loading"
       @prev="goToPrevStep"
       @next="goToNextStep" />
   </div>
@@ -84,14 +84,17 @@ function getStepStatus (index: number) {
   return "complete";
 }
 
+const user = useDirectusUser();
 const currentStepIndex = ref(0);
 const currentStep = computed(() => steps.value[currentStepIndex.value].component);
+const loading = ref(false);
 
 const eventType = ref("");
 const eventItem = ref({
   location: "Maidstone Canoe Club",
   allowedRoles: [],
-  type: {}
+  type: {},
+  leaders: [user.value]
 });
 const eventDates = ref(blankEventDates());
 
@@ -123,6 +126,7 @@ function goToNextStep () {
 }
 
 async function onSubmit () {
+  loading.value = true;
   try {
     const newEventItem = {
       ...eventItem.value
@@ -142,6 +146,8 @@ async function onSubmit () {
     await navigateTo("/calendar");
   } catch (e) {
     console.error("could not create event", e);
+  } finally {
+    loading.value = false;
   }
 }
 
