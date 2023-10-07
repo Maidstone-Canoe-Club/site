@@ -32,11 +32,10 @@
         name="bc-number"
         label="BC number" />
 
-      <input-field
+      <input-date
         id="dob"
         v-model="internalValue.dob"
         label="Date of birth"
-        type="date"
         required
         name="dob"
         autocomplete="bday"
