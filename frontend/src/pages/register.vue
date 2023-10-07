@@ -4,15 +4,6 @@
       <h2 class="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
         Register
       </h2>
-      <!--      <p-->
-      <!--        v-if="!inviteId"-->
-      <!--        class="mt-4 text-center text-sm text-gray-500">-->
-      <!--        Already a club member?-->
-      <!--        {{ ' ' }}-->
-      <!--        <nuxt-link to="/member-check" class="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">-->
-      <!--          Sign up for an account here-->
-      <!--        </nuxt-link>-->
-      <!--      </p>-->
     </div>
 
     <nav
@@ -139,14 +130,12 @@ const emergencyContacts = ref<EmergencyContact[]>([]);
 if (inviteId.value) {
   const directus = useDirectus();
   const inviteInfo = await directus<InviteData>(`/invites?id=${inviteId.value}`);
-  user.value.email = inviteInfo.email;
-  user.value.bc_number = inviteInfo.bc_number;
-  user.value.club_number = inviteInfo.club_number;
-  user.value.first_name = inviteInfo.first_name;
-  user.value.last_name = inviteInfo.last_name;
+  user.value.email = inviteInfo.invite.email;
+  user.value.bc_number = inviteInfo.invite.bc_number;
+  user.value.club_number = inviteInfo.invite.club_number;
+  user.value.first_name = inviteInfo.invite.first_name;
+  user.value.last_name = inviteInfo.invite.last_name;
 }
-
-const confirmedPassword = ref("");
 
 const currentStep = ref(1);
 

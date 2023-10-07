@@ -8,7 +8,9 @@
         type="checkbox"
         class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
     </div>
-    <div class="ml-3 text-sm leading-6">
+    <div
+      v-if="label"
+      class="ml-3 text-sm leading-6">
       <label :for="id" class="font-medium text-gray-900">{{ label }}</label>
       {{ ' ' }}
     </div>
@@ -23,7 +25,7 @@ const props = defineProps<{
   modelValue: boolean,
   id: string,
   name: string,
-  label: string
+  label?: string
 }>();
 
 const internalValue = ref(props.modelValue);
