@@ -57,17 +57,15 @@ const computedClass = computed(() => {
 
 async function onClick () {
   emits("click");
-  console.log("clicked");
+
   if (!props.action) {
-    console.log("no action");
     return;
   }
-  console.log("action");
+
   internalLoading.value = true;
 
   try {
     await props.action();
-    console.log("here?");
   } finally {
     internalLoading.value = false;
   }
