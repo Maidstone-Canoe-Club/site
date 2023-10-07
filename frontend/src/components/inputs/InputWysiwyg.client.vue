@@ -92,4 +92,8 @@ const content = computed({
   min-height: inherit;
 }
 
+::v-deep(p){
+  @apply mb-3;
+}
+
 </style>

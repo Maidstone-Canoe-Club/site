@@ -51,9 +51,6 @@ export default defineEndpoint((router, {services, database}) => {
         for (const invite of invites) {
           let content = email.content;
 
-          // hack to remove large spaces between paragraphs
-          content = content.replace("<p><br></p>", "");
-
           content = content.replace("{FIRST_NAME}", invite.first_name);
           content = content.replace("{LAST_NAME}", invite.last_name);
 
