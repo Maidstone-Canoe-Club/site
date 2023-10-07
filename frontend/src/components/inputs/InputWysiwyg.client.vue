@@ -3,12 +3,11 @@
     <label
       v-if="label"
       :for="id"
-      class="block text-sm font-medium leading-6 text-gray-900">{{ label }}</label>
+      class="block text-sm font-medium leading-6 text-gray-900 mb-2">{{ label }}</label>
     <quill-editor
       v-model:content="content"
       :modules="modules"
       class="shadow-sm"
-      :class="{'mt-2': !!label}"
       style="min-height: 300px"
       content-type="html"
       toolbar="full" />

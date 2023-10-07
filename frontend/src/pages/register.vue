@@ -78,6 +78,7 @@
         <private-data-step
           v-model:medical-info="medicalInfo"
           v-model:emergency-contacts="emergencyContacts"
+          :loading="loading"
           @on-back="previousStep"
           @on-next="onCompleteRegistration" />
       </template>
@@ -98,6 +99,8 @@ const route = useRoute();
 const inviteId = ref(route.query.inviteId as string);
 const directus = useDirectus();
 const { login } = useDirectusAuth();
+
+const loading = ref(false);
 
 const user = ref({
   email: "",
@@ -165,6 +168,7 @@ function getStepStatus (id: number) {
 }
 
 async function onCompleteRegistration () {
+  loading.value = true;
   try {
     const submitResponse = await directus("/registration", {
       method: "POST",
@@ -185,6 +189,7 @@ async function onCompleteRegistration () {
     });
     await navigateTo("/");
   } catch (e) {
+    loading.false = true;
     console.log("something went wrong", e);
   }
 }

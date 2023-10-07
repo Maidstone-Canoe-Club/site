@@ -146,7 +146,6 @@ async function onSubmit () {
     await navigateTo("/calendar");
   } catch (e) {
     console.error("could not create event", e);
-  } finally {
     loading.value = false;
   }
 }
