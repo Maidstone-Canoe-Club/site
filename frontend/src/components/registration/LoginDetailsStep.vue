@@ -18,7 +18,7 @@
       <div>
         <zxcvbn-input
           v-model="internalValue.password"
-          label="Password"
+          label="New password"
           show-strength
           :v="v$.password" />
       </div>
@@ -34,7 +34,7 @@
           </div>
           <div class="ml-3">
             <h3 class="text-sm font-medium text-red-800">
-              That email address is already in use, please try another
+              That email address is already in use
             </h3>
           </div>
         </div>

@@ -14,7 +14,7 @@
       <div class="sm:flex sm:items-center">
         <div class="sm:flex-auto">
           <h1 class="text-base font-semibold leading-6 text-gray-900">
-            Invites
+            New Invites
           </h1>
         </div>
         <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
@@ -73,14 +73,81 @@
         </div>
       </div>
     </div>
+
+    <div class="px-4 sm:px-6 lg:px-8">
+      <div class="sm:flex sm:items-center">
+        <div class="sm:flex-auto">
+          <h1 class="text-base font-semibold leading-6 text-gray-900">
+            Existing Invites
+          </h1>
+        </div>
+      </div>
+      <div class="mt-8 flow-root">
+        <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+          <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+            <table class="min-w-full divide-y divide-gray-300">
+              <thead>
+                <tr>
+                  <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
+                    First name
+                  </th>
+                  <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                    First name
+                  </th>
+                  <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                    Email
+                  </th>
+                  <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                    Club number
+                  </th>
+                  <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                    BC number
+                  </th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-200">
+                <tr v-for="person in existingInvites" :key="person.email">
+                  <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
+                    {{ person.first_name }}
+                  </td>
+                  <td class="whitespace-nowrap px-3 py-4 text-sm font-medium text-gray-900">
+                    {{ person.last_name }}
+                  </td>
+                  <td class="whitespace-nowrap px-3 py-4 text-sm font-medium text-gray-900">
+                    {{ person.email }}
+                  </td>
+                  <td class="whitespace-nowrap px-3 py-4 text-sm font-medium text-gray-900">
+                    {{ person.club_number }}
+                  </td>
+                  <td class="whitespace-nowrap px-3 py-4 text-sm font-medium text-gray-900">
+                    {{ person.bc_number }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { definePageMeta } from "#imports";
+import { definePageMeta, useDirectusItems } from "#imports";
 
 definePageMeta({
   middleware: ["auth", "admin"]
+});
+
+const { getItems, createItems } = useDirectusItems();
+
+const { data: existingInvites } = await useAsyncData("invites", async () => {
+  return await getItems({
+    collection: "member_invites",
+    params: {
+      limit: 9999
+    }
+  });
 });
 
 const input = ref("");
@@ -94,11 +161,12 @@ const people = computed(() => {
   const lines = input.value.split("\n");
   lines.forEach((line) => {
     const split = line.split(",");
-    if (split[2]) {
+    const email = split[2];
+    if (email && !alreadyExists(email)) {
       result.push({
         firstName: split[0],
         lastName: split[1],
-        email: split[2],
+        email,
         clubNumber: split[3],
         bcNumber: split[4].includes("-") ? null : split[4]
       });
@@ -113,7 +181,13 @@ watch(input, (val) => {
   console.log("found ", lines.length, "lines");
 });
 
-const { createItems } = useDirectusItems();
+function alreadyExists (email: string) {
+  if (existingInvites.value && existingInvites.value.length) {
+    return !!existingInvites.value.find(x => x.email === email);
+  }
+
+  return false;
+}
 
 async function createInvites () {
   console.log("creating invites...");
