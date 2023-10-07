@@ -35,7 +35,7 @@ export default defineEndpoint((router, {services, database}) => {
         return res.status(400).send("missing email");
       }
 
-      const from = `invite@${process.env.EMAIL_DOMAIN}`;
+      const from = `Maidstone Canoe Club <invite@${process.env.EMAIL_DOMAIN}>`;
       const inviteUrl = `${process.env.PUBLIC_URL}/register`;
 
       const inviteChunks = chunkArray(invites, 50);

@@ -4,7 +4,7 @@
       v-if="discoveredNewMember"
       class="mb-5 flex justify-center gap-5">
       <HandRaisedIcon class="w-12 h-12 text-gray-600" />
-      Hi there! You seem to already be a club member! Some of your details have already been filled out.
+      Hi there! It appears that you're already a club member, and some of your details have already been pre-filled.
     </p>
     <div class="space-y-6">
       <input-field

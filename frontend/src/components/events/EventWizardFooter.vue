@@ -7,11 +7,19 @@
       Back
     </button>
     <button
+      v-if="!isLast"
       class="ml-auto rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
       :disabled="!canGoNext || loading"
       @click="goToNextStep">
-      {{ isLast ? "Submit" : "Next" }}
+      Next
     </button>
+    <custom-button
+      v-else
+      :disabled="!canGoNext"
+      :loading="loading"
+      @click="goToNextStep">
+      Submit
+    </custom-button>
   </div>
 </template>
 

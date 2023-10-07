@@ -9,24 +9,34 @@
     <slot />
     <div
       class="absolute transition-opacity inset-0 flex justify-center items-center opacity-0 bg-indigo-600"
-      :class="{'opacity-100': loading}">
+      :class="{'opacity-100': internalLoading}">
       <loading-spinner />
     </div>
   </button>
 </template>
 
 <script setup lang="ts">
+
+const emits = defineEmits(["click"]);
+
 const props = defineProps<{
   disabled?: boolean,
-  action: Function,
-  type?: "button" | "submit" | "reset" | undefined
+  action?: Function,
+  type?: "button" | "submit" | "reset" | undefined,
+  loading?: boolean
 }>();
 
 const buttonDisabled = computed(() => {
-  return props.disabled || loading.value;
+  return props.disabled || internalLoading.value;
 });
 
-const loading = ref(false);
+const internalLoading = ref(false);
+
+watch(() => props.loading, (val) => {
+  if (val !== undefined) {
+    internalLoading.value = val;
+  }
+});
 
 const button = ref(null);
 const width = ref<string | null>(null);
@@ -46,12 +56,20 @@ const computedClass = computed(() => {
 });
 
 async function onClick () {
-  loading.value = true;
+  emits("click");
+  console.log("clicked");
+  if (!props.action) {
+    console.log("no action");
+    return;
+  }
+  console.log("action");
+  internalLoading.value = true;
 
   try {
     await props.action();
+    console.log("here?");
   } finally {
-    loading.value = false;
+    internalLoading.value = false;
   }
 }
 
