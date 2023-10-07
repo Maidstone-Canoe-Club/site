@@ -204,7 +204,7 @@ const { data: eventInfo } = await useAsyncData(`event-info-${event.value.id}`, a
   return await loadInfo();
 });
 
-const alreadyBooked = computed(() => eventInfoeventInfo.value.alreadyBooked);
+const alreadyBooked = computed(() => eventInfo.value.alreadyBooked);
 const bookings = computed(() => eventInfo.value.bookings);
 const leaders = computed(() => eventInfo.value.leaders);
 
