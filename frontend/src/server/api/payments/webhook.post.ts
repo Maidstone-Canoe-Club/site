@@ -47,6 +47,8 @@ export default defineEventHandler(async (event) => {
         expand: ["line_items"]
       });
 
+    console.log("in webhook, got session with line items", sessionWithLineItems);
+
     try {
       await ofetch("/payments/handle/event", {
         method: "POST",

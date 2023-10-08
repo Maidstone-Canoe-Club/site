@@ -107,7 +107,7 @@ export default defineEventHandler(async (event) => {
       });
     }
 
-    console.log("got line items", lineItems);
+    console.log("got line items", JSON.stringify(lineItems));
 
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
