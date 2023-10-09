@@ -308,25 +308,6 @@ const userNavigation = ref([
   }
 ]);
 
-const isAdmin = computed(() => hasRole(user.value, "administrator"));
-
-// temp check to see if user is admin
-if (user.value && isAdmin.value) {
-  userNavigation.value.push({
-    name: "Directus",
-    href: directusUrl,
-    target: "_blank"
-  },
-  {
-    name: "Analytics",
-    href: "https://analytics.mccdev.co.uk",
-    target: "_blank"
-  });
-}
-
-const hasAvatar = computed(() => !!user.value?.avatar);
-const avatarUrl = getAvatarUrl(user.value);
-
 async function closeSubItem (href: string, close: any) {
   close();
   await navigateTo(href);

@@ -7,6 +7,27 @@
       Hi there! It appears that you're already a club member, and some of your details have already been pre-filled.
     </p>
     <div class="space-y-6">
+      <div class="rounded-md bg-blue-50 p-4 border-blue-400 border">
+        <div class="flex">
+          <div class="flex-shrink-0">
+            <InformationCircleIcon class="h-5 w-5 text-blue-400" aria-hidden="true" />
+          </div>
+          <div class="ml-3">
+            <h3 class="text-sm font-medium text-blue-700">
+              Important Note
+            </h3>
+            <div class="mt-3 text-sm text-blue-600">
+              <p class="mb-2">
+                Please provide your own personal information.
+              </p>
+              <p>
+                If you need to register a junior member, you can easily add a junior account via your profile after completing your registration.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <input-field
         id="first-name"
         v-model="internalValue.first_name"
@@ -80,6 +101,7 @@
 </template>
 
 <script setup lang="ts">
+import { InformationCircleIcon } from "@heroicons/vue/20/solid";
 import { HandRaisedIcon } from "@heroicons/vue/24/outline";
 import { DirectusUser } from "nuxt-directus/dist/runtime/types";
 import { required } from "@vuelidate/validators";

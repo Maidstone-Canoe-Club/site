@@ -24,6 +24,12 @@
         name="dob"
         label="Date of birth"
         :v="v$.dob" />
+
+      <input-field
+        id="bc-number"
+        v-model="internalValue.bc_number"
+        label="BC number"
+        name="bc-number" />
     </div>
 
     <medical-information
@@ -50,6 +56,7 @@ export type Junior = {
   first_name: string,
   last_name: string,
   parentId: string,
+  bc_number: string,
   medicalInformation: {}
 }
 
