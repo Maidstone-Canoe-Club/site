@@ -48,8 +48,6 @@ export default defineEventHandler(async (event) => {
       }
     });
 
-    console.log("GOT CHECKOUT DATA", checkoutData);
-
     const eventItem = checkoutData.event;
     const users = checkoutData.users;
 
@@ -73,6 +71,7 @@ export default defineEventHandler(async (event) => {
     redirectUrl = encodeURIComponent(btoa(redirectUrl));
 
     const lineItems = [];
+    const orders = [];
 
     console.log("product name", productName);
 
@@ -89,25 +88,41 @@ export default defineEventHandler(async (event) => {
         isJunior = true;
       }
 
-      console.log("NAME", name);
-
       lineItems.push({
         quantity: 1,
         price_data: {
           currency: "GBP",
           unit_amount: price ?? 0,
           product_data: {
-            name,
-            metadata: {
-              user_id: user.id,
-              is_junior: isJunior
-            }
+            name
           }
         }
       });
+
+      orders.push({
+        user: userId,
+        amount: price,
+        customer_id: customerId,
+        status: "pending",
+        description: name,
+        metadata: JSON.stringify({
+          event_id: eventId,
+          instance,
+          booked_user: user.id,
+          is_junior: isJunior
+        })
+      });
     }
 
-    console.log("got line items", JSON.stringify(lineItems));
+    const orderIds = await ofetch("/payments/orders", {
+      method: "POST",
+      baseURL: process.env.NUXT_DIRECTUS_URL,
+      body: {
+        orders
+      }
+    });
+
+    console.log("created orders");
 
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
@@ -117,6 +132,7 @@ export default defineEventHandler(async (event) => {
         event_id: eventItem.id,
         customer_user_id: userIds,
         user_ids: Array.isArray(userIds) ? userIds.join(",") : userIds,
+        order_ids: Array.isArray(orderIds) ? orderIds.join(",") : orderIds,
         event_instance: instance
       },
       line_items: lineItems,
