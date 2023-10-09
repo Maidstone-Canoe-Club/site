@@ -361,6 +361,51 @@ export default defineEndpoint((router, {services, database}) => {
     }
   });
 
+  router.post("/update", async (req, res) => {
+    const eventItem = req.body.event;
+
+    if(!eventItem){
+      return res.status(400).send("missing event data");
+    }
+
+    try{
+      const eventService = new ItemsService("events", {
+        knex: database,
+        schema: req.schema,
+        accountability: req.accountability
+      });
+
+      const existingEvent = await eventService.readOne(eventItem.id);
+      if(!existingEvent){
+        return res.status(400).send("could not edit event that doesn't exist");
+      }
+
+      eventItem.status = "published";
+
+      if (eventItem.price || eventItem.junior_price) {
+        const loggedInUserId = req.accountability.user;
+        const userService = new UsersService({knex: database, schema: req.schema, accountability: adminAccountability});
+        const user = await userService.readOne(loggedInUserId, {
+          fields: ["role.name"]
+        });
+
+        // roles that are allowed to create an event with a price
+        const allowedRoles = ["committee", "administrator"];
+
+        if (!allowedRoles.includes(user.role.name.toLowerCase())) {
+          eventItem.status = "draft";
+        }
+      }
+
+      const result = await eventService.updateOne(eventItem.id, eventItem);
+      return res.send(result);
+
+    }catch(e){
+      console.error("error updating event", e);
+      return res.status(400).send("error updating event");
+    }
+  });
+
   router.post("/create", async (req, res) => {
     const eventType = req.body.eventType;
     const eventItem = req.body.eventItem;

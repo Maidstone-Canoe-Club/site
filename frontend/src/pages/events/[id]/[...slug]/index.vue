@@ -5,20 +5,19 @@
         <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
           {{ event.title }}
         </h2>
+
         <div class="mt-1 flex flex-col sm:mt-0 sm:flex-row sm:flex-wrap sm:space-x-6" />
       </div>
       <div
         v-if="canEdit"
         class="mt-5 flex lg:ml-4 lg:mt-0">
         <span class="sm:ml-3">
-          <a
-            :href="editLink"
-            target="_blank"
-            type="button"
+          <nuxt-link
+            :to="route.path + '/edit'"
             class="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
             <PencilIcon class="-ml-0.5 mr-1.5 h-5 w-5 text-gray-400" aria-hidden="true" />
             Edit
-          </a>
+          </nuxt-link>
         </span>
       </div>
     </div>
@@ -31,6 +30,27 @@
             :content="event.description" />
         </div>
         <div class="md:col-span-4 space-y-6">
+          <div
+            v-if="event.status === 'draft'"
+            class="rounded-md bg-yellow-50 p-4 border border-yellow-400">
+            <div class="flex">
+              <div class="flex-shrink-0">
+                <ExclamationTriangleIcon class="h-5 w-5 text-yellow-400" aria-hidden="true" />
+              </div>
+              <div class="ml-3">
+                <h3 class="text-sm font-medium text-yellow-800">
+                  Event hidden
+                </h3>
+                <div class="mt-2 text-sm text-yellow-700">
+                  <p class="mb-2">
+                    Only you can see this event as it has been hidden automatically.
+                  </p>
+                  <p>Events with a price need to be approved before being made public.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div class="flex flex-col gap-1">
             <strong>Details</strong>
             <div class="mt-2 flex items-center text-sm text-gray-500">
@@ -155,7 +175,7 @@ import {
   PencilIcon,
   UsersIcon,
   InformationCircleIcon,
-  UserGroupIcon
+  UserGroupIcon, ExclamationTriangleIcon
 } from "@heroicons/vue/20/solid";
 // @ts-ignore
 import Dinero from "dinero.js";
@@ -365,8 +385,7 @@ function formatPrice (amount?: number) {
 const directusUrl = useDirectusUrl();
 const editLink = computed(() => `${directusUrl}/admin/content/events/${route.params.id}`);
 
-// const canEdit = computed(() => hasRole(user.value, "Committee"));
-const canEdit = computed(() => false);
+const canEdit = computed(() => hasRole(user.value, "Member"));
 
 function renderSessionDate (date) {
   if (isSameDay(new Date(date.start), new Date(date.end))) {
