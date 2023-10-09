@@ -1,39 +1,64 @@
 ﻿<template>
   <div>
+    <div class="mb-4">
+      <strong>Edit event</strong>
+
+      <div
+        v-if="internalValue.status === 'draft'"
+        class="rounded-md bg-yellow-50 p-4 mt-4 border border-yellow-400">
+        <div class="flex">
+          <div class="flex-shrink-0">
+            <ExclamationTriangleIcon class="h-5 w-5 text-yellow-400" aria-hidden="true" />
+          </div>
+          <div class="ml-3">
+            <h3 class="text-sm font-medium text-yellow-800">
+              Event hidden
+            </h3>
+            <div class="mt-2 text-sm text-yellow-700">
+              <p>
+                This event is currently hidden until approved, but you can still edit it.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="space-y-4">
       <input-field
         id="title"
         v-model="internalValue.title"
-        required
-        label="Title"
         name="title"
+        label="Title"
         :v="v$.title" />
 
       <input-wysiwyg
         id="description"
         v-model="internalValue.description"
+        name="description"
         label="Description" />
 
       <input-field
         id="location"
         v-model="internalValue.location"
-        label="Location"
-        required
+        title="location"
         name="location"
+        label="Location"
         :v="v$.location" />
 
       <input-dropdown
+        id="type"
         v-model="internalValue.type"
         :options="eventTypes"
         label="Event type"
         :v="v$.type" />
 
       <input-dropdown
-        v-model="internalValue.allowedRoles"
+        id="allowed-roles"
+        v-model="internalValue.allowed_roles"
         multiple
         :options="allowedRoles"
         label="Who can join this event?"
-        :v="v$.allowedRoles" />
+        :v="v$.allowed_roles" />
 
       <template v-if="showPrice">
         <input-currency
@@ -93,50 +118,29 @@
       <span class="text-sm text-gray-500">
         Leave blank for no limit on spaces for this event
       </span>
-    </div>
 
-    <event-wizard-footer
-      :show-back-button="showBackButton"
-      can-go-next
-      :is-last="isLast"
-      :loading="loading"
-      @prev="onPrev"
-      @next="onNext" />
+      <div class="flex flex-row gap-2">
+        <nuxt-link
+          :to="'/events/' + internalValue.id"
+          class="rounded-md bg-white flex justify-center items-center px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+          Go back
+        </nuxt-link>
+        <custom-button
+          :action="onSave"
+          class="rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+          Save
+        </custom-button>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { useVuelidate, Validation } from "@vuelidate/core";
 import { ExclamationTriangleIcon } from "@heroicons/vue/20/solid";
 import { required } from "@vuelidate/validators";
 import { Ref } from "vue";
-
-const emits = defineEmits(["update:modelValue", "prev", "next"]);
-
-const user = useDirectusUser();
-
-const props = defineProps<{
-  eventItem: any,
-  showBackButton: boolean,
-  isLast: boolean,
-  loading: boolean
-}>();
-
-const internalValue = computed({
-  get () {
-    return props.eventItem;
-  },
-  set (val) {
-    emits("update:modelValue", val);
-  }
-});
-
-const allowedRoles = [
-  { id: "non-members", name: "Non-members" },
-  { id: "members", name: "Members" },
-  { id: "juniors", name: "Juniors" },
-  { id: "none", name: "No one" }
-];
+import { useVuelidate, Validation } from "@vuelidate/core/dist/index";
+import { EventItem } from "~/types";
 
 const eventTypes = [
   { id: "beginners_course", name: "Beginners course" },
@@ -150,19 +154,39 @@ const eventTypes = [
   { id: "race", name: "Race" }
 ];
 
-watch(() => internalValue.value.allowedRoles, (val, oldVal) => {
+const allowedRoles = [
+  { id: "non-members", name: "Non-members" },
+  { id: "members", name: "Members" },
+  { id: "juniors", name: "Juniors" },
+  { id: "none", name: "No one" }
+];
+
+const props = defineProps<{
+  event: EventItem
+}>();
+
+const user = useDirectusUser();
+const directus = useDirectus();
+
+const internalValue = ref({ ...props.event });
+internalValue.value.type = eventTypes.find(x => x.id === internalValue.value.type);
+internalValue.value.allowed_roles = allowedRoles.filter(r => internalValue.value.allowed_roles.includes(r.id));
+
+const juniorsAllowed = computed(() => !!internalValue.value.allowed_roles.find(x => x.id === "juniors"));
+const showPrice = computed(() => !internalValue.value.allowed_roles.find(x => x.id === "none"));
+
+watch(() => internalValue.value.allowed_roles, (val, oldVal) => {
   if (oldVal.length === 1 && oldVal[0].id === "none" && val.length > 1) {
-    internalValue.value.allowedRoles = val.filter(x => x.id !== "none");
+    internalValue.value.allowed_roles = val.filter(x => x.id !== "none");
+    console.log("here");
   } else {
     const noOne = val.find(x => x.id === "none");
+    console.log("there");
     if (noOne && val.length > 1) {
-      internalValue.value.allowedRoles.value = [noOne];
+      internalValue.value.allowed_roles = [noOne];
     }
   }
 }, { deep: true });
-
-const juniorsAllowed = computed(() => !!internalValue.value.allowedRoles.find(x => x.id === "juniors"));
-const showPrice = computed(() => !internalValue.value.allowedRoles.find(x => x.id === "none"));
 
 const showPriceWarning = computed(() => {
   if ((showPrice.value || juniorsAllowed.value) && hasExactRole(user.value, "member")) {
@@ -179,21 +203,35 @@ const canChangeLeaders = computed(() => {
 const rules = {
   title: { required },
   location: { required },
-  allowedRoles: { required },
+  allowed_roles: { required },
   type: { required }
 };
 
 const v$: Ref<Validation> = useVuelidate(rules, internalValue);
 
-function onPrev () {
-  emits("prev");
-}
-
-function onNext () {
+async function onSave () {
   v$.value.$touch();
 
   if (!v$.value.$invalid) {
-    emits("next");
+    try {
+      const newEventItem = {
+        ...internalValue.value
+      };
+
+      newEventItem.allowed_roles = newEventItem.allowed_roles.map(x => x.id);
+      newEventItem.type = newEventItem.type.id;
+
+      await directus("/events/update", {
+        method: "POST",
+        body: {
+          event: newEventItem
+        }
+      });
+
+      await navigateTo("/events/" + newEventItem.id);
+    } catch (e) {
+      console.error("error updating event", e);
+    }
   }
 }
 
