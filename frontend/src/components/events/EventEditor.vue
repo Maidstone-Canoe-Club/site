@@ -139,7 +139,7 @@
 import { ExclamationTriangleIcon } from "@heroicons/vue/20/solid";
 import { required } from "@vuelidate/validators";
 import { Ref } from "vue";
-import { useVuelidate, Validation } from "@vuelidate/core/dist/index";
+import { useVuelidate, Validation } from "@vuelidate/core";
 import { EventItem } from "~/types";
 
 const eventTypes = [
