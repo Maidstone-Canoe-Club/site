@@ -101,13 +101,13 @@
         </div>
       </template>
 
-      <div v-show="canChangeLeaders">
-        <user-search
-          v-model="internalValue.leaders"
-          label="Event leaders"
-          placeholder="Start typing the name of the club member"
-          multiple />
-      </div>
+      <!--      <div v-show="canChangeLeaders">-->
+      <!--        <user-search-->
+      <!--          v-model="internalValue.leaders"-->
+      <!--          label="Event leaders"-->
+      <!--          placeholder="Start typing the name of the club member"-->
+      <!--          multiple />-->
+      <!--      </div>-->
 
       <input-field
         id="max-spaces"
@@ -220,6 +220,7 @@ async function onSave () {
 
       newEventItem.allowed_roles = newEventItem.allowed_roles.map(x => x.id);
       newEventItem.type = newEventItem.type.id;
+      newEventItem.leaders = newEventItem.leaders.map(x => x.id);
 
       await directus("/events/update", {
         method: "POST",
