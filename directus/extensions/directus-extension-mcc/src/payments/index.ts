@@ -6,6 +6,24 @@ export default defineEndpoint((router, {services}) => {
     admin: true
   };
 
+  router.post("/orders", async (req, res) => {
+    try{
+      const orders = req.body.orders;
+
+      const ordersService = new ItemsService("orders", {
+        schema: req.schema,
+        accountability: adminAccountability
+      });
+
+      const orderIds = await ordersService.createMany(orders);
+      console.log("created orders", orderIds);
+      return res.send(orderIds);
+    }catch(e){
+      console.error("error creating orders", e);
+      return res.status(500).send("error creating orders");
+    }
+  });
+
   router.post("/handle/event", async (req, res) => {
     try {
       const sessionWithLineItems = req.body.sessionWithLineItems;
@@ -46,42 +64,15 @@ export default defineEndpoint((router, {services}) => {
         accountability: adminAccountability
       });
 
-      const orders = [];
-
-      for(const lineItem of sessionWithLineItems.line_items.data){
-        orders.push({
-          user: lineItem.price.metadata.customer_user_id,
-          amount: lineItem.amount_total,
-          customer_id: sessionWithLineItems.customer,
-          description: lineItem.description,
+      const orderIds = metadata.order_ids.split(",");
+      const orders = orderIds
+        .map(id => ({
+          id,
+          status: "paid",
           payment_intent: sessionWithLineItems.payment_intent,
-          metadata: JSON.stringify({
-            event_id: metadata.event_id,
-            instance: metadata.event_instance,
-            booked_user: lineItem.price.metadata.user_id
-          })
-        });
-      }
+        }));
 
-      await ordersService.createMany(orders);
-
-      // for(const userId of userIds){
-      //   orders.push({
-      //
-      //   });
-      // }
-
-      // await ordersService.createOne({
-      //   user: metadata.user_id,
-      //   amount: sessionWithLineItems.amount_total,
-      //   customer_id: sessionWithLineItems.customer,
-      //   description: `${metadata.event_name} - ${metadata.date}`,
-      //   payment_intent: sessionWithLineItems.payment_intent,
-      //   metadata: JSON.stringify({
-      //     event_id: metadata.event_id,
-      //     instance: metadata.event_instance,
-      //   })
-      // });
+      await ordersService.updateBatch(orders);
 
       return res.send("ok");
     }catch(e){

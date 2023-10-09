@@ -9380,7 +9380,7 @@ fields:
       options: null
       readonly: false
       required: false
-      sort: 8
+      sort: 9
       special: null
       translations: null
       validation: null
@@ -9418,7 +9418,7 @@ fields:
       options: null
       readonly: false
       required: false
-      sort: 7
+      sort: 8
       special: null
       translations: null
       validation: null
@@ -9426,6 +9426,51 @@ fields:
       width: full
     schema:
       name: payment_intent
+      table: orders
+      data_type: character varying
+      default_value: null
+      max_length: 255
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: orders
+    field: status
+    type: string
+    meta:
+      collection: orders
+      conditions: null
+      display: null
+      display_options: null
+      field: status
+      group: null
+      hidden: false
+      interface: select-dropdown
+      note: null
+      options:
+        choices:
+          - text: Pending
+            value: pending
+          - text: Paid
+            value: paid
+          - text: Refunded
+            value: refunded
+      readonly: false
+      required: false
+      sort: 7
+      special: null
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: status
       table: orders
       data_type: character varying
       default_value: null
