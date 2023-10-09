@@ -46,6 +46,7 @@ export default defineEndpoint((router, {services, database}) => {
       last_name: juniorUser.last_name,
       dob: juniorUser.dob,
       parent: juniorUser.parentId,
+      bc_number: juniorUser.bc_number
     });
 
     if(juniorUser.medicalInformation.hasData) {
@@ -75,13 +76,13 @@ export default defineEndpoint((router, {services, database}) => {
 
     const usersService = new UsersService({knex: database, schema: req.schema, accountability: adminAccountability});
 
-    // TODO: might need email address
     const newUserId = await usersService.createOne({
       first_name: juniorUser.first_name,
       last_name: juniorUser.last_name,
       dob: juniorUser.dob,
       parent: juniorUser.parentId,
       role: juniorRole.id,
+      bc_number: juniorUser.bc_number,
       email_confirmed: true
     });
 

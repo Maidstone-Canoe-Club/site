@@ -13,7 +13,7 @@
         v-if="userHasAllowedRole"
         class="w-full">
         <multi-booker
-          v-if="canBookJuniors && userHasJuniors"
+          v-if="canBookJuniors"
           :event="event"
           :instance="instance"
           :price="event.price"

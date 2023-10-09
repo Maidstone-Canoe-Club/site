@@ -37,7 +37,7 @@ services:
       CORS_ORIGIN: '*'
       CORS_ALLOWED_HEADERS: 'Content-Type,Authorization,Cache-Control'
       ACCESS_TOKEN_TTL: '15m'
-      REFRESH_TOKEN_TTL: '2d'
+      REFRESH_TOKEN_TTL: '20d'
       DB_CLIENT: 'pg'
       DB_HOST: 'postgres'
       DB_PORT: '5432'

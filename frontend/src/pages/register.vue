@@ -60,6 +60,7 @@
           @invite="setInviteId"
           @on-next="nextStep" />
       </template>
+
       <template v-if="currentStep === 2">
         <user-details-step
           v-model="user"

@@ -5,32 +5,7 @@
         <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
           {{ event.title }}
         </h2>
-        <div class="mt-1 flex flex-col sm:mt-0 sm:flex-row sm:flex-wrap sm:space-x-6">
-          <div class="mt-2 flex items-center text-sm text-gray-500">
-            <MapPinIcon class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
-            {{ event.location }}
-          </div>
-          <div
-            v-if="event.max_spaces"
-            class="mt-2 flex items-center text-sm text-gray-500">
-            <UsersIcon class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
-            {{ event.max_spaces }} max spaces
-          </div>
-          <div
-            v-if="event.price || event.junior_price"
-            class="mt-2 flex items-center text-sm text-gray-500">
-            <CurrencyPoundIcon class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
-            <template v-if="event.price">
-              {{ formatPrice(event.price) }} per adult
-            </template>
-            <template v-if="event.price && event.junior_price">
-              &ndash;
-            </template>
-            <template v-if="event.junior_price">
-              {{ formatPrice(event.junior_price) }} per junior
-            </template>
-          </div>
-        </div>
+        <div class="mt-1 flex flex-col sm:mt-0 sm:flex-row sm:flex-wrap sm:space-x-6" />
       </div>
       <div
         v-if="canEdit"
@@ -55,8 +30,56 @@
             v-if="event.description"
             :content="event.description" />
         </div>
-        <div class="md:col-span-4">
-          <div v-if="leaders && leaders.length" class="mb-4">
+        <div class="md:col-span-4 space-y-6">
+          <div class="flex flex-col gap-1">
+            <strong>Details</strong>
+            <div class="mt-2 flex items-center text-sm text-gray-500">
+              <MapPinIcon class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
+              {{ event.location }}
+            </div>
+
+            <div
+              v-if="event.max_spaces"
+              class="mt-2 flex items-center text-sm text-gray-500">
+              <UsersIcon class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
+              {{ event.max_spaces }} max spaces
+            </div>
+
+            <div
+              v-for="(date, index) in sessionDates"
+              :key="index">
+              <div class="mt-2 flex items-center text-sm text-gray-500">
+                <CalendarIcon class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
+                {{ renderSessionDate(date) }}
+              </div>
+            </div>
+
+            <div
+              v-if="event.price || event.junior_price"
+              class="mt-2 flex items-center text-sm text-gray-500">
+              <CurrencyPoundIcon class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
+              <template v-if="event.price">
+                {{ formatPrice(event.price) }} per adult
+              </template>
+              <template v-if="event.price && event.junior_price">
+                &ndash;
+              </template>
+              <template v-if="event.junior_price">
+                {{ formatPrice(event.junior_price) }} per junior
+              </template>
+            </div>
+
+            <div
+              v-if="formattedAllowedRoles"
+              class="mt-2 flex items-center text-sm text-gray-500">
+              <UserGroupIcon class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
+              <span>
+                {{ formattedAllowedRoles }}
+              </span>
+            </div>
+          </div>
+
+          <div v-if="leaders && leaders.length">
             <strong>Leaders</strong>
             <ul
               class="mt-2 flex flex-col gap-2">
@@ -75,23 +98,11 @@
             </ul>
           </div>
 
-          <div>
-            <strong>Dates</strong>
-            <div
-              v-for="(date, index) in sessionDates"
-              :key="index">
-              <div class="mt-2 flex items-center text-sm text-gray-500">
-                <CalendarIcon class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
-                {{ renderSessionDate(date) }}
-              </div>
-            </div>
-          </div>
-
           <!--          <div class="my-5">-->
           <!--            <admin-controls :event="event" />-->
           <!--          </div>-->
 
-          <div class="mb-5 mt-5">
+          <div class="mb-5">
             <event-booker
               v-if="canBook"
               :event="event"
@@ -143,7 +154,8 @@ import {
   MapPinIcon,
   PencilIcon,
   UsersIcon,
-  InformationCircleIcon
+  InformationCircleIcon,
+  UserGroupIcon
 } from "@heroicons/vue/20/solid";
 // @ts-ignore
 import Dinero from "dinero.js";
@@ -175,6 +187,40 @@ if (!event.value) {
 }
 
 const slug = slugify(event.value.title);
+
+const formattedAllowedRoles = computed(() => {
+  const roles = event.value.allowed_roles;
+
+  if (!roles || !roles.length) {
+    return null;
+  }
+
+  if (roles.includes("none")) {
+    return null;
+  }
+
+  const camelCase = (input: string) => {
+    return input.charAt(0).toUpperCase() + input.substring(1);
+  };
+
+  const joinOrAnd = (input: string[]) => {
+    if (input.length === 2) {
+      return input[0] + " & " + input[1];
+    }
+
+    if (input.length === 1) {
+      return input[0];
+    }
+
+    return input.slice(0, -1).join(", ") + " & " + input[input.length - 1];
+  };
+
+  if (roles.includes("non-members")) {
+    return camelCase(joinOrAnd(roles));
+  }
+
+  return camelCase(joinOrAnd(roles) + " only");
+});
 
 if (!route.params.slug && slug) {
   let redirect = route.path;
