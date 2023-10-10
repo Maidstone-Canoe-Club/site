@@ -249,7 +249,6 @@ async function onSave (type: string) {
 function cleanUser (user: DirectusUser, type: string): object {
   if (type === "details") {
     return {
-      id: user!.id,
       first_name: user!.first_name,
       last_name: user!.last_name,
       home_tel: user!.home_tel,
@@ -261,12 +260,10 @@ function cleanUser (user: DirectusUser, type: string): object {
     };
   } else if (type === "avatar") {
     return {
-      id: user!.id,
       avatar: user!.avatar
     };
   } else if (type === "login") {
     const result = {
-      id: user!.id,
       email: user!.email
     };
 
