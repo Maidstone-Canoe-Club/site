@@ -62,6 +62,8 @@ definePageMeta({
   middleware: ["auth"]
 });
 
+useHead({ title: "Profile" });
+
 const user = useDirectusUser();
 
 /**

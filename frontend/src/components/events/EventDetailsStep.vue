@@ -76,13 +76,13 @@
         </div>
       </template>
 
-      <!--      <div v-show="canChangeLeaders">-->
-      <!--        <user-search-->
-      <!--          v-model="internalValue.leaders"-->
-      <!--          label="Event leaders"-->
-      <!--          placeholder="Start typing the name of the club member"-->
-      <!--          multiple />-->
-      <!--      </div>-->
+      <div v-show="canChangeLeaders">
+        <user-search
+          v-model="internalValue.leaders"
+          label="Event leaders"
+          placeholder="Start typing the name of the club member"
+          multiple />
+      </div>
 
       <input-field
         id="max-spaces"
