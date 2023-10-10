@@ -134,13 +134,15 @@ async function onSubmit () {
 
     newEventItem.allowedRoles = newEventItem.allowedRoles.map(x => x.id);
     newEventItem.type = newEventItem.type.id;
+    newEventItem.leaders = undefined;
 
     await directus("/events/create", {
       method: "POST",
       body: {
         eventType: eventType.value,
         eventItem: newEventItem,
-        eventDates: eventDates.value
+        eventDates: eventDates.value,
+        leaders: eventItem.value.leaders?.map(l => l.id)
       }
     });
     await navigateTo("/calendar");

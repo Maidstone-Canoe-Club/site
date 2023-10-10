@@ -220,12 +220,15 @@ async function onSave () {
 
       newEventItem.allowed_roles = newEventItem.allowed_roles.map(x => x.id);
       newEventItem.type = newEventItem.type.id;
-      newEventItem.leaders = newEventItem.leaders.map(x => x.id);
+
+      // TODO: need to figure out which leaders have been remove and which have been added
+      newEventItem.leaders = undefined;
 
       await directus("/events/update", {
         method: "POST",
         body: {
           event: newEventItem
+          // leaders: internalValue.value.leaders.map(x => x.id)
         }
       });
 

@@ -363,6 +363,7 @@ export default defineEndpoint((router, {services, database}) => {
 
   router.post("/update", async (req, res) => {
     const eventItem = req.body.event;
+    const leaders = req.body.leaders;
 
     if(!eventItem){
       return res.status(400).send("missing event data");
@@ -397,7 +398,13 @@ export default defineEndpoint((router, {services, database}) => {
         }
       }
 
+
       const result = await eventService.updateOne(eventItem.id, eventItem);
+
+      if(leaders && leaders.length){
+
+      }
+
       return res.send(result);
 
     }catch(e){
@@ -410,6 +417,7 @@ export default defineEndpoint((router, {services, database}) => {
     const eventType = req.body.eventType;
     const eventItem = req.body.eventItem;
     const eventDates = req.body.eventDates;
+    const leaders = req.body.leaders;
 
     console.log("creating new date");
     console.log("event type", eventType);
@@ -445,17 +453,50 @@ export default defineEndpoint((router, {services, database}) => {
       }
     }
 
+    // create event leaders
+    const eventLeadersService = new ItemsService("events_directus_users", {
+      knex: database,
+      schema: req.schema,
+      accountability: req.accountability
+    });
+
     if (eventType === "single") {
-      return await createSingleEvent(eventItem, eventService, res);
+      const id = await createSingleEvent(eventItem, eventService, res);
+      await createLeaders(id, leaders, eventLeadersService, eventService);
+      return res.send(id);
     } else if (eventType === "multi") {
-      return await createMultiEvent(eventItem, eventDates, eventService, res);
+      const ids = await createMultiEvent(eventItem, eventDates, eventService, res);
+
+      for(const id of ids){
+        await createLeaders(id, leaders, eventLeadersService, eventService);
+      }
+
+      return res.send(ids);
+
     } else if (eventType === "recurring") {
-      return await createRecurringEvent(eventItem, eventDates, eventService, recurringEventService, res);
+      const id = await createRecurringEvent(eventItem, eventDates, eventService, recurringEventService, res);
+      await createLeaders(id, leaders, eventLeadersService, eventService);
+      return res.send(id);
     } else {
       return res.status(400).send("unknown event type");
     }
   });
 });
+
+async function createLeaders(eventId, leaders, leadersService, eventService){
+  console.log("creating leaders against event", eventId, leaders);
+  if(leaders && leaders.length) {
+    const leaderIds = await leadersService.createMany(leaders.map(id => ({
+      events_id: eventId,
+      directus_users_id: id
+    })));
+
+    await eventService.updateOne(eventId, {
+      leaders: leaderIds
+    });
+
+  }
+}
 
 async function createSingleEvent(eventItem, eventService, res) {
 
@@ -473,7 +514,7 @@ async function createSingleEvent(eventItem, eventService, res) {
       status: eventItem.status
     });
 
-    return res.send(result);
+    return result;
   } catch (e) {
     console.error("unable to create new event", e);
     return res.status(500).send("unable to create new event");
@@ -526,7 +567,7 @@ async function createMultiEvent(eventItem, eventDates, eventService, res) {
 
     const newIds = await eventService.createMany(newEvents);
 
-    return res.send([firstEventId, ...newIds]);
+    return [firstEventId, ...newIds];
   } catch (e) {
     console.error("unable to create new multi day event", e);
     return res.status(500).send("unable to create new multi day  event");
@@ -614,9 +655,9 @@ async function createRecurringEvent(eventItem, eventDates, eventService, recurri
     recurringPattern.day_of_month = dayOfMonth;
     recurringPattern.month_of_year = monthOfYear;
 
-    const id = await recurringEventService.createOne(recurringPattern);
+    await recurringEventService.createOne(recurringPattern);
 
-    return res.send(id);
+    return newEventId;
   } catch (e) {
     console.error("unable to create new recurring event", e);
     return res.status(500).send("unable to create new recurring event");
