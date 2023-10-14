@@ -30,8 +30,6 @@
       <custom-button :action="submit">
         Submit
       </custom-button>
-
-      <pre>{{ internalValue }}</pre>
     </div>
   </div>
 </template>
