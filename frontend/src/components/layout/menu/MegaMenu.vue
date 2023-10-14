@@ -57,7 +57,7 @@
                       <DisclosureButton
                         v-for="child in item.childItems"
                         :key="child.name"
-                        as="NuxtLink"
+                        :as="NuxtLink"
                         :to="child.href"
                         class="block rounded-lg pl-6 px-3 py-2 text-sm font-semibold leading-6 text-gray-900 hover:bg-gray-50">
                         {{ child.name }}
