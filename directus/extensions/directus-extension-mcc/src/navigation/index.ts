@@ -10,6 +10,10 @@ function buildNavItem(item: any) {
     childItems: []
   };
 
+  if (item.page) {
+    result.href = `/${item.page.slug}`;
+  }
+
   if (item.children && item.children.length) {
     for (const child of item.children) {
       result.childItems.push(buildNavItem(child));
@@ -50,7 +54,7 @@ export default defineEndpoint((router, {services, database}) => {
 
       const navItems = [];
 
-      if(navigation && navigation.items && navigation.items.length) {
+      if (navigation && navigation.items && navigation.items.length) {
         for (const item of navigation.items) {
           navItems.push(buildNavItem(item));
         }
