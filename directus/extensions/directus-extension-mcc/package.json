@@ -72,6 +72,11 @@
 				"type": "endpoint",
 				"name": "newsletters",
 				"source": "src/newsletters/index.ts"
+			},
+			{
+				"type": "endpoint",
+				"name": "navigation",
+				"source": "src/navigation/index.ts"
 			}
 		]
 	},
