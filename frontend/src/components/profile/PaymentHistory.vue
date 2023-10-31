@@ -1,6 +1,6 @@
 ﻿<template>
   <div>
-    <div>
+    <div class="overflow-x-auto">
       <table
         v-if="payments && payments.length"
         class="min-w-full divide-y divide-gray-300">
@@ -18,6 +18,9 @@
             <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
               Payment date
             </th>
+            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+              Status
+            </th>
             <th />
           </tr>
         </thead>
@@ -34,6 +37,17 @@
             </td>
             <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
               {{ formatDate(payment.date_created) }}
+            </td>
+            <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+              <span
+                class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset"
+                :class="{
+                  'bg-green-50 text-green-700 ring-green-600/20': payment.status === 'paid',
+                  'bg-blue-50 text-blue-700 ring-blue-700/20': payment.status === 'pending',
+                  'bg-yellow-50 text-yellow-800 ring-yellow-600/10': payment.status === 'refunded'
+                }">
+                {{ formatStatus(payment.status) }}
+              </span>
             </td>
             <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
               <nuxt-link
@@ -131,6 +145,13 @@ function formatDate (input: string) {
 
 function formatId (id: string) {
   return id.substring(0, 7);
+}
+
+function formatStatus (input: string) {
+  if (input) {
+    return input.charAt(0).toUpperCase() + input.slice(1);
+  }
+  return null;
 }
 
 </script>
