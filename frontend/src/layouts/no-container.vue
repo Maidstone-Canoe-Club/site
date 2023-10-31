@@ -59,7 +59,7 @@
 </template>
 
 <script setup lang="ts">
-import { Home } from "~/types";
+import type { Home } from "~/types";
 
 useHead({
   titleTemplate: title => title ? `${title} | MCC` : "Maidstone Canoe Club"

@@ -1,4 +1,4 @@
-﻿import { DirectusUser } from "nuxt-directus/dist/runtime/types";
+﻿import type { DirectusUser } from "nuxt-directus/dist/runtime/types";
 
 const roleLevels : Record<string, number> = {
   unverified: 0,

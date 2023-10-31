@@ -18,7 +18,7 @@
 
 <script setup lang="ts">
 import { UserCircleIcon } from "@heroicons/vue/24/outline";
-import { DirectusUser } from "nuxt-directus/dist/runtime/types";
+import type { DirectusUser } from "nuxt-directus/dist/runtime/types";
 
 const props = withDefaults(defineProps<{
   user: DirectusUser,

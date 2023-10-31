@@ -41,7 +41,7 @@
 </template>
 
 <script setup lang="ts">
-import { Validation } from "@vuelidate/core/dist";
+import type { Validation } from "@vuelidate/core";
 import { Listbox, ListboxButton, ListboxLabel, ListboxOption, ListboxOptions } from "@headlessui/vue";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/vue/20/solid";
 

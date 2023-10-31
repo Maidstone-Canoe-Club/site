@@ -36,7 +36,7 @@
 
 <script setup lang="ts">
 import { ExclamationCircleIcon } from "@heroicons/vue/20/solid";
-import { Validation } from "@vuelidate/core";
+import type { Validation } from "@vuelidate/core";
 
 interface Props {
   modelValue: string | number | null | undefined,

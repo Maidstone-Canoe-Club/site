@@ -138,9 +138,9 @@
 <script setup lang="ts">
 import { ExclamationTriangleIcon } from "@heroicons/vue/20/solid";
 import { required } from "@vuelidate/validators";
-import { Ref } from "vue";
+import type { Ref } from "vue";
 import { useVuelidate, Validation } from "@vuelidate/core/dist/index";
-import { EventItem } from "~/types";
+import type { EventItem } from "~/types";
 
 const eventTypes = [
   { id: "beginners_course", name: "Beginners course" },

@@ -31,7 +31,7 @@
 </template>
 
 <script setup lang="ts">
-import { Validation } from "@vuelidate/core";
+import type { Validation } from "@vuelidate/core";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/vue/24/solid";
 
 interface Props {

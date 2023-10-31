@@ -106,10 +106,11 @@
 </template>
 
 <script setup lang="ts">
-import { useVuelidate, Validation } from "@vuelidate/core";
+import { useVuelidate } from "@vuelidate/core";
+import type { Validation } from "@vuelidate/core";
 import { ExclamationTriangleIcon } from "@heroicons/vue/20/solid";
 import { required } from "@vuelidate/validators";
-import { Ref } from "vue";
+import type { Ref } from "vue";
 
 const emits = defineEmits(["update:modelValue", "prev", "next"]);
 

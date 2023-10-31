@@ -365,7 +365,7 @@ import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } fro
 import enGB from "date-fns/locale/en-GB/index.js";
 import { format, getISODay, setDefaultOptions } from "date-fns";
 import { useCalendarStore } from "~/store/calendarStore";
-import { EventItem } from "~/types";
+import type { EventItem } from "~/types";
 
 const props = withDefaults(defineProps<{
   events: EventItem[],

@@ -142,7 +142,7 @@
 
 <script setup lang="ts">
 import { InformationCircleIcon } from "@heroicons/vue/20/solid";
-import { DirectusUser } from "nuxt-directus/dist/runtime/types";
+import type { DirectusUser } from "nuxt-directus/dist/runtime/types";
 
 const user = useDirectusUser();
 const { updateUser } = useDirectusUsers();

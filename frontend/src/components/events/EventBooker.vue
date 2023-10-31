@@ -41,7 +41,7 @@
 </template>
 
 <script setup lang="ts">
-import { EventItem } from "~/types";
+import type { EventItem } from "~/types";
 
 const emits = defineEmits(["refresh"]);
 

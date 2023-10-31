@@ -83,8 +83,10 @@
 
 <script setup lang="ts">
 import { XCircleIcon } from "@heroicons/vue/20/solid";
-import { Ref, ref } from "vue";
-import { useVuelidate, Validation } from "@vuelidate/core";
+import { ref } from "vue";
+import type { Ref } from "vue";
+import { useVuelidate } from "@vuelidate/core";
+import type { Validation } from "@vuelidate/core";
 import { maxLength, required, email as emailValidator } from "@vuelidate/validators";
 import { ofetch } from "ofetch";
 import { CheckCircleIcon } from "@heroicons/vue/24/outline";

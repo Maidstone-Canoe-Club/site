@@ -19,7 +19,7 @@
 
 <script setup lang="ts">
 import { format } from "date-fns";
-import { NewsItem } from "~/types";
+import type { NewsItem } from "~/types";
 
 const { getItemById } = useDirectusItems();
 const route = useRoute();

@@ -57,10 +57,11 @@
 </template>
 
 <script setup lang="ts">
-import { DirectusUser } from "nuxt-directus/dist/runtime/types";
+import type { DirectusUser } from "nuxt-directus/dist/runtime/types";
 import { required } from "@vuelidate/validators";
-import { useVuelidate, Validation } from "@vuelidate/core";
-import { Ref } from "vue";
+import { useVuelidate } from "@vuelidate/core";
+import type { Validation } from "@vuelidate/core";
+import type { Ref } from "vue";
 
 const emits = defineEmits(["update:modelValue", "onBack", "onNext"]);
 

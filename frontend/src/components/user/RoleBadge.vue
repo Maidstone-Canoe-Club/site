@@ -7,7 +7,7 @@
 </template>
 
 <script setup lang="ts">
-import { DirectusUser } from "nuxt-directus/dist/runtime/types";
+import type { DirectusUser } from "nuxt-directus/dist/runtime/types";
 
 const props = defineProps<{
   user: DirectusUser

@@ -53,10 +53,11 @@
 
 <script setup lang="ts">
 import { XCircleIcon } from "@heroicons/vue/20/solid";
-import { useVuelidate, Validation } from "@vuelidate/core";
+import { useVuelidate } from "@vuelidate/core";
+import type { Validation } from "@vuelidate/core";
 import { minLength, required, email as emailValidator } from "@vuelidate/validators";
-import { DirectusUser } from "nuxt-directus/dist/runtime/types";
-import { InviteCheckResult } from "~/types";
+import type { DirectusUser } from "nuxt-directus/dist/runtime/types";
+import type { InviteCheckResult } from "~/types";
 
 const emits = defineEmits(["update:modelValue", "onNext", "invite"]);
 

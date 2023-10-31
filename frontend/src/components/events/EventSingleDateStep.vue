@@ -30,10 +30,11 @@
 </template>
 
 <script setup lang="ts">
-import { useVuelidate, Validation } from "@vuelidate/core";
+import { useVuelidate } from "@vuelidate/core";
+import type { Validation } from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
 import { ArrowRightIcon } from "@heroicons/vue/24/outline";
-import { Ref } from "vue";
+import type { Ref } from "vue";
 
 const emits = defineEmits(["update:eventItem", "prev", "next"]);
 

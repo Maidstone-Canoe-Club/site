@@ -138,8 +138,8 @@
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from "@headlessui/vue";
 import { CheckIcon, ExclamationTriangleIcon, UsersIcon, PlusIcon } from "@heroicons/vue/24/outline";
 import Dinero from "dinero.js";
-import { DirectusUser } from "nuxt-directus/dist/runtime/types";
-import { EventItem } from "~/types";
+import type { DirectusUser } from "nuxt-directus/dist/runtime/types";
+import type { EventItem } from "~/types";
 // @ts-ignore
 
 const emits = defineEmits(["refresh"]);

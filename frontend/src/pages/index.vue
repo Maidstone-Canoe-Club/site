@@ -130,7 +130,7 @@ import { ChevronRightIcon } from "@heroicons/vue/24/solid";
 import { format } from "date-fns";
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from "@headlessui/vue";
 import { useDirectusItems } from "#imports";
-import { Home, NewsItem } from "~/types";
+import type { Home, NewsItem } from "~/types";
 
 definePageMeta({
   layout: "no-container"

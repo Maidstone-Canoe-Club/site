@@ -41,8 +41,7 @@
 </template>
 
 <script setup lang="ts">
-import { DirectusUser } from "nuxt-directus/dist/runtime/types";
-import { InformationCircleIcon } from "@heroicons/vue/20/solid";
+import type { DirectusUser } from "nuxt-directus/dist/runtime/types";
 import { useDirectusUser, useDirectusUsers } from "#imports";
 import { useFileUploader } from "~/composables/useFileUploader";
 

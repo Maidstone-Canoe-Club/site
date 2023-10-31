@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import { NavItem } from "~/components/layout/menu/MegaMenu.vue";
+import type { NavItem } from "~/components/layout/menu/MegaMenu.vue";
 
 const directus = useDirectus();
 
