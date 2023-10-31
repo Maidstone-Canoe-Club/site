@@ -1,8 +1,6 @@
 ﻿import {defineEndpoint} from "@directus/extensions-sdk";
 
 function buildNavItem(item: any) {
-  console.log("building item", item);
-
   const result = {
     name: item.title,
     target: item.open_in_new_tab ? "_blank" : null,

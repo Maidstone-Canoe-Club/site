@@ -1,6 +1,8 @@
 ﻿<template>
   <div class="space-y-4">
-    <h3 class="font-bold text-xl">
+    <h3
+      v-if="!hideHeading"
+      class="font-bold text-xl">
       Medical information
     </h3>
     <div class="flex flex-col gap-1">
@@ -59,8 +61,10 @@ const emits = defineEmits(["update:modelValue"]);
 const props = withDefaults(defineProps<{
   checkboxesLabel?: string,
   modelValue: MedicalInformation
+  hideHeading?: boolean
 }>(), {
-  checkboxesLabel: "Do you have any of the following:"
+  checkboxesLabel: "Do you have any of the following:",
+  hideHeading: false
 });
 
 const internalValue = ref<MedicalInformation>({

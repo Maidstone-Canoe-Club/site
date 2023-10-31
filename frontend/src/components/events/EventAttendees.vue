@@ -115,16 +115,6 @@
                               {{ viewingUser.home_tel }}
                             </dd>
                           </div>
-                          <div v-if="!isJunior(viewingUser)">
-                            <dt class="text-sm font-medium text-gray-500 sm:w-40 sm:flex-shrink-0">
-                              Address
-                            </dt>
-                            <dd class="mt-1 text-sm text-gray-900 sm:col-span-2">
-                              <p class="whitespace-pre-wrap">
-                                {{ formatAddress(viewingUser) }}
-                              </p>
-                            </dd>
-                          </div>
                           <div v-else>
                             <div class="rounded-md bg-blue-50 p-4">
                               <div class="flex">
@@ -145,15 +135,15 @@
                               View parent
                             </button>
                           </div>
-                          <div class="relative">
-                            <div class="absolute inset-0 flex items-center" aria-hidden="true">
-                              <div class="w-full border-t border-gray-300" />
-                            </div>
-                            <div class="relative flex justify-center">
-                              <span class="bg-white px-2 text-sm text-gray-700">Medical Information</span>
-                            </div>
-                          </div>
                           <template v-if="medicalInfo">
+                            <div class="relative">
+                              <div class="absolute inset-0 flex items-center" aria-hidden="true">
+                                <div class="w-full border-t border-gray-300" />
+                              </div>
+                              <div class="relative flex justify-center">
+                                <span class="bg-white px-2 text-sm text-gray-700">Medical Information</span>
+                              </div>
+                            </div>
                             <div>
                               <dt class="text-sm font-medium text-gray-500 sm:w-40 sm:flex-shrink-0">
                                 Conditions
@@ -188,20 +178,6 @@
                               </dd>
                             </div>
                           </template>
-                          <div v-else>
-                            <div class="rounded-md bg-red-50 p-4">
-                              <div class="flex">
-                                <div class="flex-shrink-0">
-                                  <XCircleIcon class="h-5 w-5 text-red-400" aria-hidden="true" />
-                                </div>
-                                <div class="ml-3">
-                                  <h3 class="text-sm font-medium text-red-800">
-                                    No medical information could be loaded for this user
-                                  </h3>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
                         </dl>
                       </div>
                       <div class="relative mt-6">

@@ -83,8 +83,6 @@ async function loadJuniors () {
   return null;
 }
 
-const userHasJuniors = computed(() => juniors.value && juniors.value.length);
-
 const paymentUrl = computed(() => {
   let result = `/api/eventPayment?eventId=${props.event.id}&userId=${user.value.id}`;
 
