@@ -48,70 +48,10 @@
           Emergency contacts
         </h1>
 
-        <div class="mt-6 space-y-4">
-          <table
-            v-if="internalEmergencyContacts && internalEmergencyContacts.length"
-            class="min-w-full divide-y divide-gray-300">
-            <thead>
-              <tr>
-                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
-                  Full name
-                </th>
-                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                  Contact number
-                </th>
-                <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-0">
-                  <span class="sr-only">Edit</span>
-                </th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-200">
-              <tr v-for="(item, index) in internalEmergencyContacts" :key="index">
-                <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
-                  {{ item.full_name }}
-                </td>
-                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                  {{ item.contact_number }}
-                </td>
-                <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
-                  <button
-                    type="button"
-                    class="text-indigo-600 hover:text-indigo-900"
-                    @click="removeContact(index)">
-                    Remove<span class="sr-only">, {{ item.full_name }}</span>
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-
-          <span class="block text font-medium leading-6 text-gray-900">Add new emergency contact</span>
-          <div class="flex flex-row gap-2">
-            <input-field
-              id="full-name"
-              v-model="newFullName"
-              label="Full name"
-              name="full-name" />
-
-            <input-field
-              id="contact-number"
-              v-model="newContactNumber"
-              label="Contact number"
-              name="contact-number" />
-          </div>
-          <button
-            type="button"
-            class="rounded bg-white px-2 py-1 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-            @click="addNewContact">
-            Save
-          </button>
-
-          <p
-            v-if="showEmergencyContactValidation"
-            class="mt-2 text-sm text-red-600">
-            You must add at least one emergency contact
-          </p>
-        </div>
+        <emergency-contact-information
+          v-model="internalEmergencyContacts"
+          :show-validation="showContactsValidation"
+          class="mt-6" />
       </div>
     </div>
   </div>
@@ -144,6 +84,7 @@ const props = defineProps<{
 
 const internalMedicalInfo = ref(props.medicalInfo);
 const internalEmergencyContacts = ref(props.emergencyContacts);
+const showContactsValidation = ref(false);
 
 watch(() => props.medicalInfo, (val) => {
   internalMedicalInfo.value = val;
@@ -158,31 +99,12 @@ watch(() => props.emergencyContacts, (val) => {
 }, { deep: true });
 
 watch(internalEmergencyContacts, (val) => {
-  emits("update:emergencyContacts", val);
-}, { deep: true });
-
-const newFullName = ref("");
-const newContactNumber = ref("");
-
-const showEmergencyContactValidation = ref(false);
-
-function removeContact (index: number) {
-  internalEmergencyContacts.value.splice(index, 1);
-}
-
-function addNewContact () {
-  if (!newFullName.value || !newContactNumber.value) {
-    return;
+  if (val.filter(x => !x.shouldRemove).length > 1) {
+    showContactsValidation.value = false;
   }
 
-  internalEmergencyContacts.value.push({
-    full_name: newFullName.value,
-    contact_number: newContactNumber.value
-  });
-
-  newFullName.value = "";
-  newContactNumber.value = "";
-}
+  emits("update:emergencyContacts", val);
+}, { deep: true });
 
 function onBack () {
   emits("onBack");
@@ -190,7 +112,7 @@ function onBack () {
 
 function onSubmit () {
   if (!internalEmergencyContacts.value.length) {
-    showEmergencyContactValidation.value = true;
+    showContactsValidation.value = true;
     return;
   }
   emits("onNext");

@@ -109,10 +109,8 @@ export default defineEndpoint((router, {services, database}) => {
       const emergencyContactsService = new ItemsService("emergency_contacts", {knex: database, schema: req.schema, accountability: adminAccountability});
       await emergencyContactsService.createMany(emergencyContacts);
 
-      if (medicalInfo.hasData) {
-        const medicalInfoService = new ItemsService("medical_info", {knex: database, schema: req.schema, accountability: adminAccountability});
-        await medicalInfoService.createOne(medicalInfo);
-      }
+      const medicalInfoService = new ItemsService("medical_info", {knex: database, schema: req.schema, accountability: adminAccountability});
+      await medicalInfoService.createOne(medicalInfo);
 
       if (inviteId) {
         const inviteService = new ItemsService("member_invites", {knex: database, schema: req.schema, accountability: adminAccountability});
