@@ -35,8 +35,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, Ref } from "vue";
-import { useVuelidate, Validation } from "@vuelidate/core";
+import { ref } from "vue";
+import type { Ref } from "vue";
+import { useVuelidate } from "@vuelidate/core";
+import type { Validation } from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
 import { useDirectusItems, navigateTo } from "#imports";
 

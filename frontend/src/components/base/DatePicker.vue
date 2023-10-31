@@ -11,13 +11,13 @@
     <template #calendar-icon>
       <span class="dp__clock-icon">
         <CalendarDaysIcon />
-        Select date
+        Click to select date
       </span>
     </template>
     <template #clock-icon>
       <span class="dp__clock-icon">
         <ClockIcon />
-        Select time
+        Click to select time
       </span>
     </template>
   </vue-date-picker>

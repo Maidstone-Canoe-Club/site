@@ -71,7 +71,7 @@ import {
   ComboboxOptions
 } from "@headlessui/vue";
 import { watchDebounced } from "@vueuse/core";
-import { DirectusUser } from "nuxt-directus/dist/runtime/types";
+import type { DirectusUser } from "nuxt-directus/dist/runtime/types";
 import { ref } from "#imports";
 
 const emits = defineEmits(["update:modelValue"]);

@@ -90,7 +90,7 @@
 <script setup lang="ts">
 import { CheckIcon } from "@heroicons/vue/24/solid";
 import { definePageMeta } from "#imports";
-import { EmergencyContact, InviteData, MedicalInfo } from "~/types";
+import type { EmergencyContact, InviteData, MedicalInfo } from "~/types";
 
 definePageMeta({
   middleware: ["public-only"]

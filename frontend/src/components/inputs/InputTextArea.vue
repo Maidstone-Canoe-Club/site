@@ -23,8 +23,7 @@
 </template>
 
 <script setup lang="ts">
-
-import { Validation } from "@vuelidate/core";
+import type { Validation } from "@vuelidate/core";
 
 const emits = defineEmits(["update:modelValue"]);
 

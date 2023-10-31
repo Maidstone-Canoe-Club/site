@@ -29,10 +29,9 @@
 </template>
 
 <script setup lang="ts">
-import { EyeIcon, EyeSlashIcon } from "@heroicons/vue/24/solid";
-import { ZxcvbnResult } from "@zxcvbn-ts/core";
-import { Validation } from "@vuelidate/core";
-import { Ref } from "vue";
+import type { ZxcvbnResult } from "@zxcvbn-ts/core";
+import type { Validation } from "@vuelidate/core";
+import type { Ref } from "vue";
 
 const { zxcvbnOptions, zxcvbnAsync, debounce } = await import("@zxcvbn-ts/core");
 const zxcvbnCommonPackage = await import("@zxcvbn-ts/language-common");

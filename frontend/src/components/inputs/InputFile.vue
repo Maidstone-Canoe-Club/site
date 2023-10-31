@@ -20,7 +20,7 @@
 </template>
 
 <script setup lang="ts">
-import { Validation } from "@vuelidate/core";
+import type { Validation } from "@vuelidate/core";
 import { UploadableFile } from "~/composables/useFileList";
 
 const emits = defineEmits(["update:modelValue"]);

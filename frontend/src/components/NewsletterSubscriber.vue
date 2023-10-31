@@ -81,14 +81,12 @@
 <script setup lang="ts">
 import { CheckCircleIcon } from "@heroicons/vue/20/solid";
 import { required, email as emailValidator } from "@vuelidate/validators";
-import { useVuelidate, Validation } from "@vuelidate/core";
-import { Ref } from "vue/dist/vue";
+import { useVuelidate } from "@vuelidate/core";
+import type { Validation } from "@vuelidate/core";
+import type { Ref } from "vue";
 import { XCircleIcon, ExclamationTriangleIcon } from "@heroicons/vue/20/solid";
 import { ofetch } from "ofetch";
-import { useDirectusItems, ref } from "#imports";
-
-const user = useDirectusUser();
-const { createItems } = useDirectusItems();
+import { ref } from "#imports";
 
 const newsletterListId = 1;
 

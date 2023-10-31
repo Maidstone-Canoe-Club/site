@@ -72,7 +72,7 @@
 </template>
 
 <script setup lang="ts">
-import { EmergencyContact, MedicalInfo } from "~/types";
+import type { EmergencyContact, MedicalInfo } from "~/types";
 
 const emits = defineEmits(["update:medicalInfo", "update:emergencyContacts", "onBack", "onNext"]);
 

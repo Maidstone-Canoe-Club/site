@@ -68,9 +68,10 @@
 </template>
 
 <script setup lang="ts">
-import { useVuelidate, Validation } from "@vuelidate/core";
+import { useVuelidate } from "@vuelidate/core";
+import type { Validation } from "@vuelidate/core";
 import { minLength, required, email as emailValidator } from "@vuelidate/validators";
-import { Ref } from "vue";
+import type { Ref } from "vue";
 import { useDirectusAuth, navigateTo, definePageMeta } from "#imports";
 
 definePageMeta({

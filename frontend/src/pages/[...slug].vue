@@ -89,7 +89,8 @@ async function loadContent () {
 if (!item.value) {
   throw createError({
     statusCode: 404,
-    statusMessage: "Content not found"
+    statusMessage: "Content not found",
+    fatal: true
   });
 }
 

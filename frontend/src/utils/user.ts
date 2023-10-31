@@ -1,5 +1,4 @@
-﻿import { DirectusUser } from "nuxt-directus/dist/runtime/types";
-import { Ref } from "vue";
+﻿import type { DirectusUser } from "nuxt-directus/dist/runtime/types";
 import { useDirectusUrl } from "#imports";
 
 export function getAvatarUrl (user: DirectusUser | undefined, size = 40) {

@@ -28,7 +28,7 @@
 </template>
 
 <script setup lang="ts">
-import { Validation } from "@vuelidate/core";
+import type { Validation } from "@vuelidate/core";
 // @ts-ignore
 import Dinero from "dinero.js";
 interface Props {

@@ -35,10 +35,18 @@
                 {{ formatDate(booking.date) }}
               </td>
               <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-900">
-                {{ booking.user.first_name }} {{ booking.user.last_name }}
+                {{ booking.user?.first_name }} {{ booking.user?.last_name }}
               </td>
               <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-900">
-                {{ formatStatus(booking.status) }}
+                <span
+                  class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset"
+                  :class="{
+                    'bg-green-50 text-green-700 ring-green-600/20': booking.status === 'booked',
+                    'bg-blue-50 text-blue-700 ring-blue-700/20': booking.status === 'paid',
+                    'bg-red-50 text-red-700 ring-red-600/10': booking.status === 'cancelled'
+                  }">
+                  {{ formatStatus(booking.status) }}
+                </span>
               </td>
               <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
                 <button

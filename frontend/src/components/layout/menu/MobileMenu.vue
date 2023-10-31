@@ -65,10 +65,9 @@
 
 <script setup lang="ts">
 import { XMarkIcon } from "@heroicons/vue/24/outline";
-import { Dialog, DialogPanel, Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/vue";
-import { ChevronDownIcon } from "@heroicons/vue/20/solid";
+import { Dialog, DialogPanel } from "@headlessui/vue";
 import { watch, ref } from "vue";
-import { NavItem } from "~/components/layout/menu/MegaMenu.vue";
+import type { NavItem } from "~/components/layout/menu/MegaMenu.vue";
 
 const emits = defineEmits(["update:open"]);
 

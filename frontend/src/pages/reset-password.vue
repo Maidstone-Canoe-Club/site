@@ -59,8 +59,9 @@
 </template>
 
 <script setup lang="ts">
-import { Ref } from "vue";
-import { useVuelidate, Validation } from "@vuelidate/core";
+import type { Ref } from "vue";
+import { useVuelidate } from "@vuelidate/core";
+import type { Validation } from "@vuelidate/core";
 import { sameAs, minLength, helpers, required } from "@vuelidate/validators";
 import { ExclamationTriangleIcon } from "@heroicons/vue/20/solid";
 

@@ -27,8 +27,7 @@
 </template>
 
 <script setup lang="ts">
-import { Validation } from "@vuelidate/core";
-import { ExclamationCircleIcon } from "@heroicons/vue/20/solid";
+import type { Validation } from "@vuelidate/core";
 
 interface Props {
   modelValue: Date | number | null | undefined,

@@ -43,7 +43,7 @@
 <script setup lang="ts">
 import { Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/vue";
 import { ChevronDownIcon } from "@heroicons/vue/20/solid";
-import { NavItem } from "~/components/layout/menu/MegaMenu.vue";
+import type { NavItem } from "~/components/layout/menu/MegaMenu.vue";
 
 const emits = defineEmits(["close"]);
 
