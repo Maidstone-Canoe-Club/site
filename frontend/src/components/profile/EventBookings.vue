@@ -1,6 +1,6 @@
 ﻿<template>
   <div>
-    <div>
+    <div class="overflow-x-auto">
       <template v-if="bookings && bookings.length">
         <table
           class="min-w-full divide-y divide-gray-300">
