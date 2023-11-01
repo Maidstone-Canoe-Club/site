@@ -96,16 +96,20 @@ async function loadData () {
     params: {
       fields: ["*", "user.parent.id", "user.id", "user.first_name", "user.last_name", "recurring_pattern.*", "event.id", "event.title", "event.start_date"],
       sort: ["-date_created"],
-      filters: {
+      filter: {
         _or: [
           {
             user: {
-              _eq: user.id
+              _eq: user.value.id
             }
           },
           {
-            "parent.id": {
-              _eq: user.id
+            user: {
+              parent: {
+                id: {
+                  _eq: user.value.id
+                }
+              }
             }
           }
         ]
