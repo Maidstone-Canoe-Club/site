@@ -40,11 +40,13 @@
             </td>
             <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
               <span
+                v-if="payment.status"
                 class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset"
                 :class="{
                   'bg-green-50 text-green-700 ring-green-600/20': payment.status === 'paid',
                   'bg-blue-50 text-blue-700 ring-blue-700/20': payment.status === 'pending',
-                  'bg-yellow-50 text-yellow-800 ring-yellow-600/10': payment.status === 'refunded'
+                  'bg-yellow-50 text-yellow-800 ring-yellow-600/10': payment.status === 'refunded',
+                  'bg-red-50 text-red-700 ring-red-600/10': booking.status === 'cancelled'
                 }">
                 {{ formatStatus(payment.status) }}
               </span>
