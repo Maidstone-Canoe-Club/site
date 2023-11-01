@@ -6,6 +6,63 @@ export default defineEndpoint((router, {services}) => {
     admin: true
   };
 
+  router.post("/orders/cancel", async (req, res) => {
+    try{
+      const orderIds: string[] = req.body.orderIds;
+      const userId = req.accountability.user;
+
+      if(!orderIds || !orderIds.length){
+        return res.status(400).send("missing order ids");
+      }
+
+      const ordersService = new ItemsService("orders", {
+        schema: req.schema,
+        accountability: adminAccountability
+      });
+
+      const orders = await ordersService.readMany(orderIds, {
+        fields: [
+          "id",
+          "user.id",
+          "status"
+        ],
+        filter: {
+          status: {
+            _neq: "paid"
+          }
+        }
+      });
+
+      if(orders && orders.length) {
+
+        if(orders.length !== orderIds.length){
+          console.warn("difference in order count when cancelling");
+        }
+
+        for (const order of orders) {
+          if (order.user.id !== userId) {
+            console.error("trying to cancel order that does not belong to user", userId, order.user.id);
+            return res.status(401).send("not allowed to cancel that order");
+          }
+        }
+
+        console.log("cancelling " + orders.length + " orders");
+        await ordersService.updateBatch(orders.map(x => ({
+          id: x.id,
+          status: "cancelled"
+        })));
+      }else{
+        console.warn("no orders to cancel");
+      }
+
+    }catch(e){
+      console.error("error cancelling orders", e);
+      return res.status(500).send("error cancelling orders");
+    }
+
+    return res.send("ok");
+  });
+
   router.post("/orders", async (req, res) => {
     try{
       const orders = req.body.orders;

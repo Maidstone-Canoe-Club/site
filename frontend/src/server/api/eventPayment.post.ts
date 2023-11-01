@@ -124,6 +124,8 @@ export default defineEventHandler(async (event) => {
 
     console.log("created orders");
 
+    const formattedOrderIds = Array.isArray(orderIds) ? orderIds.join(",") : orderIds;
+
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       metadata: {
@@ -132,13 +134,13 @@ export default defineEventHandler(async (event) => {
         event_id: eventItem.id,
         customer_user_id: userId,
         user_ids: Array.isArray(userIds) ? userIds.join(",") : userIds,
-        order_ids: Array.isArray(orderIds) ? orderIds.join(",") : orderIds,
+        order_ids: formattedOrderIds,
         event_instance: instance
       },
       line_items: lineItems,
       mode: "payment",
       success_url: `${baseUrl}/payments/success?redirect=${redirectUrl}`,
-      cancel_url: `${baseUrl}/payments/cancel?redirect=${redirectUrl}`
+      cancel_url: `${baseUrl}/payments/cancel?redirect=${redirectUrl}&o=${encodeURIComponent(btoa(formattedOrderIds))}`
     });
 
     console.log("created session");
