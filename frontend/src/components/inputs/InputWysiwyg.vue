@@ -4,19 +4,23 @@
       v-if="label"
       :for="id"
       class="block text-sm font-medium leading-6 text-gray-900 mb-2">{{ label }}</label>
-    <quill-editor
-      v-model:content="content"
-      :modules="modules"
-      class="shadow-sm"
-      style="min-height: 300px"
-      content-type="html"
-      toolbar="full" />
+    <client-only>
+      <quill-editor
+        v-model:content="content"
+        :modules="modules"
+        class="shadow-sm"
+        style="min-height: 300px"
+        content-type="html"
+        toolbar="full" />
+    </client-only>
   </div>
 </template>
 
 <script setup lang="ts">
 import "@vueup/vue-quill/dist/vue-quill.snow.css";
+// @ts-ignore
 import ImageUploader from "quill-image-uploader";
+import "quill-image-uploader/dist/quill.imageUploader.min.css";
 const { QuillEditor } = await import("@vueup/vue-quill");
 
 const emits = defineEmits(["update:modelValue"]);
@@ -60,14 +64,16 @@ const modules = {
   }
 };
 
-const content = computed({
-  get () {
-    return props.modelValue;
-  },
-  set (value: string) {
-    emits("update:modelValue", value);
-  }
-});
+const content = ref();
+
+// const content = computed({
+//   get () {
+//     return props.modelValue;
+//   },
+//   set (value: string) {
+//     emits("update:modelValue", value);
+//   }
+// });
 
 </script>
 
