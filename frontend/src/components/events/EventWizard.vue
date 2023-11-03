@@ -59,11 +59,13 @@
 
 <script setup lang="ts">
 import { CheckIcon } from "@heroicons/vue/20/solid";
-import EventTypeStep from "~/components/events/EventTypeStep.vue";
-import EventSingleDateStep from "~/components/events/EventSingleDateStep.vue";
-import EventMultiDateStep from "~/components/events/EventMultiDateStep.vue";
-import EventRecurringDateStep from "~/components/events/EventRecurringDateStep.vue";
-import EventDetailsStep from "~/components/events/EventDetailsStep.vue";
+import {
+  EventTypeStep,
+  EventSingleDateStep,
+  EventMultiDateStep,
+  EventRecurringDateStep,
+  EventDetailsStep
+} from "#components";
 
 const directus = useDirectus();
 
