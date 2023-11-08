@@ -47,7 +47,7 @@ export async function extractForwardTarget(targetName: string, mailForwardsServi
 
 export async function handleMailForward(data: InboundEmail, toAddress?: FullAddress, forward?: MailForward, mailThreadsService: any, mailForwardsService: any) {
 
-  console.log("handing mail forward", toAddress?.Email, data.From);
+  console.log("handing mail forward to", toAddress?.Email,"from", data.From);
   if (toAddress && toAddress.Email.startsWith("reply+")) {
     const threadId = toAddress.MailboxHash;
 
@@ -79,6 +79,8 @@ export async function handleMailForward(data: InboundEmail, toAddress?: FullAddr
             await sendEmail({
               From: fromName,
               To: existingThread.sender_email,
+              Cc: data.Cc,
+              Bcc: data.Bcc,
               HtmlBody: data.HtmlBody,
               TextBody: data.TextBody,
               Subject: data.Subject,
@@ -95,12 +97,16 @@ export async function handleMailForward(data: InboundEmail, toAddress?: FullAddr
           let fromName = `forwards@${process.env.EMAIL_DOMAIN}`;
 
           if (data.FromName) {
-            fromName = `${data.FromName} <${fromName}>`;
+            fromName = `${data.FromName} (${data.FromFull.Email}) <${fromName}>`;
+          }else{
+            fromName = `(${data.FromFull.Email}) <${fromName}>`;
           }
 
           await sendEmail({
             From: fromName,
             To: existingThread.target_email,
+            Cc: data.Cc,
+            Bcc: data.Bcc,
             HtmlBody: data.HtmlBody,
             TextBody: data.TextBody,
             Subject: data.Subject,
@@ -157,13 +163,17 @@ async function handleNewMailThread(data: InboundEmail, toAddress?: FullAddress, 
         let fromAddress = `<forwards@${process.env.EMAIL_DOMAIN}>`;
 
         if (data.FromName) {
-          fromAddress = `${data.FromName} ${fromAddress}`;
+          fromAddress = `${data.FromName} (${data.FromFull.Email}) ${fromAddress}`;
+        }else{
+          fromAddress = `(${data.FromFull.Email}) ${fromAddress}`;
         }
 
         // send email to target
         await sendEmail({
           From: fromAddress,
           To: foundForward.target_email,
+          Cc: data.Cc,
+          Bcc: data.Bcc,
           HtmlBody: data.HtmlBody,
           TextBody: data.TextBody,
           Subject: data.Subject,
