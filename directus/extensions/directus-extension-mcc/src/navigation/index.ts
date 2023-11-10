@@ -46,7 +46,7 @@ export default defineEndpoint((router, {services, database}) => {
           "items.children.*",
           "items.children.page.slug",
           "items.children.children.*",
-          "items.children.children.page.slug.*",
+          "items.children.children.page.slug",
         ]
       });
 
