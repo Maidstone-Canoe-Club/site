@@ -31,7 +31,6 @@
   "dependencies": {
     "@directus/sdk": "^10.3.3",
     "@heroicons/vue": "^2.0.18",
-    "@nuxt/image": "^1.0.0",
     "@pinia/nuxt": "^0.4.11",
     "@vuelidate/core": "^2.0.2",
     "@vuelidate/validators": "^2.0.2",

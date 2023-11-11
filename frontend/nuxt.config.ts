@@ -73,7 +73,6 @@ export default defineNuxtConfig({
     "@nuxtjs/tailwindcss",
     "nuxt-headlessui",
     "@pinia/nuxt",
-    "@nuxt/image",
     "@nuxtjs/turnstile",
     "floating-vue/nuxt"
   ],

@@ -3,11 +3,11 @@
     v-if="home.show_holding_page"
     class="mx-auto max-w-3xl mt-8 px-3 sm:px-0">
     <div class="flex justify-center items-center mb-12 mt-12">
-      <nuxt-img
+      <img
         src="/images/logo.svg"
         alt="MCC logo"
         width="200"
-        height="200" />
+        height="200">
     </div>
     <rich-text :content="holdingPage" />
   </div>
