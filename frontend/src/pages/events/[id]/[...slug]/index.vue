@@ -13,7 +13,7 @@
         class="mt-5 flex lg:ml-4 lg:mt-0">
         <span class="sm:ml-3">
           <nuxt-link
-            :to="route.path + '/edit'"
+            :to="editLink"
             class="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
             <PencilIcon class="-ml-0.5 mr-1.5 h-5 w-5 text-gray-400" aria-hidden="true" />
             Edit
@@ -175,7 +175,8 @@ import {
   PencilIcon,
   UsersIcon,
   InformationCircleIcon,
-  UserGroupIcon, ExclamationTriangleIcon
+  UserGroupIcon,
+  ExclamationTriangleIcon
 } from "@heroicons/vue/20/solid";
 // @ts-ignore
 import Dinero from "dinero.js";
@@ -383,9 +384,17 @@ function formatPrice (amount?: number) {
 }
 
 const directusUrl = useDirectusUrl();
-const editLink = computed(() => `${directusUrl}/admin/content/events/${route.params.id}`);
+const editLink = computed(() => {
+  let result = `/events/${route.params.id}/${route.params.slug}/edit`;
 
-const canEdit = computed(() => hasRole(user.value, "Member"));
+  if (route.query.instance) {
+    result += `?instance=${route.query.instance}`;
+  }
+
+  return result;
+});
+
+const canEdit = computed(() => (user.value && event.value.user_created === user.value.id) || hasRole(user.value, "Coach"));
 
 function renderSessionDate (date) {
   if (isSameDay(new Date(date.start), new Date(date.end))) {

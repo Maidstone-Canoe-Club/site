@@ -4,10 +4,10 @@
       <div class="flex lg:flex-1">
         <nuxt-link to="/" class="-m-1.5 p-1.5">
           <span class="sr-only">Maidstone Canoe Club</span>
-          <nuxt-img
+          <img
             class="h-14 w-auto"
             src="/images/logo-no-text.svg"
-            alt="MCC logo" />
+            alt="MCC logo">
         </nuxt-link>
       </div>
       <div class="flex lg:hidden">
