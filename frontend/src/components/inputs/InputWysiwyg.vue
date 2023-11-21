@@ -64,16 +64,14 @@ const modules = {
   }
 };
 
-const content = ref();
-
-// const content = computed({
-//   get () {
-//     return props.modelValue;
-//   },
-//   set (value: string) {
-//     emits("update:modelValue", value);
-//   }
-// });
+const content = computed({
+  get () {
+    return props.modelValue;
+  },
+  set (value: string) {
+    emits("update:modelValue", value);
+  }
+});
 
 </script>
 
