@@ -31,11 +31,13 @@
         label="Title"
         :v="v$.title" />
 
-      <input-wysiwyg
-        id="description"
-        v-model="internalValue.description"
-        name="description"
-        label="Description" />
+      <client-only>
+        <input-wysiwyg
+          id="description"
+          v-model="internalValue.description"
+          name="description"
+          label="Description" />
+      </client-only>
 
       <input-field
         id="location"
@@ -94,7 +96,10 @@
                 Event will be hidden
               </h3>
               <div class="mt-2 text-sm text-yellow-700">
-                <p>This event will be hidden if you give this event a price, and will need to be approved before it becomes visible</p>
+                <p>
+                  This event will be hidden if you give this event a price, and will need to be approved before it
+                  becomes visible
+                </p>
               </div>
             </div>
           </div>
@@ -119,6 +124,9 @@
         Leave blank for no limit on spaces for this event
       </span>
 
+      <event-canceller
+        :event="event"
+        :instance="instance" />
       <div class="flex flex-row gap-2">
         <nuxt-link
           :to="'/events/' + internalValue.id"
@@ -138,9 +146,11 @@
 <script setup lang="ts">
 import { ExclamationTriangleIcon } from "@heroicons/vue/20/solid";
 import { required } from "@vuelidate/validators";
+import { useVuelidate } from "@vuelidate/core";
 import type { Ref } from "vue";
-import { useVuelidate, Validation } from "@vuelidate/core/dist/index";
+import type { Validation } from "@vuelidate/core";
 import type { EventItem } from "~/types";
+import EventCanceller from "~/components/events/EventCanceller.vue";
 
 const eventTypes = [
   { id: "beginners_course", name: "Beginners course" },
@@ -162,7 +172,8 @@ const allowedRoles = [
 ];
 
 const props = defineProps<{
-  event: EventItem
+  event: EventItem,
+  instance?: string
 }>();
 
 const user = useDirectusUser();
@@ -178,10 +189,8 @@ const showPrice = computed(() => !internalValue.value.allowed_roles.find(x => x.
 watch(() => internalValue.value.allowed_roles, (val, oldVal) => {
   if (oldVal.length === 1 && oldVal[0].id === "none" && val.length > 1) {
     internalValue.value.allowed_roles = val.filter(x => x.id !== "none");
-    console.log("here");
   } else {
     const noOne = val.find(x => x.id === "none");
-    console.log("there");
     if (noOne && val.length > 1) {
       internalValue.value.allowed_roles = [noOne];
     }

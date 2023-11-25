@@ -46,7 +46,7 @@
               </h2>
               <time class="relative order-first text-sm text-gray-500 mb-3">{{ formatDate(news.date_created) }}</time>
               <div
-                class="relative mt-2 text-sm line-clamp-4 overflow-hidden overflow-ellipsis"
+                class="relative mt-2 text-sm line-clamp-4 overflow-hidden overflow-ellipsis news-items"
                 v-html="news.content" />
               <div class="mt-4 font-medium text-sm text-indigo-500 flex flex-row gap-2 items-center">
                 Continue reading
@@ -176,6 +176,10 @@ function closeWelcome () {
 
 </script>
 
-<style scoped lang="scss">
-
+<style scoped lang="postcss">
+.news-items {
+  ::v-deep(img){
+    display: none;
+  }
+}
 </style>

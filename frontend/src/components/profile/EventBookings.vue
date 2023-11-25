@@ -1,6 +1,16 @@
 ﻿<template>
   <div>
-    <div class="overflow-x-auto">
+    <div
+      v-if="loading"
+      class="w-full py-20 flex justify-center items-center">
+      <loading-spinner
+        color="#aaa"
+        size="50px" />
+    </div>
+
+    <div
+      v-else
+      class="overflow-x-auto">
       <template v-if="bookings && bookings.length">
         <table
           class="min-w-full divide-y divide-gray-300">
@@ -64,6 +74,7 @@
           title="Cancel booking"
           action-button-label="Cancel booking"
           cancel-button="Dismiss"
+          variant="warning"
           :action="cancelBooking"
           @dismiss="dismissCancelBooking">
           Are you sure you want to cancel your booking?
@@ -86,41 +97,45 @@ const directus = useDirectus();
 const user = useDirectusUser();
 const { getItems } = useDirectusItems();
 
-const { data: bookings } = await useAsyncData("event-bookings-" + user.value.id, async () => {
-  return await loadData();
-});
+const bookings = ref(null);
+const loading = ref(false);
 
 async function loadData () {
-  const result = await getItems({
-    collection: "event_bookings",
-    params: {
-      fields: ["*", "user.parent.id", "user.id", "user.first_name", "user.last_name", "recurring_pattern.*", "event.id", "event.title", "event.start_date"],
-      sort: ["-date_created"],
-      filter: {
-        _or: [
-          {
-            user: {
-              _eq: user.value.id
-            }
-          },
-          {
-            user: {
-              parent: {
-                id: {
-                  _eq: user.value.id
+  loading.value = true;
+  try {
+    const result = await getItems({
+      collection: "event_bookings",
+      params: {
+        fields: ["*", "user.parent.id", "user.id", "user.first_name", "user.last_name", "recurring_pattern.*", "event.id", "event.title", "event.start_date"],
+        sort: ["-date_created"],
+        filter: {
+          _or: [
+            {
+              user: {
+                _eq: user.value.id
+              }
+            },
+            {
+              user: {
+                parent: {
+                  id: {
+                    _eq: user.value.id
+                  }
                 }
               }
             }
-          }
-        ]
+          ]
+        }
       }
-    }
-  });
+    });
 
-  return result.map(b => ({
-    ...b,
-    date: getDateFromInstance(b.event.start_date, b.instance, b.recurring_pattern?.type)
-  }));
+    return result.map(b => ({
+      ...b,
+      date: getDateFromInstance(b.event.start_date, b.instance, b.recurring_pattern?.type)
+    }));
+  } finally {
+    loading.value = false;
+  }
 }
 
 function formatDate (input: string) {
@@ -167,7 +182,7 @@ function dismissCancelBooking () {
 }
 
 async function cancelBooking () {
-  let url = "/events/cancel?eventId=" + eventToCancel.value + "&userId=" + userToCancel.value;
+  let url = "/events/booking/cancel?eventId=" + eventToCancel.value + "&userId=" + userToCancel.value;
 
   if (instanceToCancel.value) {
     url += "&instance=" + instanceToCancel.value;
@@ -183,6 +198,10 @@ async function cancelBooking () {
   instanceToCancel.value = null;
   userToCancel.value = null;
 }
+
+onMounted(async () => {
+  bookings.value = await loadData();
+});
 
 </script>
 

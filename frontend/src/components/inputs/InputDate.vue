@@ -42,7 +42,7 @@ interface Props {
 const emits = defineEmits(["update:modelValue"]);
 
 const props = withDefaults(defineProps<Props>(), {
-  label: null,
+  label: undefined,
   required: false,
   disabled: false,
   v: null
@@ -56,11 +56,11 @@ const error = computed(() => {
 
 const isValid = computed(() => !props.v?.$invalid ?? true);
 
-const internalValue = computed<Date | number | null>({
+const internalValue = computed<Date | number | null | undefined>({
   get () {
     return props.modelValue;
   },
-  set (val: Date | number | null) {
+  set (val: Date | number | null | undefined) {
     emits("update:modelValue", val);
   }
 });

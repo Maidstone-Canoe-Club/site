@@ -1,6 +1,8 @@
 ﻿<template>
   <div class="mt-16 mx-auto max-w-4xl px-3 sm:px-0">
-    <event-editor :event="event" />
+    <event-editor
+      :event="event"
+      :instance="instance" />
   </div>
 </template>
 
@@ -21,6 +23,8 @@ const { data: event } = await useAsyncData(`event-item-${route.params.id}`, asyn
     id: route.params.id
   });
 });
+
+const instance = computed(() => route.query.instance);
 
 if (!event.value) {
   throw createError({

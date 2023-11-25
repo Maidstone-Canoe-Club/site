@@ -18,6 +18,10 @@ defineProps<{
   @apply mb-6 leading-6;
 }
 
+::v-deep(img){
+  @apply rounded-lg;
+}
+
 ::v-deep(ul){
   @apply list-disc mx-8 py-4;
 }

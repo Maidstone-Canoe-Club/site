@@ -30,13 +30,36 @@
                   class="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                   @click="open = false">
                   <span class="sr-only">Close</span>
-                  <XMarkIcon class="h-6 w-6" aria-hidden="true" />
+                  <XMarkIcon
+                    class="h-6 w-6"
+                    aria-hidden="true" />
                 </button>
               </div>
               <div class="sm:flex sm:items-start">
                 <div
-                  class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
-                  <ExclamationTriangleIcon class="h-6 w-6 text-red-600" aria-hidden="true" />
+                  class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full sm:mx-0 sm:h-10 sm:w-10"
+                  :class="{
+                    'bg-red-100': variant === 'error',
+                    'bg-blue-100': variant === 'info',
+                    'bg-green-100': variant === 'success',
+                    'bg-yellow-100': variant === 'warning',
+                  }">
+                  <ExclamationTriangleIcon
+                    v-if="variant === 'error'"
+                    class="h-6 w-6 text-red-400"
+                    aria-hidden="true" />
+                  <InformationCircleIcon
+                    v-else-if="variant === 'info'"
+                    class="h-6 w-6 text-blue-500"
+                    aria-hidden="true" />
+                  <ExclamationTriangleIcon
+                    v-else-if="variant === 'warning'"
+                    class="h-6 w-6 text-yellow-500"
+                    aria-hidden="true" />
+                  <CheckCircleIcon
+                    v-else-if="variant === 'success'"
+                    class="h-6 w-6 text-green-500"
+                    aria-hidden="true" />
                 </div>
                 <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
                   <DialogTitle
@@ -55,7 +78,11 @@
               <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
                 <custom-button
                   type="button"
-                  class="whitespace-nowrap inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
+                  class="whitespace-nowrap inline-flex w-full justify-center rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
+                  :class="{
+                    'bg-red-600': variant === 'error',
+                    'bg-indigo-600': variant !== 'error'
+                  }"
                   :action="actionWrapper">
                   {{ actionButtonLabel }}
                 </custom-button>
@@ -76,7 +103,7 @@
 
 <script setup lang="ts">
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from "@headlessui/vue";
-import { ExclamationTriangleIcon, XMarkIcon } from "@heroicons/vue/24/outline";
+import { ExclamationTriangleIcon, InformationCircleIcon, CheckCircleIcon, XMarkIcon } from "@heroicons/vue/24/outline";
 
 const emits = defineEmits(["update:open", "dismiss"]);
 
@@ -85,7 +112,8 @@ const props = withDefaults(defineProps<{
   title?: string,
   actionButtonLabel: string
   cancelButton?: string
-  action: Function
+  action: Function,
+  variant: "info" | "success" | "error" | "warning"
 }>(), {
   title: null,
   cancelButton: "Cancel"

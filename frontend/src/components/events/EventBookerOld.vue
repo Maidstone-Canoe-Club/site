@@ -352,7 +352,7 @@ const cancelConfirmationMessage = computed(() => {
 });
 
 async function cancelBooking () {
-  let url = "/events/cancel?eventId=" + props.event.id + "&userId=" + props.userId;
+  let url = "/events/booking/cancel?eventId=" + props.event.id + "&userId=" + props.userId;
 
   if (props.instance) {
     url += "&instance=" + props.instance;

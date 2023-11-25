@@ -118,10 +118,6 @@
             </ul>
           </div>
 
-          <!--          <div class="my-5">-->
-          <!--            <admin-controls :event="event" />-->
-          <!--          </div>-->
-
           <div class="mb-5">
             <event-booker
               v-if="canBook"
@@ -181,19 +177,21 @@ import {
 // @ts-ignore
 import Dinero from "dinero.js";
 import { format, isSameDay } from "date-fns";
+import type { DirectusUser } from "nuxt-directus/dist/runtime/types";
 import { getDateFromInstance } from "~/utils/events";
+import type { EventItem } from "~/types";
 
 const { getItemById, getItems } = useDirectusItems();
 const directus = useDirectus();
 const route = useRoute();
-const user = useDirectusUser();
+const user : DirectusUser = useDirectusUser();
 
 const instance = route.query.instance ? parseInt(route.query.instance, 10) : null;
 
 const childEvents = ref();
 const recurringPattern = ref();
 
-const { data: event } = await useAsyncData(`event-item-${route.params.id}`, async () => {
+const { data: event } = await useAsyncData<EventItem>(`event-item-${route.params.id}`, async () => {
   return await getItemById({
     collection: "events",
     id: route.params.id
@@ -210,6 +208,10 @@ if (!event.value) {
 const slug = slugify(event.value.title);
 
 const formattedAllowedRoles = computed(() => {
+  if (!event.value) {
+    return null;
+  }
+
   const roles = event.value.allowed_roles;
 
   if (!roles || !roles.length) {
@@ -271,9 +273,9 @@ const { data: eventInfo } = await useAsyncData(`event-info-${event.value.id}`, a
   return await loadInfo();
 });
 
-const alreadyBooked = computed(() => eventInfo.value.alreadyBooked);
-const bookings = computed(() => eventInfo.value.bookings);
-const leaders = computed(() => eventInfo.value.leaders);
+const alreadyBooked = computed(() => eventInfo.value?.alreadyBooked ?? false);
+const bookings = computed(() => eventInfo.value?.bookings ?? []);
+const leaders = computed(() => eventInfo.value?.leaders ?? []);
 
 const userIsLeader = computed(() => {
   if (leaders.value && leaders.value.length && user.value) {
