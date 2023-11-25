@@ -132,7 +132,18 @@ export default defineEndpoint((router, {services, database}) => {
       const userIsLeader = leaders.find(x => x.directus_users_id.id === userId);
 
       if (user) {
-        if (event.visible_attendees || allowedRoles.includes(user.role.name.toLowerCase()) || userIsLeader) {
+        if(event.visible_attendees) {
+          bookings = eventBookings.map(e => ({
+            id: e.id,
+            status: e.status,
+            user: {
+              id: e.user.id,
+              avatar: e.user.avatar,
+              first_name: e.user.first_name,
+              last_name: e.user.last_name,
+            }
+          }));
+        }else if (allowedRoles.includes(user.role.name.toLowerCase()) || userIsLeader) {
           bookings = eventBookings;
         } else {
           bookings = eventBookings.filter(b => b.user.id === userId || b.user.parent === userId);
