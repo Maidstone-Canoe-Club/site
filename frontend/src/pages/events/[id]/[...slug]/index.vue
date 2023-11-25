@@ -13,7 +13,7 @@
         class="mt-5 flex lg:ml-4 lg:mt-0">
         <span class="sm:ml-3">
           <nuxt-link
-            :to="route.path + '/edit'"
+            :to="editLink"
             class="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
             <PencilIcon class="-ml-0.5 mr-1.5 h-5 w-5 text-gray-400" aria-hidden="true" />
             Edit
@@ -118,10 +118,6 @@
             </ul>
           </div>
 
-          <!--          <div class="my-5">-->
-          <!--            <admin-controls :event="event" />-->
-          <!--          </div>-->
-
           <div class="mb-5">
             <event-booker
               v-if="canBook"
@@ -180,19 +176,21 @@ import {
 // @ts-ignore
 import Dinero from "dinero.js";
 import { format, isSameDay } from "date-fns";
+import type { DirectusUser } from "nuxt-directus/dist/runtime/types";
 import { getDateFromInstance } from "~/utils/events";
+import type { EventItem } from "~/types";
 
 const { getItemById, getItems } = useDirectusItems();
 const directus = useDirectus();
 const route = useRoute();
-const user = useDirectusUser();
+const user : DirectusUser = useDirectusUser();
 
 const instance = route.query.instance ? parseInt(route.query.instance, 10) : null;
 
 const childEvents = ref();
 const recurringPattern = ref();
 
-const { data: event } = await useAsyncData(`event-item-${route.params.id}`, async () => {
+const { data: event } = await useAsyncData<EventItem>(`event-item-${route.params.id}`, async () => {
   return await getItemById({
     collection: "events",
     id: route.params.id
@@ -209,6 +207,10 @@ if (!event.value) {
 const slug = slugify(event.value.title);
 
 const formattedAllowedRoles = computed(() => {
+  if (!event.value) {
+    return null;
+  }
+
   const roles = event.value.allowed_roles;
 
   if (!roles || !roles.length) {
@@ -270,9 +272,9 @@ const { data: eventInfo } = await useAsyncData(`event-info-${event.value.id}`, a
   return await loadInfo();
 });
 
-const alreadyBooked = computed(() => eventInfo.value.alreadyBooked);
-const bookings = computed(() => eventInfo.value.bookings);
-const leaders = computed(() => eventInfo.value.leaders);
+const alreadyBooked = computed(() => eventInfo.value?.alreadyBooked ?? false);
+const bookings = computed(() => eventInfo.value?.bookings ?? []);
+const leaders = computed(() => eventInfo.value?.leaders ?? []);
 
 const userIsLeader = computed(() => {
   if (leaders.value && leaders.value.length && user.value) {
@@ -383,9 +385,14 @@ function formatPrice (amount?: number) {
 }
 
 const directusUrl = useDirectusUrl();
-const editLink = computed(() => `${directusUrl}/admin/content/events/${route.params.id}`);
-
-const canEdit = computed(() => hasRole(user.value, "Member"));
+const editLink = computed(() => {
+  let result = `/events/${route.params.id}/${route.params.slug}/edit`;
+  if (route.query.instance) {
+    result += `?instance=${route.query.instance}`;
+  }
+  return result;
+});
+const canEdit = computed(() => (user.value && event.value.user_created === user.value.id) || hasRole(user.value, "Coach"));
 
 function renderSessionDate (date) {
   if (isSameDay(new Date(date.start), new Date(date.end))) {

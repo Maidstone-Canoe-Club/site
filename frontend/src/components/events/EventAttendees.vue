@@ -349,7 +349,7 @@ function cancelBooking (user) {
 
 async function onCancelBooking () {
   try {
-    let url = `/events/cancel?eventId=${props.eventId}&userId=${cancelBookingForUser.value.id}`;
+    let url = `/events/booking/cancel?eventId=${props.eventId}&userId=${cancelBookingForUser.value.id}`;
 
     if (props.instance) {
       url += `&instance=${props.instance}`;

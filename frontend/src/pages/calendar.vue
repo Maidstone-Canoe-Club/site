@@ -35,6 +35,11 @@ async function fetchEvents () {
         filter: {
           _and: [
             {
+              status: {
+                _neq: "cancelled"
+              }
+            },
+            {
               _or: [
                 {
                   is_recurring: { _eq: false }
@@ -71,6 +76,11 @@ async function fetchEvents () {
               is_recurring: { _eq: true }
             },
             {
+              status: {
+                _neq: "cancelled"
+              }
+            },
+            {
               start_date: { _lte: end.value }
             },
             {
@@ -91,6 +101,17 @@ async function fetchEvents () {
     if (recurringEvents?.length) {
       const recurringEventIds = recurringEvents.map(e => e.id);
 
+      const eventExceptions = await getItems({
+        collection: "event_exception",
+        params: {
+          filter: {
+            event: {
+              _in: recurringEventIds
+            }
+          }
+        }
+      });
+
       const recurringPatterns = await getItems({
         collection: "recurring_event_patterns",
         params: {
@@ -106,7 +127,11 @@ async function fetchEvents () {
         const event = recurringEvents.find(e => e.id === p.event);
         event.is_recurring = false;
         event.instance = 1;
-        foundEvents.push(event);
+
+        const exception = eventExceptions.find(x => x.event === event.id && x.instance === `${event.instance}`);
+        if (!exception || !exception.is_cancelled) {
+          foundEvents.push(event);
+        }
 
         // TODO: The following code is a hot mess and needs refactoring
 
@@ -121,7 +146,10 @@ async function fetchEvents () {
 
               // ensure we only add events that fall within the current month
               if (repeatedStartMonth === calendarStore.getMonth) {
-                foundEvents.push(repeatedEvent);
+                const exception = eventExceptions.find(x => x.event === event.id && x.instance === `${repeatedEvent.instance}`);
+                if (!exception || !exception.is_cancelled) {
+                  foundEvents.push(repeatedEvent);
+                }
               }
             }
           } else {
@@ -141,7 +169,10 @@ async function fetchEvents () {
                 repeatedEvent.end_date = addDays(new Date(event.end_date), instance);
                 repeatedEvent.instance = instance + 1;
 
-                foundEvents.push(repeatedEvent);
+                const exception = eventExceptions.find(x => x.event === event.id && x.instance === `${repeatedEvent.instance}`);
+                if (!exception || !exception.is_cancelled) {
+                  foundEvents.push(repeatedEvent);
+                }
               }
             }
           }
@@ -153,11 +184,15 @@ async function fetchEvents () {
               repeatedEvent.start_date = addWeeks(new Date(event.start_date), i);
               repeatedEvent.end_date = addWeeks(new Date(event.end_date), i);
               repeatedEvent.instance = i + 1;
+
               const repeatedStartMonth = getMonth(repeatedEvent.start_date);
 
               // ensure we only add events that fall within the current month
               if (repeatedStartMonth === calendarStore.getMonth) {
-                foundEvents.push(repeatedEvent);
+                const exception = eventExceptions.find(x => x.event === event.id && x.instance === `${repeatedEvent.instance}`);
+                if (!exception || !exception.is_cancelled) {
+                  foundEvents.push(repeatedEvent);
+                }
               }
             }
           } else {
@@ -177,7 +212,10 @@ async function fetchEvents () {
                 repeatedEvent.end_date = addWeeks(new Date(event.end_date), instance);
                 repeatedEvent.instance = instance + 1;
 
-                foundEvents.push(repeatedEvent);
+                const exception = eventExceptions.find(x => x.event === event.id && x.instance === `${repeatedEvent.instance}`);
+                if (!exception || !exception.is_cancelled) {
+                  foundEvents.push(repeatedEvent);
+                }
               }
             }
           }
@@ -195,7 +233,10 @@ async function fetchEvents () {
               console.log("month", repeatedStartMonth, calendarStore.getMonth);
               // ensure we only add events that fall within the current month
               if (repeatedStartMonth === calendarStore.getMonth) {
-                foundEvents.push(repeatedEvent);
+                const exception = eventExceptions.find(x => x.event === event.id && x.instance === `${repeatedEvent.instance}`);
+                if (!exception || !exception.is_cancelled) {
+                  foundEvents.push(repeatedEvent);
+                }
               }
             }
           } else {
@@ -215,7 +256,10 @@ async function fetchEvents () {
                 repeatedEvent.end_date = addWeeks(new Date(event.end_date), instance);
                 repeatedEvent.instance = instance + 1;
 
-                foundEvents.push(repeatedEvent);
+                const exception = eventExceptions.find(x => x.event === event.id && x.instance === `${repeatedEvent.instance}`);
+                if (!exception || !exception.is_cancelled) {
+                  foundEvents.push(repeatedEvent);
+                }
               }
             }
           }

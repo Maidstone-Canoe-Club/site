@@ -13,7 +13,8 @@ import enGB from "date-fns/locale/en-GB/index.js";
 export default defineEndpoint((router, {services, database}) => {
   const {
     ItemsService,
-    UsersService
+    UsersService,
+    MailService
   } = services;
 
   const adminAccountability = {
@@ -153,6 +154,151 @@ export default defineEndpoint((router, {services, database}) => {
   });
 
   router.post("/cancel", async (req, res) => {
+    try {
+      const mailService = new MailService({schema: req.schema, knex: database});
+
+      const eventId = req.query.eventId;
+      const instance = req.query.instance;
+      const cancelAll = req.query.cancelAll === "true";
+      const loggedInUserId = req.accountability.user;
+
+      if (!eventId) {
+        return res.status(400).send("missing event id");
+      }
+
+      const eventsService = new ItemsService("events", {
+        knex: database,
+        schema: req.schema,
+        accountability: req.accountability
+      });
+
+      const userService = new UsersService({knex: database, schema: req.schema, accountability: adminAccountability});
+
+      const loggedInUser = await userService.readOne(loggedInUserId, {
+        fields: ["*", "role.name"]
+      });
+
+      // Proceed if user created the event or the user is committee and above
+      const event = await eventsService.readOne(eventId);
+
+      const allowedRoles = ["committee", "administrator"];
+      const userCreatedEvent = event.user_created === loggedInUserId;
+      const userHasRole = allowedRoles.includes(loggedInUser.role.name);
+
+      if (userCreatedEvent || userHasRole) {
+        if (event.status === "cancelled") {
+          return res.status(400).send("event has already been cancelled");
+        }
+
+        // List event bookings for event
+        const eventBookingService = new ItemsService("event_bookings", {
+          knex: database,
+          schema: req.schema,
+          accountability: adminAccountability
+        });
+
+        const filter = {
+          _and: [
+            {
+              event: {
+                _eq: eventId
+              }
+            },
+          ]
+        };
+
+        console.log("instance", instance);
+        console.log("cancel all", cancelAll);
+
+        // Only pass the event instance if we have an instance and we don't want
+        // to cancel the entire recurring event
+        if (instance && !cancelAll) {
+          filter._and.push({
+            instance: {
+              _eq: instance
+            }
+          });
+        }
+
+        console.log("loading event bookings with filter", JSON.stringify(filter));
+
+        const eventBookings = await eventBookingService
+          .readByQuery({
+            fields: ["*", "user.email"],
+            filter
+          });
+
+        console.log("found event bookings", eventBookings);
+        if (eventBookings && eventBookings.length) {
+          // For each event booking, cancel the booking
+          for (const booking of eventBookings) {
+            booking.status = "cancelled";
+            console.log("booking cancelled for", booking, booking.user.email);
+            if (booking.user.email) {
+              try {
+                await mailService.send({
+                  to: booking.user.email,
+                  from: `events@${process.env.EMAIL_DOMAIN}`,
+                  subject: event.title + " - Cancellation Notification",
+                  template: {
+                    name: "event-cancelled",
+                    data: {
+                      eventTitle: event.title,
+                      eventDate: new Date(event.start_date).toLocaleString()
+                    }
+                  }
+                });
+              } catch (e) {
+                console.log("unable to send event cancelled email", e);
+              }
+            }
+          }
+
+          await eventBookingService.updateBatch(eventBookings.map(x => ({
+            id: x.id,
+            status: x.status
+          })));
+        }
+
+        const cancelEntireEvent = !instance || cancelAll;
+
+        // If the event is a single or multi day event, or the event is recurring and
+        // we want to cancel the whole event
+        if (!event.is_recurring || (event.is_recurring && cancelEntireEvent)) {
+          // Cancel the event
+          console.log("The event is a single, multi-day or is recurring and is cancelled");
+          event.status = "cancelled";
+          await eventsService.updateOne(eventId, event);
+        } else {
+          console.log("creating new event exception");
+          // If the cancellation is for a single instance of an event
+          // Create a new event exception
+          const eventExceptionService = new ItemsService("event_exception", {
+            knex: database,
+            schema: req.schema,
+            accountability: adminAccountability
+          });
+
+          await eventExceptionService.createOne({
+            event: eventId,
+            instance,
+            is_cancelled: true
+            // TODO: There could be more options for a recurring event exception
+          });
+        }
+
+        return res.status(200).send("ok");
+      } else {
+        console.error("user does not have permission to cancel this event", loggedInUser, userCreatedEvent, userHasRole);
+        return res.status(401).send("not allowed to cancel this event");
+      }
+    } catch (e) {
+      console.error("error cancelling event", e);
+      return res.status(500).send("error cancelling event");
+    }
+  });
+
+  router.post("/booking/cancel", async (req, res) => {
     try {
       const eventId = req.query.eventId;
       const userId = req.query.userId;
@@ -365,11 +511,11 @@ export default defineEndpoint((router, {services, database}) => {
     const eventItem = req.body.event;
     const leaders = req.body.leaders;
 
-    if(!eventItem){
+    if (!eventItem) {
       return res.status(400).send("missing event data");
     }
 
-    try{
+    try {
       const eventService = new ItemsService("events", {
         knex: database,
         schema: req.schema,
@@ -377,7 +523,7 @@ export default defineEndpoint((router, {services, database}) => {
       });
 
       const existingEvent = await eventService.readOne(eventItem.id);
-      if(!existingEvent){
+      if (!existingEvent) {
         return res.status(400).send("could not edit event that doesn't exist");
       }
 
@@ -401,13 +547,13 @@ export default defineEndpoint((router, {services, database}) => {
 
       const result = await eventService.updateOne(eventItem.id, eventItem);
 
-      if(leaders && leaders.length){
+      if (leaders && leaders.length) {
 
       }
 
       return res.send(result);
 
-    }catch(e){
+    } catch (e) {
       console.error("error updating event", e);
       return res.status(400).send("error updating event");
     }
@@ -467,7 +613,7 @@ export default defineEndpoint((router, {services, database}) => {
     } else if (eventType === "multi") {
       const ids = await createMultiEvent(eventItem, eventDates, eventService, res);
 
-      for(const id of ids){
+      for (const id of ids) {
         await createLeaders(id, leaders, eventLeadersService, eventService);
       }
 
@@ -483,9 +629,9 @@ export default defineEndpoint((router, {services, database}) => {
   });
 });
 
-async function createLeaders(eventId, leaders, leadersService, eventService){
+async function createLeaders(eventId, leaders, leadersService, eventService) {
   console.log("creating leaders against event", eventId, leaders);
-  if(leaders && leaders.length) {
+  if (leaders && leaders.length) {
     const leaderIds = await leadersService.createMany(leaders.map(id => ({
       events_id: eventId,
       directus_users_id: id
