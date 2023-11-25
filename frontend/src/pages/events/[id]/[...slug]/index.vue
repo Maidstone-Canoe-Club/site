@@ -171,7 +171,8 @@ import {
   PencilIcon,
   UsersIcon,
   InformationCircleIcon,
-  UserGroupIcon, ExclamationTriangleIcon
+  UserGroupIcon,
+  ExclamationTriangleIcon
 } from "@heroicons/vue/20/solid";
 // @ts-ignore
 import Dinero from "dinero.js";
@@ -387,11 +388,14 @@ function formatPrice (amount?: number) {
 const directusUrl = useDirectusUrl();
 const editLink = computed(() => {
   let result = `/events/${route.params.id}/${route.params.slug}/edit`;
+
   if (route.query.instance) {
     result += `?instance=${route.query.instance}`;
   }
+
   return result;
 });
+
 const canEdit = computed(() => (user.value && event.value.user_created === user.value.id) || hasRole(user.value, "Coach"));
 
 function renderSessionDate (date) {

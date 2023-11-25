@@ -3,11 +3,11 @@
     v-if="home.show_holding_page"
     class="mx-auto max-w-3xl mt-8 px-3 sm:px-0">
     <div class="flex justify-center items-center mb-12 mt-12">
-      <nuxt-img
+      <img
         src="/images/logo.svg"
         alt="MCC logo"
-        width="200px"
-        height="200px" />
+        width="200"
+        height="200">
     </div>
     <rich-text :content="holdingPage" />
   </div>
@@ -23,13 +23,12 @@
 
     <div class="absolute z-0 h-[75vh] top-16 w-full object-cover overflow-hidden ">
       <div class="bg-gradient-to-t from-gray-50 to-30% to-black/[.35] inset-0 absolute" />
-      <nuxt-img
+      <img
         src="/images/hero_small.webp"
         height="1100"
         :width="width"
-        :placeholder="15"
         alt="Hero background image"
-        class="h-full object-cover w-full z-5" />
+        class="h-full object-cover w-full z-5">
     </div>
 
     <div class="w-full absolute h-[460px] sm:h-[460px] top-16 flex justify-center items-center">
