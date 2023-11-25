@@ -1,7 +1,7 @@
 ﻿<template>
   <div>
     <template v-if="spacesLeft === 0">
-      <div class="rounded-md bg-blue-50 p-4">
+      <div class="rounded-md bg-blue-50 p-4 border border-blue-400">
         <div class="flex">
           <div class="flex-shrink-0">
             <InformationCircleIcon class="h-5 w-5 text-blue-400" aria-hidden="true" />
@@ -110,7 +110,7 @@ import { CheckIcon, ExclamationTriangleIcon } from "@heroicons/vue/24/outline";
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from "@headlessui/vue";
 // @ts-ignore
 import Dinero from "dinero.js";
-import { EventItem } from "~/types";
+import type { EventItem } from "~/types";
 
 const emits = defineEmits(["refresh"]);
 

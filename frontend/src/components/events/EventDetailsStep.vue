@@ -70,7 +70,10 @@
                   Event will be hidden
                 </h3>
                 <div class="mt-2 text-sm text-yellow-700">
-                  <p>This event will be hidden if you give this event a price, and will need to be approved before it becomes visible</p>
+                  <p>
+                    This event will be hidden if you give this event a price, and will need to be approved before it
+                    becomes visible
+                  </p>
                 </div>
               </div>
             </div>
@@ -93,6 +96,16 @@
           name="max-spaces" />
         <span class="text-sm text-gray-500">
           Leave blank for no limit on spaces for this event
+        </span>
+
+        <input-checkbox
+          id="visible-attendees"
+          v-model="internalValue.visible_attendees"
+          label="Attendees are visible"
+          name="visible-attendees" />
+        <span class="text-sm text-gray-500">
+          When enabled, event attendees will be able to see who else has booked onto the event.
+          Enable for events like a Sunday Paddle or Pool Session, but disable for events like a Beginners Course.
         </span>
       </client-only>
     </div>

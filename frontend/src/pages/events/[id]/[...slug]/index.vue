@@ -156,6 +156,7 @@
             :event-id="event.id"
             :instance="instance"
             :user-is-leader="userIsLeader"
+            :attendees-count="eventInfo.bookingsCount"
             @refresh="onRefresh" />
         </div>
       </div>

@@ -1,10 +1,13 @@
 ﻿<template>
   <div v-if="internalBookings && internalBookings.length">
-    <strong>Attendees</strong>
+    <strong>{{ attendeesLabel }}</strong>
     <ul
       role="list"
       class="divide-y divide-gray-100">
-      <li v-for="booking in internalBookings" :key="booking.email" class="flex items-center justify-between gap-x-6 py-5">
+      <li
+        v-for="booking in internalBookings"
+        :key="booking.email"
+        class="flex items-center justify-between gap-x-6 py-5">
         <div class="flex min-w-0 gap-x-2 items-center">
           <user-avatar
             size-class="w-12 h-12"
@@ -60,7 +63,8 @@
               leave="ease-in duration-200"
               leave-from="opacity-100 translate-y-0 sm:scale-100"
               leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
-              <DialogPanel class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+              <DialogPanel
+                class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
                 <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                   <div class="">
                     <template v-if="loading">
@@ -151,18 +155,23 @@
                               <dd class="mt-1 text-sm text-gray-900 sm:col-span-2">
                                 <div class="flex flex-wrap gap-2">
                                   <medical-badge
+                                    v-if="medicalInfo.allergies"
                                     label="Allergies"
                                     :value="medicalInfo.allergies" />
                                   <medical-badge
+                                    v-if="medicalInfo.asthma"
                                     label="Asthma"
                                     :value="medicalInfo.asthma" />
                                   <medical-badge
+                                    v-if="medicalInfo.epilepsy"
                                     label="Epilepsy"
                                     :value="medicalInfo.epilepsy" />
                                   <medical-badge
+                                    v-if="medicalInfo.diabetes"
                                     label="Diabetes"
                                     :value="medicalInfo.diabetes" />
                                   <medical-badge
+                                    v-if="medicalInfo.other"
                                     label="Other"
                                     :value="medicalInfo.other" />
                                 </div>
@@ -238,7 +247,7 @@
                 </div>
                 <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                   <button
-                    v-if="userIsLeader"
+                    v-if="canCancelBooking(viewingUser)"
                     type="button"
                     class="inline-flex w-full gap-2 items-center justify-center rounded-md bg-red-50 px-3 py-2 text-sm font-semibold ring-1 ring-inset ring-red-300 text-red-600 shadow-sm hover:bg-red-100 sm:ml-3 sm:w-auto"
                     @click="cancelBooking(viewingUser)">
@@ -264,6 +273,7 @@
       v-model:open="showCancelConfirmModal"
       title="Cancel booking"
       action-button-label="Cancel booking"
+      variant="warning"
       :action="onCancelBooking">
       Are you sure you want to cancel this booking?
     </dismiss-modal>
@@ -272,11 +282,9 @@
 
 <script setup lang="ts">
 import { InformationCircleIcon } from "@heroicons/vue/20/solid";
-import { XCircleIcon } from "@heroicons/vue/20/solid";
-import { UserCircleIcon, ExclamationTriangleIcon, TrashIcon } from "@heroicons/vue/24/outline";
+import { ExclamationTriangleIcon, TrashIcon } from "@heroicons/vue/24/outline";
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from "@headlessui/vue";
 import { format } from "date-fns";
-import { utcToZonedTime } from "date-fns-tz";
 
 const emits = defineEmits(["refresh"]);
 
@@ -284,7 +292,8 @@ const props = defineProps<{
   bookings: any,
   eventId: string,
   instance?: string,
-  userIsLeader: boolean
+  userIsLeader: boolean,
+  attendeesCount: number
 }>();
 
 const internalBookings = ref(props.bookings);
@@ -309,6 +318,11 @@ const medicalInfo = ref(null);
 const cancelBookingForUser = ref(null);
 const showCancelConfirmModal = ref(false);
 
+const attendeesLabel = computed(() => {
+  const count = props.attendeesCount;
+  return count === 1 ? "1 Attendee" : `${count} Attendees`;
+});
+
 async function viewUser (user) {
   medicalInfo.value = null;
   emergencyContactInfo.value = null;
@@ -329,7 +343,13 @@ async function viewUser (user) {
       }
     });
 
-    medicalInfo.value = results?.length ? results[0] : null;
+    const result = results?.length ? results[0] : null;
+
+    if (result && (result.allergies || result.asthma ||
+        result.epilepsy || result.diabetes ||
+        result.other || result.details)) {
+      medicalInfo.value = result;
+    }
   } catch (e) {
     console.error("error loading medical info", e);
     showModal.value = false;
@@ -342,9 +362,13 @@ function closeModal () {
   showModal.value = false;
 }
 
-function cancelBooking (user) {
-  cancelBookingForUser.value = user;
+function cancelBooking (viewingUser) {
+  cancelBookingForUser.value = viewingUser;
   showCancelConfirmModal.value = true;
+}
+
+function canCancelBooking (viewingUser) {
+  return props.userIsLeader || viewingUser.id === user.value.id;
 }
 
 async function onCancelBooking () {

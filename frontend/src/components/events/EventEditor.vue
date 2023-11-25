@@ -124,6 +124,16 @@
         Leave blank for no limit on spaces for this event
       </span>
 
+      <input-checkbox
+        id="visible-attendees"
+        v-model="internalValue.visible_attendees"
+        label="Attendees are visible"
+        name="visible-attendees" />
+      <span class="text-sm text-gray-500">
+        When enabled, event attendees will be able to see who else has booked onto the event.
+        Enable for events like a Sunday Paddle or Pool Session, but disable for events like a Beginners Course.
+      </span>
+
       <event-canceller
         :event="event"
         :instance="instance" />

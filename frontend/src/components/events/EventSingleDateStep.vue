@@ -35,6 +35,7 @@ import type { Validation } from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
 import { ArrowRightIcon } from "@heroicons/vue/24/outline";
 import type { Ref } from "vue";
+import { addHours } from "date-fns";
 
 const emits = defineEmits(["update:eventItem", "prev", "next"]);
 
@@ -52,6 +53,12 @@ watch(() => props.eventItem, (val) => {
 watch(eventItem, (val) => {
   emits("update:eventItem", val);
 }, { deep: true, immediate: true });
+
+watch(() => eventItem.value.startDate, (val) => {
+  if (val && !eventItem.value.endDate) {
+    eventItem.value.endDate = addHours(new Date(val), 1);
+  }
+});
 
 function beforeEndDate (value, siblings) {
   return value < siblings.endDate;
