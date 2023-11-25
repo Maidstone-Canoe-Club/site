@@ -119,7 +119,7 @@
                               {{ viewingUser.home_tel }}
                             </dd>
                           </div>
-                          <div v-else>
+                          <div v-if="!!viewingUser.parent">
                             <div class="rounded-md bg-blue-50 p-4">
                               <div class="flex">
                                 <div class="flex-shrink-0">

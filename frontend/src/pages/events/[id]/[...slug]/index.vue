@@ -24,7 +24,16 @@
 
     <div class="mt-5">
       <div class="grid md:grid-cols-12 gap-10">
-        <div class="md:col-span-8 mt-5 min-w-0">
+        <div
+          ref="contentColumn"
+          class="md:col-span-8 min-w-0"
+          :class="{'mb-5': !!eventImage}">
+          <img
+            v-if="eventImage"
+            alt="Event image"
+            class="rounded-lg mb-5"
+            :src="eventImage">
+
           <rich-text
             v-if="event.description"
             :content="event.description" />
@@ -398,6 +407,27 @@ const editLink = computed(() => {
 });
 
 const canEdit = computed(() => (user.value && event.value.user_created === user.value.id) || hasRole(user.value, "Coach"));
+
+const contentColumn = ref(null);
+const imageWidth = ref(null);
+
+onMounted(() => {
+  imageWidth.value = contentColumn.value.clientWidth;
+});
+
+const eventImage = computed(() => {
+  if (event.value.image) {
+    const directusUrl = useDirectusUrl();
+    let url = `${directusUrl}/assets/${event.value.image}?format=webp&height=450`;
+
+    if (imageWidth.value) {
+      url += "&width=" + imageWidth.value;
+    }
+
+    return url;
+  }
+  return null;
+});
 
 function renderSessionDate (date) {
   if (isSameDay(new Date(date.start), new Date(date.end))) {

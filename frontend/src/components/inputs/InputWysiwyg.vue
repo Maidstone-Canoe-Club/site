@@ -7,11 +7,10 @@
     <client-only>
       <quill-editor
         v-model:content="content"
-        :modules="modules"
         class="shadow-sm"
         style="min-height: 300px"
         content-type="html"
-        toolbar="full" />
+        toolbar="minimal" />
     </client-only>
   </div>
 </template>
@@ -19,7 +18,7 @@
 <script setup lang="ts">
 import "@vueup/vue-quill/dist/vue-quill.snow.css";
 // @ts-ignore
-import ImageUploader from "quill-image-uploader";
+// import ImageUploader from "quill-image-uploader";
 import "quill-image-uploader/dist/quill.imageUploader.min.css";
 const { QuillEditor } = await import("@vueup/vue-quill");
 
@@ -33,36 +32,36 @@ const props = defineProps<{
 const directusUrl = useDirectusUrl();
 const { token } = useDirectusToken();
 
-const modules = {
-  name: "imageUploader",
-  module: ImageUploader,
-  options: {
-    upload: (file) => {
-      return new Promise((resolve, reject) => {
-        const formData = new FormData();
-        formData.append("title", file.name);
-        formData.append("type", file.type);
-        formData.append("image", file);
-
-        $fetch(directusUrl + "/files",
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${token.value}`
-            },
-            body: formData
-          })
-          .then((res) => {
-            resolve(directusUrl + "/assets/" + res.data.id);
-          })
-          .catch((err) => {
-            reject(new Error("Upload failed"));
-            console.error("Upload failed", err);
-          });
-      });
-    }
-  }
-};
+// const modules = {
+//   name: "imageUploader",
+//   module: ImageUploader,
+//   options: {
+//     upload: (file) => {
+//       return new Promise((resolve, reject) => {
+//         const formData = new FormData();
+//         formData.append("title", file.name);
+//         formData.append("type", file.type);
+//         formData.append("image", file);
+//
+//         $fetch(directusUrl + "/files",
+//           {
+//             method: "POST",
+//             headers: {
+//               Authorization: `Bearer ${token.value}`
+//             },
+//             body: formData
+//           })
+//           .then((res) => {
+//             resolve(directusUrl + "/assets/" + res.data.id);
+//           })
+//           .catch((err) => {
+//             reject(new Error("Upload failed"));
+//             console.error("Upload failed", err);
+//           });
+//       });
+//     }
+//   }
+// };
 
 const content = computed({
   get () {
