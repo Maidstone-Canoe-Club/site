@@ -132,7 +132,7 @@ export default defineEndpoint((router, {services, database}) => {
       const userIsLeader = leaders.find(x => x.directus_users_id.id === userId);
 
       if (user) {
-        if (allowedRoles.includes(user.role.name.toLowerCase()) || userIsLeader) {
+        if (event.visible_attendees || allowedRoles.includes(user.role.name.toLowerCase()) || userIsLeader) {
           bookings = eventBookings;
         } else {
           bookings = eventBookings.filter(b => b.user.id === userId || b.user.parent === userId);
@@ -657,7 +657,9 @@ async function createSingleEvent(eventItem, eventService, res) {
       junior_price: eventItem.junior_price,
       allowed_roles: eventItem.allowedRoles,
       type: eventItem.type,
-      status: eventItem.status
+      status: eventItem.status,
+      max_spaces: eventItem.max_spaces,
+      visible_attendees: eventItem.visible_attendees
     });
 
     return result;
@@ -688,7 +690,9 @@ async function createMultiEvent(eventItem, eventDates, eventService, res) {
       allowed_roles: eventItem.allowedRoles,
       has_multiple: true,
       type: eventItem.type,
-      status: eventItem.status
+      status: eventItem.status,
+      max_spaces: eventItem.max_spaces,
+      visible_attendees: eventItem.visible_attendees
     });
 
     for (let i = 1; i < eventDates.multiple.length; i++) {
@@ -707,7 +711,9 @@ async function createMultiEvent(eventItem, eventDates, eventService, res) {
         allowed_roles: eventItem.allowedRoles,
         parent_event: firstEventId,
         type: eventItem.type,
-        status: eventItem.status
+        status: eventItem.status,
+        max_spaces: eventItem.max_spaces,
+        visible_attendees: eventItem.visible_attendees
       });
     }
 
@@ -752,7 +758,9 @@ async function createRecurringEvent(eventItem, eventDates, eventService, recurri
       last_occurance: endDate,
       is_recurring: true,
       type: eventItem.type,
-      status: eventItem.status
+      status: eventItem.status,
+      max_spaces: eventItem.max_spaces,
+      visible_attendees: eventItem.visible_attendees
     });
 
     const recurringPattern = {

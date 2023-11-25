@@ -95,6 +95,7 @@
 
 <script setup lang="ts">
 import { PlusIcon, TrashIcon, ArrowRightIcon } from "@heroicons/vue/24/outline";
+import { addHours } from "date-fns";
 
 const emits = defineEmits(["update:eventDates", "update:eventItem", "prev", "next"]);
 
@@ -132,6 +133,13 @@ watch(eventItem, (val) => {
 watch(eventDates, (val) => {
   emits("update:eventDates", val);
 }, { deep: true, immediate: true });
+
+watch(() => eventItem.value.start_date, (val) => {
+  console.log("start date change", val);
+  if (val) {
+    eventItem.value.end_date = addHours(new Date(val), 1);
+  }
+});
 
 function addDay () {
   eventDates.value.multiple.push(newDay());

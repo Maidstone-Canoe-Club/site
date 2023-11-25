@@ -1,6 +1,20 @@
 ﻿<template>
+  <div v-if="spacesLeft === 0">
+    <div class="rounded-md bg-blue-50 p-4 border border-blue-400">
+      <div class="flex">
+        <div class="flex-shrink-0">
+          <InformationCircleIcon class="h-5 w-5 text-blue-400" aria-hidden="true" />
+        </div>
+        <div class="ml-3 flex-1 md:flex md:justify-between">
+          <p class="text-sm text-blue-700">
+            This event is now full
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
   <div
-    v-if="usersThatCanBook && usersThatCanBook.length"
+    v-else-if="usersThatCanBook && usersThatCanBook.length"
     class="ring-1 ring-black ring-opacity-5 rounded p-3 sm:p-5 flex flex-col bg-white">
     <div class="flex gap-1 flex-wrap justify-between items-center mb-4">
       <span
@@ -139,6 +153,7 @@ import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } fro
 import { CheckIcon, ExclamationTriangleIcon, UsersIcon, PlusIcon } from "@heroicons/vue/24/outline";
 import Dinero from "dinero.js";
 import type { DirectusUser } from "nuxt-directus/dist/runtime/types";
+import { InformationCircleIcon } from "@heroicons/vue/20/solid";
 import type { EventItem } from "~/types";
 // @ts-ignore
 
