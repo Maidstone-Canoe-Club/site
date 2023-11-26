@@ -199,7 +199,8 @@ async function handleMailingList(data: InboundEmail, toAddress: FullAddress, mai
           const emailsToSend = [];
 
           for(const subscriber of chunk){
-            const body = await renderMailBody(data.HtmlBody, subscriber, mailingList.id, mailService);
+            const body = await renderMailBody(data.HtmlBody, mailingList.id, mailService);
+            const unsubscribeUrl = getUnsubscribeUrl(mailingList.id);
 
             emailsToSend.push(
               {
@@ -224,7 +225,7 @@ async function handleMailingList(data: InboundEmail, toAddress: FullAddress, mai
                   },
                   {
                     name: "List-Unsubscribe",
-                    value: `<${process.env.PUBLIC_URL}/unsubscribe?list=${mailingList.email_name}>`
+                    value: unsubscribeUrl
                   },
                   {
                     name: "Original-Sender",
@@ -279,16 +280,15 @@ function chunkArray<T>(input: T[], size: number): T[][] {
 //   return `${subscriber.user.first_name} ${subscriber.user.last_name} <${mailingList.email_name}@${process.env.EMAIL_DOMAIN}>`;
 // }
 
-function getUnsubscribeUrl(email: string, listId: string){
-  const encodedEmail = encodeURIComponent(btoa(email));
+function getUnsubscribeUrl(listId: string){
   const encodedList = encodeURIComponent(btoa(listId));
-  return `${process.env.PUBLIC_URL}/unsubscribe/mailing-list?e=${encodedEmail}&l=${encodedList}`;
+  return `${process.env.PUBLIC_URL}/unsubscribe/mailing-list?l=${encodedList}`;
 }
 
-async function renderMailBody(htmlBody: string, subscriber: any, listId: string, mailService: any){
+async function renderMailBody(htmlBody: string, listId: string, mailService: any){
   return await mailService.renderTemplate("broadcast-email", {
     content: htmlBody,
-    url: getUnsubscribeUrl(subscriber.email, listId)
+    url: getUnsubscribeUrl(listId)
   });
 }
 
