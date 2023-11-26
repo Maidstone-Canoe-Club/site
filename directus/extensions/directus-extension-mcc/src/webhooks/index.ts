@@ -196,40 +196,46 @@ async function handleMailingList(data: InboundEmail, toAddress: FullAddress, mai
             from = `${data.FromName} via ${mailingList.name} <${mailingList.email_name}@${process.env.EMAIL_DOMAIN}>`;
           }
 
-          const emailsToSend = chunk.map(async (subscriber) => {
+          const emailsToSend = [];
+
+          for(const subscriber of chunk){
             const body = await renderMailBody(data.HtmlBody, subscriber, mailingList.id, mailService);
 
-            return {
-              To: subscriber.email,
-              From: from,
-              Subject: data.Subject,
-              // TextBody: data.StrippedTextReply,
-              HtmlBody: body,
-              ReplyTo: buildReplyToEmailAddress(mailingList),
-              TrackOpens: true,
-              TrackLinks: "None",
-              MessageStream: "broadcast",
-              Attachments: data.Attachments,
-              Headers: [
-                {
-                  name: "Precedence",
-                  value: "list"
-                },
-                {
-                  name: "List-Id",
-                  value: `${mailingList.name} <${mailingList.email_name}@${process.env.EMAIL_DOMAIN}>`,
-                },
-                {
-                  name: "List-Unsubscribe",
-                  value: getUnsubscribeUrl(subscriber.email, mailingList.id)
-                },
-                {
-                  name: "Original-Sender",
-                  value: data.From
-                }
-              ]
-            };
-          });
+            emailsToSend.push(
+              {
+                To: subscriber.email,
+                From: from,
+                Subject: data.Subject,
+                // TextBody: data.StrippedTextReply,
+                HtmlBody: body,
+                ReplyTo: buildReplyToEmailAddress(mailingList),
+                TrackOpens: true,
+                TrackLinks: "None",
+                MessageStream: "broadcast",
+                Attachments: data.Attachments,
+                Headers: [
+                  {
+                    name: "Precedence",
+                    value: "list"
+                  },
+                  {
+                    name: "List-Id",
+                    value: `${mailingList.name} <${mailingList.email_name}@${process.env.EMAIL_DOMAIN}>`,
+                  },
+                  {
+                    name: "List-Unsubscribe",
+                    value: `<${process.env.PUBLIC_URL}/unsubscribe?list=${mailingList.email_name}>`
+                  },
+                  {
+                    name: "Original-Sender",
+                    value: data.From
+                  }
+                ]
+              }
+            );
+          }
+
+          // const emailsToSend = chunk.map(subscriber => ());
 
           console.log("sending emails!", emailsToSend);
           await sendBatchEmail(emailsToSend);
