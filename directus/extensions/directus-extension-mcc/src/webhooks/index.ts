@@ -14,8 +14,8 @@ const postmarkUrl = "https://api.postmarkapp.com";
 const stripe = new Stripe(process.env.STRIPE_KEY);
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
-export default defineEndpoint((router, {services}) => {
-  const {ItemsService} = services;
+export default defineEndpoint((router, {services, database}) => {
+  const {ItemsService, MailService} = services;
   const adminAccountability = {
     admin: true
   };
@@ -121,9 +121,11 @@ export default defineEndpoint((router, {services}) => {
         accountability: adminAccountability
       });
 
+      const mailService = new MailService({schema: req.schema, knex: database});
+
       for (let i = 0; i < toAddresses.length; i++) {
         const toAddress = toAddresses[i]!;
-        await handleMailingList(data, toAddress, mailingListsService, mailingListSubscribersService);
+        await handleMailingList(data, toAddress, mailingListsService, mailingListSubscribersService, mailService);
         await handleMailForward(data, toAddress, null, mailThreadsService, mailForwardsService);
       }
 
@@ -135,7 +137,7 @@ export default defineEndpoint((router, {services}) => {
   });
 });
 
-async function handleMailingList(data: InboundEmail, toAddress: FullAddress, mailingListsService: any, mailingListSubscribersService: any) {
+async function handleMailingList(data: InboundEmail, toAddress: FullAddress, mailingListsService: any, mailingListSubscribersService: any, mailService: any) {
 
   try {
     const to = toAddress.Email;
@@ -194,36 +196,40 @@ async function handleMailingList(data: InboundEmail, toAddress: FullAddress, mai
             from = `${data.FromName} via ${mailingList.name} <${mailingList.email_name}@${process.env.EMAIL_DOMAIN}>`;
           }
 
-          const emailsToSend = chunk.map(subscriber => ({
-            To: subscriber.email,
-            From: from,
-            Subject: data.Subject,
-            TextBody: data.StrippedTextReply,
-            HtmlBody: data.HtmlBody,
-            ReplyTo: buildReplyToEmailAddress(mailingList),
-            TrackOpens: true,
-            TrackLinks: "None",
-            MessageStream: "broadcast",
-            Attachments: data.Attachments,
-            Headers: [
-              {
-                name: "Precedence",
-                value: "list"
-              },
-              {
-                name: "List-Id",
-                value: `${mailingList.name} <${mailingList.email_name}@${process.env.EMAIL_DOMAIN}>`,
-              },
-              {
-                name: "List-Unsubscribe",
-                value: `<${process.env.PUBLIC_URL}/unsubscribe?list=${mailingList.email_name}>`
-              },
-              {
-                name: "Original-Sender",
-                value: data.From
-              }
-            ]
-          }));
+          const emailsToSend = chunk.map(async (subscriber) => {
+            const body = await renderMailBody(data.HtmlBody, subscriber, mailingList.id, mailService);
+
+            return {
+              To: subscriber.email,
+              From: from,
+              Subject: data.Subject,
+              // TextBody: data.StrippedTextReply,
+              HtmlBody: body,
+              ReplyTo: buildReplyToEmailAddress(mailingList),
+              TrackOpens: true,
+              TrackLinks: "None",
+              MessageStream: "broadcast",
+              Attachments: data.Attachments,
+              Headers: [
+                {
+                  name: "Precedence",
+                  value: "list"
+                },
+                {
+                  name: "List-Id",
+                  value: `${mailingList.name} <${mailingList.email_name}@${process.env.EMAIL_DOMAIN}>`,
+                },
+                {
+                  name: "List-Unsubscribe",
+                  value: getUnsubscribeUrl(subscriber.email, mailingList.id)
+                },
+                {
+                  name: "Original-Sender",
+                  value: data.From
+                }
+              ]
+            };
+          });
 
           console.log("sending emails!", emailsToSend);
           await sendBatchEmail(emailsToSend);
@@ -266,6 +272,19 @@ function chunkArray<T>(input: T[], size: number): T[][] {
 // function buildFromEmailAddress(mailingList: MailingList, subscriber: Subscriber) {
 //   return `${subscriber.user.first_name} ${subscriber.user.last_name} <${mailingList.email_name}@${process.env.EMAIL_DOMAIN}>`;
 // }
+
+function getUnsubscribeUrl(email: string, listId: string){
+  const encodedEmail = encodeURIComponent(btoa(email));
+  const encodedList = encodeURIComponent(btoa(listId));
+  return `${process.env.PUBLIC_URL}/unsubscribe/mailing-list?e=${encodedEmail}&l=${encodedList}`;
+}
+
+async function renderMailBody(htmlBody: string, subscriber: any, listId: string, mailService: any){
+  return await mailService.renderTemplate("broadcast-email", {
+    content: htmlBody,
+    url: getUnsubscribeUrl(subscriber.email, listId)
+  });
+}
 
 function buildReplyToEmailAddress(mailingList: MailingList) {
   return `${mailingList.email_name}@${process.env.EMAIL_DOMAIN}`;
