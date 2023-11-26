@@ -6,11 +6,10 @@ definePageMeta({
   middleware: ["auth"]
 });
 
+const user = useDirectusUser();
 const route = useRoute();
-const e = route.query.e;
 const l = route.query.l;
 
-const email = ref<string | null>(e ? decodeURIComponent(atob(e)) : null);
 const list = ref<string | null>(l ? decodeURIComponent(atob(l)) : null);
 
 const confirmed = ref<boolean>(false);
@@ -41,6 +40,11 @@ const { data: subscription } = await useAsyncData("subscriptions", async () => {
   const subscriptions = await getItems({
     collection: "mailing_list_subscriber",
     params: {
+      fields: [
+        "id",
+        "email",
+        "user.email"
+      ],
       filter: {
         _and: [
           {
@@ -49,9 +53,20 @@ const { data: subscription } = await useAsyncData("subscriptions", async () => {
             }
           },
           {
-            email: {
-              _eq: email.value
-            }
+            _or: [
+              {
+                email: {
+                  _eq: user.value!.email
+                }
+              },
+              {
+                user: {
+                  email: {
+                    _eq: user.value!.email
+                  }
+                }
+              }
+            ]
           }
         ]
       }
