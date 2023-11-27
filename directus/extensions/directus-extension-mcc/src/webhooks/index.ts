@@ -199,7 +199,7 @@ async function handleMailingList(data: InboundEmail, toAddress: FullAddress, mai
           const emailsToSend = [];
 
           for(const subscriber of chunk){
-            const bodyInput = data.HtmlBody || data.StrippedTextReply || data.TextBody;
+            const bodyInput = data.HtmlBody || data.TextBody;
             const body = await renderMailBody(bodyInput, mailingList.id, mailService);
             const unsubscribeUrl = getUnsubscribeUrl(mailingList.id);
 
