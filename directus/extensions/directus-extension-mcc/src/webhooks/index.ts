@@ -199,7 +199,8 @@ async function handleMailingList(data: InboundEmail, toAddress: FullAddress, mai
           const emailsToSend = [];
 
           for(const subscriber of chunk){
-            const body = await renderMailBody(data.HtmlBody, mailingList.id, mailService);
+            const bodyInput = data.HtmlBody || data.StrippedTextReply || data.TextBody;
+            const body = await renderMailBody(bodyInput, mailingList.id, mailService);
             const unsubscribeUrl = getUnsubscribeUrl(mailingList.id);
 
             emailsToSend.push(
