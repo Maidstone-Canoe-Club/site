@@ -132,7 +132,7 @@ export default defineEndpoint((router, {services, database}) => {
       const userIsLeader = leaders.find(x => x.directus_users_id.id === userId);
 
       if (user) {
-        if(event.visible_attendees) {
+        if (event.visible_attendees) {
           bookings = eventBookings.map(e => ({
             id: e.id,
             status: e.status,
@@ -143,7 +143,7 @@ export default defineEndpoint((router, {services, database}) => {
               last_name: e.user.last_name,
             }
           }));
-        }else if (allowedRoles.includes(user.role.name.toLowerCase()) || userIsLeader) {
+        } else if (allowedRoles.includes(user.role.name.toLowerCase()) || userIsLeader) {
           bookings = eventBookings;
         } else {
           bookings = eventBookings.filter(b => b.user.id === userId || b.user.parent === userId);
@@ -571,71 +571,76 @@ export default defineEndpoint((router, {services, database}) => {
   });
 
   router.post("/create", async (req, res) => {
-    const eventType = req.body.eventType;
-    const eventItem = req.body.eventItem;
-    const eventDates = req.body.eventDates;
-    const leaders = req.body.leaders;
+    try {
+      const eventType = req.body.eventType;
+      const eventItem = req.body.eventItem;
+      const eventDates = req.body.eventDates;
+      const leaders = req.body.leaders;
 
-    console.log("creating new date");
-    console.log("event type", eventType);
-    console.log("event item", eventItem);
-    console.log("event dates", eventDates);
+      console.log("creating new date");
+      console.log("event type", eventType);
+      console.log("event item", eventItem);
+      console.log("event dates", eventDates);
 
-    const eventService = new ItemsService("events", {
-      knex: database,
-      schema: req.schema,
-      accountability: req.accountability
-    });
-
-    const recurringEventService = new ItemsService("recurring_event_patterns", {
-      knex: database,
-      schema: req.schema,
-      accountability: req.accountability
-    });
-
-    eventItem.status = "published";
-
-    if (eventItem.price || eventItem.junior_price) {
-      const loggedInUserId = req.accountability.user;
-      const userService = new UsersService({knex: database, schema: req.schema, accountability: adminAccountability});
-      const user = await userService.readOne(loggedInUserId, {
-        fields: ["role.name"]
+      const eventService = new ItemsService("events", {
+        knex: database,
+        schema: req.schema,
+        accountability: req.accountability
       });
 
-      // roles that are allowed to create an event with a price
-      const allowedRoles = ["committee", "administrator"];
+      const recurringEventService = new ItemsService("recurring_event_patterns", {
+        knex: database,
+        schema: req.schema,
+        accountability: req.accountability
+      });
 
-      if (!allowedRoles.includes(user.role.name.toLowerCase())) {
-        eventItem.status = "draft";
+      eventItem.status = "published";
+
+      if (eventItem.price || eventItem.junior_price) {
+        const loggedInUserId = req.accountability.user;
+        const userService = new UsersService({knex: database, schema: req.schema, accountability: adminAccountability});
+        const user = await userService.readOne(loggedInUserId, {
+          fields: ["role.name"]
+        });
+
+        // roles that are allowed to create an event with a price
+        const allowedRoles = ["committee", "administrator"];
+
+        if (!allowedRoles.includes(user.role.name.toLowerCase())) {
+          eventItem.status = "draft";
+        }
       }
-    }
 
-    // create event leaders
-    const eventLeadersService = new ItemsService("events_directus_users", {
-      knex: database,
-      schema: req.schema,
-      accountability: req.accountability
-    });
+      // create event leaders
+      const eventLeadersService = new ItemsService("events_directus_users", {
+        knex: database,
+        schema: req.schema,
+        accountability: req.accountability
+      });
 
-    if (eventType === "single") {
-      const id = await createSingleEvent(eventItem, eventService, res);
-      await createLeaders(id, leaders, eventLeadersService, eventService);
-      return res.send(id);
-    } else if (eventType === "multi") {
-      const ids = await createMultiEvent(eventItem, eventDates, eventService, res);
-
-      for (const id of ids) {
+      if (eventType === "single") {
+        const id = await createSingleEvent(eventItem, eventService, res);
         await createLeaders(id, leaders, eventLeadersService, eventService);
+        return res.send(id);
+      } else if (eventType === "multi") {
+        const ids = await createMultiEvent(eventItem, eventDates, eventService, res);
+
+        for (const id of ids) {
+          await createLeaders(id, leaders, eventLeadersService, eventService);
+        }
+
+        return res.send(ids);
+
+      } else if (eventType === "recurring") {
+        const id = await createRecurringEvent(eventItem, eventDates, eventService, recurringEventService, res);
+        await createLeaders(id, leaders, eventLeadersService, eventService);
+        return res.send(id);
+      } else {
+        return res.status(400).send("unknown event type");
       }
-
-      return res.send(ids);
-
-    } else if (eventType === "recurring") {
-      const id = await createRecurringEvent(eventItem, eventDates, eventService, recurringEventService, res);
-      await createLeaders(id, leaders, eventLeadersService, eventService);
-      return res.send(id);
-    } else {
-      return res.status(400).send("unknown event type");
+    } catch (e) {
+      console.error("error creating event", e);
+      return res.status(500).send("error creating event");
     }
   });
 });
