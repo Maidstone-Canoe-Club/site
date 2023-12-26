@@ -36,49 +36,51 @@
           label="Who can join this event?"
           :v="v$.allowedRoles" />
 
-        <template v-if="showPrice">
-          <input-currency
-            id="price"
-            v-model="internalValue.price"
-            label="Price"
-            name="price" />
-          <span class="text-sm text-gray-500">
-            Leave blank for the event to be free
-          </span>
-        </template>
+        <event-pricing v-model="internalValue" />
 
-        <template v-if="juniorsAllowed">
-          <input-currency
-            id="junior-price"
-            v-model="internalValue.junior_price"
-            placeholder=""
-            label="Junior price"
-            name="junior-price" />
-          <span class="text-sm text-gray-500">
-            Leave blank for the event to be free for juniors
-          </span>
-        </template>
+        <!--        <template v-if="showPrice">-->
+        <!--          <input-currency-->
+        <!--            id="price"-->
+        <!--            v-model="internalValue.price"-->
+        <!--            label="Price"-->
+        <!--            name="price" />-->
+        <!--          <span class="text-sm text-gray-500">-->
+        <!--            Leave blank for the event to be free-->
+        <!--          </span>-->
+        <!--        </template>-->
 
-        <template v-if="showPriceWarning">
-          <div class="rounded-md bg-yellow-50 p-4">
-            <div class="flex">
-              <div class="flex-shrink-0">
-                <ExclamationTriangleIcon class="h-5 w-5 text-yellow-400" aria-hidden="true" />
-              </div>
-              <div class="ml-3">
-                <h3 class="text-sm font-medium text-yellow-800">
-                  Event will be hidden
-                </h3>
-                <div class="mt-2 text-sm text-yellow-700">
-                  <p>
-                    This event will be hidden if you give this event a price, and will need to be approved before it
-                    becomes visible
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </template>
+        <!--        <template v-if="juniorsAllowed">-->
+        <!--          <input-currency-->
+        <!--            id="junior-price"-->
+        <!--            v-model="internalValue.junior_price"-->
+        <!--            placeholder=""-->
+        <!--            label="Junior price"-->
+        <!--            name="junior-price" />-->
+        <!--          <span class="text-sm text-gray-500">-->
+        <!--            Leave blank for the event to be free for juniors-->
+        <!--          </span>-->
+        <!--        </template>-->
+
+        <!--        <template v-if="showPriceWarning">-->
+        <!--          <div class="rounded-md bg-yellow-50 p-4">-->
+        <!--            <div class="flex">-->
+        <!--              <div class="flex-shrink-0">-->
+        <!--                <ExclamationTriangleIcon class="h-5 w-5 text-yellow-400" aria-hidden="true" />-->
+        <!--              </div>-->
+        <!--              <div class="ml-3">-->
+        <!--                <h3 class="text-sm font-medium text-yellow-800">-->
+        <!--                  Event will be hidden-->
+        <!--                </h3>-->
+        <!--                <div class="mt-2 text-sm text-yellow-700">-->
+        <!--                  <p>-->
+        <!--                    This event will be hidden if you give this event a price, and will need to be approved before it-->
+        <!--                    becomes visible-->
+        <!--                  </p>-->
+        <!--                </div>-->
+        <!--              </div>-->
+        <!--            </div>-->
+        <!--          </div>-->
+        <!--        </template>-->
 
         <div v-show="canChangeLeaders">
           <user-search
@@ -123,7 +125,6 @@
 <script setup lang="ts">
 import { useVuelidate } from "@vuelidate/core";
 import type { Validation } from "@vuelidate/core";
-import { ExclamationTriangleIcon } from "@heroicons/vue/20/solid";
 import { required } from "@vuelidate/validators";
 import type { Ref } from "vue";
 

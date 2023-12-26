@@ -31,6 +31,10 @@
         label="Title"
         :v="v$.title" />
 
+      <input-image
+        label="Cover photo"
+        @change="onFileChange" />
+
       <client-only>
         <input-wysiwyg
           id="description"
@@ -189,6 +193,7 @@ const props = defineProps<{
 const user = useDirectusUser();
 const directus = useDirectus();
 
+const file = ref();
 const internalValue = ref({ ...props.event });
 internalValue.value.type = eventTypes.find(x => x.id === internalValue.value.type);
 internalValue.value.allowed_roles = allowedRoles.filter(r => internalValue.value.allowed_roles.includes(r.id));
@@ -219,6 +224,13 @@ const canChangeLeaders = computed(() => {
   return hasRole(user.value, "committee");
 });
 
+const directusUrl = useDirectusUrl();
+const { token } = useDirectusToken();
+
+function onFileChange (val) {
+  file.value = val;
+}
+
 const rules = {
   title: { required },
   location: { required },
@@ -236,6 +248,25 @@ async function onSave () {
       const newEventItem = {
         ...internalValue.value
       };
+
+      if (file.value) {
+        const toUpload = file.value[0];
+
+        const formData = new FormData();
+        formData.append("title", toUpload.name);
+        formData.append("type", toUpload.type);
+        formData.append("image", toUpload);
+
+        const result = await $fetch((`${directusUrl}/files`), {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token.value}`
+          },
+          body: formData
+        });
+
+        newEventItem.image = result.data.id;
+      }
 
       newEventItem.allowed_roles = newEventItem.allowed_roles.map(x => x.id);
       newEventItem.type = newEventItem.type.id;

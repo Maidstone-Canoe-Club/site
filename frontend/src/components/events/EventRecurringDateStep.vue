@@ -45,6 +45,7 @@ import { useVuelidate } from "@vuelidate/core";
 import type { Validation } from "@vuelidate/core";
 import { required, helpers } from "@vuelidate/validators";
 import type { Ref } from "vue";
+import { addHours, formatISO } from "date-fns";
 
 const emits = defineEmits(["update:eventDates", "prev", "next"]);
 
@@ -73,6 +74,12 @@ const recurringTypes = [
 function onPrev () {
   emits("prev");
 }
+
+watch(() => eventDates.value.recurring.startDate, (val) => {
+  if (val && !eventDates.value.recurring.endDate) {
+    eventDates.value.recurring.endDate = formatISO(addHours(new Date(val), 1));
+  }
+});
 
 function beforeEndDate (value, siblings) {
   return value < siblings.endDate;

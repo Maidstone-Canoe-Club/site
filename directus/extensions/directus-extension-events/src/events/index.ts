@@ -596,7 +596,8 @@ export default defineEndpoint((router, {services, database}) => {
 
       eventItem.status = "published";
 
-      if (eventItem.price || eventItem.junior_price) {
+      // require approval if a price is set
+      if (eventItem.price || eventItem.junior_price || eventItem.member_price || eventItem.non_member_price || eventItem.coach_price) {
         const loggedInUserId = req.accountability.user;
         const userService = new UsersService({knex: database, schema: req.schema, accountability: adminAccountability});
         const user = await userService.readOne(loggedInUserId, {
@@ -671,6 +672,10 @@ async function createSingleEvent(eventItem, eventService, res) {
       end_date: eventItem.endDate,
       price: eventItem.price,
       junior_price: eventItem.junior_price,
+      advanced_pricing: eventItem.advanced_pricing,
+      member_price: eventItem.member_price,
+      non_member_price: eventItem.non_member_price,
+      coach_price: eventItem.coach_price,
       allowed_roles: eventItem.allowedRoles,
       type: eventItem.type,
       status: eventItem.status,
@@ -703,6 +708,10 @@ async function createMultiEvent(eventItem, eventDates, eventService, res) {
       end_date: firstDate.endDate,
       price: eventItem.price,
       junior_price: eventItem.junior_price,
+      advanced_pricing: eventItem.advanced_pricing,
+      member_price: eventItem.member_price,
+      non_member_price: eventItem.non_member_price,
+      coach_price: eventItem.coach_price,
       allowed_roles: eventItem.allowedRoles,
       has_multiple: true,
       type: eventItem.type,
@@ -724,6 +733,10 @@ async function createMultiEvent(eventItem, eventDates, eventService, res) {
         end_date: date.endDate,
         price: eventItem.price,
         junior_price: eventItem.junior_price,
+        advanced_pricing: eventItem.advanced_pricing,
+        member_price: eventItem.member_price,
+        non_member_price: eventItem.non_member_price,
+        coach_price: eventItem.coach_price,
         allowed_roles: eventItem.allowedRoles,
         parent_event: firstEventId,
         type: eventItem.type,
@@ -768,6 +781,10 @@ async function createRecurringEvent(eventItem, eventDates, eventService, recurri
       location: eventItem.location,
       price: eventItem.price,
       junior_price: eventItem.junior_price,
+      member_price: eventItem.member_price,
+      advanced_pricing: eventItem.advanced_pricing,
+      non_member_price: eventItem.non_member_price,
+      coach_price: eventItem.coach_price,
       start_date: eventDates.recurring.startDate,
       end_date: eventDates.recurring.endDate,
       allowed_roles: eventItem.allowedRoles,
@@ -813,7 +830,10 @@ async function createRecurringEvent(eventItem, eventDates, eventService, recurri
 
     if (recurringPattern.type === "2") { // monthly
       weekOfMonth = getWeekOfMonth(startDate);
-      dayOfMonth = getDate(startDate);
+
+      // TODO: If we want the event to occur on the same DAY of the month, 2nd, 16th:
+      // dayOfMonth = getDate(startDate);
+      dayOfWeek = dayMap[getDay(startDate)];
     }
 
     if (recurringPattern.type === "3") { // yearly

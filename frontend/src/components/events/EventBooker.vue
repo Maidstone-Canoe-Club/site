@@ -12,6 +12,13 @@
       <div
         v-if="userHasAllowedRole"
         class="w-full">
+        <!--        <advanced-booker-->
+        <!--          v-if="advancedPricing"-->
+        <!--          :event="event"-->
+        <!--          :payment-url="paymentUrl"-->
+        <!--          :already-booked="alreadyBooked"-->
+        <!--          :spaces-left="spacesLeft" />-->
+        <!--        <template v-else>-->
         <multi-booker
           v-if="canBookJuniors"
           :event="event"
@@ -27,11 +34,12 @@
           v-else
           :event="event"
           :instance="instance"
-          :price="event.price"
+          :price="priceForUser"
           :payment-url="paymentUrl"
           :already-booked="alreadyBooked"
           :spaces-left="spacesLeft"
           @refresh="onRefresh" />
+        <!--        </template>-->
       </div>
       <div v-else>
         You aren't allowed to book onto this event
@@ -61,6 +69,9 @@ const { getUsers } = useDirectusUsers();
 const loginUrl = computed(() => `/login?redirect=${route.path}`);
 
 const canBookJuniors = computed(() => props.event.allowed_roles?.map(x => x.toLowerCase()).includes("juniors") ?? false);
+
+// const advancedPricing = computed(() => props.event.advanced_pricing);
+const advancedPricing = ref(false);
 
 const { data: juniors } = await useAsyncData("juniors-" + user.value?.id, async () => {
   return await loadJuniors();
@@ -122,6 +133,22 @@ const userHasAllowedRole = computed(() => {
   }
 
   return result;
+});
+
+const priceForUser = computed(() => {
+  if (props.event.advanced_pricing) {
+    if (hasExactRole(user.value, "member")) {
+      return props.event.member_price;
+    } else if (hasExactRole(user.value, "non_member")) {
+      return props.event.non_member_price;
+    } else if (hasExactRole(user.value, "coach")) {
+      return props.event.coach_price;
+    }
+
+    return null;
+  } else {
+    return props.event.price;
+  }
 });
 
 function mapAllowedRoleToUserRole (allowedRole: string) {
