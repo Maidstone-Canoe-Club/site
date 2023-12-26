@@ -360,6 +360,29 @@ collections:
       unarchive_value: null
     schema:
       name: events_directus_users
+  - collection: events_events
+    meta:
+      accountability: all
+      archive_app_filter: true
+      archive_field: null
+      archive_value: null
+      collapse: open
+      collection: events_events
+      color: null
+      display_template: null
+      group: null
+      hidden: true
+      icon: import_export
+      item_duplication_fields: null
+      note: null
+      preview_url: null
+      singleton: false
+      sort: null
+      sort_field: null
+      translations: null
+      unarchive_value: null
+    schema:
+      name: events_events
   - collection: faqs
     meta:
       accountability: all
@@ -3834,6 +3857,45 @@ fields:
       foreign_key_table: directus_users
       foreign_key_column: id
   - collection: events
+    field: advanced_pricing
+    type: boolean
+    meta:
+      collection: events
+      conditions: null
+      display: null
+      display_options: null
+      field: advanced_pricing
+      group: null
+      hidden: false
+      interface: boolean
+      note: null
+      options: null
+      readonly: false
+      required: false
+      sort: 16
+      special:
+        - cast-boolean
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: advanced_pricing
+      table: events
+      data_type: boolean
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: events
     field: allowed_roles
     type: json
     meta:
@@ -3860,7 +3922,7 @@ fields:
         previewThreshold: 4
       readonly: false
       required: false
-      sort: 24
+      sort: 28
       special:
         - cast-json
       translations: null
@@ -3874,6 +3936,44 @@ fields:
       default_value: null
       max_length: null
       numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: events
+    field: coach_price
+    type: float
+    meta:
+      collection: events
+      conditions: null
+      display: null
+      display_options: null
+      field: coach_price
+      group: null
+      hidden: false
+      interface: input
+      note: null
+      options: null
+      readonly: false
+      required: false
+      sort: 19
+      special: null
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: coach_price
+      table: events
+      data_type: real
+      default_value: null
+      max_length: null
+      numeric_precision: 24
       numeric_scale: null
       is_nullable: true
       is_unique: false
@@ -4070,7 +4170,7 @@ fields:
       options: null
       readonly: false
       required: false
-      sort: 21
+      sort: 25
       special: null
       translations: null
       validation: null
@@ -4108,7 +4208,7 @@ fields:
       options: null
       readonly: false
       required: false
-      sort: 22
+      sort: 26
       special: null
       translations: null
       validation: null
@@ -4146,7 +4246,7 @@ fields:
       options: null
       readonly: false
       required: false
-      sort: 19
+      sort: 23
       special:
         - cast-boolean
       translations: null
@@ -4263,7 +4363,7 @@ fields:
       options: null
       readonly: false
       required: false
-      sort: 16
+      sort: 20
       special:
         - cast-boolean
       translations: null
@@ -4302,7 +4402,7 @@ fields:
       options: null
       readonly: false
       required: false
-      sort: 17
+      sort: 21
       special:
         - cast-boolean
       translations: null
@@ -4380,7 +4480,7 @@ fields:
       options: null
       readonly: false
       required: false
-      sort: 18
+      sort: 22
       special: null
       translations: null
       validation: null
@@ -4419,7 +4519,7 @@ fields:
         enableCreate: false
       readonly: false
       required: false
-      sort: 25
+      sort: 29
       special:
         - m2m
       translations: null
@@ -4480,7 +4580,7 @@ fields:
       options: null
       readonly: false
       required: false
-      sort: 23
+      sort: 27
       special: null
       translations: null
       validation: null
@@ -4494,6 +4594,82 @@ fields:
       max_length: null
       numeric_precision: 32
       numeric_scale: 0
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: events
+    field: member_price
+    type: float
+    meta:
+      collection: events
+      conditions: null
+      display: null
+      display_options: null
+      field: member_price
+      group: null
+      hidden: false
+      interface: input
+      note: null
+      options: null
+      readonly: false
+      required: false
+      sort: 18
+      special: null
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: member_price
+      table: events
+      data_type: real
+      default_value: null
+      max_length: null
+      numeric_precision: 24
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: events
+    field: non_member_price
+    type: float
+    meta:
+      collection: events
+      conditions: null
+      display: null
+      display_options: null
+      field: non_member_price
+      group: null
+      hidden: false
+      interface: input
+      note: null
+      options: null
+      readonly: false
+      required: false
+      sort: 17
+      special: null
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: non_member_price
+      table: events
+      data_type: real
+      default_value: null
+      max_length: null
+      numeric_precision: 24
+      numeric_scale: null
       is_nullable: true
       is_unique: false
       is_primary_key: false
@@ -4519,7 +4695,7 @@ fields:
         enableCreate: false
       readonly: false
       required: false
-      sort: 20
+      sort: 24
       special:
         - m2o
       translations: null
@@ -4581,6 +4757,32 @@ fields:
       has_auto_increment: false
       foreign_key_table: null
       foreign_key_column: null
+  - collection: events
+    field: required_event_booking
+    type: alias
+    meta:
+      collection: events
+      conditions: null
+      display: null
+      display_options: null
+      field: required_event_booking
+      group: null
+      hidden: false
+      interface: list-m2m
+      note: >-
+        Users must be booked on to a specific event in order to book on to this
+        event
+      options:
+        enableCreate: false
+      readonly: false
+      required: false
+      sort: 31
+      special:
+        - m2m
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
   - collection: events
     field: start_date
     type: timestamp
@@ -4878,7 +5080,7 @@ fields:
       options: null
       readonly: false
       required: false
-      sort: 26
+      sort: 30
       special:
         - cast-boolean
       translations: null
@@ -5015,6 +5217,120 @@ fields:
       has_auto_increment: true
       foreign_key_table: null
       foreign_key_column: null
+  - collection: events_events
+    field: events_id
+    type: uuid
+    meta:
+      collection: events_events
+      conditions: null
+      display: null
+      display_options: null
+      field: events_id
+      group: null
+      hidden: true
+      interface: null
+      note: null
+      options: null
+      readonly: false
+      required: false
+      sort: 2
+      special: null
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: events_id
+      table: events_events
+      data_type: uuid
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: events
+      foreign_key_column: id
+  - collection: events_events
+    field: id
+    type: integer
+    meta:
+      collection: events_events
+      conditions: null
+      display: null
+      display_options: null
+      field: id
+      group: null
+      hidden: true
+      interface: null
+      note: null
+      options: null
+      readonly: false
+      required: false
+      sort: 1
+      special: null
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: id
+      table: events_events
+      data_type: integer
+      default_value: nextval('events_events_id_seq'::regclass)
+      max_length: null
+      numeric_precision: 32
+      numeric_scale: 0
+      is_nullable: false
+      is_unique: true
+      is_primary_key: true
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: true
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: events_events
+    field: related_events_id
+    type: uuid
+    meta:
+      collection: events_events
+      conditions: null
+      display: null
+      display_options: null
+      field: related_events_id
+      group: null
+      hidden: true
+      interface: null
+      note: null
+      options: null
+      readonly: false
+      required: false
+      sort: 3
+      special: null
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: related_events_id
+      table: events_events
+      data_type: uuid
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: events
+      foreign_key_column: id
   - collection: faqs
     field: blocks
     type: alias
@@ -5467,6 +5783,45 @@ fields:
       has_auto_increment: false
       foreign_key_table: null
       foreign_key_column: null
+  - collection: home
+    field: hero_image
+    type: uuid
+    meta:
+      collection: home
+      conditions: null
+      display: null
+      display_options: null
+      field: hero_image
+      group: null
+      hidden: false
+      interface: file-image
+      note: null
+      options: null
+      readonly: false
+      required: false
+      sort: 10
+      special:
+        - file
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: hero_image
+      table: home
+      data_type: uuid
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: directus_files
+      foreign_key_column: id
   - collection: home
     field: holding_page_content
     type: text
@@ -11230,6 +11585,48 @@ relations:
       constraint_name: events_directus_users_events_id_foreign
       on_update: NO ACTION
       on_delete: CASCADE
+  - collection: events_events
+    field: events_id
+    related_collection: events
+    meta:
+      junction_field: related_events_id
+      many_collection: events_events
+      many_field: events_id
+      one_allowed_collections: null
+      one_collection: events
+      one_collection_field: null
+      one_deselect_action: nullify
+      one_field: required_event_booking
+      sort_field: null
+    schema:
+      table: events_events
+      column: events_id
+      foreign_key_table: events
+      foreign_key_column: id
+      constraint_name: events_events_events_id_foreign
+      on_update: NO ACTION
+      on_delete: SET NULL
+  - collection: events_events
+    field: related_events_id
+    related_collection: events
+    meta:
+      junction_field: events_id
+      many_collection: events_events
+      many_field: related_events_id
+      one_allowed_collections: null
+      one_collection: events
+      one_collection_field: null
+      one_deselect_action: nullify
+      one_field: null
+      sort_field: null
+    schema:
+      table: events_events
+      column: related_events_id
+      foreign_key_table: events
+      foreign_key_column: id
+      constraint_name: events_events_related_events_id_foreign
+      on_update: NO ACTION
+      on_delete: SET NULL
   - collection: faqs
     field: user_updated
     related_collection: directus_users
@@ -11307,6 +11704,27 @@ relations:
       constraint_name: footer_user_updated_foreign
       on_update: NO ACTION
       on_delete: NO ACTION
+  - collection: home
+    field: hero_image
+    related_collection: directus_files
+    meta:
+      junction_field: null
+      many_collection: home
+      many_field: hero_image
+      one_allowed_collections: null
+      one_collection: directus_files
+      one_collection_field: null
+      one_deselect_action: nullify
+      one_field: null
+      sort_field: null
+    schema:
+      table: home
+      column: hero_image
+      foreign_key_table: directus_files
+      foreign_key_column: id
+      constraint_name: home_hero_image_foreign
+      on_update: NO ACTION
+      on_delete: SET NULL
   - collection: home
     field: user_updated
     related_collection: directus_users

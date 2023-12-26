@@ -24,10 +24,11 @@
     <div class="absolute z-0 h-[75vh] top-16 w-full object-cover overflow-hidden ">
       <div class="bg-gradient-to-t from-gray-50 to-30% to-black/[.35] inset-0 absolute" />
       <img
-        src="/images/hero_small.webp"
+        :src="heroImageUrl"
+        :srcset="heroImageSrcSet"
+        alt="Hero background image"
         height="1100"
         :width="width"
-        alt="Hero background image"
         class="h-full object-cover w-full z-5">
     </div>
 
@@ -59,6 +60,7 @@
 
 <script setup lang="ts">
 import type { Home } from "~/types";
+import { useDirectusUrl } from "#imports";
 
 useHead({
   titleTemplate: title => title ? `${title} | MCC` : "Maidstone Canoe Club"
@@ -79,6 +81,35 @@ const width = process.client ? window.innerWidth : 1920;
 const height = 1100;
 
 const holdingPage = computed(() => home.value?.holding_page_content);
+
+const heroImageUrl = computed(() => {
+  if (home.value?.hero_image) {
+    return generateHeroImageUrl(home.value.hero_image, width);
+  }
+
+  return null;
+});
+
+const heroImageSrcSet = computed(() => {
+  if (home.value?.hero_image) {
+    const id = home.value.hero_image;
+    const result = [
+      generateHeroImageUrl(id, 400) + " 400w",
+      generateHeroImageUrl(id, 500) + " 640w",
+      generateHeroImageUrl(id, 1030) + " 1030w",
+      generateHeroImageUrl(id, 1920) + " 1920w"
+    ];
+
+    return result.join(",\n");
+  }
+
+  return null;
+});
+
+function generateHeroImageUrl (id: string, width: number) {
+  const directusUrl = useDirectusUrl();
+  return `${directusUrl}/assets/${id}?width=${width}&height=1100&format=webp&quality=75`;
+}
 
 </script>
 
