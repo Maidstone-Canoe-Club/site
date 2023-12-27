@@ -38,12 +38,12 @@
             placeholder="you@example.com" />
         </div>
         <div>
-          <custom-button
+          <a-button
             type="submit"
-            class="mt-3 inline-flex w-full items-center justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:ml-3 sm:mt-0 sm:w-auto"
+            class="mt-3 inline-flex w-full sm:ml-3 sm:mt-0 sm:w-auto"
             :action="onNewsletterSubscribe">
             Subscribe
-          </custom-button>
+          </a-button>
         </div>
       </form>
       <div
@@ -79,7 +79,6 @@
 </template>
 
 <script setup lang="ts">
-import { CheckCircleIcon } from "@heroicons/vue/20/solid";
 import { required, email as emailValidator } from "@vuelidate/validators";
 import { useVuelidate } from "@vuelidate/core";
 import type { Validation } from "@vuelidate/core";

@@ -16,7 +16,7 @@
     </template>
     <template v-else-if="!alreadyBooked">
       <form
-        v-if="!!price"
+        v-if="hasPrice"
         :action="paymentUrl"
         method="POST">
         <input
@@ -156,8 +156,24 @@ async function onBookNow () {
   }
 }
 
+const userPrice = computed(() => {
+  if (props.event.coach_price && (hasExactRole(user.value, "coach") || hasExactRole(user.value, "committee"))) {
+    return props.event.coach_price;
+  } else if (props.event.member_price && hasExactRole(user.value, "member")) {
+    return props.event.member_price;
+  } else if (props.event.non_member_price && hasExactRole(user.value, "unapproved")) {
+    return props.event.non_member_price;
+  } else {
+    return props.event.price;
+  }
+});
+
 const payNowLabel = computed(() => {
-  return "Pay " + renderPrice(props.price) + " now";
+  return "Pay " + renderPrice(userPrice.value) + " now";
+});
+
+const hasPrice = computed(() => {
+  return props.event.price || props.event.coach_price || props.event.member_price || props.event.non_member_price;
 });
 
 function renderPrice (amount: number) {

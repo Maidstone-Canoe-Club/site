@@ -12,12 +12,12 @@
         v-if="canEdit"
         class="mt-5 flex lg:ml-4 lg:mt-0">
         <span class="sm:ml-3">
-          <nuxt-link
-            :to="editLink"
-            class="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
-            <PencilIcon class="-ml-0.5 mr-1.5 h-5 w-5 text-gray-400" aria-hidden="true" />
+          <a-button
+            variant="outline"
+            :to="editLink">
+            <PencilIcon class="-ml-0.5 h-5 w-5 text-gray-400" aria-hidden="true" />
             Edit
-          </nuxt-link>
+          </a-button>
         </span>
       </div>
     </div>
@@ -62,7 +62,9 @@
 
           <div class="flex flex-col gap-1">
             <strong>Details</strong>
-            <div class="mt-2 flex items-center text-sm text-gray-500">
+            <div
+              v-if="event.location"
+              class="mt-2 flex items-center text-sm text-gray-500">
               <MapPinIcon class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
               {{ event.location }}
             </div>
@@ -137,6 +139,9 @@
               :instance="instance"
               :pattern-type="eventInfo.patternType"
               :already-booked="alreadyBooked"
+              :has-required-booking="eventInfo.hasRequiredBooking"
+              :other-booking-required="eventInfo.otherBookingRequired"
+              :required-event-title="eventInfo.requiredEventTitle"
               :bookings="bookings"
               :spaces-left="eventInfo.spacesLeft"
               @refresh="onRefresh" />

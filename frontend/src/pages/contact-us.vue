@@ -57,11 +57,11 @@
             <span class="text-sm text-gray-500">Max 1000 characters</span>
           </div>
         </div>
-        <custom-button
+        <a-button
           type="submit"
           :action="onSubmit">
           Send
-        </custom-button>
+        </a-button>
         <div
           v-if="errorMessage"
           class="rounded-md bg-red-50 p-4">

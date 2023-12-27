@@ -9,38 +9,48 @@
     </template>
 
     <template v-else>
-      <div
-        v-if="userHasAllowedRole"
-        class="w-full">
-        <!--        <advanced-booker-->
-        <!--          v-if="advancedPricing"-->
-        <!--          :event="event"-->
-        <!--          :payment-url="paymentUrl"-->
-        <!--          :already-booked="alreadyBooked"-->
-        <!--          :spaces-left="spacesLeft" />-->
-        <!--        <template v-else>-->
-        <multi-booker
-          v-if="canBookJuniors"
-          :event="event"
-          :instance="instance"
-          :price="event.price"
-          :junior-price="event.junior_price"
-          :payment-url="paymentUrl"
-          :current-bookings="bookings"
-          :spaces-left="spacesLeft"
-          :juniors="juniors"
-          @refresh="onRefresh" />
-        <single-booker
+      <template v-if="userHasAllowedRole">
+        <alert-box
+          v-if="!userHasRequiredBooking"
+          heading="Unable to book"
+          variant="warning">
+          <p>You must be booked onto <strong>{{ requiredEventTitle }}</strong> in order to book onto this event.</p>
+        </alert-box>
+
+        <div
           v-else
-          :event="event"
-          :instance="instance"
-          :price="priceForUser"
-          :payment-url="paymentUrl"
-          :already-booked="alreadyBooked"
-          :spaces-left="spacesLeft"
-          @refresh="onRefresh" />
+          class="w-full">
+          <!--        <advanced-booker-->
+          <!--          v-if="advancedPricing"-->
+          <!--          :event="event"-->
+          <!--          :payment-url="paymentUrl"-->
+          <!--          :already-booked="alreadyBooked"-->
+          <!--          :spaces-left="spacesLeft" />-->
+          <!--        <template v-else>-->
+          <multi-booker
+            v-if="canBookJuniors"
+            :event="event"
+            :instance="instance"
+            :price="event.price"
+            :junior-price="event.junior_price"
+            :payment-url="paymentUrl"
+            :current-bookings="bookings"
+            :spaces-left="spacesLeft"
+            :juniors="juniors"
+            @refresh="onRefresh" />
+
+          <single-booker
+            v-else
+            :event="event"
+            :instance="instance"
+            :price="priceForUser"
+            :payment-url="paymentUrl"
+            :already-booked="alreadyBooked"
+            :spaces-left="spacesLeft"
+            @refresh="onRefresh" />
         <!--        </template>-->
-      </div>
+        </div>
+      </template>
       <div v-else>
         You aren't allowed to book onto this event
       </div>
@@ -49,6 +59,7 @@
 </template>
 
 <script setup lang="ts">
+import { ExclamationTriangleIcon } from "@heroicons/vue/20/solid";
 import type { EventItem } from "~/types";
 
 const emits = defineEmits(["refresh"]);
@@ -58,6 +69,9 @@ const props = defineProps<{
   instance?: string,
   patternType?: string,
   alreadyBooked: boolean,
+  hasRequiredBooking: boolean,
+  otherBookingRequired: boolean,
+  requiredEventTitle?: string,
   spacesLeft?: number,
   bookings: any,
 }>();
@@ -68,14 +82,14 @@ const { getUsers } = useDirectusUsers();
 
 const loginUrl = computed(() => `/login?redirect=${route.path}`);
 
-const canBookJuniors = computed(() => props.event.allowed_roles?.map(x => x.toLowerCase()).includes("juniors") ?? false);
-
 // const advancedPricing = computed(() => props.event.advanced_pricing);
 const advancedPricing = ref(false);
 
 const { data: juniors } = await useAsyncData("juniors-" + user.value?.id, async () => {
   return await loadJuniors();
 });
+
+const canBookJuniors = computed(() => juniors.value.length && (props.event.allowed_roles?.map(x => x.toLowerCase()).includes("juniors") ?? false));
 
 async function loadJuniors () {
   if (user.value) {
@@ -164,6 +178,14 @@ function mapAllowedRoleToUserRole (allowedRole: string) {
 function onRefresh () {
   emits("refresh");
 }
+
+const userHasRequiredBooking = computed(() => {
+  if (props.otherBookingRequired) {
+    return props.hasRequiredBooking;
+  }
+
+  return true;
+});
 
 </script>
 

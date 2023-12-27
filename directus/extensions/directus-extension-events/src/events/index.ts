@@ -30,7 +30,12 @@ export default defineEndpoint((router, {services, database}) => {
       let user;
 
       if (userId) {
-        const userService = new UsersService({knex: database, schema: req.schema, accountability: adminAccountability});
+        const userService = new UsersService({
+          knex: database,
+          schema: req.schema,
+          accountability: adminAccountability
+        });
+        
         user = await userService.readOne(userId, {
           fields: ["*", "role.name"]
         });
@@ -61,6 +66,48 @@ export default defineEndpoint((router, {services, database}) => {
       });
 
       const event = await eventsService.readOne(eventId);
+      const otherBookingRequired = !!event.required_event;
+      let hasRequiredBooking = false;
+
+      let requiredEventTitle = null;
+
+      if (otherBookingRequired) {
+        console.log("has other required booking", event.required_event);
+
+        const bookings = await eventBookingService.readByQuery({
+          fields: ["*", "required_event.id"],
+          filter: {
+            _and: [
+              {
+                event: {
+                  _eq: event.required_event
+                }
+              },
+              {
+                user: {
+                  _eq: userId
+                }
+              },
+              {
+                status: {
+                  _neq: "cancelled"
+                }
+              }
+            ]
+          }
+        });
+
+        console.log("other event bookings", bookings);
+
+        if (bookings && bookings.length) {
+          console.log("has required booking!");
+          hasRequiredBooking = true;
+        }
+
+        const requiredEvent = await eventsService.readOne(event.required_event);
+        console.log("required event", requiredEvent);
+        requiredEventTitle = requiredEvent.title;
+      }
 
       const leaders = await eventLeadersService.readByQuery({
         fields: ["*", "directus_users_id.first_name", "directus_users_id.last_name", "directus_users_id.avatar", "directus_users_id.id"],
@@ -156,7 +203,10 @@ export default defineEndpoint((router, {services, database}) => {
         alreadyBooked,
         bookings,
         bookingsCount: eventBookings.length,
-        leaders
+        leaders,
+        otherBookingRequired,
+        hasRequiredBooking,
+        requiredEventTitle
       });
     } catch (e) {
       console.error("error getting event info", e);
@@ -183,7 +233,11 @@ export default defineEndpoint((router, {services, database}) => {
         accountability: req.accountability
       });
 
-      const userService = new UsersService({knex: database, schema: req.schema, accountability: adminAccountability});
+      const userService = new UsersService({
+        knex: database,
+        schema: req.schema,
+        accountability: adminAccountability
+      });
 
       const loggedInUser = await userService.readOne(loggedInUserId, {
         fields: ["*", "role.name"]
@@ -329,7 +383,11 @@ export default defineEndpoint((router, {services, database}) => {
         schema: req.schema,
         accountability: adminAccountability
       });
-      const userService = new UsersService({knex: database, schema: req.schema, accountability: adminAccountability});
+      const userService = new UsersService({
+        knex: database,
+        schema: req.schema,
+        accountability: adminAccountability
+      });
 
       const loggedInUser = await userService.readOne(loggedInUserId, {
         fields: ["*", "role.name"]
@@ -542,7 +600,11 @@ export default defineEndpoint((router, {services, database}) => {
 
       if (eventItem.price || eventItem.junior_price) {
         const loggedInUserId = req.accountability.user;
-        const userService = new UsersService({knex: database, schema: req.schema, accountability: adminAccountability});
+        const userService = new UsersService({
+          knex: database,
+          schema: req.schema,
+          accountability: adminAccountability
+        });
         const user = await userService.readOne(loggedInUserId, {
           fields: ["role.name"]
         });
@@ -599,7 +661,11 @@ export default defineEndpoint((router, {services, database}) => {
       // require approval if a price is set
       if (eventItem.price || eventItem.junior_price || eventItem.member_price || eventItem.non_member_price || eventItem.coach_price) {
         const loggedInUserId = req.accountability.user;
-        const userService = new UsersService({knex: database, schema: req.schema, accountability: adminAccountability});
+        const userService = new UsersService({
+          knex: database,
+          schema: req.schema,
+          accountability: adminAccountability
+        });
         const user = await userService.readOne(loggedInUserId, {
           fields: ["role.name"]
         });

@@ -93,6 +93,7 @@ export default defineEventHandler(async (event) => {
           name += " (Non-member pricing)";
           price = eventItem.non_member_price;
           break;
+        case "committee":
         case "coach":
           name += " (Coach pricing)";
           price = eventItem.coach_price;

@@ -48,12 +48,12 @@
                   v-model="newSubscription"
                   :options="subscribableLists"
                   label="Subscribe to a mailing list" />
-                <custom-button
+                <a-button
                   class="mt-3"
                   :disabled="!newSubscription"
                   :action="onMailingListSubscribe">
                   Subscribe
-                </custom-button>
+                </a-button>
               </template>
               <div
                 v-else
@@ -95,11 +95,12 @@
                       </p>
                     </div>
                   </div>
-                  <button
-                    class="rounded bg-white px-2 py-1 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-                    @click="tryNewsletterUnsubscribe(subscription.id, subscription.newsletter.name)">
+                  <a-button
+                    variant="outline"
+                    size="sm"
+                    :action="tryNewsletterUnsubscribe(subscription.id, subscription.newsletter.name)">
                     Unsubscribe
-                  </button>
+                  </a-button>
                 </li>
               </ul>
               <div v-else>
@@ -135,6 +136,7 @@
     <dismiss-modal
       v-model:open="showUnsubscribeModal"
       :action="onUnsubscribe"
+      variant="warning"
       title="Unsubscribe"
       action-button-label="Unsubscribe">
       Are you sure you want to unsubscribe from the <strong>{{ unsubscribeListName }}</strong> mailing list?
@@ -143,6 +145,7 @@
     <dismiss-modal
       v-model:open="showNewsletterUnsubscribeModal"
       :action="onNewsletterUnsubscribe"
+      variant="warning"
       title="Unsubscribe"
       action-button-label="Unsubscribe">
       Are you sure you want to unsubscribe from the <strong>{{ unsubscribeNewsletterName }}</strong> newsletter?

@@ -4758,31 +4758,46 @@ fields:
       foreign_key_table: null
       foreign_key_column: null
   - collection: events
-    field: required_event_booking
-    type: alias
+    field: required_event
+    type: uuid
     meta:
       collection: events
       conditions: null
       display: null
       display_options: null
-      field: required_event_booking
+      field: required_event
       group: null
       hidden: false
-      interface: list-m2m
-      note: >-
-        Users must be booked on to a specific event in order to book on to this
-        event
+      interface: select-dropdown-m2o
+      note: null
       options:
         enableCreate: false
+        template: '{{title}}'
       readonly: false
       required: false
-      sort: 31
+      sort: 32
       special:
-        - m2m
+        - m2o
       translations: null
       validation: null
       validation_message: null
       width: full
+    schema:
+      name: required_event
+      table: events
+      data_type: uuid
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: events
+      foreign_key_column: id
   - collection: events
     field: start_date
     type: timestamp
@@ -11502,6 +11517,27 @@ relations:
       on_update: NO ACTION
       on_delete: NO ACTION
   - collection: events
+    field: required_event
+    related_collection: events
+    meta:
+      junction_field: null
+      many_collection: events
+      many_field: required_event
+      one_allowed_collections: null
+      one_collection: events
+      one_collection_field: null
+      one_deselect_action: nullify
+      one_field: null
+      sort_field: null
+    schema:
+      table: events
+      column: required_event
+      foreign_key_table: events
+      foreign_key_column: id
+      constraint_name: events_required_event_foreign
+      on_update: NO ACTION
+      on_delete: NO ACTION
+  - collection: events
     field: user_created
     related_collection: directus_users
     meta:
@@ -11596,7 +11632,7 @@ relations:
       one_collection: events
       one_collection_field: null
       one_deselect_action: nullify
-      one_field: required_event_booking
+      one_field: null
       sort_field: null
     schema:
       table: events_events
