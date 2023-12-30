@@ -50,12 +50,13 @@
         label="Contact number"
         name="contact-number" />
     </div>
-    <button
-      type="button"
-      class="rounded bg-white px-2 py-1 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+    <a-button
+      :disabled="isAddDisabled"
+      variant="outline"
+      size="sm"
       @click="addNewContact">
       {{ addButtonLabel }}
-    </button>
+    </a-button>
 
     <p
       v-if="showEmergencyContactValidation"
@@ -116,6 +117,10 @@ function removeContact (contact: any) {
 
   contact.shouldRemove = true;
 }
+
+const isAddDisabled = computed(() => {
+  return !newFullName.value || !newContactNumber.value;
+});
 
 function addNewContact () {
   showEmergencyContactValidation.value = false;

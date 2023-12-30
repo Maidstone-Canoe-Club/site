@@ -94,14 +94,6 @@ export default defineNuxtConfig({
     }
   },
 
-  image: {
-    ipx: {
-      options: {
-        maxAge: 31536000
-      }
-    }
-  },
-
   nitro: {
     publicAssets: [
       {

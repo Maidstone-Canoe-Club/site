@@ -326,6 +326,8 @@ function countEventOccurences (pattern, startDate, endDate) {
       currentDate = addDays(currentDate, 1);
     } else if (pattern.type === "1") {
       currentDate = addWeeks(currentDate, 1);
+    } else {
+      throw new Error("Unknown event pattern type: " + pattern.type);
     }
   }
 

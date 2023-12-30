@@ -79,10 +79,30 @@ export default defineEventHandler(async (event) => {
       console.log("adding user", user.id);
 
       let name = productName;
+
       let price = eventItem.price;
       let isJunior = false;
 
-      if (user.role.name === "Junior") {
+      if (eventItem.advanced_pricing) {
+        switch (user.role.name.toLowerCase()) {
+        case "member":
+          name += " (Member pricing)";
+          price = eventItem.member_price;
+          break;
+        case "non_member":
+          name += " (Non-member pricing)";
+          price = eventItem.non_member_price;
+          break;
+        case "committee":
+        case "coach":
+          name += " (Coach pricing)";
+          price = eventItem.coach_price;
+          break;
+        default:
+          console.warn("Unhandled user role when setting price: " + user.role.name);
+          break;
+        }
+      } else if (user.role.name === "Junior") {
         name += " (Junior)";
         price = eventItem.junior_price;
         isJunior = true;

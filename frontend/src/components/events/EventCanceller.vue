@@ -71,23 +71,23 @@ async function onCancel () {
 
           <template v-if="instance">
             <p>This is a recurring event, so you can either:</p>
-            <custom-button
-              class="rounded-md bg-red-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600"
+            <a-button
+              variant="danger"
               :action="tryCancel">
               Cancel just this event
-            </custom-button>
-            <custom-button
-              class="rounded-md bg-red-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600"
+            </a-button>
+            <a-button
+              variant="danger"
               :action="() => tryCancel(true)">
               Cancel all recurring events
-            </custom-button>
+            </a-button>
           </template>
           <template v-else>
-            <custom-button
-              class="rounded-md bg-red-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600"
+            <a-button
+              variant="danger"
               :action="tryCancel">
               Cancel event
-            </custom-button>
+            </a-button>
           </template>
         </div>
       </div>

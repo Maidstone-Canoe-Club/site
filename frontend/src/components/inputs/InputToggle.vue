@@ -3,7 +3,7 @@
     <SwitchLabel
       v-if="label"
       as="span"
-      class="text-sm flex-grow">
+      class="text-sm mr-3 flex-grow">
       <span
         class="font-medium"
         :class="[disabled ? 'text-gray-500' : 'text-gray-900']">{{ label }}</span>
