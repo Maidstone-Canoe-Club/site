@@ -10,6 +10,11 @@ export const useCalendarStore = defineStore("calendar", () => {
   const getMonth = computed(() => month.value);
   const getDay = computed(() => day.value);
 
+  function getDaysInMonth (year: number, month: number) {
+    const date = new Date(year, month + 1, 0);
+    return date.getDate();
+  }
+
   function incrementYear (val: number) {
     year.value = year.value + val;
   }
@@ -24,6 +29,11 @@ export const useCalendarStore = defineStore("calendar", () => {
     }
 
     month.value = month.value + val;
+
+    const daysInMonth = getDaysInMonth(year.value, month.value);
+    if (day.value > daysInMonth) {
+      day.value = daysInMonth;
+    }
   }
   function decrementMonth (val: number) {
     if (month.value === 0) {
