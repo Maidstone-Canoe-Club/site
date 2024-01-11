@@ -7,7 +7,7 @@ import {
   Subscriber
 } from "../types";
 import Stripe from "stripe";
-import {handleMailForward} from "../mail-forwards";
+import {handleMailForward, sendEmail} from "../mail-forwards";
 
 const postmarkUrl = "https://api.postmarkapp.com";
 
@@ -158,95 +158,101 @@ async function handleMailingList(data: InboundEmail, toAddress: FullAddress, mai
 
     console.log("found mailing list", mailingList);
 
-    if (mailingList) {
-      const subscribers: Subscriber[] = await mailingListSubscribersService
-        .readByQuery({
-          fields: ["list", "email"],
-          filter: {
-            _and: [
+    if (!mailingList) {
+      console.log("could not find mailing list:", emailName);
+      return;
+    }
+
+    let subscribers: Subscriber[] = await mailingListSubscribersService
+      .readByQuery({
+        fields: ["list", "email"],
+        filter: {
+          list: {
+            _eq: mailingList.id
+          }
+        }
+      });
+
+    if (!(subscribers && subscribers.length)) {
+      console.log("there are no subscribers for mailing list:", emailName);
+      return;
+    }
+
+    if (!subscribers.some(s => s.email.toLowerCase() === data.From.toLowerCase())) {
+      console.log(`${data.From} tried to send email to ${emailName.toLowerCase()} mailing list but not a subscriber`);
+      await sendEmail({
+        From: `web@${process.env.EMAIL_DOMAIN}`,
+        To: data.From,
+        TextBody: "You have tried to send an email to a mailing list you are not subscribed to. Please reply to this email if you wish to subscribe.",
+        Subject: "Unable to email mailing list"
+      });
+      return;
+    }
+
+    subscribers = subscribers.filter(s => s.email.toLowerCase() !== data.From.toLowerCase());
+
+    console.log(`found ${subscribers.length} subscribers`);
+    const subscriberChunks = chunkArray<Subscriber>(subscribers, 50);
+
+    for (let j = 0; j < subscriberChunks.length; j++) {
+      const chunk = subscriberChunks[j];
+      if (!chunk) {
+        continue;
+      }
+
+      let from: string;
+      if (!data.FromName || data.FromName === "") {
+        const emailNamePart = data.From.split("@")[0];
+        from = `${emailNamePart} via ${mailingList.name} <${mailingList.email_name}@${process.env.EMAIL_DOMAIN}>`;
+      } else {
+        from = `${data.FromName} via ${mailingList.name} <${mailingList.email_name}@${process.env.EMAIL_DOMAIN}>`;
+      }
+
+      const emailsToSend = [];
+
+      for (const subscriber of chunk) {
+        const bodyInput = data.HtmlBody || data.TextBody;
+        const body = await renderMailBody(bodyInput, mailingList.id, mailService);
+        const unsubscribeUrl = getUnsubscribeUrl(mailingList.id);
+
+        emailsToSend.push(
+          {
+            To: subscriber.email,
+            From: from,
+            Subject: data.Subject,
+            // TextBody: data.StrippedTextReply,
+            HtmlBody: body,
+            ReplyTo: buildReplyToEmailAddress(mailingList),
+            TrackOpens: true,
+            TrackLinks: "None",
+            MessageStream: "broadcast",
+            Attachments: data.Attachments,
+            Headers: [
               {
-                list: {
-                  _eq: mailingList.id
-                }
+                name: "Precedence",
+                value: "list"
               },
               {
-                email: {
-                  _neq: data.From
-                }
+                name: "List-Id",
+                value: `${mailingList.name} <${mailingList.email_name}@${process.env.EMAIL_DOMAIN}>`,
+              },
+              {
+                name: "List-Unsubscribe",
+                value: unsubscribeUrl
+              },
+              {
+                name: "Original-Sender",
+                value: data.From
               }
             ]
           }
-        });
-
-      if (subscribers && subscribers.length) {
-        console.log("found subscribers", subscribers);
-        const subscriberChunks = chunkArray<Subscriber>(subscribers, 50);
-
-        for (let j = 0; j < subscriberChunks.length; j++) {
-          const chunk = subscriberChunks[j];
-          if (!chunk) {
-            continue;
-          }
-
-          let from: string;
-          if(!data.FromName || data.FromName === ""){
-            const emailNamePart = data.From.split("@")[0];
-            from = `${emailNamePart} via ${mailingList.name} <${mailingList.email_name}@${process.env.EMAIL_DOMAIN}>`;
-          }else{
-            from = `${data.FromName} via ${mailingList.name} <${mailingList.email_name}@${process.env.EMAIL_DOMAIN}>`;
-          }
-
-          const emailsToSend = [];
-
-          for(const subscriber of chunk){
-            const bodyInput = data.HtmlBody || data.TextBody;
-            const body = await renderMailBody(bodyInput, mailingList.id, mailService);
-            const unsubscribeUrl = getUnsubscribeUrl(mailingList.id);
-
-            emailsToSend.push(
-              {
-                To: subscriber.email,
-                From: from,
-                Subject: data.Subject,
-                // TextBody: data.StrippedTextReply,
-                HtmlBody: body,
-                ReplyTo: buildReplyToEmailAddress(mailingList),
-                TrackOpens: true,
-                TrackLinks: "None",
-                MessageStream: "broadcast",
-                Attachments: data.Attachments,
-                Headers: [
-                  {
-                    name: "Precedence",
-                    value: "list"
-                  },
-                  {
-                    name: "List-Id",
-                    value: `${mailingList.name} <${mailingList.email_name}@${process.env.EMAIL_DOMAIN}>`,
-                  },
-                  {
-                    name: "List-Unsubscribe",
-                    value: unsubscribeUrl
-                  },
-                  {
-                    name: "Original-Sender",
-                    value: data.From
-                  }
-                ]
-              }
-            );
-          }
-
-          // const emailsToSend = chunk.map(subscriber => ());
-
-          console.log("sending emails!", emailsToSend);
-          await sendBatchEmail(emailsToSend);
-        }
-      } else {
-        console.log("there are no subscribers for mailing list:", emailName);
+        );
       }
-    } else {
-      console.log("could not find mailing list:", emailName);
+
+      // const emailsToSend = chunk.map(subscriber => ());
+
+      console.log(`sending ${emailsToSend.length} emails`);
+      await sendBatchEmail(emailsToSend);
     }
   } catch (e) {
     console.log("something went wrong handling mailing list email", e, e.message, e.data);

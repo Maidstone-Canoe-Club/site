@@ -89,6 +89,7 @@ export default defineNuxtConfig({
   },
 
   googleFonts: {
+    download: true,
     families: {
       Inter: [400, 500, 600, 700]
     }
