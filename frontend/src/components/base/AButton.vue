@@ -54,7 +54,7 @@ const props = withDefaults(defineProps<{
   to?: string,
   type?: string,
   target?: string,
-  action?:() => Promise<any>,
+  action?:(() => Promise<any>) | (() => void),
   loading?: boolean
   keepLoading?: boolean
 }>(), {

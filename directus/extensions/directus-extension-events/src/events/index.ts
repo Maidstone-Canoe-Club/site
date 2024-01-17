@@ -180,8 +180,6 @@ export default defineEndpoint((router, {services, database}) => {
       const isCoachAndBooked = user.role.name.toLowerCase() === "coach"
                 && eventBookings.some(x => x.user.id === user.id);
 
-      console.log("USER COACH OR BOOKED", isCoachAndBooked, user.role.name.toLowerCase() === "coach", eventBookings.some(x => x.user.id === user.id));
-
       if (user) {
         if (allowedRoles.includes(user.role.name.toLowerCase()) || userIsLeader || isCoachAndBooked) {
           bookings = eventBookings;
