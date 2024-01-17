@@ -368,7 +368,7 @@ function cancelBooking (viewingUser) {
 }
 
 function canCancelBooking (viewingUser) {
-  return props.userIsLeader || viewingUser.id === user.value.id;
+  return hasRole(user.value, "committee") || props.userIsLeader || viewingUser.id === user.value.id;
 }
 
 async function onCancelBooking () {
@@ -391,23 +391,12 @@ async function onCancelBooking () {
 }
 
 function canViewBooking () {
-  return hasRole(user.value, "coach") || props.userIsLeader;
+  const isBookedCoach = hasRole(user.value, "coach") && props.bookings.some(x => x.user.id === user.value.id);
+  return isBookedCoach || props.userIsLeader;
 }
 
 function formatDate (input: string) {
   return format(new Date(input), "do MMMM yyyy");
-}
-
-function formatAddress (user) {
-  const lines = [
-    user.street_address,
-    user.city,
-    user.county,
-    user.postcode
-  ];
-
-  return lines.filter(x => x && x.trim() !== "")
-    .join("\n");
 }
 
 function isJunior (user) {
