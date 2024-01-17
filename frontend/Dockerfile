@@ -1,4 +1,4 @@
-﻿FROM node:18-bullseye-slim AS prebase
+﻿FROM node:20-bullseye-slim AS prebase
 
 RUN apt-get update && apt-get install -y --no-install-recommends netcat wget \
     && apt-get clean \

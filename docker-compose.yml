@@ -17,6 +17,8 @@ services:
   directus:
     container_name: mcc-backend
     restart: unless-stopped
+    depends_on:
+      - postgres
     build:
       context: "./directus"
       dockerfile: "Dockerfile"
@@ -26,7 +28,7 @@ services:
       - ./directus/snapshots:/directus/snapshots
       - ./directus/extensions:/directus/extensions
       - ./directus/uploads:/directus/uploads
-      - ./directus/database:/directus/database
+      # - ./directus/database:/directus/database
     environment:
       PORT: '8055'
       KEY: ${KEY}
@@ -58,6 +60,7 @@ services:
       IGNORE_MAIL: 'true'
       STRIPE_KEY: ${STRIPE_KEY}
       STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
+      EXTENSIONS_AUTO_RELOAD: 'true'
 
   frontend:
     container_name: mcc-frontend

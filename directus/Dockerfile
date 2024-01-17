@@ -2,10 +2,11 @@
 
 WORKDIR /builder
 
-COPY package.json ./
+COPY package.json package-lock.json ./
 COPY extensions/ extensions/
 
-RUN npm i && npm run build
+RUN npm i
+RUN npm run build
 
 FROM directus/directus:10.5
 
