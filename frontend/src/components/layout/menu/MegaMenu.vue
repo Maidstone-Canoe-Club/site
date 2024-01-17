@@ -26,7 +26,7 @@
           <Popover
             v-if="navItem.childItems && navItem.childItems.length"
             class="relative">
-            <PopoverButton class="flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900">
+            <PopoverButton class="flex items-center gap-x-1 font-semibold leading-6 text-gray-900">
               {{ navItem.name }}
               <ChevronDownIcon class="h-5 w-5 flex-none text-gray-400" aria-hidden="true" />
             </PopoverButton>
@@ -47,7 +47,7 @@
                     v-if="item.childItems && item.childItems.length"
                     v-slot="{ open }"
                     as="div"
-                    class="block text-sm font-semibold leading-6 text-gray-900">
+                    class="block font-semibold leading-6 text-gray-900">
                     <DisclosureButton
                       class="flex w-full px-3 py-2 rounded-lg justify-between items-center hover:bg-gray-50">
                       {{ item.name }}
@@ -59,7 +59,7 @@
                         :key="child.name"
                         :as="NuxtLink"
                         :to="child.href"
-                        class="block rounded-lg pl-6 px-3 py-2 text-sm font-semibold leading-6 text-gray-900 hover:bg-gray-50">
+                        class="block rounded-lg pl-6 px-3 py-2 font-semibold leading-6 text-gray-900 hover:bg-gray-50">
                         {{ child.name }}
                       </DisclosureButton>
                     </DisclosurePanel>
@@ -68,7 +68,7 @@
                   <nuxt-link
                     v-else
                     :to="item.href"
-                    class="block rounded-lg px-3 py-2 text-sm font-semibold leading-6 text-gray-900 hover:bg-gray-50">
+                    class="block rounded-lg px-3 py-2 font-semibold leading-6 text-gray-900 hover:bg-gray-50">
                     {{
                       item.name
                     }}
@@ -80,7 +80,7 @@
           <nuxt-link
             v-else
             :to="navItem.href"
-            class="text-sm font-semibold leading-6 text-gray-900">
+            class="font-semibold leading-6 text-gray-900">
             {{ navItem.name }}
           </nuxt-link>
         </template>

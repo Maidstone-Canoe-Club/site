@@ -98,7 +98,7 @@
                   <a-button
                     variant="outline"
                     size="sm"
-                    :action="tryNewsletterUnsubscribe(subscription.id, subscription.newsletter.name)">
+                    :action="() => tryNewsletterUnsubscribe(subscription.id, subscription.newsletter.name)">
                     Unsubscribe
                   </a-button>
                 </li>
@@ -357,6 +357,7 @@ function tryMailingListUnsubscribe (subscriptionId: string, listName: string) {
 }
 
 function tryNewsletterUnsubscribe (newsletterId: string, newsletterName: string) {
+  console.log("trying unsub");
   unsubscribeNewsletterId.value = newsletterId;
   unsubscribeNewsletterName.value = newsletterName;
   showNewsletterUnsubscribeModal.value = true;

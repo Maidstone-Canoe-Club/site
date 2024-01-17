@@ -35,7 +35,7 @@ export default defineEndpoint((router, {services, database}) => {
           schema: req.schema,
           accountability: adminAccountability
         });
-        
+
         user = await userService.readOne(userId, {
           fields: ["*", "role.name"]
         });
@@ -173,13 +173,15 @@ export default defineEndpoint((router, {services, database}) => {
         alreadyBooked = eventBookings.filter(x => x.user.id === userId).length > 0;
       }
 
-      const allowedRoles = ["coach", "committee", "administrator"];
+      const allowedRoles = ["committee", "administrator"];
       let bookings = [];
 
       const userIsLeader = leaders.find(x => x.directus_users_id.id === userId);
+      const isCoachAndBooked = user.role.name.toLowerCase() === "coach"
+                && eventBookings.some(x => x.user.id === user.id);
 
       if (user) {
-        if (allowedRoles.includes(user.role.name.toLowerCase()) || userIsLeader) {
+        if (allowedRoles.includes(user.role.name.toLowerCase()) || userIsLeader || isCoachAndBooked) {
           bookings = eventBookings;
         } else if (event.visible_attendees) {
           bookings = eventBookings.map(e => ({

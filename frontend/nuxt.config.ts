@@ -91,7 +91,8 @@ export default defineNuxtConfig({
   googleFonts: {
     download: true,
     families: {
-      Inter: [400, 500, 600, 700]
+      Karla: [400, 500, 600, 700],
+      "Space Grotesk": [500, 600, 700]
     }
   },
 
