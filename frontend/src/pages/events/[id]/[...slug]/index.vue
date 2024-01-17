@@ -1,9 +1,9 @@
 ﻿<template>
-  <div class="mt-10">
+  <article class="mt-10 text-pretty">
     <div class="lg:flex lg:items-center lg:justify-between">
       <div class="min-w-0 flex-1">
         <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
-          {{ event.title }}
+          {{ event!.title }}
         </h2>
 
         <div class="mt-1 flex flex-col sm:mt-0 sm:flex-row sm:flex-wrap sm:space-x-6" />
@@ -175,7 +175,7 @@
         </div>
       </div>
     </div>
-  </div>
+  </article>
 </template>
 
 <script setup lang="ts">
@@ -193,23 +193,24 @@ import {
 import Dinero from "dinero.js";
 import { format, isSameDay } from "date-fns";
 import type { DirectusUser } from "nuxt-directus/dist/runtime/types";
+import type { Ref } from "vue";
 import { getDateFromInstance } from "~/utils/events";
 import type { EventItem } from "~/types";
 
 const { getItemById, getItems } = useDirectusItems();
 const directus = useDirectus();
 const route = useRoute();
-const user : DirectusUser = useDirectusUser();
+const user : Ref<DirectusUser> = useDirectusUser();
 
-const instance = route.query.instance ? parseInt(route.query.instance, 10) : null;
+const instance = route.query.instance ? parseInt(route.query.instance as string, 10) : null;
 
 const childEvents = ref();
 const recurringPattern = ref();
 
 const { data: event } = await useAsyncData<EventItem>(`event-item-${route.params.id}`, async () => {
-  return await getItemById({
+  return await getItemById<EventItem>({
     collection: "events",
-    id: route.params.id
+    id: route.params.id as string
   });
 });
 
