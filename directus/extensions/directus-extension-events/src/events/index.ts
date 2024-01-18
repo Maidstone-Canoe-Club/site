@@ -177,7 +177,7 @@ export default defineEndpoint((router, {services, database}) => {
       let bookings = [];
 
       const userIsLeader = leaders.find(x => x.directus_users_id.id === userId);
-      const isCoachAndBooked = user.role.name.toLowerCase() === "coach"
+      const isCoachAndBooked = user && user.role.name.toLowerCase() === "coach"
                 && eventBookings.some(x => x.user.id === user.id);
 
       if (user) {
