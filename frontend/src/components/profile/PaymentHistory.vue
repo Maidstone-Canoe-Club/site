@@ -138,7 +138,9 @@ function formatPrice (amount?: number) {
   if (!amount) {
     return null;
   }
-  return `£${Dinero({ amount, currency: "GBP" }).toFormat("0.00")}`;
+
+  const result = `£${Dinero({ amount, currency: "GBP" }).toFormat("0.00")}`;
+  return result.endsWith(".00") ? result.substring(0, result.length - 3) : result;
 }
 
 function formatDate (input: string) {
