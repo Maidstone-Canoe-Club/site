@@ -39,9 +39,8 @@ import type { FunctionalComponent } from "vue";
 export type Variant = "warning" | "error" | "success" | "info";
 
 interface IProps {
-  variant: Variants,
+  variant: Variant,
   heading: string,
-  innerText: string
 }
 
 interface IVariant {
@@ -54,8 +53,7 @@ interface IVariant {
 
 const props = withDefaults(defineProps<IProps>(), {
   variant: "warning",
-  headingText: undefined,
-  innerText: undefined
+  headingText: undefined
 });
 
 const variants: Record<Variant, IVariant> = {

@@ -1,5 +1,5 @@
 ﻿<template>
-  <div>
+  <div :class="{invalid: !isValid}">
     <label
       v-if="label"
       :for="id"
@@ -13,7 +13,6 @@
         :id="id"
         v-model="internalValue"
         class="shadow-sm"
-        :class="inputClass"
         :enable-time-picker="enableTimePicker"
         v-bind="$attrs" />
     </div>
@@ -65,20 +64,12 @@ const internalValue = computed<Date | number | null | undefined>({
   }
 });
 
-const inputClass = computed(() => {
-  // if (props.disabled) {
-  //   return "text-gray-600 bg-gray-50 ring-1 ring-inset ring-gray-200";
-  // }
-  //
-  // if (isValid.value) {
-  //   return "text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-indigo-600";
-  // } else {
-  //   return "pr-10 text-red-900 ring-1 ring-inset ring-red-300 placeholder:text-red-300 focus:ring-red-500";
-  // }
-});
-
 </script>
 
-<style scoped lang="scss">
-
+<style scoped lang="postcss">
+.invalid {
+  ::v-deep(.dp__input){
+    border-color: rgb(252 165 165 / 1);
+  }
+}
 </style>

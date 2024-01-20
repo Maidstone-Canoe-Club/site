@@ -30,12 +30,14 @@ async function onClick () {
 }
 
 async function onSubscribe () {
+  window.umami?.track("news-post-subscribe");
   hasSubscription.value = await directus<boolean>("/news-posts/subscribe", {
     method: "POST"
   });
 }
 
 async function onUnsubscribe () {
+  window.umami?.track("news-post-unsubscribe");
   const result = await directus("/news-posts/unsubscribe", {
     method: "POST"
   });
@@ -53,8 +55,7 @@ async function onUnsubscribe () {
       variant="outline"
       size="sm"
       :to="!user ? loginUrl : undefined"
-      :action="!user ? undefined : onClick"
-      :data-umami-event="hasSubscription ? 'news-post-unsubscribe' : 'news-post-subscribe'">
+      :action="!user ? undefined : onClick">
       <span class="flex items-center justify-center gap-2">
         <EnvelopeIcon
           v-if="!hasSubscription"

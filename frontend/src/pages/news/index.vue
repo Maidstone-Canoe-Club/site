@@ -83,7 +83,7 @@ async function loadData () {
           _or: [
             {
               publish_date: {
-                _lt: "$NOW"
+                _lte: "$NOW"
               }
             },
             {

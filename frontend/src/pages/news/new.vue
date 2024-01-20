@@ -1,7 +1,7 @@
 ﻿<script setup lang="ts">
 import { useVuelidate } from "@vuelidate/core";
 import type { Validation } from "@vuelidate/core";
-import { required } from "@vuelidate/validators";
+import { helpers, required, requiredIf } from "@vuelidate/validators";
 import type { Ref } from "vue";
 import type { NewsItem } from "~/types";
 
@@ -11,20 +11,35 @@ const title = ref("");
 const content = ref("");
 const publishDate = ref(null);
 
+function futureValidator (value: string | Date) {
+  return showPublish.value ? new Date(value) >= new Date() : true;
+}
+
 const rules = {
   title: { required },
-  content: { required }
+  content: { required },
+  publishDate: {
+    requiredIf: requiredIf(showPublish),
+    before: helpers.withMessage("Publish date must be in the future", futureValidator)
+  }
 };
 
 const v$: Ref<Validation> = useVuelidate(rules, {
   title,
-  content
+  content,
+  publishDate
 });
 
 const { createItems } = useDirectusItems();
 
 const showError = ref(false);
 const errorMessage = ref<string | null>(null);
+
+watch(showPublish, (val) => {
+  if (!val) {
+    publishDate.value = null;
+  }
+});
 
 async function onCreate () {
   v$.value.$touch();
@@ -80,7 +95,7 @@ function closeModal () {
       <input-checkbox
         id="show-publish"
         v-model="showPublish"
-        label="Schedule publish"
+        label="Schedule publishing of news post"
         name="show-publish" />
 
       <div v-if="showPublish">
@@ -88,9 +103,10 @@ function closeModal () {
           id="publish-date"
           v-model="publishDate"
           enable-time-picker
-          label="Publish date" />
+          label="Publish date"
+          :v="v$.publishDate" />
         <small>
-          The site will post unpublished news posts every 15 minutes.
+          The site will check for any pending scheduled news posts every 15 minutes.
         </small>
       </div>
 
