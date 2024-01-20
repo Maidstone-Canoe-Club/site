@@ -41,7 +41,7 @@
 <script setup lang="ts">
 import { NuxtLink } from "#components";
 
-export type Variant = "primary" | "secondary" | "outline" | "danger";
+export type Variant = "primary" | "secondary" | "outline" | "danger" | "warning" | "success";
 export type ButtonSize = "xs" | "sm" | "md" | "lg";
 
 const emits = defineEmits(["click"]);
@@ -82,7 +82,9 @@ const variantsMapping: Record<Variant, string> = {
   primary: "bg-indigo-600 text-white hover:bg-indigo-500 focus-visible:outline-indigo-600",
   secondary: "bg-gray-600 text-white hover:bg-gray-500 focus-visible:outline-gray-600",
   outline: "bg-white text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50",
-  danger: "bg-red-600 text-white hover:bg-red-500 focus-visible:outline-red-600"
+  danger: "bg-red-600 text-white hover:bg-red-500 focus-visible:outline-red-600",
+  warning: "bg-yellow-600 text-white hover:bg-yellow-500 focus-visible:outline-yellow-600",
+  success: "bg-green-600 text-white hover:bg-green-500 focus-visible:outline-green-600"
 };
 
 const sizesMapping: Record<ButtonSize, string> = {

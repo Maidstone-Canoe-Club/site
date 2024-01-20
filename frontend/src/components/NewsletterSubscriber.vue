@@ -83,7 +83,7 @@ import { required, email as emailValidator } from "@vuelidate/validators";
 import { useVuelidate } from "@vuelidate/core";
 import type { Validation } from "@vuelidate/core";
 import type { Ref } from "vue";
-import { XCircleIcon, ExclamationTriangleIcon } from "@heroicons/vue/20/solid";
+import { XCircleIcon, ExclamationTriangleIcon, CheckCircleIcon } from "@heroicons/vue/20/solid";
 import { ofetch } from "ofetch";
 import { ref } from "#imports";
 

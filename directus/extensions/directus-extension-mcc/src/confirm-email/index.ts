@@ -1,5 +1,5 @@
 ﻿import {defineEndpoint} from "@directus/extensions-sdk";
-import sendConfirmAccountEmail from "../send-email";
+import {sendConfirmAccountEmail} from "../send-email";
 
 export default defineEndpoint((router, {services, database}) => {
   const {UsersService, RolesService} = services;
@@ -47,7 +47,11 @@ export default defineEndpoint((router, {services, database}) => {
         return res.status(400).send("Missing token");
       }
 
-      const userService = new UsersService({knex: database, schema: req.schema, accountability: adminAccountability});
+      const userService = new UsersService({
+        knex: database,
+        schema: req.schema,
+        accountability: adminAccountability
+      });
 
       const users = await userService
         .readByQuery({
@@ -95,7 +99,11 @@ export default defineEndpoint((router, {services, database}) => {
       };
 
       if (user.role.name === "Unverified") {
-        const rolesService = new RolesService({knex: database, schema: req.schema, accountability: adminAccountability});
+        const rolesService = new RolesService({
+          knex: database,
+          schema: req.schema,
+          accountability: adminAccountability
+        });
         const unapprovedRole = await getRole("Unapproved", rolesService);
         userUpdateFields.role = unapprovedRole.id;
       }
@@ -107,7 +115,7 @@ export default defineEndpoint((router, {services, database}) => {
         statusCode: 100,
         message: null
       });
-    }catch(e){
+    } catch (e) {
       console.error("something went wrong confirming an email", e);
       return res.json({
         result: false,

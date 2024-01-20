@@ -1,4 +1,6 @@
-﻿export type MedicalInfo = {
+﻿import type {DirectusUser} from "nuxt-directus/dist/runtime/types";
+
+export type MedicalInfo = {
   allergies: boolean,
   asthma: boolean,
   epilepsy: boolean,
@@ -84,4 +86,10 @@ export interface NewsItem {
 export interface Home {
   title?: string
   tagline?: string
+}
+
+export interface NewsSubscriber {
+  user: DirectusUser,
+  id: string,
+  unsubscribe_token: string
 }

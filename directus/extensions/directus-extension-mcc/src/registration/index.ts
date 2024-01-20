@@ -1,4 +1,5 @@
 ﻿import {defineEndpoint} from "@directus/extensions-sdk";
+import {nanoid} from "nanoid";
 
 async function getRole(name: string, rolesService: any) {
   const roles = await rolesService.readByQuery({
@@ -20,7 +21,7 @@ async function getRole(name: string, rolesService: any) {
   return roles[0];
 }
 
-export default defineEndpoint((router, {services, database}) => {
+export default defineEndpoint((router, {services, database, logger}) => {
   const {
     ItemsService,
     RolesService,
@@ -31,7 +32,7 @@ export default defineEndpoint((router, {services, database}) => {
     admin: true
   };
 
-  router.get("/check", async (req, res) => {
+  router.get("/check", async (req: any, res: any) => {
     try {
       const email = req.query.email;
 
@@ -39,7 +40,11 @@ export default defineEndpoint((router, {services, database}) => {
         return res.status(400).send("missing email");
       }
 
-      const usersService = new UsersService({knex: database, schema: req.schema, accountability: adminAccountability});
+      const usersService = new UsersService({
+        knex: database,
+        schema: req.schema,
+        accountability: adminAccountability
+      });
 
       const existing = await usersService.readByQuery({
         filter: {
@@ -63,15 +68,16 @@ export default defineEndpoint((router, {services, database}) => {
       });
 
     } catch (e) {
-      console.error("error checking if email is already in use", e);
+      logger.error(e, "error checking if email is already in use");
       return res.status(500).send("error checking if email is already in use");
     }
   });
 
-  router.post("/", async (req, res) => {
+  router.post("/", async (req: any, res: any) => {
     try {
       const user = req.body.user;
       const inviteId = req.body.inviteId;
+      const newsPostNotifications = req.body.newsPostNotifications;
       const emergencyContacts = req.body.emergencyContacts;
       const medicalInfo = req.body.medicalInfo;
 
@@ -87,7 +93,11 @@ export default defineEndpoint((router, {services, database}) => {
         return res.status(400).send("missing medical info");
       }
 
-      const rolesService = new RolesService({knex: database, schema: req.schema, accountability: adminAccountability});
+      const rolesService = new RolesService({
+        knex: database,
+        schema: req.schema,
+        accountability: adminAccountability
+      });
 
       if (inviteId) {
         const memberRole = await getRole("Member", rolesService);
@@ -97,7 +107,11 @@ export default defineEndpoint((router, {services, database}) => {
         user.role = unverifiedRole.id;
       }
 
-      const usersService = new UsersService({knex: database, schema: req.schema, accountability: adminAccountability});
+      const usersService = new UsersService({
+        knex: database,
+        schema: req.schema,
+        accountability: adminAccountability
+      });
 
       const newUserId = await usersService.createOne(user);
 
@@ -106,22 +120,49 @@ export default defineEndpoint((router, {services, database}) => {
         emergencyContacts[i].user = newUserId;
       }
 
-      const emergencyContactsService = new ItemsService("emergency_contacts", {knex: database, schema: req.schema, accountability: adminAccountability});
+      const emergencyContactsService = new ItemsService("emergency_contacts", {
+        knex: database,
+        schema: req.schema,
+        accountability: adminAccountability
+      });
       await emergencyContactsService.createMany(emergencyContacts);
 
-      const medicalInfoService = new ItemsService("medical_info", {knex: database, schema: req.schema, accountability: adminAccountability});
+      const medicalInfoService = new ItemsService("medical_info", {
+        knex: database,
+        schema: req.schema,
+        accountability: adminAccountability
+      });
       await medicalInfoService.createOne(medicalInfo);
 
       if (inviteId) {
-        const inviteService = new ItemsService("member_invites", {knex: database, schema: req.schema, accountability: adminAccountability});
+        const inviteService = new ItemsService("member_invites", {
+          knex: database,
+          schema: req.schema,
+          accountability: adminAccountability
+        });
         const invite = await inviteService.readOne(inviteId);
         invite.accepted = true;
         await inviteService.updateOne(inviteId, invite);
       }
 
+      if (newsPostNotifications) {
+        const subscribersService = new ItemsService("news_subscribers", {
+          knex: database,
+          schema: req.schema,
+          accountability: adminAccountability
+        });
+
+        await subscribersService.createOne({
+          user: {
+            id: newUserId
+          },
+          unsubscribe_token: nanoid(34)
+        });
+      }
+
       return res.send(newUserId);
     } catch (e) {
-      console.error("error registering new user", e);
+      logger.error(e, "error registering new user");
       return res.status(500).send("error registering new user");
     }
   });

@@ -1,9 +1,10 @@
 ﻿import {nanoid} from "nanoid";
 import {createError} from "@directus/errors";
-
+import {ofetch} from "ofetch";
 const MailSendError = createError("VERIFY_MAIL_SEND_ERROR", "Unable to send verify email address email");
+const postmarkUrl = "https://api.postmarkapp.com";
 
-async function sendConfirmAccountEmail (services: any, input: any, schema: any, database: any) {
+export async function sendConfirmAccountEmail (services: any, input: any, schema: any, database: any) {
 
   if(input.email_confirmed){
     return input;
@@ -45,4 +46,27 @@ async function sendConfirmAccountEmail (services: any, input: any, schema: any, 
   return input;
 }
 
-export default sendConfirmAccountEmail;
+export async function sendBatchEmail(data: any) {
+  console.log("Sending batch emails");
+  return await ofetch("/email/batch", {
+    method: "POST",
+    baseURL: postmarkUrl,
+    body: data,
+    headers: {
+      "X-Postmark-Server-Token": process.env.EMAIL_SMTP_PASSWORD!
+    }
+  }).catch((err) => {
+    console.log("send mail error: ", err.data);
+  });
+}
+
+export function chunkArray<T>(input: T[], size: number): T[][] {
+  const result : T[][] = [];
+
+  for (let i = 0; i < input.length; i += size) {
+    result.push(input.slice(i, i + size));
+  }
+
+  return result;
+}
+

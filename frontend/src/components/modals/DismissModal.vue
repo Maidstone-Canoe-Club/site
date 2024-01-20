@@ -28,7 +28,7 @@
                 <button
                   type="button"
                   class="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                  @click="open = false">
+                  @click="onCancel">
                   <span class="sr-only">Close</span>
                   <XMarkIcon
                     class="h-6 w-6"
@@ -39,17 +39,17 @@
                 <div
                   class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full sm:mx-0 sm:h-10 sm:w-10"
                   :class="{
-                    'bg-red-100': variant === 'error',
-                    'bg-blue-100': variant === 'info',
+                    'bg-red-100': variant === 'danger',
+                    'bg-blue-100': variant === 'primary',
                     'bg-green-100': variant === 'success',
                     'bg-yellow-100': variant === 'warning',
                   }">
                   <ExclamationTriangleIcon
-                    v-if="variant === 'error'"
+                    v-if="variant === 'danger'"
                     class="h-6 w-6 text-red-400"
                     aria-hidden="true" />
                   <InformationCircleIcon
-                    v-else-if="variant === 'info'"
+                    v-else-if="variant === 'primary'"
                     class="h-6 w-6 text-blue-500"
                     aria-hidden="true" />
                   <ExclamationTriangleIcon
@@ -69,29 +69,25 @@
                     {{ title }}
                   </DialogTitle>
                   <div class="mt-2">
-                    <p class="text-sm text-gray-500">
+                    <p class="text-pretty text-gray-700">
                       <slot />
                     </p>
                   </div>
                 </div>
               </div>
               <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
-                <custom-button
-                  type="button"
-                  class="whitespace-nowrap inline-flex w-full justify-center rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
-                  :class="{
-                    'bg-red-600': variant === 'error',
-                    'bg-indigo-600': variant !== 'error'
-                  }"
+                <a-button
+                  :variant="variant"
+                  class="whitespace-nowrap w-full sm:w-auto sm:ml-3"
                   :action="actionWrapper">
                   {{ actionButtonLabel }}
-                </custom-button>
-                <button
-                  type="button"
-                  class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
+                </a-button>
+                <a-button
+                  variant="outline"
+                  class="mt-3 w-full sm:w-auto sm:mt-0"
                   @click="onCancel">
                   {{ cancelButton }}
-                </button>
+                </a-button>
               </div>
             </DialogPanel>
           </TransitionChild>
@@ -113,9 +109,9 @@ const props = withDefaults(defineProps<{
   actionButtonLabel: string
   cancelButton?: string
   action: Function,
-  variant: "info" | "success" | "error" | "warning"
+  variant: "primary" | "secondary" | "outline" | "danger" | "warning" | "success";
 }>(), {
-  title: null,
+  title: undefined,
   cancelButton: "Cancel"
 });
 
@@ -136,7 +132,7 @@ function onCancel () {
 
 async function actionWrapper () {
   await props.action();
-  isOpen.value = false;
+  onCancel();
 }
 
 </script>

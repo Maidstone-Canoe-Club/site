@@ -1,8 +1,11 @@
 ﻿<template>
   <div class="mx-auto max-w-3xl mt-8 px-3 sm:px-0">
-    <h1 class="mb-12 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-      News posts
-    </h1>
+    <div class="flex flex-col sm:flex-row items-start gap-y-3 sm:items-center justify-between mb-12">
+      <h1 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+        News posts
+      </h1>
+      <news-subscriber-button />
+    </div>
 
     <div class="space-y-6 mb-8">
       <article
@@ -28,7 +31,7 @@
 
     <simple-pagination
       :items-per-page="itemsPerPage"
-      :total-items="items.meta.total_count"
+      :total-items="items.meta.filter_count"
       :page="page"
       @next="onNext"
       @prev="onPrev" />
@@ -53,14 +56,40 @@ const { data: items } = await useAsyncData("news-items-", async () => {
 });
 
 async function loadData () {
+  const params = {
+    sort: ["-date_created"],
+    limit: itemsPerPage,
+    page: page.value,
+    meta: "filter_count",
+    filter: {
+      _and: [
+        {
+          _or: [
+            {
+              publish_date: {
+                _lt: "$NOW"
+              }
+            },
+            {
+              publish_date: {
+                _null: true
+              }
+            }
+          ]
+        },
+        {
+          status: {
+            _eq: "published"
+          }
+        }
+
+      ]
+    }
+  };
+
   const result = await getItems({
     collection: "news",
-    params: {
-      sort: ["-date_created"],
-      limit: itemsPerPage,
-      page: page.value,
-      meta: "total_count"
-    }
+    params
   });
 
   result.data = result.data.map(x => ({
@@ -80,7 +109,7 @@ watch(page, (val) => {
 });
 
 const totalPages = computed(() => {
-  return Math.ceil(items.value.meta.total_count / itemsPerPage);
+  return Math.ceil(items.value.meta.filter_count / itemsPerPage);
 });
 
 async function onNext () {
@@ -96,12 +125,6 @@ async function onPrev () {
     items.value = await loadData();
   }
 }
-
-async function onClick (p: number) {
-  page.value = p;
-  items.value = await loadData();
-}
-
 function formatDate (input: string) {
   return format(new Date(input), "MMMM dd, yyyy");
 }

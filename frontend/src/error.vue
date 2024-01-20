@@ -7,7 +7,7 @@
       <h1 class="mt-4 text-3xl font-bold tracking-tight text-gray-900 sm:text-5xl">
         {{ title }}
       </h1>
-      <p class="mt-6 text-base leading-7 text-gray-600">
+      <p class="mt-6 text-base leading-7 text-gray-700">
         {{ description }}
       </p>
       <div class="mt-5">
@@ -49,6 +49,10 @@ const title = computed(() => {
 const description = computed(() => {
   if (is404.value) {
     return "We couldn't find that page";
+  }
+
+  if (props.error.statusMessage) {
+    return props.error.statusMessage;
   }
 
   return "There was a problem rendering that page";

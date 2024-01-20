@@ -21,7 +21,8 @@
                 Please provide your own personal information.
               </p>
               <p>
-                If you need to register a junior member, you can easily add a junior account via your profile after completing your registration.
+                If you need to register a junior member, you can easily add a junior account via your profile after
+                completing your own registration.
               </p>
             </div>
           </div>
