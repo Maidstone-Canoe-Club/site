@@ -4,7 +4,18 @@
       <h1 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
         News posts
       </h1>
-      <news-subscriber-button />
+
+      <div class="flex flex-col-reverse sm:flex-row gap-2">
+        <news-subscriber-button />
+        <div>
+          <a-button
+            v-if="canCreatePost"
+            to="/news/new"
+            size="sm">
+            Create post
+          </a-button>
+        </div>
+      </div>
     </div>
 
     <div class="space-y-6 mb-8">
@@ -42,6 +53,7 @@
 import { format } from "date-fns";
 import { ChevronRightIcon } from "@heroicons/vue/24/solid";
 
+const user = useDirectusUser();
 const { getItems } = useDirectusItems();
 const route = useRoute();
 const router = useRouter();
@@ -53,6 +65,10 @@ const page = ref(route.query.page && !isNaN(route.query.page) ? parseInt(route.q
 
 const { data: items } = await useAsyncData("news-items-", async () => {
   return await loadData();
+});
+
+const canCreatePost = computed(() => {
+  return hasRole(user.value, "coach");
 });
 
 async function loadData () {
@@ -125,6 +141,7 @@ async function onPrev () {
     items.value = await loadData();
   }
 }
+
 function formatDate (input: string) {
   return format(new Date(input), "MMMM dd, yyyy");
 }

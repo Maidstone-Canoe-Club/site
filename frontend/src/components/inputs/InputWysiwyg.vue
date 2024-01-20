@@ -1,5 +1,6 @@
 ﻿<template>
-  <div>
+  <div
+    :class="{'invalid': !isValid}">
     <label
       v-if="label"
       :for="id"
@@ -12,6 +13,12 @@
         content-type="html"
         toolbar="minimal" />
     </client-only>
+    <p
+      v-if="!isValid"
+      :id="`${id}-error`"
+      class="mt-2 text-sm text-red-600">
+      {{ error }}
+    </p>
   </div>
 </template>
 
@@ -20,6 +27,8 @@ import "@vueup/vue-quill/dist/vue-quill.snow.css";
 // @ts-ignore
 // import ImageUploader from "quill-image-uploader";
 import "quill-image-uploader/dist/quill.imageUploader.min.css";
+import type { Validation } from "@vuelidate/core";
+
 const { QuillEditor } = await import("@vueup/vue-quill");
 
 const emits = defineEmits(["update:modelValue"]);
@@ -27,6 +36,7 @@ const props = defineProps<{
   modelValue?: string,
   id: string,
   label?: string
+  v?: Validation | null
 }>();
 
 const directusUrl = useDirectusUrl();
@@ -63,6 +73,20 @@ const { token } = useDirectusToken();
 //   }
 // };
 
+const error = computed(() => {
+  if (props.v && props.v?.$errors?.length >= 1) {
+    return props.v.$errors[0].$message;
+  }
+});
+
+const isValid = computed(() => {
+  if (props.v && props.v.$dirty) {
+    return !props.v.$invalid;
+  }
+
+  return true;
+});
+
 const content = computed({
   get () {
     return props.modelValue;
@@ -87,15 +111,29 @@ const content = computed({
   background-color: #fff;
 }
 
+.invalid {
+  ::v-deep(.ql-toolbar) {
+    border-top-color: rgb(252 165 165 / 1);
+    border-right-color: rgb(252 165 165 / 1);
+    border-left-color: rgb(252 165 165 / 1);
+  }
+
+  ::v-deep(.ql-container) {
+    border-bottom-color: rgb(252 165 165 / 1);
+    border-right-color: rgb(252 165 165 / 1);
+    border-left-color: rgb(252 165 165 / 1);
+  }
+}
+
 ::v-deep(.ql-container) {
   min-height: inherit;
 }
 
-::v-deep(.ql-editor){
+::v-deep(.ql-editor) {
   min-height: inherit;
 }
 
-::v-deep(p){
+::v-deep(p) {
   @apply mb-3;
 }
 

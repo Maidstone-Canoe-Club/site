@@ -3,6 +3,13 @@
     v-if="item"
     class="mx-auto max-w-3xl mt-8 px-3 sm:px-0">
     <div class="mb-4">
+      <alert-box
+        v-if="item.status !=='published'"
+        class="mb-4"
+        heading="Post not visible"
+        variant="warning">
+        This news post has not been made public yet
+      </alert-box>
       <h1 class="mb-3 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
         {{ item.title }}
       </h1>
@@ -30,7 +37,7 @@ const { data: item } = await useAsyncData(`news-item-${route.params.id}`, async 
     id: route.params.id,
     params: {
       fields: [
-        "title", "content", "slug", "date_created", "user_created.id", "user_created.first_name", "user_created.last_name"
+        "status", "title", "content", "slug", "date_created", "user_created.id", "user_created.first_name", "user_created.last_name"
       ]
     }
   });
