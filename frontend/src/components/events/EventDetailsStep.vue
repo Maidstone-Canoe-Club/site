@@ -109,6 +109,13 @@
           When enabled, event attendees will be able to see who else has booked onto the event.
           Enable for events like a Sunday Paddle or Pool Session, but disable for events like a Beginners Course.
         </span>
+
+        <input-date
+          id="last-booking-date"
+          v-model="internalValue.last_booking_date"
+          enable-time-picker
+          label="Last booking date"
+          name="last-booking-date" />
       </client-only>
     </div>
 

@@ -1,7 +1,9 @@
 ﻿<template>
   <div>
     <div class="mb-4">
-      <strong>Edit event</strong>
+      <h1 class="mb-3 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+        Edit event
+      </h1>
 
       <div
         v-if="internalValue.status === 'draft'"
@@ -137,6 +139,13 @@
         When enabled, event attendees will be able to see who else has booked onto the event.
         Enable for events like a Sunday Paddle or Pool Session, but disable for events like a Beginners Course.
       </span>
+
+      <input-date
+        id="last-booing-date"
+        v-model="internalValue.last_booking_date"
+        enable-time-picker
+        label="Last booking date"
+        name="last-booking-date" />
 
       <event-canceller
         :event="event"
