@@ -1,94 +1,18 @@
 import {defineEndpoint} from "@directus/extensions-sdk";
-import {ofetch} from "ofetch";
 import {
   MailingList,
   InboundEmail,
   FullAddress,
   Subscriber
 } from "../types";
-import Stripe from "stripe";
 import {handleMailForward, sendEmail} from "../mail-forwards";
-
-const postmarkUrl = "https://api.postmarkapp.com";
-
-const stripe = new Stripe(process.env.STRIPE_KEY);
-const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
+import {chunkArray, sendBatchEmail} from "../send-email";
 
 export default defineEndpoint((router, {services, database}) => {
   const {ItemsService, MailService} = services;
   const adminAccountability = {
     admin: true
   };
-
-  // REPLACED with nuxt server endpoint
-  // router.post("/payment", async (req, res) => {
-  //   try {
-  //     if (!endpointSecret) {
-  //       console.error("Webhook error: No endpoint secret");
-  //       return res.status(500).send("Webhook error: No endpoint secret");
-  //     }
-  //
-  //     const sig = req.header("Stripe-Signature");
-  //     if (!sig) {
-  //       console.error("Webhook error: No stripe signature in header");
-  //       return res.send(400).send("Webhook error: No stripe signature in header");
-  //     }
-  //
-  //     const bodyBuffer = req.rawBody;
-  //     const stripeEvent: Stripe.Event = stripe.webhooks.constructEvent(bodyBuffer, sig, endpointSecret);
-  //
-  //     if (stripeEvent.type === "checkout.session.completed") {
-  //       console.log("checkout completed!");
-  //
-  //       const sessionWithLineItems = await stripe.checkout.sessions.retrieve(stripeEvent.data.object.id,
-  //         {
-  //           expand: ["line_items"]
-  //         });
-  //
-  //       const metadata = sessionWithLineItems.metadata;
-  //
-  //       console.log("checkout data", sessionWithLineItems, metadata);
-  //
-  //       // TODO: payments will be for different things like memberships, boats, ect, need to handle for them
-  //
-  //       const bookingService = new ItemsService("event_bookings", {
-  //         schema: req.schema,
-  //         accountability: adminAccountability
-  //       });
-  //
-  //       // TODO: status paid?
-  //       await bookingService.createOne({
-  //         user: metadata.user_id,
-  //         event: metadata.event_id,
-  //         instance: metadata.event_instance
-  //       });
-  //
-  //       const ordersService = new ItemsService("orders", {
-  //         schema: req.schema,
-  //         accountability: adminAccountability
-  //       });
-  //
-  //       await ordersService.createOne({
-  //         user: metadata.user_id,
-  //         amount: sessionWithLineItems.amount_total,
-  //         customer_id: sessionWithLineItems.customer,
-  //         description: `${metadata.event_name} - ${metadata.date}`,
-  //         payment_intent: sessionWithLineItems.payment_intent,
-  //         metadata: JSON.stringify({
-  //           event_id: metadata.event_id,
-  //           instance: metadata.event_instance,
-  //         })
-  //       });
-  //
-  //       // TODO: send payment complete email to user
-  //     }
-  //
-  //     return res.send(`handled ${stripeEvent.type}`);
-  //   } catch (e) {
-  //     console.error("Webhook error: Error validating webhook event", e);
-  //     return res.status(400).send("Webhook error: Error validating webhook event");
-  //   }
-  // });
 
   router.post("/mail-inbound", async (req, res) => {
     try {
@@ -249,8 +173,6 @@ async function handleMailingList(data: InboundEmail, toAddress: FullAddress, mai
         );
       }
 
-      // const emailsToSend = chunk.map(subscriber => ());
-
       console.log(`sending ${emailsToSend.length} emails`);
       await sendBatchEmail(emailsToSend);
     }
@@ -258,34 +180,6 @@ async function handleMailingList(data: InboundEmail, toAddress: FullAddress, mai
     console.log("something went wrong handling mailing list email", e, e.message, e.data);
   }
 }
-
-async function sendBatchEmail(data: any) {
-  console.log("Sending batch emails");
-  return await ofetch("/email/batch", {
-    method: "POST",
-    baseURL: postmarkUrl,
-    body: data,
-    headers: {
-      "X-Postmark-Server-Token": process.env.EMAIL_SMTP_PASSWORD!
-    }
-  }).catch((err) => {
-    console.log("send mail error: ", err.data);
-  });
-}
-
-function chunkArray<T>(input: T[], size: number): T[][] {
-  const result : T[][] = [];
-
-  for (let i = 0; i < input.length; i += size) {
-    result.push(input.slice(i, i + size));
-  }
-
-  return result;
-}
-
-// function buildFromEmailAddress(mailingList: MailingList, subscriber: Subscriber) {
-//   return `${subscriber.user.first_name} ${subscriber.user.last_name} <${mailingList.email_name}@${process.env.EMAIL_DOMAIN}>`;
-// }
 
 function getUnsubscribeUrl(listId: string){
   const encodedList = encodeURIComponent(btoa(listId));

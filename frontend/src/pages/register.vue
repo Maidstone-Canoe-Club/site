@@ -77,6 +77,7 @@
 
       <template v-if="currentStep === 4">
         <private-data-step
+          v-model:news-post-notifications="newsPostNotifications"
           v-model:medical-info="medicalInfo"
           v-model:emergency-contacts="emergencyContacts"
           :loading="loading"
@@ -118,6 +119,8 @@ const user = ref({
   county: "",
   postcode: ""
 });
+
+const newsPostNotifications = ref(false);
 
 const medicalInfo = ref<MedicalInfo>({
   allergies: false,
@@ -176,6 +179,7 @@ async function onCompleteRegistration () {
       body: {
         inviteId: inviteId.value,
         user: user.value,
+        newsPostNotifications: newsPostNotifications.value,
         emergencyContacts: emergencyContacts.value,
         medicalInfo: medicalInfo.value
       }
@@ -190,7 +194,7 @@ async function onCompleteRegistration () {
     });
     await navigateTo("/");
   } catch (e) {
-    loading.false = true;
+    loading.value = true;
     console.log("something went wrong", e);
   }
 }

@@ -125,7 +125,7 @@
 </template>
 
 <script setup lang="ts">
-import { EnvelopeIcon, HandRaisedIcon } from "@heroicons/vue/24/outline";
+import { HandRaisedIcon } from "@heroicons/vue/24/outline";
 import { ChevronRightIcon } from "@heroicons/vue/24/solid";
 import { format } from "date-fns";
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from "@headlessui/vue";

@@ -1,5 +1,5 @@
 ﻿import {defineHook} from "@directus/extensions-sdk";
-import sendConfirmAccountEmail from "../send-email";
+import {sendConfirmAccountEmail} from "../send-email";
 // import express from "express";
 export default defineHook(({filter, init}, {services}) => {
 

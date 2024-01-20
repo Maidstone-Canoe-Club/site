@@ -1,6 +1,7 @@
 ﻿<template>
   <div class="space-y-6 flex flex-col">
-    <strong>This information will remain private and will only be accessible to coaches, instructors, and leaders during events you sign up for.</strong>
+    <strong>This information will remain private and will only be accessible to coaches, instructors, and leaders during
+      events you sign up for.</strong>
 
     <div class="space-y-8">
       <div class="space-y-4">
@@ -56,6 +57,12 @@
     </div>
   </div>
   <div class="flex flex-col gap-4 mt-14">
+    <input-checkbox
+      id="news-post-notifications"
+      v-model="internalNewsPostNotifications"
+      name="news-post-notifications"
+      label="I want to receive email notifications when news posts are published." />
+
     <custom-button
       :loading="loading"
       @click="onSubmit">
@@ -74,17 +81,27 @@
 <script setup lang="ts">
 import type { EmergencyContact, MedicalInfo } from "~/types";
 
-const emits = defineEmits(["update:medicalInfo", "update:emergencyContacts", "onBack", "onNext"]);
+const emits = defineEmits(["update:newsPostNotifications", "update:medicalInfo", "update:emergencyContacts", "onBack", "onNext"]);
 
 const props = defineProps<{
+  newsPostNotifications: boolean,
   medicalInfo: MedicalInfo,
   emergencyContacts: EmergencyContact[],
   loading: boolean
 }>();
 
+const internalNewsPostNotifications = ref(props.newsPostNotifications);
 const internalMedicalInfo = ref(props.medicalInfo);
 const internalEmergencyContacts = ref(props.emergencyContacts);
 const showContactsValidation = ref(false);
+
+watch(() => props.newsPostNotifications, (val) => {
+  internalNewsPostNotifications.value = val;
+});
+
+watch(internalNewsPostNotifications, (val) => {
+  emits("update:newsPostNotifications", val);
+});
 
 watch(() => props.medicalInfo, (val) => {
   internalMedicalInfo.value = val;
