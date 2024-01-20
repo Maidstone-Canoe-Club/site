@@ -77,6 +77,7 @@
               </div>
               <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
                 <a-button
+                  v-if="!hideActionButton"
                   :variant="variant"
                   class="whitespace-nowrap w-full sm:w-auto sm:ml-3"
                   :action="actionWrapper">
@@ -108,11 +109,14 @@ const props = withDefaults(defineProps<{
   title?: string,
   actionButtonLabel: string
   cancelButton?: string
-  action: Function,
+  action?: Function,
+  hideActionButton?: boolean,
   variant: "primary" | "secondary" | "outline" | "danger" | "warning" | "success";
 }>(), {
   title: undefined,
-  cancelButton: "Cancel"
+  action: undefined,
+  cancelButton: "Cancel",
+  hideActionButton: false
 });
 
 const isOpen = ref(props.open);
@@ -131,7 +135,9 @@ function onCancel () {
 }
 
 async function actionWrapper () {
-  await props.action();
+  if (props.action) {
+    await props.action();
+  }
   onCancel();
 }
 
