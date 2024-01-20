@@ -108,6 +108,15 @@
                 {{ formattedAllowedRoles }}
               </span>
             </div>
+
+            <div
+              v-if="event.last_booking_date"
+              class="mt-5 flex items-center text-sm text-gray-700">
+              <ExclamationTriangleIcon class="mr-1.5 h-5 w-5 flex-shrink-0 text-orange-400" aria-hidden="true" />
+              <span>
+                <strong>Bookings cut-off: {{ formatDate(event.last_booking_date) }}</strong>
+              </span>
+            </div>
           </div>
 
           <div v-if="leaders && leaders.length">
@@ -188,7 +197,7 @@ import {
   InformationCircleIcon,
   UserGroupIcon,
   ExclamationTriangleIcon
-} from "@heroicons/vue/20/solid";
+} from "@heroicons/vue/16/solid";
 // @ts-ignore
 import Dinero from "dinero.js";
 import { format, isSameDay } from "date-fns";
@@ -387,6 +396,11 @@ const sessionDates = computed(() => {
 });
 
 const canBook = computed(() => {
+  const lastBookingDate = event.value?.last_booking_date;
+  if (lastBookingDate && new Date(lastBookingDate) < new Date()) {
+    return false;
+  }
+
   if (sessionDates.value && sessionDates.value.length) {
     const firstDate = sessionDates.value[0].start;
     return new Date() < new Date(firstDate);

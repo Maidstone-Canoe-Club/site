@@ -619,7 +619,6 @@ export default defineEndpoint((router, {services, database}) => {
         }
       }
 
-
       const result = await eventService.updateOne(eventItem.id, eventItem);
 
       if (leaders && leaders.length) {
@@ -748,7 +747,8 @@ async function createSingleEvent(eventItem, eventService, res) {
       type: eventItem.type,
       status: eventItem.status,
       max_spaces: eventItem.max_spaces,
-      visible_attendees: eventItem.visible_attendees
+      visible_attendees: eventItem.visible_attendees,
+      last_booking_date: eventItem.last_booking_date
     });
 
     return result;
@@ -785,7 +785,8 @@ async function createMultiEvent(eventItem, eventDates, eventService, res) {
       type: eventItem.type,
       status: eventItem.status,
       max_spaces: eventItem.max_spaces,
-      visible_attendees: eventItem.visible_attendees
+      visible_attendees: eventItem.visible_attendees,
+      last_booking_date: eventItem.last_booking_date
     });
 
     for (let i = 1; i < eventDates.multiple.length; i++) {
@@ -810,7 +811,8 @@ async function createMultiEvent(eventItem, eventDates, eventService, res) {
         type: eventItem.type,
         status: eventItem.status,
         max_spaces: eventItem.max_spaces,
-        visible_attendees: eventItem.visible_attendees
+        visible_attendees: eventItem.visible_attendees,
+        last_booking_date: eventItem.last_booking_date
       });
     }
 
@@ -861,7 +863,8 @@ async function createRecurringEvent(eventItem, eventDates, eventService, recurri
       type: eventItem.type,
       status: eventItem.status,
       max_spaces: eventItem.max_spaces,
-      visible_attendees: eventItem.visible_attendees
+      visible_attendees: eventItem.visible_attendees,
+      last_booking_date: eventItem.last_booking_date
     });
 
     const recurringPattern = {

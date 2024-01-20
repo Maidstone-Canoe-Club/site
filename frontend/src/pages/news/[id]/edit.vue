@@ -167,7 +167,8 @@ function onBack () {
             Back
           </a-button>
           <a-button
-            :action="onSave">
+            :action="onSave"
+            keep-loading>
             {{ saveButtonLabel }}
           </a-button>
         </div>
