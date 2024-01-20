@@ -56,7 +56,8 @@ const props = withDefaults(defineProps<{
   target?: string,
   action?:(() => Promise<any>) | (() => void),
   loading?: boolean
-  keepLoading?: boolean
+  keepLoading?: boolean,
+  hideLoader?: boolean
 }>(), {
   variant: "primary",
   size: "md",
@@ -67,7 +68,8 @@ const props = withDefaults(defineProps<{
   target: undefined,
   action: undefined,
   loading: false,
-  keepLoading: false
+  keepLoading: false,
+  hideLoader: false
 });
 
 const internalLoading = ref(false);
@@ -119,7 +121,9 @@ async function onClick () {
     return;
   }
 
-  internalLoading.value = true;
+  if (!props.hideLoader) {
+    internalLoading.value = true;
+  }
 
   try {
     await props.action();

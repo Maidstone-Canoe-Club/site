@@ -107,7 +107,7 @@ const emits = defineEmits(["update:open", "dismiss"]);
 const props = withDefaults(defineProps<{
   open: boolean,
   title?: string,
-  actionButtonLabel: string
+  actionButtonLabel?: string
   cancelButton?: string
   action?: Function,
   hideActionButton?: boolean,
@@ -115,6 +115,7 @@ const props = withDefaults(defineProps<{
 }>(), {
   title: undefined,
   action: undefined,
+  actionButtonLabel: "Okay",
   cancelButton: "Cancel",
   hideActionButton: false
 });

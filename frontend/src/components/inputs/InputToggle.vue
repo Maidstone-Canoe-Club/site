@@ -12,7 +12,9 @@
       v-model="internalValue"
       :disabled="disabled"
       :class="switchClass">
-      <span aria-hidden="true" :class="[internalValue ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out']" />
+      <span
+        aria-hidden="true"
+        :class="[internalValue ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out']" />
     </Switch>
   </SwitchGroup>
 </template>
@@ -30,7 +32,9 @@ const props = defineProps<{
 
 const internalValue = ref(props.modelValue);
 
-watch(() => props.modelValue, (val: boolean) => internalValue.value = val);
+watch(() => props.modelValue, (val: boolean) => {
+  internalValue.value = val;
+});
 watch(internalValue, (val: boolean) => emits("update:modelValue", val));
 
 const switchClass = computed(() => {

@@ -12,6 +12,11 @@
         style="min-height: 300px"
         content-type="html"
         toolbar="minimal" />
+      <template #fallback>
+        <div class="flex p-7 justify-center items-center">
+          <loading-spinner color="#aaa" />
+        </div>
+      </template>
     </client-only>
     <p
       v-if="!isValid"

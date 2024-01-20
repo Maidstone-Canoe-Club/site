@@ -1,20 +1,38 @@
 ﻿<template>
   <article
     v-if="item"
-    class="mx-auto max-w-3xl mt-8 px-3 sm:px-0">
+    class="mx-auto max-w-3xl mt-8 px-3 sm:px-0 text-pretty">
     <div class="mb-4">
       <alert-box
-        v-if="item.status !=='published'"
+        v-if="!isPublished"
         class="mb-4"
         heading="Post not visible"
         variant="warning">
         This news post has not been made public yet
       </alert-box>
-      <h1 class="mb-3 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-        {{ item.title }}
-      </h1>
+      <div class="sm:flex sm:items-center sm:justify-between mb-4">
+        <div class="min-w-0 flex-1">
+          <h1 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+            {{ item.title }}
+          </h1>
+        </div>
+        <div
+          v-if="canEdit"
+          class="mt-3 flex sm:ml-4 sm:mt-0 gap-2">
+          <a-button
+            variant="outline"
+            :to="editUrl">
+            Edit
+          </a-button>
+          <a-button
+            v-if="!isPublished"
+            variant="primary">
+            Publish now
+          </a-button>
+        </div>
+      </div>
       <p v-if="item.user_created.first_name || item.user_created.last_name" class="font-semibold">
-        By {{ item.user_created.first_name }} {{ item.user_created.last_name }}
+        Posted by {{ item.user_created.first_name }} {{ item.user_created.last_name }}
       </p>
       <p class="text-base text-gray-700">
         {{ formatDate(item.date_created) }}
@@ -34,10 +52,17 @@ const route = useRoute();
 const { data: item } = await useAsyncData(`news-item-${route.params.id}`, async () => {
   return await getItemById<NewsItem>({
     collection: "news",
-    id: route.params.id,
+    id: route.params.id as string,
     params: {
       fields: [
-        "status", "title", "content", "slug", "date_created", "user_created.id", "user_created.first_name", "user_created.last_name"
+        "status",
+        "title",
+        "content",
+        "slug",
+        "date_created",
+        "user_created.id",
+        "user_created.first_name",
+        "user_created.last_name"
       ]
     }
   });
@@ -67,6 +92,18 @@ if (!route.params.slug && item.value.slug) {
     statusMessage: "News post not found"
   });
 }
+
+const user = useDirectusUser();
+const isPublished = computed(() => item.value?.status === "published");
+const editUrl = computed(() => `/news/${route.params.id}/edit`);
+
+const canEdit = computed(() => {
+  if (user.value && user.value.id === item.value?.user_created.id) {
+    return true;
+  }
+
+  return hasRole(user.value, "coach");
+});
 
 function formatDate (input: string) {
   return format(new Date(input), "MMM do, yyyy");

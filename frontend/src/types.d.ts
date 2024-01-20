@@ -73,11 +73,14 @@ export interface EventItem {
 
 export interface NewsItem {
   id: number | undefined,
+  status: "published" | "draft" | "scheduled",
   title: string,
   content: string,
   slug: string,
+  publish_date: string | Date | null,
   date_created: string,
   user_created: {
+    id: string,
     first_name: string,
     last_name: string
   }
