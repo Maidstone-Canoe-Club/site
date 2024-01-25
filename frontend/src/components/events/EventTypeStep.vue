@@ -34,7 +34,6 @@
 </template>
 
 <script setup lang="ts">
-import { RadioGroup, RadioGroupDescription, RadioGroupLabel, RadioGroupOption } from "@headlessui/vue";
 import { CheckCircleIcon } from "@heroicons/vue/20/solid";
 
 const emits = defineEmits(["update:eventType", "prev", "next"]);

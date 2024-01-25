@@ -6,7 +6,7 @@
       class="block text-sm font-medium leading-6 text-gray-900">{{ label }}</label>
     <input
       id="file_input"
-      class="p-2 bg-white block w-full text-sm text-gray-900 border border-gray-300 rounded-md cursor-pointer bg-gray-50 focus:outline-none"
+      class="p-2 bg-white block w-full text-sm text-gray-900 border border-gray-300 rounded-md cursor-pointer focus:outline-none"
       type="file"
       :accept="fileTypes"
       @change="onInputChange">

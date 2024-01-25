@@ -99,7 +99,6 @@
 </template>
 
 <script setup lang="ts">
-import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from "@headlessui/vue";
 import { ExclamationTriangleIcon, InformationCircleIcon, CheckCircleIcon, XMarkIcon } from "@heroicons/vue/24/outline";
 
 const emits = defineEmits(["update:open", "dismiss"]);

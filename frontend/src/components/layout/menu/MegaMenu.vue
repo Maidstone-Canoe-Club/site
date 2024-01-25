@@ -146,17 +146,7 @@
 </template>
 
 <script setup lang="ts">
-import {
-  Disclosure, DisclosureButton, DisclosurePanel,
-  Popover,
-  PopoverButton,
-  PopoverGroup,
-  PopoverPanel,
-  Menu, MenuButton, MenuItems, MenuItem
-} from "@headlessui/vue";
-import {
-  Bars3Icon
-} from "@heroicons/vue/24/outline";
+import { Bars3Icon } from "@heroicons/vue/24/outline";
 import { ChevronDownIcon } from "@heroicons/vue/20/solid";
 import { ref } from "vue";
 import { NuxtLink } from "#components";

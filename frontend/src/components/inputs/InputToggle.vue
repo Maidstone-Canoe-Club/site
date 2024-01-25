@@ -20,7 +20,6 @@
 </template>
 
 <script setup lang="ts">
-import { Switch, SwitchGroup, SwitchLabel } from "@headlessui/vue";
 
 const emits = defineEmits(["update:modelValue"]);
 
