@@ -149,7 +149,6 @@
 </template>
 
 <script setup lang="ts">
-import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from "@headlessui/vue";
 import { CheckIcon, ExclamationTriangleIcon, UsersIcon, PlusIcon } from "@heroicons/vue/24/outline";
 import Dinero from "dinero.js";
 import type { DirectusUser } from "nuxt-directus/dist/runtime/types";

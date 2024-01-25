@@ -30,7 +30,6 @@
 
 <script setup lang="ts">
 import { PlusIcon, MinusIcon } from "@heroicons/vue/24/outline";
-import { Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/vue";
 
 const { getSingletonItem } = useDirectusItems();
 

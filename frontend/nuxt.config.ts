@@ -77,6 +77,10 @@ export default defineNuxtConfig({
     "floating-vue/nuxt"
   ],
 
+  headlessui: {
+    prefix: ""
+  },
+
   directus: {
     autoRefresh: true,
     fetchUserParams: {

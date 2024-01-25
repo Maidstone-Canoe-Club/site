@@ -128,7 +128,6 @@
 import { HandRaisedIcon } from "@heroicons/vue/24/outline";
 import { ChevronRightIcon } from "@heroicons/vue/24/solid";
 import { format } from "date-fns";
-import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from "@headlessui/vue";
 import { useDirectusItems } from "#imports";
 import type { Home, NewsItem } from "~/types";
 

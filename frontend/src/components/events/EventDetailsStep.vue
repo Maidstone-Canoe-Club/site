@@ -171,7 +171,8 @@ const eventTypes = [
   { id: "coaching", name: "Coaching" },
   { id: "social_event", name: "Social event" },
   { id: "fun_session", name: "Fun session" },
-  { id: "race", name: "Race" }
+  { id: "race", name: "Race" },
+  { id: "meetings", name: "Meetings" }
 ];
 
 watch(() => internalValue.value.allowedRoles, (val, oldVal) => {

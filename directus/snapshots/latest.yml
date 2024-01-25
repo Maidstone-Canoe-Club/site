@@ -5033,6 +5033,8 @@ fields:
             value: race
           - text: Beginners course
             value: beginners_course
+          - text: Meetings
+            value: meetings
       readonly: false
       required: true
       sort: 13
@@ -8554,6 +8556,8 @@ fields:
             value: committee
           - text: CDG
             value: cdg
+          - text: AGM
+            value: agm
       readonly: false
       required: true
       sort: 6

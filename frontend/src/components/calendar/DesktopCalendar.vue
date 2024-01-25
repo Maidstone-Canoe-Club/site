@@ -32,8 +32,8 @@
           </button>
         </div>
         <div class="hidden md:ml-4 md:flex md:items-center">
-          <!--          <HeadlessMenu as="div" class="relative">-->
-          <!--            <HeadlessMenuButton type="button" class="flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 gap-x-1.5 hover:bg-gray-50">-->
+          <!--          <Menu as="div" class="relative">-->
+          <!--            <MenuButton type="button" class="flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 gap-x-1.5 hover:bg-gray-50">-->
           <!--              Month view-->
           <!--              &lt;!&ndash;              <ChevronDownIcon class="-mr-1 h-5 w-5 text-gray-400" aria-hidden="true" />&ndash;&gt;-->
           <!--            </HeadlessMenuButton>-->
@@ -72,12 +72,12 @@
             </nuxt-link>
           </template>
         </div>
-        <HeadlessMenu as="div" class="relative ml-6 md:hidden">
-          <HeadlessMenuButton
+        <Menu as="div" class="relative ml-6 md:hidden">
+          <MenuButton
             class="-mx-2 flex items-center rounded-full border border-transparent p-2 text-gray-400 hover:text-gray-500">
-            <span class="sr-only">Open HeadlessMenu</span>
+            <span class="sr-only">Open Menu</span>
             <EllipsisHorizontalIcon class="h-5 w-5" aria-hidden="true" />
-          </HeadlessMenuButton>
+          </MenuButton>
 
           <transition
             enter-active-class="transition duration-100 ease-out"
@@ -86,19 +86,19 @@
             leave-active-class="transition duration-75 ease-in"
             leave-from-class="scale-100 transform opacity-100"
             leave-to-class="scale-95 transform opacity-0">
-            <HeadlessMenuItems
+            <MenuItems
               class="absolute right-0 z-10 mt-3 w-36 origin-top-right overflow-hidden rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 focus:outline-none">
               <div class="py-1">
-                <HeadlessMenuItem v-slot="{ active }">
+                <MenuItem v-slot="{ active }">
                   <nuxt-link
                     to="/events/new"
                     :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm']">
                     Add event
                   </nuxt-link>
-                </HeadlessMenuItem>
+                </MenuItem>
               </div>
               <div class="py-1">
-                <HeadlessMenuItem v-slot="{ active }">
+                <MenuItem v-slot="{ active }">
                   <button
                     type="button"
                     class="w-full text-left"
@@ -106,25 +106,25 @@
                     @click="calendarStore.resetDate()">
                     Go to today
                   </button>
-                </HeadlessMenuItem>
+                </MenuItem>
               </div>
               <!--              <div class="py-1">-->
-              <!--                <HeadlessMenuItem v-slot="{ active }">-->
+              <!--                <MenuItem v-slot="{ active }">-->
               <!--                  <a href="#" :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm']">Day view</a>-->
-              <!--                </HeadlessMenuItem>-->
-              <!--                <HeadlessMenuItem v-slot="{ active }">-->
+              <!--                </MenuItem>-->
+              <!--                <MenuItem v-slot="{ active }">-->
               <!--                  <a href="#" :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm']">Week view</a>-->
-              <!--                </HeadlessMenuItem>-->
-              <!--                <HeadlessMenuItem v-slot="{ active }">-->
+              <!--                </MenuItem>-->
+              <!--                <MenuItem v-slot="{ active }">-->
               <!--                  <a href="#" :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm']">Month view</a>-->
-              <!--                </HeadlessMenuItem>-->
-              <!--                <HeadlessMenuItem v-slot="{ active }">-->
+              <!--                </MenuItem>-->
+              <!--                <MenuItem v-slot="{ active }">-->
               <!--                  <a href="#" :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm']">Year view</a>-->
-              <!--                </HeadlessMenuItem>-->
+              <!--                </MenuItem>-->
               <!--              </div>-->
-            </HeadlessMenuItems>
+            </MenuItems>
           </transition>
-        </HeadlessMenu>
+        </Menu>
       </div>
     </header>
 
@@ -361,7 +361,6 @@ import {
   EllipsisHorizontalIcon,
   XMarkIcon
 } from "@heroicons/vue/24/outline";
-import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from "@headlessui/vue";
 import enGB from "date-fns/locale/en-GB/index.js";
 import { format, getISODay, setDefaultOptions } from "date-fns";
 import { useCalendarStore } from "~/store/calendarStore";

@@ -14,7 +14,10 @@
 
     <div v-if="meetingMinutes && meetingMinutes.length">
       <ul role="list" class="divide-y divide-gray-100">
-        <li v-for="minutes in meetingMinutes" :key="minutes.id" class="flex items-center justify-between gap-x-6 py-5 relative">
+        <li
+          v-for="minutes in meetingMinutes"
+          :key="minutes.id"
+          class="flex items-center justify-between gap-x-6 py-5 relative">
           <div
             v-if="minutes.loading"
             class="absolute inset-[-5px] backdrop-blur-[2px] flex justify-center items-center z-10">
@@ -56,7 +59,8 @@
                 leave-active-class="transition ease-in duration-75"
                 leave-from-class="transform opacity-100 scale-100"
                 leave-to-class="transform opacity-0 scale-95">
-                <MenuItems class="absolute right-0 z-10 mt-2 w-32 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none">
+                <MenuItems
+                  class="absolute right-0 z-10 mt-2 w-32 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none">
                   <MenuItem v-slot="{ active }">
                     <button
                       type="button"
@@ -81,7 +85,6 @@
 
 <script setup lang="ts">
 import { format } from "date-fns";
-import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
 import { EllipsisVerticalIcon } from "@heroicons/vue/20/solid";
 
 const { getItems, deleteItems } = useDirectusItems();
@@ -96,7 +99,9 @@ const { data: meetingMinutes } = await useAsyncData("minutes", async () => {
 async function loadData () {
   const items = await getItems({
     collection: "minutes",
-    sort: ["-meeting_date"]
+    params: {
+      sort: ["-meeting_date"]
+    }
   });
 
   return items?.map(x => ({
@@ -111,9 +116,14 @@ const canModifyMinutes = computed(() => {
 
 function formatMeetingName (value: string) {
   switch (value) {
-  case "committee": return "Committee meeting";
-  case "cdg": return "CDG";
-  default: throw new Error(`Unknown meeting type: '${value}'`);
+  case "committee":
+    return "Committee meeting";
+  case "cdg":
+    return "CDG";
+  case "agm":
+    return "AGM";
+  default:
+    throw new Error(`Unknown meeting type: '${value}'`);
   }
 }
 

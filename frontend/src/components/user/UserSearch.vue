@@ -62,14 +62,6 @@
 <script setup lang="ts">
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/vue/20/solid";
 import { XMarkIcon } from "@heroicons/vue/24/outline";
-import {
-  Combobox,
-  ComboboxButton,
-  ComboboxInput,
-  ComboboxLabel,
-  ComboboxOption,
-  ComboboxOptions
-} from "@headlessui/vue";
 import { watchDebounced } from "@vueuse/core";
 import type { DirectusUser } from "nuxt-directus/dist/runtime/types";
 import { ref } from "#imports";

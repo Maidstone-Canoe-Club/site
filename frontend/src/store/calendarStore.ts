@@ -1,7 +1,4 @@
-﻿import { defineStore } from "pinia";
-import { computed, ref } from "vue";
-
-export const useCalendarStore = defineStore("calendar", () => {
+﻿export const useCalendarStore = defineStore("calendar", () => {
   const year = ref(new Date().getFullYear());
   const month = ref(new Date().getMonth());
   const day = ref(new Date().getDate());

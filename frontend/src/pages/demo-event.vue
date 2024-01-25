@@ -122,7 +122,6 @@ import {
   MapPinIcon,
   PencilIcon
 } from "@heroicons/vue/20/solid";
-import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
 import { UserCircleIcon } from "@heroicons/vue/24/outline";
 
 const people = [

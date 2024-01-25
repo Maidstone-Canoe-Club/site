@@ -108,7 +108,6 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from "@headlessui/vue";
 import { EnvelopeOpenIcon, CheckCircleIcon } from "@heroicons/vue/24/outline";
 import { XCircleIcon } from "@heroicons/vue/20/solid";
 

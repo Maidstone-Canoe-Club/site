@@ -67,6 +67,10 @@ const meetingOptions = [
   {
     id: "cdg",
     name: "CDG"
+  },
+  {
+    id: "agm",
+    name: "AGM"
   }
 ];
 

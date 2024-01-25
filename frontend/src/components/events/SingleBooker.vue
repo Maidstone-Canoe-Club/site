@@ -107,7 +107,6 @@
 <script setup lang="ts">
 import { InformationCircleIcon } from "@heroicons/vue/20/solid";
 import { CheckIcon, ExclamationTriangleIcon } from "@heroicons/vue/24/outline";
-import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from "@headlessui/vue";
 // @ts-ignore
 import Dinero from "dinero.js";
 import type { EventItem } from "~/types";

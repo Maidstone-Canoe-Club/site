@@ -69,7 +69,7 @@ export type Subscriber = {
 }
 
 export type MailingList = {
-    id: number,
+    id: string,
     name: string,
     email_name: string
 }

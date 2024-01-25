@@ -53,7 +53,6 @@
 </template>
 
 <script setup lang="ts">
-import { TabGroup, TabList, TabPanels, TabPanel, Tab } from "@headlessui/vue";
 import { CalendarDaysIcon, UserCircleIcon, UsersIcon, CreditCardIcon, EnvelopeIcon, Cog6ToothIcon } from "@heroicons/vue/24/outline";
 import { useDirectusUser, definePageMeta } from "#imports";
 import { NuxtLink } from "#components";
