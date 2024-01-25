@@ -107,7 +107,7 @@ async function handleMailingList(data: InboundEmail, toAddress: FullAddress, mai
       await sendEmail({
         From: `web@${process.env.EMAIL_DOMAIN}`,
         To: data.From,
-        TextBody: "You have tried to send an email to a mailing list you are not subscribed to. Please reply to this email if you wish to subscribe.",
+        TextBody: `You have tried to send an email to the ${emailName.toLowerCase()} mailing list but you are not subscribed. Please reply to this email if you wish to subscribe.`,
         Subject: "Unable to email mailing list"
       });
       return;
