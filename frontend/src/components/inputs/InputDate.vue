@@ -53,7 +53,13 @@ const error = computed(() => {
   }
 });
 
-const isValid = computed(() => !props.v?.$invalid ?? true);
+const isValid = computed(() => {
+  if (props.v && props.v.$dirty) {
+    return !props.v.$invalid;
+  }
+
+  return true;
+});
 
 const internalValue = computed<Date | number | null | undefined>({
   get () {

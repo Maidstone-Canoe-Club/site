@@ -69,7 +69,7 @@ const { data: item } = await useAsyncData(`news-item-${route.params.id}`, async 
 });
 
 if (!item.value) {
-  throw createError({
+  throw showError({
     statusCode: 404,
     statusMessage: "News post not found"
   });
@@ -87,11 +87,16 @@ if (!route.params.slug && item.value.slug) {
     redirectCode: 301
   });
 } else if (route.params.slug && route.params.slug[0] !== item.value.slug) {
-  throw createError({
+  throw showError({
     statusCode: 404,
     statusMessage: "News post not found"
   });
 }
+
+defineOgImageComponent("CustomImage", {
+  headline: "News post",
+  title: item.value.title
+});
 
 const user = useDirectusUser();
 const isPublished = computed(() => item.value?.status === "published");
