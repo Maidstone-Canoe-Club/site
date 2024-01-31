@@ -71,7 +71,7 @@ services:
     environment:
       NODE_ENV: 'development'
       BASE_URL: 'http://localhost:3000'
-      NUXT_DIRECTUS_URL: 'http://host.docker.internal:8055'
+      NUXT_PUBLIC_DIRECTUS_URL: 'http://host.docker.internal:8055'
       STRIPE_KEY: ${STRIPE_KEY}
       STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
       NUXT_TURNSTILE_SECRET_KEY: ${NUXT_TURNSTILE_SECRET_KEY}

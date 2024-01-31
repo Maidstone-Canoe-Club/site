@@ -42,7 +42,7 @@ export default defineEventHandler(async (event) => {
   try {
     const checkoutData = await ofetch(`/checkout/data?eventId=${eventId}`, {
       method: "POST",
-      baseURL: process.env.NUXT_DIRECTUS_URL,
+      baseURL: process.env.NUXT_PUBLIC_DIRECTUS_URL,
       body: {
         userIds
       }
@@ -58,7 +58,7 @@ export default defineEventHandler(async (event) => {
     const authToken = getCookie(event, "directus_token");
     const customerId = await ofetch(`/checkout/customer?userId=${userId}`, {
       method: "GET",
-      baseURL: process.env.NUXT_DIRECTUS_URL,
+      baseURL: process.env.NUXT_PUBLIC_DIRECTUS_URL,
       headers: {
         Authorization: `Bearer ${authToken}`
       }
@@ -136,7 +136,7 @@ export default defineEventHandler(async (event) => {
 
     const orderIds = await ofetch("/payments/orders", {
       method: "POST",
-      baseURL: process.env.NUXT_DIRECTUS_URL,
+      baseURL: process.env.NUXT_PUBLIC_DIRECTUS_URL,
       body: {
         orders
       }
