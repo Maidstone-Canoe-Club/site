@@ -4,7 +4,7 @@
     <page-header />
     <email-verification-banner
       v-if="showVerificationBanner" />
-    <div class="mx-auto w-full max-w-7xl flex-grow px-2 sm:px-6 lg-px-8">
+    <div class="mx-auto w-full max-w-7xl flex-grow px-2 sm:px-6 lg-px-8 layout-content">
       <slot />
     </div>
     <lazy-page-footer class="mt-8" />

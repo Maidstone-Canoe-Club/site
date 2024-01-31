@@ -24,7 +24,7 @@ const { data: item } = await useAsyncData(`news-edit-item-${route.params.id}`, a
 });
 
 if (!item.value) {
-  throw createError({
+  throw showError({
     statusCode: 404,
     statusMessage: "News post not found"
   });
@@ -49,7 +49,7 @@ const v$: Ref<Validation> = useVuelidate(rules, item.value);
 const wasScheduled = ref(!!item.value.publish_date);
 
 const showDeleteModal = ref(false);
-const showError = ref(false);
+const showErrorModal = ref(false);
 const errorMessage = ref<string | null>(null);
 
 watch(showPublish, (val) => {
@@ -72,7 +72,7 @@ async function onSave () {
     } catch (e) {
       console.error("Error updating news post", e);
       errorMessage.value = "Unable to edit the news post";
-      showError.value = true;
+      showErrorModal.value = true;
     }
   }
 }
@@ -88,7 +88,7 @@ async function onDelete () {
   } catch (e) {
     console.error("Error deleting news post", e);
     errorMessage.value = "Unable to delete the news post";
-    showError.value = true;
+    showErrorModal.value = true;
   }
 }
 
@@ -97,7 +97,7 @@ function closeDeleteModal () {
 }
 
 function closeErrorModal () {
-  showError.value = false;
+  showErrorModal.value = false;
 }
 
 function tryDelete () {
@@ -192,7 +192,7 @@ function onBack () {
     </dismiss-modal>
 
     <dismiss-modal
-      :open="showError"
+      :open="showErrorModal"
       variant="danger"
       title="An error occured"
       cancel-button="Okay"
