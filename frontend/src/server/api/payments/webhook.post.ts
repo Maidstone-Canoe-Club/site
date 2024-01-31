@@ -52,7 +52,7 @@ export default defineEventHandler(async (event) => {
     try {
       await ofetch("/payments/handle/event", {
         method: "POST",
-        baseURL: process.env.NUXT_DIRECTUS_URL,
+        baseURL: process.env.NUXT_PUBLIC_DIRECTUS_URL,
         body: {
           sessionWithLineItems
         }
