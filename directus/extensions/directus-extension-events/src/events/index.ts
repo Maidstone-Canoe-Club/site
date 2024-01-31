@@ -21,7 +21,7 @@ export default defineEndpoint((router, {services, database}) => {
     admin: true
   };
 
-  router.get("/info", async (req, res) => {
+  router.get("/info", async (req: any, res: any) => {
     try {
       const eventId = req.query.eventId;
       const eventInstance = req.query.instance;
@@ -216,7 +216,7 @@ export default defineEndpoint((router, {services, database}) => {
     }
   });
 
-  router.post("/cancel", async (req, res) => {
+  router.post("/cancel", async (req: any, res: any) => {
     try {
       const mailService = new MailService({schema: req.schema, knex: database});
 

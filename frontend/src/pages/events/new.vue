@@ -1,6 +1,7 @@
 ﻿<template>
   <div>
-    <event-wizard />
+    <!--    <event-wizard />-->
+    <new-event-wizard />
   </div>
 </template>
 
