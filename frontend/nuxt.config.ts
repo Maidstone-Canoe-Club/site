@@ -95,6 +95,7 @@ export default defineNuxtConfig({
   },
 
   directus: {
+    url: "http://host.docker.internal:8055",
     autoRefresh: true,
     fetchUserParams: {
       fields: ["*", "role.name"]
@@ -115,14 +116,7 @@ export default defineNuxtConfig({
 
   ogImage: {
     fonts: [
-      {
-        name: "Karla",
-        weight: 700
-      },
-      {
-        name: "Space Grotesk",
-        weight: 700
-      }
+      "Karla:700", "Space+Grotesk:700"
     ],
     compatibility: {
       prerender: {
