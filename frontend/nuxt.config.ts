@@ -20,6 +20,10 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   srcDir: "src/",
 
+  site: {
+    url: process.env.BASE_URL
+  },
+
   runtimeConfig: {
     public: {
       BASE_URL: process.env.BASE_URL,
@@ -57,6 +61,14 @@ export default defineNuxtConfig({
         { rel: "manifest", href: "/site.webmanifest" },
         { rel: "mask-icon", href: "/safari-pinned-tab.svg", color: "#40a7e0" }
       ]
+    },
+    pageTransition: {
+      name: "page",
+      mode: "out-in"
+    },
+    layoutTransition: {
+      name: "layout",
+      mode: "out-in"
     }
   },
 
@@ -74,7 +86,8 @@ export default defineNuxtConfig({
     "nuxt-headlessui",
     "@pinia/nuxt",
     "@nuxtjs/turnstile",
-    "floating-vue/nuxt"
+    "floating-vue/nuxt",
+    "nuxt-og-image"
   ],
 
   headlessui: {
@@ -82,6 +95,7 @@ export default defineNuxtConfig({
   },
 
   directus: {
+    url: "http://host.docker.internal:8055",
     autoRefresh: true,
     fetchUserParams: {
       fields: ["*", "role.name"]
@@ -97,6 +111,17 @@ export default defineNuxtConfig({
     families: {
       Karla: [400, 500, 600, 700],
       "Space Grotesk": [500, 600, 700]
+    }
+  },
+
+  ogImage: {
+    fonts: [
+      "Karla:700", "Space+Grotesk:700"
+    ],
+    compatibility: {
+      prerender: {
+        chromium: false
+      }
     }
   },
 

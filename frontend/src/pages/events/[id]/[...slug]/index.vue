@@ -224,7 +224,7 @@ const { data: event } = await useAsyncData<EventItem>(`event-item-${route.params
 });
 
 if (!event.value) {
-  throw createError({
+  throw showError({
     statusCode: 404,
     statusMessage: "Event not found"
   });
@@ -286,7 +286,7 @@ if (!route.params.slug && slug) {
     redirectCode: 301
   });
 } else if (route.params.slug && route.params.slug[0] !== slug) {
-  throw createError({
+  throw showError({
     statusCode: 404,
     statusMessage: "News post not found"
   });

@@ -39,6 +39,7 @@
               leave-from-class="opacity-100 translate-y-0"
               leave-to-class="opacity-0 translate-y-1">
               <PopoverPanel
+                v-slot="{close}"
                 class="absolute -left-8 top-full z-10 mt-3 w-56 rounded-xl bg-white p-2 shadow-lg ring-1 ring-gray-900/5">
                 <template
                   v-for="item in navItem.childItems"
@@ -59,8 +60,9 @@
                         :key="child.name"
                         :as="NuxtLink"
                         :to="child.href"
-                        class="block rounded-lg pl-6 px-3 py-2 font-semibold leading-6 text-gray-900 hover:bg-gray-50">
-                        {{ child.name }}
+                        class="block rounded-lg pl-6 px-3 py-2 font-semibold leading-6 text-gray-900 hover:bg-gray-50"
+                        @mouseup="close">
+                        {{ child.name }} foo
                       </DisclosureButton>
                     </DisclosurePanel>
                   </Disclosure>
@@ -68,7 +70,8 @@
                   <nuxt-link
                     v-else
                     :to="item.href"
-                    class="block rounded-lg px-3 py-2 font-semibold leading-6 text-gray-900 hover:bg-gray-50">
+                    class="block rounded-lg px-3 py-2 font-semibold leading-6 text-gray-900 hover:bg-gray-50"
+                    @mouseup="close">
                     {{
                       item.name
                     }}
@@ -77,12 +80,13 @@
               </PopoverPanel>
             </transition>
           </Popover>
-          <nuxt-link
-            v-else
-            :to="navItem.href"
-            class="font-semibold leading-6 text-gray-900">
-            {{ navItem.name }}
-          </nuxt-link>
+          <template v-else>
+            <NuxtLink
+              :to="navItem.href"
+              class="font-semibold leading-6 text-gray-900">
+              {{ navItem.name }}
+            </NuxtLink>
+          </template>
         </template>
       </PopoverGroup>
       <div class="hidden lg:flex lg:flex-1 lg:justify-end">

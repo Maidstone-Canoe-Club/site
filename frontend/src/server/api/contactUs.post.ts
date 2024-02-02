@@ -22,7 +22,7 @@ export default defineEventHandler(async (event) => {
   try {
     await ofetch("/contact-us", {
       method: "POST",
-      baseURL: process.env.NUXT_DIRECTUS_URL,
+      baseURL: process.env.NUXT_PUBLIC_DIRECTUS_URL,
       body: data
     });
   } catch (e) {
