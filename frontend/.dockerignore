@@ -1,1 +1,10 @@
-﻿node_modules/
+﻿node_modules
+*.log
+dist
+.output
+.nuxt
+.idea/
+
+*~
+*swp
+*swo

@@ -6,7 +6,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends netcat wget \
 
 WORKDIR /opt/node_app/app
 
-COPY ./package*.json ./
+COPY ./package.json ./
+COPY ./package-lock.json ./
 COPY ./.npmrc ./
 
 FROM prebase AS base
