@@ -26,16 +26,17 @@ function onAdvance () {
 </script>
 
 <template>
-  <div>
-    <button
-      :disabled="disablePrev"
-      @click="onPrev">
-      Prev
-    </button>
-    <button
+  <div class="flex flex-row-reverse justify-between gap-2">
+    <a-button
       @click="onAdvance">
       {{ nextButtonLabel }}
-    </button>
+    </a-button>
+    <a-button
+      v-if="!disablePrev"
+      :disabled="disablePrev"
+      @click="onPrev">
+      Previous
+    </a-button>
   </div>
 </template>
 

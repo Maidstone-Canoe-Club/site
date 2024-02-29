@@ -226,7 +226,8 @@
         </div>
       </div>
       <div v-if="selectedDay?.events.length > 0" class="py-10 sm:px-6 lg:hidden">
-        <ol class="overflow-hidden rounded-lg bg-white text-sm shadow ring-1 ring-black ring-opacity-5 divide-y divide-gray-100">
+        <ol
+          class="overflow-hidden rounded-lg bg-white text-sm shadow ring-1 ring-black ring-opacity-5 divide-y divide-gray-100">
           <li
             v-for="event in selectedDay.events"
             :key="event.id"
@@ -239,12 +240,19 @@
                   {{ event.name }}
                 </p>
               </div>
-              <time
-                v-if="event.time"
-                :datetime="event.datetime"
-                class="mt-2 flex items-center text-gray-700">
-                {{ event.time }}
-              </time>
+              <div class="flex gap-2 items-center mt-2">
+                <time
+                  v-if="event.time"
+                  :datetime="event.datetime"
+                  class="flex items-center text-gray-700">
+                  {{ event.time }}
+                </time>
+                <!--                TODO: Show spaces left or event full when events are refactored -->
+                <!--                <span-->
+                <!--                  class="inline-flex items-center rounded-full bg-indigo-50 px-1.5 py-0.5 text-xs font-semibold text-indigo-700 ring-1 ring-inset ring-indigo-700/10">-->
+                <!--                  17/17 spaces left-->
+                <!--                </span>-->
+              </div>
             </div>
             <nuxt-link
               :to="event.href"
@@ -359,7 +367,7 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
   EllipsisHorizontalIcon,
-  XMarkIcon
+  XMarkIcon, UsersIcon
 } from "@heroicons/vue/24/outline";
 import enGB from "date-fns/locale/en-GB/index.js";
 import { format, getISODay, setDefaultOptions } from "date-fns";

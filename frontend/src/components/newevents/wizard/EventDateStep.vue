@@ -10,6 +10,12 @@ const event = defineModel<EventWizardItem>({ required: true });
     <strong>Event date</strong>
 
     <SingleDatePicker v-model="event" />
+
+    <input-date
+      id="last-booking-date"
+      v-model="event.last_booking_date"
+      enable-time-picker
+      label="Last booking date" />
   </div>
 </template>
 

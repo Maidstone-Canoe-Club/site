@@ -1,7 +1,8 @@
 ﻿<script setup lang="ts">
 import type { Component } from "vue";
+import EventTypeStep from "./EventTypeStep.vue";
 import {
-  EventTypeStep,
+  // EventTypeStep,
   EventBasicsStep,
   SingleDateStep,
   MultiDateStep,
@@ -110,10 +111,13 @@ async function onSubmit () {
 </script>
 
 <template>
-  <div>
-    <pre>{{ newEvent }}</pre>
-    <pre>currentStepIndex: {{ currentStepIndex }}</pre>
-    <pre>currentStepIsLast: {{ currentStepIsLast }}</pre>
+  <div class="m-auto max-w-xl space-y-8 mt-12">
+    <!--    <pre>{{ newEvent }}</pre>-->
+    <!--    <pre>currentStepIndex: {{ currentStepIndex }}</pre>-->
+    <!--    <pre>currentStepIsLast: {{ currentStepIsLast }}</pre>-->
+    <h1 class="text-2xl font-bold text-center">
+      Create a new event
+    </h1>
     <EventWizardSteps
       v-model="currentStepIndex"
       :steps="steps" />
@@ -131,7 +135,3 @@ async function onSubmit () {
     </component>
   </div>
 </template>
-
-<style scoped>
-
-</style>

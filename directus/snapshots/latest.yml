@@ -3895,7 +3895,7 @@ fields:
       options: null
       readonly: false
       required: false
-      sort: 16
+      sort: 17
       special:
         - cast-boolean
       translations: null
@@ -3945,7 +3945,7 @@ fields:
         previewThreshold: 4
       readonly: false
       required: false
-      sort: 28
+      sort: 29
       special:
         - cast-json
       translations: null
@@ -3984,7 +3984,7 @@ fields:
       options: null
       readonly: false
       required: false
-      sort: 19
+      sort: 20
       special: null
       translations: null
       validation: null
@@ -4193,7 +4193,7 @@ fields:
       options: null
       readonly: false
       required: false
-      sort: 25
+      sort: 26
       special: null
       translations: null
       validation: null
@@ -4231,7 +4231,7 @@ fields:
       options: null
       readonly: false
       required: false
-      sort: 26
+      sort: 27
       special: null
       translations: null
       validation: null
@@ -4269,7 +4269,7 @@ fields:
       options: null
       readonly: false
       required: false
-      sort: 23
+      sort: 24
       special:
         - cast-boolean
       translations: null
@@ -4386,7 +4386,7 @@ fields:
       options: null
       readonly: false
       required: false
-      sort: 20
+      sort: 21
       special:
         - cast-boolean
       translations: null
@@ -4425,7 +4425,7 @@ fields:
       options: null
       readonly: false
       required: false
-      sort: 21
+      sort: 22
       special:
         - cast-boolean
       translations: null
@@ -4465,7 +4465,7 @@ fields:
         iconLeft: currency_pound
       readonly: false
       required: false
-      sort: 15
+      sort: 16
       special: null
       translations: null
       validation: null
@@ -4541,7 +4541,7 @@ fields:
       options: null
       readonly: false
       required: false
-      sort: 22
+      sort: 23
       special: null
       translations: null
       validation: null
@@ -4580,7 +4580,7 @@ fields:
         enableCreate: false
       readonly: false
       required: false
-      sort: 29
+      sort: 30
       special:
         - m2m
       translations: null
@@ -4641,7 +4641,7 @@ fields:
       options: null
       readonly: false
       required: false
-      sort: 27
+      sort: 28
       special: null
       translations: null
       validation: null
@@ -4679,7 +4679,7 @@ fields:
       options: null
       readonly: false
       required: false
-      sort: 18
+      sort: 19
       special: null
       translations: null
       validation: null
@@ -4717,7 +4717,7 @@ fields:
       options: null
       readonly: false
       required: false
-      sort: 17
+      sort: 18
       special: null
       translations: null
       validation: null
@@ -4756,7 +4756,7 @@ fields:
         enableCreate: false
       readonly: false
       required: false
-      sort: 24
+      sort: 25
       special:
         - m2o
       translations: null
@@ -4796,7 +4796,7 @@ fields:
         iconLeft: currency_pound
       readonly: false
       required: false
-      sort: 14
+      sort: 15
       special: null
       translations: null
       validation: null
@@ -4809,6 +4809,44 @@ fields:
       default_value: null
       max_length: null
       numeric_precision: 24
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: events
+    field: recurs_until
+    type: dateTime
+    meta:
+      collection: events
+      conditions: null
+      display: null
+      display_options: null
+      field: recurs_until
+      group: null
+      hidden: false
+      interface: datetime
+      note: null
+      options: null
+      readonly: false
+      required: false
+      sort: 13
+      special: null
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: recurs_until
+      table: events
+      data_type: timestamp without time zone
+      default_value: null
+      max_length: null
+      numeric_precision: null
       numeric_scale: null
       is_nullable: true
       is_unique: false
@@ -4859,6 +4897,44 @@ fields:
       has_auto_increment: false
       foreign_key_table: events
       foreign_key_column: id
+  - collection: events
+    field: rrule
+    type: string
+    meta:
+      collection: events
+      conditions: null
+      display: null
+      display_options: null
+      field: rrule
+      group: null
+      hidden: false
+      interface: input
+      note: null
+      options: null
+      readonly: false
+      required: false
+      sort: 34
+      special: null
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: rrule
+      table: events
+      data_type: character varying
+      default_value: null
+      max_length: 255
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
   - collection: events
     field: start_date
     type: timestamp
@@ -5037,7 +5113,7 @@ fields:
             value: meetings
       readonly: false
       required: true
-      sort: 13
+      sort: 14
       special: null
       translations: null
       validation: null
@@ -5158,7 +5234,7 @@ fields:
       options: null
       readonly: false
       required: false
-      sort: 30
+      sort: 31
       special:
         - cast-boolean
       translations: null

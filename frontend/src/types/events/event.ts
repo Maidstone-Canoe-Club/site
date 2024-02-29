@@ -33,3 +33,11 @@ export type Event = {
     user_created?: string,
     date_created?: string,
 }
+
+export type NewEventItem = {
+  name: string,
+  startDate: Date,
+  endDate: Date,
+  rrule: string,
+  type: EventType,
+}

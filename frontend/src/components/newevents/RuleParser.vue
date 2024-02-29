@@ -1,36 +1,44 @@
 ﻿<script setup lang="ts">
 import { datetime, RRule } from "rrule";
-import { format } from "date-fns";
 import type { Validation } from "@vuelidate/core";
+import { useDebounceFn } from "@vueuse/core";
+import { useDirectusToken } from "#imports";
 
 const props = withDefaults(defineProps<{
   id: string,
   label?: string,
   placeholder?: string,
-  start: Date,
-  hideExamples?: boolean,
-  hidePreviewDates?: boolean,
-  v?: Validation
+  start: Date | string,
+  v?: Validation,
+  rawValue?: string,
 }>(), {
   label: undefined,
   placeholder: undefined,
-  hideExamples: false,
-  hidePreviewDates: false,
-  v: undefined
+  v: undefined,
+  rawValue: undefined
 });
+
+const loading = ref(false);
+const smartGenerationError = ref<string | null>();
 
 const rule = defineModel<string | undefined>({ required: true });
 
 const ruleData = ref<RRule | null>(null);
 
-const rawValue = ref<string>();
+const internalRawValue = ref<string | undefined>(props.rawValue);
 
-watch(rawValue, () => {
-  ruleData.value = createRule();
+watch(() => props.rawValue, (val) => {
+  internalRawValue.value = val;
+});
+
+watch(internalRawValue, (val) => {
+  props.v?.$reset();
+
+  ruleData.value = createRule(val, true);
   rule.value = ruleData.value?.toString() ?? undefined;
 });
 
-function toDatetime (date: Date) {
+function toDatetime (date: Date | string) {
   const newDate = new Date(date);
   return datetime(newDate.getUTCFullYear(),
     newDate.getUTCMonth() + 1,
@@ -40,10 +48,51 @@ function toDatetime (date: Date) {
     newDate.getUTCSeconds());
 }
 
-function createRule () {
+const { token } = useDirectusToken();
+
+const debouncedSmartGeneration = useDebounceFn(async () => {
+  if (!internalRawValue.value) {
+    console.warn("no prompt");
+  }
+  loading.value = true;
+
   try {
-    if (rawValue.value) {
-      const options = RRule.parseText(rawValue.value);
+    const res = await $fetch<string | undefined>("/api/newevents", {
+      query: {
+        prompt: internalRawValue.value
+      },
+      headers: {
+        Authorization: `Bearer ${token.value}`
+      }
+    });
+
+    console.log("response", res);
+    if (res) {
+      if (res.startsWith("error: ")) {
+        smartGenerationError.value = res.replace("error: ", "");
+      } else {
+        const options = RRule.parseString(res);
+        options.dtstart = toDatetime(props.start);
+        ruleData.value = new RRule(options);
+        rule.value = ruleData.value?.toString() ?? undefined;
+      }
+    } else {
+      throw createError("No choices available");
+    }
+  } catch (err) {
+    smartGenerationError.value = "Unable to generate a valid recurring event pattern";
+    console.error(err);
+  } finally {
+    loading.value = false;
+  }
+}, 1000);
+
+function createRule (input: string | undefined, smartFallback: boolean) {
+  smartGenerationError.value = null;
+
+  try {
+    if (input) {
+      const options = RRule.parseText(input);
       options.dtstart = toDatetime(props.start);
       return new RRule(options);
     } else {
@@ -51,71 +100,36 @@ function createRule () {
     }
   } catch (e: any) {
     console.warn("Rule parse error: " + e.message);
+    if (smartFallback) {
+      debouncedSmartGeneration();
+    }
   }
 
   return new RRule();
-}
-
-const previewDates = computed(() => {
-  if (!ruleData.value) {
-    return [];
-  }
-
-  const until = ruleData.value.options.until;
-
-  const results = ruleData.value.all((_, i) => {
-    return !until ? i < 9 : true;
-  }).map(d => format(d, "EEE do MMMM yyyy"));
-
-  if (!until) {
-    results.push("Indefinitely...");
-  }
-
-  return results;
-});
-
-const examples = [
-  "Every weekday",
-  "Every Sunday",
-  "Every month on the 3rd Thursday",
-  "Every week on Monday, Wednesday",
-  "Every 2 months until November 1, 2024"
-];
-
-function setExample (example: string) {
-  rawValue.value = example;
 }
 
 </script>
 
 <template>
   <div>
-    <pre>rule: {{ rule }}</pre>
-
     <input-field
       :id="id"
-      v-model="rawValue"
+      v-model="internalRawValue"
       :label="label"
       :placeholder="placeholder"
-      :v="v" />
+      :disabled="loading"
+      :v="v">
+      <template #icons>
+        <LoadingSpinner
+          v-if="loading"
+          color="#4f46e5" />
+      </template>
+    </input-field>
 
-    <template v-if="!hideExamples">
-      <p>Click one of the examples below to try:</p>
-      <ul>
-        <li
-          v-for="(example, index) in examples"
-          :key="index">
-          <button @click="setExample(example)">
-            {{ example }}
-          </button>
-        </li>
-      </ul>
-    </template>
-
-    <pre>{{ previewDates }}</pre>
+    <p
+      v-if="smartGenerationError"
+      class="text-sm text-red-600 mt-2">
+      {{ smartGenerationError }}
+    </p>
   </div>
 </template>
-
-<style scoped>
-
-</style>
