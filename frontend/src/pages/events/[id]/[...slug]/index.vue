@@ -138,6 +138,24 @@
             </ul>
           </div>
 
+          <div
+            v-if="bookings.length && userIsLeader"
+            class="flex flex-col gap-2">
+            <a-button
+              variant="outline"
+              @click="onMessageAttendees">
+              <EnvelopeIcon class="size-5" />
+              Message attendees
+            </a-button>
+
+            <a-button
+              variant="outline"
+              @click="onDownloadAttendeeDetails">
+              <ArrowDownOnSquareStackIcon class="size-5" />
+              Download attendee details
+            </a-button>
+          </div>
+
           <div class="mb-5">
             <event-booker
               v-if="canBook"
@@ -184,6 +202,14 @@
         </div>
       </div>
     </div>
+
+    <message-attendees-modal
+      v-if="userIsLeader"
+      :open="messageAttendeesModalOpen"
+      :attendee-count="bookings.length"
+      :event-id="event.id"
+      :instance="instance"
+      @dismiss="messageAttendeesModalOpen = false" />
   </article>
 </template>
 
@@ -196,7 +222,9 @@ import {
   UsersIcon,
   InformationCircleIcon,
   UserGroupIcon,
-  ExclamationTriangleIcon
+  ExclamationTriangleIcon,
+  EnvelopeIcon,
+  ArrowDownOnSquareStackIcon
 } from "@heroicons/vue/16/solid";
 // @ts-ignore
 import Dinero from "dinero.js";
@@ -215,6 +243,8 @@ const instance = route.query.instance ? parseInt(route.query.instance as string,
 
 const childEvents = ref();
 const recurringPattern = ref();
+
+const messageAttendeesModalOpen = ref(false);
 
 const { data: event } = await useAsyncData<EventItem>(`event-item-${route.params.id}`, async () => {
   return await getItemById<EventItem>({
@@ -480,6 +510,14 @@ const spacesLeftLabel = computed(() => {
 
   return result;
 });
+
+function onMessageAttendees () {
+  messageAttendeesModalOpen.value = true;
+}
+
+function onDownloadAttendeeDetails () {
+
+}
 
 </script>
 

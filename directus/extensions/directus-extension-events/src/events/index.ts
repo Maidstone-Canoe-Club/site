@@ -3,7 +3,6 @@ import {
   parseISO,
   getDay,
   getWeekOfMonth,
-  getDate,
   getMonth,
   setDefaultOptions,
   addDays, addWeeks, addMonths, addYears
@@ -709,6 +708,122 @@ export default defineEndpoint((router, {services, database}) => {
     } catch (e) {
       console.error("error creating event", e);
       return res.status(500).send("error creating event");
+    }
+  });
+
+  router.post("/message-attendees", async (req: any, res: any) => {
+    try {
+      const eventId = req.query.eventId;
+      const instance = req.query.instance;
+      const loggedInUserId = req.accountability.user;
+
+      const subject = req.body.subject;
+      const message = req.body.message;
+
+      if (!subject) {
+        return res.status(400).send("missing subject");
+      }
+
+      if (!message) {
+        return res.status(400).send("missing message content");
+      }
+
+      if (!eventId) {
+        return res.status(400).send("missing event id");
+      }
+
+      const eventsService = new ItemsService("events", {
+        knex: database,
+        schema: req.schema,
+        accountability: adminAccountability
+      });
+
+      const eventLeadersService = new ItemsService("events_directus_users", {
+        knex: database,
+        schema: req.schema,
+        accountability: adminAccountability
+      });
+
+      const event = await eventsService.readOne(eventId);
+
+      if (!event.leaders || event.leaders.length === 0) {
+        return res.status(400).send("event doesn't have any leaders");
+      }
+
+      const leaders = await eventLeadersService.readByQuery({
+        fields: ["*"],
+        filter: {
+          id: {
+            _in: event.leaders
+          }
+        }
+      });
+
+      if (leaders.filter(x => x.directus_users_id === loggedInUserId).length === 0) {
+        return res.status(401).send("you are not a leader of that event");
+      }
+
+      const eventBookingService = new ItemsService("event_bookings", {
+        knex: database,
+        schema: req.schema,
+        accountability: adminAccountability
+      });
+
+      const bookingsFilter = {
+        event: {
+          _eq: eventId
+        }
+      };
+
+      if (instance) {
+        bookingsFilter.instance = {
+          _eq: instance
+        };
+      }
+
+      const bookings = await eventBookingService.readByQuery({
+        fields: ["*", "user.email", "user.role.name", "user.parent.email"],
+        filter: bookingsFilter
+      });
+
+      if (!bookings || bookings.length === 0) {
+        return res.status(400).send("no bookings found");
+      }
+
+      const mailService = new MailService({schema: req.schema, knex: database});
+
+      const eventTitle = event.title;
+      let eventUrl = `${process.env.PUBLIC_URL}/events/${event.id}`;
+      if (instance) {
+        eventUrl += `?instance=${instance}`;
+      }
+
+      for (const booking of bookings) {
+        let email = booking.user.email;
+        if (booking.user.role.name === "junior") {
+          email = booking.user.parent.email;
+        }
+
+        await mailService.send({
+          to: email,
+          from: `events@${process.env.EMAIL_DOMAIN}`,
+          subject,
+          template: {
+            name: "event-message",
+            data: {
+              message,
+              eventTitle,
+              eventUrl
+            }
+          }
+        });
+      }
+
+      console.log(`user ${loggedInUserId} send event message to ${bookings.length} attendee(s)`);
+      return res.status(200);
+    } catch (e: any) {
+      console.error("error sending message to event attendees", e);
+      return res.status(500).send("error sending message to event attendees");
     }
   });
 });

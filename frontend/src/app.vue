@@ -3,8 +3,6 @@
     <nuxt-page />
   </nuxt-layout>
 </template>
-<script setup lang="ts">
-</script>
 
 <script setup lang="ts">
 import { provideUseId } from "@headlessui/vue";
