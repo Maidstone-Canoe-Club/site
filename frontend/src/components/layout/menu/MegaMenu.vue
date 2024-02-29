@@ -62,7 +62,7 @@
                         :to="child.href"
                         class="block rounded-lg pl-6 px-3 py-2 font-semibold leading-6 text-gray-900 hover:bg-gray-50"
                         @mouseup="close">
-                        {{ child.name }} foo
+                        {{ child.name }}
                       </DisclosureButton>
                     </DisclosurePanel>
                   </Disclosure>
