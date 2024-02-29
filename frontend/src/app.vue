@@ -6,6 +6,13 @@
 <script setup lang="ts">
 </script>
 
+<script setup lang="ts">
+import { provideUseId } from "@headlessui/vue";
+
+provideUseId(() => useId());
+
+</script>
+
 <style lang="postcss">
 .page-enter-active,
 .page-leave-active {
