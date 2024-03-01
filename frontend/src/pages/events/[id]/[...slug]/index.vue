@@ -210,6 +210,13 @@
       :event-id="event.id"
       :instance="instance"
       @dismiss="messageAttendeesModalOpen = false" />
+
+    <attendee-download-modal
+      :open="attendeeDownloadModalOpen"
+      :event-title="event.title"
+      :event-id="event.id"
+      :instance="instance"
+      @dismiss="attendeeDownloadModalOpen = false" />
   </article>
 </template>
 
@@ -245,6 +252,7 @@ const childEvents = ref();
 const recurringPattern = ref();
 
 const messageAttendeesModalOpen = ref(false);
+const attendeeDownloadModalOpen = ref(false);
 
 const { data: event } = await useAsyncData<EventItem>(`event-item-${route.params.id}`, async () => {
   return await getItemById<EventItem>({
@@ -516,7 +524,7 @@ function onMessageAttendees () {
 }
 
 function onDownloadAttendeeDetails () {
-
+  attendeeDownloadModalOpen.value = true;
 }
 
 </script>

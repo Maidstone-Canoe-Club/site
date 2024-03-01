@@ -711,6 +711,252 @@ export default defineEndpoint((router, {services, database}) => {
     }
   });
 
+  router.post("/download-attendees", async (req: any, res: any) => {
+    try {
+      const eventId = req.query.eventId;
+      const instance = req.query.instance;
+      const loggedInUserId = req.accountability.user;
+
+      const body = req.body;
+
+      if (!eventId) {
+        return res.status(400).send("missing event id");
+      }
+
+      const eventsService = new ItemsService("events", {
+        knex: database,
+        schema: req.schema,
+        accountability: adminAccountability
+      });
+
+      const eventLeadersService = new ItemsService("events_directus_users", {
+        knex: database,
+        schema: req.schema,
+        accountability: adminAccountability
+      });
+
+      const event = await eventsService.readOne(eventId);
+
+      if (!event.leaders || event.leaders.length === 0) {
+        return res.status(400).send("event doesn't have any leaders");
+      }
+
+      const leaders = await eventLeadersService.readByQuery({
+        fields: ["*"],
+        filter: {
+          id: {
+            _in: event.leaders
+          }
+        }
+      });
+
+      if (leaders.filter(x => x.directus_users_id === loggedInUserId).length === 0) {
+        return res.status(401).send("you are not a leader of that event");
+      }
+
+      const eventBookingService = new ItemsService("event_bookings", {
+        knex: database,
+        schema: req.schema,
+        accountability: adminAccountability
+      });
+
+      const bookingsFilter = {
+        event: {
+          _eq: eventId
+        }
+      };
+
+      if (instance) {
+        bookingsFilter.instance = {
+          _eq: instance
+        };
+      }
+
+      const bookings = await eventBookingService.readByQuery({
+        fields: [
+          "user.id",
+          "user.email",
+          "user.first_name",
+          "user.last_name",
+          "user.dob",
+          "user.bc_number",
+          "user.home_tel",
+          "user.mobile",
+          "user.parent.email",
+          "user.parent.id",
+          "user.parent.first_name",
+          "user.parent.last_name",
+          "user.parent.home_tel",
+          "user.parent.mobile"
+        ],
+        filter: bookingsFilter
+      });
+
+      const userService = new UsersService({
+        knex: database,
+        schema: req.schema,
+        accountability: adminAccountability
+      });
+
+      const medicalInfoService = new ItemsService("medical_info", {
+        knex: database,
+        schema: req.schema,
+        accountability: adminAccountability
+      });
+
+      const emergancyContactsService = new ItemsService("emergency_contacts", {
+        knex: database,
+        schema: req.schema,
+        accountability: adminAccountability
+      });
+
+      const result = [];
+      const row = [];
+
+      if (body.firstName) {
+        row.push("first name");
+      }
+
+      if (body.lastName) {
+        row.push("last name");
+      }
+
+      if (body.dob) {
+        row.push("date of birth");
+      }
+
+      if (body.email) {
+        row.push("email");
+      }
+
+      if (body.bcNumber) {
+        row.push("bc number");
+      }
+
+      if (body.homeTel) {
+        row.push("home telephone");
+      }
+
+      if (body.mobileNumber) {
+        row.push("mobile");
+      }
+
+      if (body.medicalInfo) {
+        row.push("allergies");
+        row.push("asthma");
+        row.push("epilepsy");
+        row.push("diabetes");
+        row.push("other medical condition");
+        row.push("additional medical info");
+      }
+
+      if (body.emergencyContacts) {
+        row.push("emergency contact name");
+        row.push("emergency contact number");
+      }
+
+      if (body.parentDetails) {
+        row.push("parent name");
+        row.push("parent email");
+        row.push("parent mobile");
+      }
+
+      result.push(row);
+
+      for (const booking of bookings) {
+        const bookingRow = [];
+        if (body.firstName) {
+          bookingRow.push(booking.user.first_name);
+        }
+
+        if (body.lastName) {
+          bookingRow.push(booking.user.last_name);
+        }
+
+        if (body.dob) {
+          bookingRow.push(booking.user.dob);
+        }
+
+        if (body.email) {
+          bookingRow.push(booking.user.email);
+        }
+
+        if (body.bcNumber) {
+          bookingRow.push(booking.user.bc_number);
+        }
+
+        if (body.homeTel) {
+          bookingRow.push(booking.user.home_tel);
+        }
+
+        if (body.mobileNumber) {
+          bookingRow.push(booking.user.mobile);
+        }
+
+        if (body.medicalInfo) {
+          const medicalInfoItems = await medicalInfoService.readByQuery({
+            fields: ["*"],
+            filter: {
+              user: {
+                _eq: booking.user.id
+              }
+            }
+          });
+
+          let medicalInfo;
+          if (medicalInfoItems && medicalInfoItems.length) {
+            medicalInfo = medicalInfoItems[0];
+          }
+
+          bookingRow.push((medicalInfo?.allergies ?? false) ? "Yes" : "No");
+          bookingRow.push((medicalInfo?.asthma ?? false) ? "Yes" : "No");
+          bookingRow.push((medicalInfo?.epilepsy ?? false) ? "Yes" : "No");
+          bookingRow.push((medicalInfo?.diabetes ?? false) ? "Yes" : "No");
+          bookingRow.push((medicalInfo?.other ?? false) ? "Yes" : "No");
+          bookingRow.push(medicalInfo?.details ?? null);
+        }
+
+        if (body.emergencyContacts) {
+          const contacts = await emergancyContactsService.readByQuery({
+            fields: ["*"],
+            filter: {
+              user: {
+                _eq: booking.user.id
+              }
+            }
+          });
+
+          let contact;
+          if (contacts && contacts.length) {
+            contact = contacts[0];
+          }
+
+          bookingRow.push(contact?.full_name);
+          bookingRow.push(contact?.contact_number);
+        }
+
+        if (body.parentDetails && booking.user.parent) {
+
+          let parent;
+          if(booking.user.parent){
+            parent = await userService.readOne(booking.user.parent.id);
+          }
+
+          bookingRow.push(parent ? `${parent.first_name} ${parent.last_name}` : null);
+          bookingRow.push(parent?.email);
+          bookingRow.push(parent?.mobile);
+        }
+
+        result.push(bookingRow);
+      }
+
+      return res.status(200).send(result);
+    } catch (e) {
+      console.error("error downloading event attendee data", e);
+      return res.status(500).send("error downloading event attendee data");
+    }
+  });
+
   router.post("/message-attendees", async (req: any, res: any) => {
     try {
       const eventId = req.query.eventId;
