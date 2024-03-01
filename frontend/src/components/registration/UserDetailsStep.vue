@@ -105,9 +105,10 @@
 import { InformationCircleIcon } from "@heroicons/vue/20/solid";
 import { HandRaisedIcon } from "@heroicons/vue/24/outline";
 import type { DirectusUser } from "nuxt-directus/dist/runtime/types";
-import { required } from "@vuelidate/validators";
+import { required, maxValue, helpers } from "@vuelidate/validators";
 import { useVuelidate } from "@vuelidate/core";
 import type { Validation } from "@vuelidate/core";
+import { subYears } from "date-fns";
 import type { Ref } from "vue";
 
 const emits = defineEmits(["update:modelValue", "onBack", "onNext"]);
@@ -127,10 +128,18 @@ watch(internalValue, (val) => {
   emits("update:modelValue", val);
 }, { deep: true });
 
+function isAdult (value: Date) {
+  const cutoff = subYears(new Date(), 18);
+  return new Date(value) < cutoff;
+}
+
 const rules = {
   first_name: { required },
   last_name: { required },
-  dob: { required }
+  dob: {
+    required,
+    minValue: helpers.withMessage("You must be over 18 to create an account", isAdult)
+  }
 };
 
 const discoveredNewMember = computed(() => !props.inviteId && internalValue.value!.bc_number);
