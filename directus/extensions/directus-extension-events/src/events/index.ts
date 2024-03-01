@@ -1066,7 +1066,7 @@ export default defineEndpoint((router, {services, database}) => {
       }
 
       console.log(`user ${loggedInUserId} send event message to ${bookings.length} attendee(s)`);
-      return res.status(200);
+      return res.status(200).send("ok");
     } catch (e: any) {
       console.error("error sending message to event attendees", e);
       return res.status(500).send("error sending message to event attendees");
