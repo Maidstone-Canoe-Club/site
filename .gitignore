@@ -142,6 +142,9 @@ dist
 .svelte-kit
 
 ### Nuxtjs ###
+
+.data
+
 # Nuxt build
 
 # Nuxt generate

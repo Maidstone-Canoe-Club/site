@@ -3,7 +3,12 @@
     <nuxt-page />
   </nuxt-layout>
 </template>
+
 <script setup lang="ts">
+import { provideUseId } from "@headlessui/vue";
+
+provideUseId(() => useId());
+
 </script>
 
 <style lang="postcss">
