@@ -4,14 +4,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends netcat wget \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /opt/node_app/app
+WORKDIR /mcc
 
-COPY ./package*.json ./
-COPY ./.npmrc ./
+RUN corepack enable
+
+COPY package.json ./
+COPY .npmrc ./
+COPY pnpm-lock.yaml ./
 
 FROM prebase AS base
 
-RUN npm install && npm cache clean --force
+RUN pnpm i --frozen-lockfile
 
 ARG NUXT_PUBLIC_DIRECTUS_URL
 ENV NUXT_PUBLIC_DIRECTUS_URL ${NUXT_PUBLIC_DIRECTUS_URL}
@@ -62,25 +65,24 @@ EXPOSE 3000
 
 FROM base AS build
 
-WORKDIR /opt/node_app/app
-COPY --from=base --chown=node:node /opt/node_app/app .
+WORKDIR /mcc
+COPY --from=base --chown=node:node /mcc .
 
 COPY ./src ./src
 COPY ./nuxt.config.ts ./
 COPY ./tailwind.config.ts ./
 COPY ./tsconfig.json ./
 
-RUN npm run build
+RUN pnpm build
 
-RUN rm -rf node_modules && rm -rf .nuxt && npm cache clean --force
+RUN rm -rf node_modules && rm -rf .nuxt
 
 FROM prebase
 
 USER node
 
-WORKDIR /opt/
-COPY --from=build --chown=node:node /opt/node_app/app/.output node_app/app/.output
-WORKDIR /opt/node_app/app
+WORKDIR /mcc
+COPY --from=build --chown=node:node /mcc/.output ./.output
 
 ARG BASE_URL
 ENV BASE_URL ${BASE_URL}
