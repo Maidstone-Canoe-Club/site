@@ -249,7 +249,7 @@ export default defineEndpoint((router, {services, database}) => {
 
       const allowedRoles = ["committee", "administrator"];
       const userCreatedEvent = event.user_created === loggedInUserId;
-      const userHasRole = allowedRoles.includes(loggedInUser.role.name);
+      const userHasRole = allowedRoles.includes(loggedInUser.role.name.toLowerCase());
 
       if (userCreatedEvent || userHasRole) {
         if (event.status === "cancelled") {
@@ -401,7 +401,7 @@ export default defineEndpoint((router, {services, database}) => {
       const allowedRoles = ["committee", "administrator"];
       const isParentOfBookedUser = bookedUser.role.name === "Junior" && bookedUser.parent === loggedInUserId;
 
-      if (isParentOfBookedUser || loggedInUser.id === userId || allowedRoles.includes(loggedInUser.role.name)) {
+      if (isParentOfBookedUser || loggedInUser.id === userId || allowedRoles.includes(loggedInUser.role.name.toLowerCase())) {
         const eventBookingService = new ItemsService("event_bookings", {
           knex: database,
           schema: req.schema,
