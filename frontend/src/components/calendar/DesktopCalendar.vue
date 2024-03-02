@@ -1,6 +1,6 @@
 ﻿<template>
   <div class="lg:flex lg:h-full lg:flex-col">
-    <header class="flex items-center justify-between border-b border-gray-200 px-6 py-4 lg:flex-none">
+    <header class="flex items-center justify-between border-b border-gray-200 px-1 lg:px-6 py-4 lg:flex-none pt-0">
       <h1 class="text-base font-semibold leading-6 text-gray-900">
         <time datetime="2022-01">{{ monthLabel }} {{ calendarStore.getYear }}</time>
       </h1>
@@ -578,14 +578,14 @@ function getEventBorderColor (event: EventItem) {
     return "border-orange-500";
   case "fun_session":
     return "border-violet-500";
-  case "social_events":
+  case "social_event":
     return "border-rose-500";
   case "beginners_course":
     return "border-green-500";
   case "race_training":
     return "border-yellow-500";
   case "race":
-    return "border-line-500";
+    return "border-lime-500";
   case "coaching":
     return "border-red-500";
   default:

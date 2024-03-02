@@ -36,7 +36,7 @@ export type EventType = "pool_session"
   | "race_training"
   | "coaching"
   | "paddles_trips_tours"
-  | "social_events"
+  | "social_event"
   | "fun_session"
   | "race"
   | "beginners_course";
