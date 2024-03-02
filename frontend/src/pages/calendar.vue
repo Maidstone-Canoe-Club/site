@@ -69,14 +69,6 @@ async function fetchEvents () {
       ]
     };
 
-    if (filters.value.length > 0) {
-      getFilter._and.push({
-        type: {
-          _in: filters.value
-        }
-      });
-    }
-
     const foundEvents = await getItems({
       collection: "events",
       params: {
@@ -109,14 +101,6 @@ async function fetchEvents () {
         }
       ]
     };
-
-    if (filters.value.length > 0) {
-      getRecurringFilter._and.push({
-        type: {
-          _in: filters.value
-        }
-      });
-    }
 
     const recurringEvents = await getItems({
       collection: "events",

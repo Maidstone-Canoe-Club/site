@@ -28,6 +28,7 @@ const filters = computed(() => [
       { value: "fun_session", label: "Fun Session", class: "bg-violet-50 text-violet-600 ring-violet-500/20" },
       { value: "race_training", label: "Race Training", class: "bg-yellow-50 text-yellow-600 ring-yellow-500/20" },
       { value: "race", label: "Race", class: "bg-lime-50 text-lime-600 ring-lime-500/20" },
+      { value: "coaching", label: "Coaching", class: "bg-pink-50 text-pink-600 ring-pink-500/20" },
       { value: "beginners_course", label: "Beginners Course", class: "bg-green-50 text-green-600 ring-green-500/20" },
       { value: "meetings", label: "Meetings", class: "bg-red-50 text-red-600 ring-red-500/20" }
     ]
@@ -72,17 +73,18 @@ function getCount (type: string) {
         :key="option.value">
         <span
           class="inline-flex items-center rounded-full px-2 py-1 text-sm font-medium ring-1 ring-inset"
-          :class="isSelected(option.value) ? option.class : 'bg-gray-50 text-gray-600 ring-gray-600/10'">
+          :class="[isSelected(option.value) ? option.class : 'bg-gray-50 text-gray-600 ring-gray-600/10', getCount(option.value) === 0 ? 'opacity-60': null]">
           <input
             :id="`${filter.id}-${optionIdx}`"
             v-model="selected[option.value]"
             :value="option.value"
+            :disabled="getCount(option.value) === 0"
             :name="`${filter.id}[]`"
             class="hidden"
             type="checkbox">
           <label
             :for="`${filter.id}-${optionIdx}`"
-            class="cursor-pointer">
+            :class="{'cursor-pointer': getCount(option.value) > 0}">
             {{ option.label }} ({{ getCount(option.value) }})
           </label>
         </span>
