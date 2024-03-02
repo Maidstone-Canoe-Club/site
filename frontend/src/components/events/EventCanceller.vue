@@ -97,7 +97,7 @@ async function onCancel () {
       :action="onCancel"
       action-button-label="Yes, cancel"
       cancel-button="Back"
-      variant="error"
+      variant="danger"
       :open="showConfirmModal"
       title="Cancel event"
       @dismiss="onCloseModal">

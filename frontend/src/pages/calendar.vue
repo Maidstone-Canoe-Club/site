@@ -1,9 +1,11 @@
 ﻿<template>
   <div>
-    <event-filter @change="onFilterChange" />
+    <event-filter
+      :events="events"
+      @change="onFilterChange" />
     <desktop-calendar
       class="mt-5"
-      :events="events"
+      :events="filteredEvents"
       :loading="loading" />
   </div>
 </template>
@@ -17,6 +19,8 @@ const calendarStore = useCalendarStore();
 const filters = ref<string[]>([]);
 const events = ref([]);
 const loading = ref(false);
+
+const filteredEvents = computed(() => events.value.filter(e => filters.value.length === 0 ? true : filters.value.includes(e.type)));
 
 const { getItems } = useDirectusItems();
 

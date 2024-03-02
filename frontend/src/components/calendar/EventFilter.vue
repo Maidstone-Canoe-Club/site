@@ -1,15 +1,29 @@
 ﻿<script setup lang="ts">
+import { useCalendarStore } from "~/store/calendarStore";
+import type { EventItem } from "~/types";
 
 const emits = defineEmits(["change"]);
 
-const filters = [
+const calendarStore = useCalendarStore();
+const start = computed(() => new Date(calendarStore.year, calendarStore.month, 1));
+const end = computed(() => new Date(calendarStore.year, calendarStore.getMonth + 1, 0, 23, 59, 59));
+
+const props = defineProps<{
+  events: EventItem[]
+}>();
+
+const filters = computed(() => [
   {
     id: "type",
     name: "Event type",
     options: [
       { value: "pool_session", label: "Pool Session", class: "bg-cyan-50 text-cyan-600 ring-cyan-500/20" },
       { value: "club_paddle", label: "Club Paddle", class: "bg-blue-50 text-blue-600 ring-cyan-500/20" },
-      { value: "paddles_trips_tours", label: "Paddles Trips Tours", class: "bg-orange-50 text-orange-600 ring-orange-500/20" },
+      {
+        value: "paddles_trips_tours",
+        label: "Paddles Trips Tours",
+        class: "bg-orange-50 text-orange-600 ring-orange-500/20"
+      },
       { value: "social_event", label: "Social Events", class: "bg-rose-50 text-rose-600 ring-rose-500/20" },
       { value: "fun_session", label: "Fun Session", class: "bg-violet-50 text-violet-600 ring-violet-500/20" },
       { value: "race_training", label: "Race Training", class: "bg-yellow-50 text-yellow-600 ring-yellow-500/20" },
@@ -18,7 +32,7 @@ const filters = [
       { value: "meetings", label: "Meetings", class: "bg-red-50 text-red-600 ring-red-500/20" }
     ]
   }
-];
+]);
 
 const selected = ref<Record<string, boolean>>({});
 
@@ -32,6 +46,16 @@ function isSelected (id: string) {
     return selected.value[id];
   }
   return true;
+}
+
+function getCount (type: string) {
+  return props.events.filter((e) => {
+    if (new Date(e.start_date) < end.value && (e.end_date === undefined || new Date(e.end_date) > start.value)) {
+      return e.type === type;
+    }
+
+    return false;
+  }).length;
 }
 
 </script>
@@ -56,8 +80,10 @@ function isSelected (id: string) {
             :name="`${filter.id}[]`"
             class="hidden"
             type="checkbox">
-          <label :for="`${filter.id}-${optionIdx}`">
-            {{ option.label }}
+          <label
+            :for="`${filter.id}-${optionIdx}`"
+            class="cursor-pointer">
+            {{ option.label }} ({{ getCount(option.value) }})
           </label>
         </span>
       </div>
