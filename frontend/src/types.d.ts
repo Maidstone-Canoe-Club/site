@@ -39,7 +39,8 @@ export type EventType = "pool_session"
   | "social_event"
   | "fun_session"
   | "race"
-  | "beginners_course";
+  | "beginners_course"
+  | "meetings";
 
 export type EventAllowedRoles = "none" | "non-members" | "juniors" | "members";
 

@@ -587,6 +587,8 @@ function getEventBorderColor (event: EventItem) {
   case "race":
     return "border-lime-500";
   case "coaching":
+    return "border-pink-500";
+  case "meetings":
     return "border-red-500";
   default:
     return "border-gray-300";
@@ -609,15 +611,17 @@ function getEventDotColor (event: EventItem) {
     return "bg-orange-500";
   case "fun_session":
     return "bg-violet-500";
-  case "social_events":
+  case "social_event":
     return "bg-rose-500";
   case "beginners_course":
     return "bg-green-500";
   case "race_training":
     return "bg-yellow-500";
   case "race":
-    return "bg-line-500";
+    return "bg-lime-500";
   case "coaching":
+    return "bg-pink-500";
+  case "meetings":
     return "bg-red-500";
   default:
     return "bg-gray-300";
