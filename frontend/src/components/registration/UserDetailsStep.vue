@@ -105,10 +105,9 @@
 import { InformationCircleIcon } from "@heroicons/vue/20/solid";
 import { HandRaisedIcon } from "@heroicons/vue/24/outline";
 import type { DirectusUser } from "nuxt-directus/dist/runtime/types";
-import { required, maxValue, helpers } from "@vuelidate/validators";
+import { required, helpers } from "@vuelidate/validators";
 import { useVuelidate } from "@vuelidate/core";
 import type { Validation } from "@vuelidate/core";
-import { subYears } from "date-fns";
 import type { Ref } from "vue";
 
 const emits = defineEmits(["update:modelValue", "onBack", "onNext"]);
@@ -127,11 +126,6 @@ watch(() => props.modelValue, (val) => {
 watch(internalValue, (val) => {
   emits("update:modelValue", val);
 }, { deep: true });
-
-function isAdult (value: Date) {
-  const cutoff = subYears(new Date(), 18);
-  return new Date(value) < cutoff;
-}
 
 const rules = {
   first_name: { required },
