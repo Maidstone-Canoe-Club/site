@@ -345,9 +345,8 @@ function countEventOccurences (pattern, startDate, endDate) {
   return count;
 }
 
-async function onFilterChange (val: Record<string, boolean>) {
+function onFilterChange (val: Record<string, boolean>) {
   filters.value = Object.keys(val).filter(key => val[key]);
-  await fetchEvents();
 }
 
 </script>

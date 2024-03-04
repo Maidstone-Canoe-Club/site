@@ -1,4 +1,5 @@
 ﻿import type { DirectusUser } from "nuxt-directus/dist/runtime/types";
+import { subYears } from "date-fns";
 import { useDirectusUrl } from "#imports";
 
 export function getAvatarUrl (user: DirectusUser | undefined, size = 40) {
@@ -7,4 +8,9 @@ export function getAvatarUrl (user: DirectusUser | undefined, size = 40) {
     return `${directusUrl}/assets/${user.avatar}?width=${size}&height=${size}&fit=cover&format=webp`;
   }
   return null;
+}
+
+export function isAdult (value: Date) {
+  const cutoff = subYears(new Date(), 18);
+  return new Date(value) < cutoff;
 }
