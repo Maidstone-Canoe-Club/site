@@ -19,18 +19,50 @@
       <tbody class="divide-y divide-gray-200">
         <tr v-for="(item, index) in filteredValues" :key="index">
           <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
-            {{ item.full_name }}
+            <input-field
+              v-if="isEditing(item)"
+              v-model="editingItem!.full_name" />
+            <template v-else>
+              {{ item.full_name }}
+            </template>
           </td>
           <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-            {{ item.contact_number }}
+            <input-field
+              v-if="isEditing(item)"
+              v-model="editingItem!.contact_number" />
+            <template v-else>
+              {{ item.contact_number }}
+            </template>
           </td>
           <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
-            <button
-              type="button"
-              class="text-indigo-600 hover:text-indigo-900"
-              @click="removeContact(item)">
-              Remove<span class="sr-only">, {{ item.full_name }}</span>
-            </button>
+            <template v-if="isEditing(item)">
+              <button
+                type="button"
+                class="text-indigo-600 hover:text-indigo-900"
+                @click="confirmChanges">
+                Confirm changes
+              </button>
+              <button
+                type="button"
+                class="text-red-600 hover:text-red-900 ml-4"
+                @click="cancelChanges">
+                Cancel
+              </button>
+            </template>
+            <template v-else>
+              <button
+                type="button"
+                class="text-indigo-600 hover:text-indigo-900"
+                @click="editContact(item)">
+                Edit<span class="sr-only">, {{ item.full_name }}</span>
+              </button>
+              <button
+                type="button"
+                class="text-red-600 hover:text-red-900 ml-4"
+                @click="removeContact(item)">
+                Remove<span class="sr-only">, {{ item.full_name }}</span>
+              </button>
+            </template>
           </td>
         </tr>
       </tbody>
@@ -73,11 +105,18 @@
 </template>
 
 <script setup lang="ts">
+import { nanoid } from "nanoid";
+import type { EmergencyContact } from "~/types";
+
+type InternalEmergencyContact = {
+  shouldRemove: boolean,
+  editId: string | null
+} & EmergencyContact;
 
 const emits = defineEmits(["update:modelValue"]);
 
 const props = withDefaults(defineProps<{
-  modelValue: any,
+  modelValue: InternalEmergencyContact[],
   addButtonLabel?: string,
   showValidation?: boolean
 }>(), {
@@ -87,7 +126,9 @@ const props = withDefaults(defineProps<{
 
 const user = useDirectusUser();
 
-const internalValue = ref(props.modelValue);
+const internalValue = ref<InternalEmergencyContact[]>(props.modelValue || []);
+
+const editingItem = ref<InternalEmergencyContact | null>(null);
 
 watch(() => props.modelValue, (val) => {
   internalValue.value = val;
@@ -118,6 +159,30 @@ function removeContact (contact: any) {
   contact.shouldRemove = true;
 }
 
+function editContact (contact: InternalEmergencyContact) {
+  contact.editId = nanoid();
+  editingItem.value = {
+    ...contact
+  };
+}
+
+function isEditing (contact: InternalEmergencyContact) {
+  return !!editingItem.value &&
+    editingItem.value.editId === contact.editId;
+}
+
+function confirmChanges () {
+  const index = internalValue.value.findIndex(c => c.editId === editingItem.value!.editId);
+  if (index >= 0) {
+    internalValue.value[index] = editingItem.value!;
+    editingItem.value = null;
+  }
+}
+
+function cancelChanges () {
+  editingItem.value = null;
+}
+
 const isAddDisabled = computed(() => {
   return !newFullName.value || !newContactNumber.value;
 });
@@ -128,9 +193,13 @@ function addNewContact () {
     return;
   }
 
-  const item = {
+  const item: InternalEmergencyContact = {
+    id: null,
+    editId: nanoid(),
     full_name: newFullName.value,
-    contact_number: newContactNumber.value
+    contact_number: newContactNumber.value,
+    user: null,
+    shouldRemove: false
   };
 
   if (user.value) {
