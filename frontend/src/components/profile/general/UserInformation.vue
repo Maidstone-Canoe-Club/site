@@ -31,7 +31,8 @@
             v-model="user.first_name"
             autocomplete="given-name"
             label="First name"
-            name="first-name" />
+            name="first-name"
+            :v="v$.first_name" />
         </div>
 
         <div class="sm:col-span-3">
@@ -40,7 +41,18 @@
             v-model="user.last_name"
             autocomplete="last-name"
             label="Last name"
-            name="last-name" />
+            name="last-name"
+            :v="v$.last_name" />
+        </div>
+
+        <div class="sm:col-span-3">
+          <input-date
+            id="dob"
+            v-model="user.dob"
+            autocomplete="bday"
+            label="Date of birth"
+            name="dob"
+            :v="v$.dob" />
         </div>
 
         <div class="sm:col-span-3">
@@ -67,7 +79,8 @@
             v-model="user.street_address"
             autocomplete="street-address"
             label="Street address"
-            name="street-address" />
+            name="street-address"
+            :v="v$.street_address" />
         </div>
 
         <div class="sm:col-span-2 sm:col-start-1">
@@ -75,8 +88,9 @@
             id="city"
             v-model="user.city"
             autocomplete="address-level2"
-            label="City"
-            name="city" />
+            label="Town or city"
+            name="city"
+            :v="v$.city" />
         </div>
 
         <div class="sm:col-span-2">
@@ -85,7 +99,8 @@
             v-model="user.county"
             autocomplete="address-level1"
             label="County"
-            name="region" />
+            name="region"
+            :v="v$.county" />
         </div>
 
         <div class="sm:col-span-2">
@@ -94,7 +109,8 @@
             v-model="user.postcode"
             autocomplete="postal-code"
             label="Post code"
-            name="post-code" />
+            name="post-code"
+            :v="v$.postcode" />
         </div>
 
         <div class="sm:col-span-full">
@@ -143,6 +159,10 @@
 <script setup lang="ts">
 import { InformationCircleIcon } from "@heroicons/vue/20/solid";
 import type { DirectusUser } from "nuxt-directus/dist/runtime/types";
+import { required, helpers } from "@vuelidate/validators";
+import { useVuelidate } from "@vuelidate/core";
+import type { Validation } from "@vuelidate/core";
+import type { Ref } from "vue";
 
 const user = useDirectusUser();
 const { updateUser } = useDirectusUsers();
@@ -151,6 +171,21 @@ const { uploadFile } = useFileUploader();
 const directus = useDirectus();
 
 const uploadingAvatar = ref(false);
+
+const rules = {
+  first_name: { required },
+  last_name: { required },
+  street_address: { required },
+  county: { required },
+  city: { required },
+  postcode: { required },
+  dob: {
+    required,
+    minValue: helpers.withMessage("You must be over 18 to have an account", isAdult)
+  }
+};
+
+const v$: Ref<Validation> = useVuelidate<DirectusUser>(rules, user);
 
 async function avatarChanged (event) {
   const file = new UploadableFile(event.target.files[0], false);
@@ -188,26 +223,31 @@ async function removeAvatar () {
 }
 
 async function onSave () {
-  try {
-    const userToSave = {
-      first_name: user.value!.first_name,
-      last_name: user.value!.last_name,
-      home_tel: user.value!.home_tel,
-      mobile: user.value!.mobile,
-      street_address: user.value!.street_address,
-      city: user.value!.city,
-      county: user.value!.county,
-      postcode: user.value!.postcode,
-      avatar: user.value!.avatar
-    };
+  v$.value.$touch();
 
-    await updateUser({
-      id: user.value!.id,
-      user: userToSave
-    });
-    await fetchUser();
-  } catch (e) {
-    console.error("could not save user details", e);
+  if (!v$.value.$invalid) {
+    try {
+      const userToSave = {
+        first_name: user.value!.first_name,
+        last_name: user.value!.last_name,
+        dob: user.value!.dob,
+        home_tel: user.value!.home_tel,
+        mobile: user.value!.mobile,
+        street_address: user.value!.street_address,
+        city: user.value!.city,
+        county: user.value!.county,
+        postcode: user.value!.postcode,
+        avatar: user.value!.avatar
+      };
+
+      await updateUser({
+        id: user.value!.id,
+        user: userToSave
+      });
+      await fetchUser();
+    } catch (e) {
+      console.error("could not save user details", e);
+    }
   }
 }
 

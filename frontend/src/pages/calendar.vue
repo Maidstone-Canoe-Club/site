@@ -1,7 +1,11 @@
 ﻿<template>
   <div>
-    <desktop-calendar
+    <event-filter
       :events="events"
+      @change="onFilterChange" />
+    <desktop-calendar
+      class="mt-5"
+      :events="filteredEvents"
       :loading="loading" />
   </div>
 </template>
@@ -12,8 +16,11 @@ import { useCalendarStore } from "~/store/calendarStore";
 
 const calendarStore = useCalendarStore();
 
+const filters = ref<string[]>([]);
 const events = ref([]);
 const loading = ref(false);
+
+const filteredEvents = computed(() => events.value.filter(e => filters.value.length === 0 ? true : filters.value.includes(e.type)));
 
 const { getItems } = useDirectusItems();
 
@@ -29,72 +36,76 @@ await fetchEvents();
 async function fetchEvents () {
   loading.value = true;
   try {
-    const foundEvents = await getItems({
-      collection: "events",
-      params: {
-        filter: {
-          _and: [
+    const getFilter = {
+      _and: [
+        {
+          status: {
+            _neq: "cancelled"
+          }
+        },
+        {
+          _or: [
             {
-              status: {
-                _neq: "cancelled"
-              }
+              is_recurring: { _eq: false }
             },
             {
-              _or: [
-                {
-                  is_recurring: { _eq: false }
-                },
-                {
-                  is_recurring: { _null: true }
-                }
-              ]
+              is_recurring: { _null: true }
+            }
+          ]
+        },
+        {
+          start_date: { _lte: end.value }
+        },
+        {
+          _or: [
+            {
+              end_date: { _gt: start.value }
             },
             {
-              start_date: { _lte: end.value }
-            },
-            {
-              _or: [
-                {
-                  end_date: { _gt: start.value }
-                },
-                {
-                  end_date: { _null: true }
-                }
-              ]
+              end_date: { _null: true }
             }
           ]
         }
+      ]
+    };
+
+    const foundEvents = await getItems({
+      collection: "events",
+      params: {
+        filter: getFilter
       }
     });
+
+    const getRecurringFilter = {
+      _and: [
+        {
+          is_recurring: { _eq: true }
+        },
+        {
+          status: {
+            _neq: "cancelled"
+          }
+        },
+        {
+          start_date: { _lte: end.value }
+        },
+        {
+          _or: [
+            {
+              last_occurence: { _gt: start.value }
+            },
+            {
+              last_occurence: { _null: true }
+            }
+          ]
+        }
+      ]
+    };
 
     const recurringEvents = await getItems({
       collection: "events",
       params: {
-        filter: {
-          _and: [
-            {
-              is_recurring: { _eq: true }
-            },
-            {
-              status: {
-                _neq: "cancelled"
-              }
-            },
-            {
-              start_date: { _lte: end.value }
-            },
-            {
-              _or: [
-                {
-                  last_occurence: { _gt: start.value }
-                },
-                {
-                  last_occurence: { _null: true }
-                }
-              ]
-            }
-          ]
-        }
+        filter: getRecurringFilter
       }
     });
 
@@ -332,6 +343,10 @@ function countEventOccurences (pattern, startDate, endDate) {
   }
 
   return count;
+}
+
+function onFilterChange (val: Record<string, boolean>) {
+  filters.value = Object.keys(val).filter(key => val[key]);
 }
 
 </script>

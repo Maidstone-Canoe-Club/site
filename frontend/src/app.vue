@@ -1,10 +1,18 @@
 <template>
-  <div>
-    <nuxt-layout>
-      <nuxt-page />
-    </nuxt-layout>
-  </div>
+  <nuxt-layout :key="key">
+    <nuxt-page />
+  </nuxt-layout>
 </template>
+
+<script setup lang="ts">
+import { provideUseId } from "@headlessui/vue";
+
+provideUseId(() => useId());
+
+const user = useDirectusUser();
+const key = computed(() => user.value?.id || "");
+
+</script>
 
 <style lang="postcss">
 .page-enter-active,

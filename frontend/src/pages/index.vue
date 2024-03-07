@@ -148,7 +148,30 @@ const { data: newsItems } = await useAsyncData("news-items-home", async () => {
     collection: "news",
     params: {
       limit: 3,
-      sort: ["-date_created"]
+      sort: ["-date_created"],
+      filter: {
+        _and: [
+          {
+            _or: [
+              {
+                publish_date: {
+                  _lte: "$NOW"
+                }
+              },
+              {
+                publish_date: {
+                  _null: true
+                }
+              }
+            ]
+          },
+          {
+            status: {
+              _eq: "published"
+            }
+          }
+        ]
+      }
     }
   });
 

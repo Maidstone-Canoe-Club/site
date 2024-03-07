@@ -81,13 +81,13 @@ export default defineNuxtConfig({
 
   modules: [
     "nuxt-directus",
-    "@nuxtjs/google-fonts",
     "@nuxtjs/tailwindcss",
     "nuxt-headlessui",
     "@pinia/nuxt",
     "@nuxtjs/turnstile",
     "floating-vue/nuxt",
-    "nuxt-og-image"
+    "nuxt-og-image",
+    "@nuxt/fonts"
   ],
 
   headlessui: {
@@ -103,14 +103,6 @@ export default defineNuxtConfig({
     onAutoRefreshFailure () : Promise<void> {
       console.log("AUTO REFRESH FAILURE!");
       return Promise.resolve();
-    }
-  },
-
-  googleFonts: {
-    download: true,
-    families: {
-      Karla: [400, 500, 600, 700],
-      "Space Grotesk": [500, 600, 700]
     }
   },
 

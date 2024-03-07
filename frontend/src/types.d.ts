@@ -11,6 +11,7 @@ export type MedicalInfo = {
 }
 
 export type EmergencyContact = {
+  id: string | null,
   full_name: string,
   contact_number: string,
   user: string | null
@@ -36,10 +37,11 @@ export type EventType = "pool_session"
   | "race_training"
   | "coaching"
   | "paddles_trips_tours"
-  | "social_events"
+  | "social_event"
   | "fun_session"
   | "race"
-  | "beginners_course";
+  | "beginners_course"
+  | "meetings";
 
 export type EventAllowedRoles = "none" | "non-members" | "juniors" | "members";
 
