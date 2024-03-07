@@ -18,7 +18,7 @@
 
 <script setup lang="ts">
 
-const { getItems, createItems, deleteItems } = useDirectusItems();
+const { getItems, createItems, deleteItems, updateItem } = useDirectusItems();
 const user = useDirectusUser();
 
 const { data: contacts } = await useAsyncData("emergency-contacts", async () => {
@@ -53,12 +53,15 @@ async function onSave () {
   try {
     const toAdd = [];
     const toRemove = [];
+    const toUpdate = [];
 
     for (const contact of contacts.value) {
       if (contact.shouldRemove) {
         toRemove.push(contact);
       } else if (!contact.id) {
         toAdd.push(contact);
+      } else if (contact.shouldUpdate) {
+        toUpdate.push(contact);
       }
     }
 
@@ -76,8 +79,23 @@ async function onSave () {
       });
     }
 
-    if (toAdd.length || toRemove.length) {
+    if (toUpdate.length) {
+      for (const contact of toUpdate) {
+        await updateItem({
+          collection: "emergency_contacts",
+          id: contact.id,
+          item: {
+            full_name: contact.full_name,
+            contact_number: contact.contact_number
+          }
+        });
+      }
+    }
+
+    if (toAdd.length || toRemove.length || toUpdate.length) {
       await loadData();
+    } else {
+      console.warn("No changes made");
     }
   } catch (e) {
     console.error("error saving emergency contacts", e);

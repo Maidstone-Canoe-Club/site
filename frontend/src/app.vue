@@ -1,5 +1,5 @@
 <template>
-  <nuxt-layout>
+  <nuxt-layout :key="key">
     <nuxt-page />
   </nuxt-layout>
 </template>
@@ -8,6 +8,9 @@
 import { provideUseId } from "@headlessui/vue";
 
 provideUseId(() => useId());
+
+const user = useDirectusUser();
+const key = computed(() => user.value?.id || "");
 
 </script>
 
