@@ -19,8 +19,8 @@ export default defineNitroPlugin((nitroApp) => {
     integrations: [
       new ProfilingIntegration()
     ],
-    tracesSampleRate: 0.1,
-    profilesSampleRate: 0.1
+    tracesSampleRate: 1.0,
+    profilesSampleRate: 0.3
   });
 
   nitroApp.hooks.hook("error", (error) => {

@@ -20,6 +20,6 @@ export default defineNuxtPlugin((nuxtApp) => {
       })
     ],
     tracePropagationTargets: ["localhost", config.public.BASE_URL],
-    tracesSampleRate: 0.1
+    tracesSampleRate: 1.0
   });
 });

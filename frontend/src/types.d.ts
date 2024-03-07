@@ -11,6 +11,7 @@ export type MedicalInfo = {
 }
 
 export type EmergencyContact = {
+  id: string | null,
   full_name: string,
   contact_number: string,
   user: string | null
