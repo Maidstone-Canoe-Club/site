@@ -110,6 +110,7 @@ import type { EmergencyContact } from "~/types";
 
 type InternalEmergencyContact = {
   shouldRemove: boolean,
+  shouldUpdate: boolean,
   editId: string | null
 } & EmergencyContact;
 
@@ -175,6 +176,7 @@ function confirmChanges () {
   const index = internalValue.value.findIndex(c => c.editId === editingItem.value!.editId);
   if (index >= 0) {
     internalValue.value[index] = editingItem.value!;
+    internalValue.value[index].shouldUpdate = true;
     editingItem.value = null;
   }
 }
@@ -199,7 +201,8 @@ function addNewContact () {
     full_name: newFullName.value,
     contact_number: newContactNumber.value,
     user: null,
-    shouldRemove: false
+    shouldRemove: false,
+    shouldUpdate: false
   };
 
   if (user.value) {
