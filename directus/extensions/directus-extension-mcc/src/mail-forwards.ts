@@ -97,9 +97,9 @@ export async function handleMailForward(data: InboundEmail, toAddress?: FullAddr
           let fromName = `forwards@${process.env.EMAIL_DOMAIN}`;
 
           if (data.FromName) {
-            fromName = `${data.FromName} (${data.FromFull.Email}) <${fromName}>`;
-          }else{
-            fromName = `(${data.FromFull.Email}) <${fromName}>`;
+            fromName = `${data.FromName} <${fromName}>`;
+          // }else{
+          //   fromName = `(${data.FromFull.Email}) <${fromName}>`;
           }
 
           await sendEmail({
@@ -163,9 +163,9 @@ async function handleNewMailThread(data: InboundEmail, toAddress?: FullAddress, 
         let fromAddress = `<forwards@${process.env.EMAIL_DOMAIN}>`;
 
         if (data.FromName) {
-          fromAddress = `${data.FromName} (${data.FromFull.Email}) ${fromAddress}`;
-        }else{
-          fromAddress = `(${data.FromFull.Email}) ${fromAddress}`;
+          fromAddress = `${data.FromName} ${fromAddress}`;
+        // }else{
+        //   fromAddress = `(${data.FromFull.Email}) ${fromAddress}`;
         }
 
         // send email to target
