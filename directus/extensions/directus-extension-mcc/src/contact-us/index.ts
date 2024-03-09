@@ -5,6 +5,7 @@ import {extractForwardTarget, handleMailForward} from "../mail-forwards";
 export default defineEndpoint((router, {services, database}) => {
   const {
     ItemsService,
+    MailService
   } = services;
 
   const adminAccountability = {
@@ -49,11 +50,20 @@ export default defineEndpoint((router, {services, database}) => {
 
       const mailThreadsService = new ItemsService("mail_threads", {knex: database, schema: req.schema, accountability: adminAccountability});
 
+      const mailService = new MailService({schema: req.schema, knex: database});
+
+      const sentFromMessage = `This email was sent by ${data.fromName} (${data.fromEmail})`;
+
+      const message = await mailService.renderTemplate("sent-from", {
+        content: data.message,
+        sentFromMessage
+      });
+
       const inboundEmail: InboundEmail = {
         From: data.fromEmail,
         FromName: data.fromName,
         Subject: data.subject,
-        TextBody: data.message,
+        HtmlBody: message,
         FromFull: {
           Email: data.fromEmail,
           Name: data.fromName
