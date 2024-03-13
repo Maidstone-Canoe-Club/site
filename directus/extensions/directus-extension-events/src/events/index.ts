@@ -1,13 +1,6 @@
 import {defineEndpoint} from "@directus/extensions-sdk";
-import {
-  parseISO,
-  getDay,
-  getWeekOfMonth,
-  getMonth,
-  setDefaultOptions,
-  addDays, addWeeks, addMonths, addYears
-} from "date-fns";
-import enGB from "date-fns/locale/en-GB/index.js";
+import {create} from "./create";
+import {get} from "./get";
 
 export default defineEndpoint((router, {services, database}) => {
   const {
@@ -19,6 +12,10 @@ export default defineEndpoint((router, {services, database}) => {
   const adminAccountability = {
     admin: true
   };
+
+  router.get("/", async (req: any, res: any) => {
+    return await get(req, res, services, database);
+  });
 
   router.get("/info", async (req: any, res: any) => {
     try {
@@ -633,82 +630,7 @@ export default defineEndpoint((router, {services, database}) => {
   });
 
   router.post("/create", async (req, res) => {
-    try {
-      const eventType = req.body.eventType;
-      const eventItem = req.body.eventItem;
-      const eventDates = req.body.eventDates;
-      const leaders = req.body.leaders;
-
-      console.log("creating new date");
-      console.log("event type", eventType);
-      console.log("event item", eventItem);
-      console.log("event dates", eventDates);
-
-      const eventService = new ItemsService("events", {
-        knex: database,
-        schema: req.schema,
-        accountability: req.accountability
-      });
-
-      const recurringEventService = new ItemsService("recurring_event_patterns", {
-        knex: database,
-        schema: req.schema,
-        accountability: req.accountability
-      });
-
-      eventItem.status = "published";
-
-      // require approval if a price is set
-      if (eventItem.price || eventItem.junior_price || eventItem.member_price || eventItem.non_member_price || eventItem.coach_price) {
-        const loggedInUserId = req.accountability.user;
-        const userService = new UsersService({
-          knex: database,
-          schema: req.schema,
-          accountability: adminAccountability
-        });
-        const user = await userService.readOne(loggedInUserId, {
-          fields: ["role.name"]
-        });
-
-        // roles that are allowed to create an event with a price
-        const allowedRoles = ["committee", "administrator"];
-
-        if (!allowedRoles.includes(user.role.name.toLowerCase())) {
-          eventItem.status = "draft";
-        }
-      }
-
-      // create event leaders
-      const eventLeadersService = new ItemsService("events_directus_users", {
-        knex: database,
-        schema: req.schema,
-        accountability: req.accountability
-      });
-
-      if (eventType === "single") {
-        const id = await createSingleEvent(eventItem, eventService, res);
-        await createLeaders(id, leaders, eventLeadersService, eventService);
-        return res.send(id);
-      } else if (eventType === "multi") {
-        const ids = await createMultiEvent(eventItem, eventDates, eventService, res);
-
-        for (const id of ids) {
-          await createLeaders(id, leaders, eventLeadersService, eventService);
-        }
-
-        return res.send(ids);
-
-      } else if (eventType === "recurring") {
-        const id = await createRecurringEvent(eventItem, eventDates, eventService, recurringEventService, res);
-        await createLeaders(id, leaders, eventLeadersService, eventService);
-        return res.send(id);
-      } else {
-        return res.status(400).send("unknown event type");
-      }
-    } catch (e) {
-      console.error("error creating event", e);
-      return res.status(500).send("error creating event");
-    }
+    return await create(req, res, services, database);
   });
 
   router.post("/download-attendees", async (req: any, res: any) => {
@@ -938,7 +860,7 @@ export default defineEndpoint((router, {services, database}) => {
         if (body.parentDetails && booking.user.parent) {
 
           let parent;
-          if(booking.user.parent){
+          if (booking.user.parent) {
             parent = await userService.readOne(booking.user.parent.id);
           }
 
@@ -1073,230 +995,3 @@ export default defineEndpoint((router, {services, database}) => {
     }
   });
 });
-
-async function createLeaders(eventId, leaders, leadersService, eventService) {
-  console.log("creating leaders against event", eventId, leaders);
-  if (leaders && leaders.length) {
-    const leaderIds = await leadersService.createMany(leaders.map(id => ({
-      events_id: eventId,
-      directus_users_id: id
-    })));
-
-    await eventService.updateOne(eventId, {
-      leaders: leaderIds
-    });
-
-  }
-}
-
-async function createSingleEvent(eventItem, eventService, res) {
-
-  try {
-    const result = await eventService.createOne({
-      title: eventItem.title,
-      description: eventItem.description,
-      location: eventItem.location,
-      start_date: eventItem.startDate,
-      end_date: eventItem.endDate,
-      price: eventItem.price,
-      junior_price: eventItem.junior_price,
-      advanced_pricing: eventItem.advanced_pricing,
-      member_price: eventItem.member_price,
-      non_member_price: eventItem.non_member_price,
-      coach_price: eventItem.coach_price,
-      allowed_roles: eventItem.allowedRoles,
-      type: eventItem.type,
-      status: eventItem.status,
-      max_spaces: eventItem.max_spaces,
-      visible_attendees: eventItem.visible_attendees,
-      last_booking_date: eventItem.last_booking_date
-    });
-
-    return result;
-  } catch (e) {
-    console.error("unable to create new event", e);
-    return res.status(500).send("unable to create new event");
-  }
-}
-
-async function createMultiEvent(eventItem, eventDates, eventService, res) {
-
-  try {
-    const newEvents = [];
-
-    const eventCount = eventDates.multiple.length;
-
-    const firstDate = eventDates.multiple[0];
-    const firstEventId = await eventService.createOne({
-      title: eventItem.title,
-      event_count: eventCount,
-      event_index: 1,
-      description: eventItem.description,
-      location: eventItem.location,
-      start_date: firstDate.startDate,
-      end_date: firstDate.endDate,
-      price: eventItem.price,
-      junior_price: eventItem.junior_price,
-      advanced_pricing: eventItem.advanced_pricing,
-      member_price: eventItem.member_price,
-      non_member_price: eventItem.non_member_price,
-      coach_price: eventItem.coach_price,
-      allowed_roles: eventItem.allowedRoles,
-      has_multiple: true,
-      type: eventItem.type,
-      status: eventItem.status,
-      max_spaces: eventItem.max_spaces,
-      visible_attendees: eventItem.visible_attendees,
-      last_booking_date: eventItem.last_booking_date
-    });
-
-    for (let i = 1; i < eventDates.multiple.length; i++) {
-      const date = eventDates.multiple[i];
-
-      newEvents.push({
-        title: eventItem.title,
-        event_count: eventCount,
-        event_index: i + 1,
-        description: eventItem.description,
-        location: eventItem.location,
-        start_date: date.startDate,
-        end_date: date.endDate,
-        price: eventItem.price,
-        junior_price: eventItem.junior_price,
-        advanced_pricing: eventItem.advanced_pricing,
-        member_price: eventItem.member_price,
-        non_member_price: eventItem.non_member_price,
-        coach_price: eventItem.coach_price,
-        allowed_roles: eventItem.allowedRoles,
-        parent_event: firstEventId,
-        type: eventItem.type,
-        status: eventItem.status,
-        max_spaces: eventItem.max_spaces,
-        visible_attendees: eventItem.visible_attendees,
-        last_booking_date: eventItem.last_booking_date
-      });
-    }
-
-    const newIds = await eventService.createMany(newEvents);
-
-    return [firstEventId, ...newIds];
-  } catch (e) {
-    console.error("unable to create new multi day event", e);
-    return res.status(500).send("unable to create new multi day  event");
-  }
-}
-
-async function createRecurringEvent(eventItem, eventDates, eventService, recurringEventService, res) {
-  try {
-
-    let endDate = undefined;
-    const occurences = eventDates.recurring.maxOccurrences;
-    if (occurences) {
-      const type = eventDates.recurring.recurringType.id;
-      const start = eventDates.recurring.startDate;
-
-      if (type === "daily") {
-        endDate = addDays(new Date(start), occurences);
-      } else if (type === "weekly") {
-        endDate = addWeeks(new Date(start), occurences);
-      } else if (type === "monthly") {
-        endDate = addMonths(new Date(start), occurences);
-      } else if (type === "yearly") {
-        endDate = addYears(new Date(start), occurences);
-      }
-    }
-
-    const newEventId = await eventService.createOne({
-      title: eventItem.title,
-      description: eventItem.description,
-      location: eventItem.location,
-      price: eventItem.price,
-      junior_price: eventItem.junior_price,
-      member_price: eventItem.member_price,
-      advanced_pricing: eventItem.advanced_pricing,
-      non_member_price: eventItem.non_member_price,
-      coach_price: eventItem.coach_price,
-      start_date: eventDates.recurring.startDate,
-      end_date: eventDates.recurring.endDate,
-      allowed_roles: eventItem.allowedRoles,
-      last_occurance: endDate,
-      is_recurring: true,
-      type: eventItem.type,
-      status: eventItem.status,
-      max_spaces: eventItem.max_spaces,
-      visible_attendees: eventItem.visible_attendees,
-      last_booking_date: eventItem.last_booking_date
-    });
-
-    const recurringPattern = {
-      event: newEventId,
-      type: mapRecurringType(eventDates.recurring.recurringType.id),
-      max_occurences: eventDates.recurring.maxOccurrences
-    };
-
-    let dayOfWeek: number | undefined;
-    let weekOfMonth: number | undefined;
-    let dayOfMonth: number | undefined;
-    let monthOfYear: number | undefined;
-
-    setDefaultOptions({
-      locale: enGB,
-      weekStartsOn: 1
-    });
-
-    const startDate = parseISO(eventDates.recurring.startDate);
-
-    const dayMap = {
-      "0": 6,
-      "1": 0,
-      "2": 1,
-      "3": 2,
-      "4": 3,
-      "5": 4,
-      "6": 5,
-    };
-
-    if (recurringPattern.type === "1") { // weekly
-      dayOfWeek = dayMap[getDay(startDate)];
-    }
-
-    if (recurringPattern.type === "2") { // monthly
-      weekOfMonth = getWeekOfMonth(startDate);
-
-      // TODO: If we want the event to occur on the same DAY of the month, 2nd, 16th:
-      // dayOfMonth = getDate(startDate);
-      dayOfWeek = dayMap[getDay(startDate)];
-    }
-
-    if (recurringPattern.type === "3") { // yearly
-      monthOfYear = getMonth(startDate);
-    }
-
-    recurringPattern.day_of_week = dayOfWeek;
-    recurringPattern.week_of_month = weekOfMonth;
-    recurringPattern.day_of_month = dayOfMonth;
-    recurringPattern.month_of_year = monthOfYear;
-
-    await recurringEventService.createOne(recurringPattern);
-
-    return newEventId;
-  } catch (e) {
-    console.error("unable to create new recurring event", e);
-    return res.status(500).send("unable to create new recurring event");
-  }
-}
-
-function mapRecurringType(id: string) {
-  switch (id) {
-  case "daily":
-    return "0";
-  case "weekly":
-    return "1";
-  case "monthly":
-    return "2";
-  case "yearly":
-    return "3";
-  default:
-    throw new Error(`Unknown recurring type: ${id}`);
-  }
-}

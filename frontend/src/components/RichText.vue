@@ -22,6 +22,14 @@ defineProps<{
   @apply rounded-lg;
 }
 
+::v-deep(ol){
+  @apply list-decimal mx-8 pb-6;
+}
+
+::v-deep(ol > li){
+  @apply pb-2;
+}
+
 ::v-deep(ul){
   @apply list-disc mx-8 py-4;
 }

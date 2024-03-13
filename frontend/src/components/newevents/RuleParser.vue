@@ -1,7 +1,8 @@
 ﻿<script setup lang="ts">
 import { datetime, RRule } from "rrule";
 import type { Validation } from "@vuelidate/core";
-import { useDebounceFn } from "@vueuse/core";
+import { useDebounceFn, watchDebounced } from "@vueuse/core";
+import { CheckIcon, XMarkIcon } from "@heroicons/vue/24/outline";
 import { useDirectusToken } from "#imports";
 
 const props = withDefaults(defineProps<{
@@ -19,6 +20,7 @@ const props = withDefaults(defineProps<{
 });
 
 const loading = ref(false);
+const result = ref<"pending" | "success" | "error">("pending");
 const smartGenerationError = ref<string | null>();
 
 const rule = defineModel<string | undefined>({ required: true });
@@ -31,12 +33,12 @@ watch(() => props.rawValue, (val) => {
   internalRawValue.value = val;
 });
 
-watch(internalRawValue, (val) => {
+watchDebounced(internalRawValue, (val) => {
   props.v?.$reset();
 
   ruleData.value = createRule(val, true);
   rule.value = ruleData.value?.toString() ?? undefined;
-});
+}, { debounce: 1000 });
 
 function toDatetime (date: Date | string) {
   const newDate = new Date(date);
@@ -53,7 +55,9 @@ const { token } = useDirectusToken();
 const debouncedSmartGeneration = useDebounceFn(async () => {
   if (!internalRawValue.value) {
     console.warn("no prompt");
+    return;
   }
+
   loading.value = true;
 
   try {
@@ -70,17 +74,20 @@ const debouncedSmartGeneration = useDebounceFn(async () => {
     if (res) {
       if (res.startsWith("error: ")) {
         smartGenerationError.value = res.replace("error: ", "");
+        result.value = "error";
       } else {
         const options = RRule.parseString(res);
         options.dtstart = toDatetime(props.start);
         ruleData.value = new RRule(options);
         rule.value = ruleData.value?.toString() ?? undefined;
+        result.value = "success";
       }
     } else {
       throw createError("No choices available");
     }
   } catch (err) {
     smartGenerationError.value = "Unable to generate a valid recurring event pattern";
+    result.value = "error";
     console.error(err);
   } finally {
     loading.value = false;
@@ -88,17 +95,20 @@ const debouncedSmartGeneration = useDebounceFn(async () => {
 }, 1000);
 
 function createRule (input: string | undefined, smartFallback: boolean) {
+  result.value = "pending";
   smartGenerationError.value = null;
 
   try {
     if (input) {
       const options = RRule.parseText(input);
       options.dtstart = toDatetime(props.start);
+      result.value = "success";
       return new RRule(options);
     } else {
       return null;
     }
   } catch (e: any) {
+    result.value = "error";
     console.warn("Rule parse error: " + e.message);
     if (smartFallback) {
       debouncedSmartGeneration();
@@ -123,6 +133,14 @@ function createRule (input: string | undefined, smartFallback: boolean) {
         <LoadingSpinner
           v-if="loading"
           color="#4f46e5" />
+        <template v-else>
+          <CheckIcon
+            v-if="result === 'success'"
+            class="size-5 text-green-600" />
+          <XMarkIcon
+            v-else-if="result === 'error'"
+            class="size-5 text-red-500" />
+        </template>
       </template>
     </input-field>
 

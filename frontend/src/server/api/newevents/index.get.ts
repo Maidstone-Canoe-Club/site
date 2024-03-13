@@ -1,4 +1,4 @@
-﻿import OpenAI from "openai";
+﻿import { OpenAI } from "openai";
 
 type User = {
   role: {
@@ -28,6 +28,13 @@ export default defineEventHandler(async (event) => {
     throw createError({
       statusCode: 400,
       statusMessage: "Missing prompt"
+    });
+  }
+
+  if (prompt.length > 1024) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: "Prompt too long, must be 1024 characters or less"
     });
   }
 

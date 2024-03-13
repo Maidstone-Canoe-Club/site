@@ -45,7 +45,7 @@ const user = useDirectusUser();
 const { fetchUser } = useDirectusAuth();
 
 if (!user.value) {
-  throw new Error("Unable to fetch user");
+  throw createError("Unable to fetch user");
 }
 
 type ConfirmResult = {
@@ -69,10 +69,10 @@ const res = await useFetch<ConfirmResult>(url, {
   }
 });
 
-const result = computed(() => res.data.value?.result ?? false);
-const expired = computed(() => res.data.value?.statusCode === 103 ?? false);
-const alreadyConfirmed = computed(() => res.data.value?.statusCode === 102 ?? false);
-const unknownToken = computed(() => res.data.value?.statusCode === 101 ?? false);
+const result = computed(() => res.data.value?.result || false);
+const expired = computed(() => res.data.value?.statusCode === 103 || false);
+const alreadyConfirmed = computed(() => res.data.value?.statusCode === 102 || false);
+const unknownToken = computed(() => res.data.value?.statusCode === 101 || false);
 const hasError = computed(() => !!res.error.value);
 
 if (result.value) {

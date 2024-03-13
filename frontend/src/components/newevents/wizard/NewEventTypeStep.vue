@@ -3,9 +3,10 @@ import { required } from "@vuelidate/validators";
 import { useVuelidate } from "@vuelidate/core";
 import type { EventWizardItem } from "~/components/newevents/wizard/NewEventWizard.vue";
 import ValidationMessages from "~/components/newevents/wizard/ValidationMessages.vue";
+import type { OccurrenceType } from "~/types/events";
 
 type EventType = {
-  id: string,
+  id: OccurrenceType,
   name: string,
   description: string,
 }
@@ -30,17 +31,17 @@ const eventTypes: EventType[] = [
   }
 ];
 
-const selected = ref<EventType | undefined>(eventTypes.find(t => t.id === event.value.type));
+const selected = ref<EventType | undefined>(eventTypes.find(t => t.id === event.value.occurrenceType));
 
 watch(selected, (val) => {
-  event.value.type = val?.id;
+  event.value.occurrenceType = val?.id;
 }, { deep: true });
 
 const rules = {
-  type: { required }
+  occurrenceType: { required }
 };
 
-const validator = useVuelidate(rules, event);
+const validator = useVuelidate<EventWizardItem>(rules, event);
 
 </script>
 

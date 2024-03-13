@@ -1,31 +1,58 @@
 ﻿<script setup lang="ts">
 import type { Component } from "vue";
-import EventTypeStep from "./EventTypeStep.vue";
+import type { DirectusUser } from "nuxt-directus/dist/runtime/types";
 import {
-  // EventTypeStep,
+  NewEventTypeStep,
   EventBasicsStep,
   SingleDateStep,
   MultiDateStep,
-  RecurringDateStep
+  RecurringDateStep,
+  RecurringRuleStep
 } from "#components";
-import type { EventType, NewEventItem } from "~/types/events";
+import type { NewEventItem, OccurrenceType } from "~/types/events";
+import type { EventType } from "~/types/events";
+import type { EventMultiDate } from "~/components/newevents/wizard/MultiDateStep.vue";
+
+export type EventWizardAllowedRole = {
+  id: string,
+  value: string
+}
 
 export type EventWizardItem = {
   name?: string,
-  startDate?: Date,
-  endDate?: Date,
+  description?: string,
+  location?: string,
+  type?: EventType,
+  allowedRoles: EventWizardAllowedRole[],
+  leaders: DirectusUser[],
+  startDate?: Date | string,
+  endDate?: Date | string,
+  lastBookingDate?: Date,
+  lastOccurrence?: Date,
   dates?: {
     startDate: Date,
     endDate: Date,
   }[],
   rrule?: string,
-  type?: EventType,
+  occurrenceType?: OccurrenceType,
 }
 
+const directus = useDirectus();
+
 const newEvent = reactive<EventWizardItem>({
-  type: "recurring",
-  name: "Hello"
+  occurrenceType: "single",
+  name: "Test event",
+  location: "Lee Valley White Water Center",
+  allowedRoles: [],
+  leaders: []
 });
+
+const eventDates = reactive<EventMultiDate[]>([
+  {
+    startDate: undefined,
+    endDate: undefined
+  }
+]);
 
 export type WizardStep = {
   id: string,
@@ -36,7 +63,7 @@ const steps = computed(() => {
   const result: WizardStep[] = [
     {
       id: "type",
-      component: EventTypeStep
+      component: NewEventTypeStep
     },
     {
       id: "basics",
@@ -44,31 +71,31 @@ const steps = computed(() => {
     }
   ];
 
-  if (newEvent.type === "single") {
+  if (newEvent.occurrenceType === "single") {
     result.push({
       id: "single",
       component: SingleDateStep
     });
-  } else if (newEvent.type === "multi") {
+  } else if (newEvent.occurrenceType === "multi") {
     result.push({
       id: "multi",
       component: MultiDateStep
     });
-  } else if (newEvent.type === "recurring") {
+  } else if (newEvent.occurrenceType === "recurring") {
     result.push({
-      id: "single",
-      component: SingleDateStep
+      id: "recurring-date",
+      component: RecurringDateStep
     });
     result.push({
-      id: "recurring",
-      component: RecurringDateStep
+      id: "recurring-rule",
+      component: RecurringRuleStep
     });
   }
 
   return result;
 });
 
-const currentStepIndex = ref(2);
+const currentStepIndex = ref(0);
 const currentStep = computed(() => steps.value[currentStepIndex.value]);
 const currentStepIsLast = computed(() => currentStepIndex.value === steps.value.length - 1);
 
@@ -76,20 +103,25 @@ function onPrev () {
   currentStepIndex.value -= 1;
 }
 
-async function onAdvance () {
-  if (currentStepIsLast.value) {
-    await onSubmit();
-  } else {
+function onAdvance () {
+  if (!currentStepIsLast.value) {
     currentStepIndex.value += 1;
   }
 }
 
 function toNewEventItem (eventItem: EventWizardItem) : NewEventItem {
   return {
-    name: eventItem.name!,
-    startDate: eventItem.startDate!,
-    endDate: eventItem.endDate!,
+    title: eventItem.name!,
+    description: eventItem.description,
+    location: eventItem.location!,
+    start_date: eventItem.startDate!,
+    end_date: eventItem.endDate!,
+    last_occurrence: eventItem.lastOccurrence,
+    last_booking_date: eventItem.lastBookingDate,
+    allowed_roles: eventItem.allowedRoles.map(r => r.id),
+    leaders: eventItem.leaders.map(r => r.id),
     rrule: eventItem.rrule!,
+    occurrenceType: eventItem.occurrenceType!,
     type: eventItem.type!
   };
 }
@@ -97,9 +129,12 @@ function toNewEventItem (eventItem: EventWizardItem) : NewEventItem {
 async function onSubmit () {
   try {
     console.log("SUBMIT!");
-    const newId = await $fetch("/api/events", {
+    const newId = await directus("/events/create/", {
       method: "POST",
-      body: toNewEventItem(newEvent)
+      body: {
+        eventItem: toNewEventItem(newEvent),
+        eventDates
+      }
     });
 
     await navigateTo(`/events/${newId}`);
@@ -112,7 +147,8 @@ async function onSubmit () {
 
 <template>
   <div class="m-auto max-w-xl space-y-8 mt-12">
-    <!--    <pre>{{ newEvent }}</pre>-->
+    <pre>{{ newEvent }}</pre>
+    <!--    <pre>{{ eventDates }}</pre>-->
     <!--    <pre>currentStepIndex: {{ currentStepIndex }}</pre>-->
     <!--    <pre>currentStepIsLast: {{ currentStepIsLast }}</pre>-->
     <h1 class="text-2xl font-bold text-center">
@@ -124,12 +160,14 @@ async function onSubmit () {
     <component
       :is="currentStep.component"
       v-model="newEvent"
-      #="{valid, validator}">
+      v-model:event-dates="eventDates"
+      #="{validator, isValid}">
       <EventWizardControls
         :current-step-index="currentStepIndex"
         :current-step-is-last="currentStepIsLast"
-        :valid="valid"
+        :is-valid="isValid"
         :validator="validator"
+        :on-submit="onSubmit"
         @prev="onPrev"
         @advance="onAdvance" />
     </component>

@@ -1,15 +1,19 @@
 ﻿<script setup lang="ts">
 import { useVuelidate } from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
+import type { EventType } from "~/types/events";
 import type { EventWizardItem } from "~/components/newevents/wizard/NewEventWizard.vue";
 
 const event = defineModel<EventWizardItem>({ required: true });
 
 const rules = {
-  name: { required }
+  name: { required },
+  location: { required },
+  type: { required },
+  allowedRoles: { required }
 };
 
-const validator = useVuelidate(rules, event);
+const validator = useVuelidate<EventWizardItem>(rules, event);
 
 const allowedRoles = [
   { id: "non-members", name: "Non-members" },
@@ -18,7 +22,12 @@ const allowedRoles = [
   { id: "none", name: "No one" }
 ];
 
-const eventTypes = [
+type EventTypeOption = {
+  id: EventType,
+  name: string
+}
+
+const eventTypes: EventTypeOption[] = [
   { id: "beginners_course", name: "Beginners course" },
   { id: "club_paddle", name: "Regular club paddle" },
   { id: "pool_session", name: "Pool session" },
@@ -30,6 +39,25 @@ const eventTypes = [
   { id: "race", name: "Race" },
   { id: "meetings", name: "Meetings" }
 ];
+
+const eventType = ref<EventTypeOption | null>(null);
+
+watch(eventType, (val) => {
+  if (val) {
+    event.value.type = val.id;
+  }
+}, { deep: true });
+
+watch(() => event.value.allowedRoles, (val, oldVal) => {
+  if (oldVal.length === 1 && oldVal[0].id === "none" && val.length > 1) {
+    event.value.allowedRoles = val.filter(x => x.id !== "none");
+  } else {
+    const noOne = val.find(x => x.id === "none");
+    if (noOne && val.length > 1) {
+      event.value.allowedRoles = [noOne];
+    }
+  }
+}, { deep: true });
 
 const user = useDirectusUser();
 
@@ -58,13 +86,14 @@ const canChangeLeaders = computed(() => {
     <input-field
       id="location"
       v-model="event.location"
+      placeholder="Maidstone Canoe Club"
       required
       label="Location"
       :v="validator.location" />
 
     <input-dropdown
       id="event-type"
-      v-model="event.type"
+      v-model="eventType"
       :options="eventTypes"
       label="Event type"
       :v="validator.type" />
@@ -75,7 +104,7 @@ const canChangeLeaders = computed(() => {
       multiple
       :options="allowedRoles"
       label="Who can join this event?"
-      :v="validator.allowedToles" />
+      :v="validator.allowedRoles" />
 
     <user-search
       v-show="canChangeLeaders"

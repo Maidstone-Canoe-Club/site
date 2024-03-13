@@ -11,16 +11,34 @@ const rules = {
   endDate: {
     required,
     afterStart: helpers.withMessage("End date must be after the start date", (value: Date, siblings: EventWizardItem) => {
-      return new Date(value) > new Date(siblings.startDate);
+      return new Date(value) > new Date(siblings.startDate!);
     })
   }
 };
 
-const validator = useVuelidate(rules, event);
+const validator = useVuelidate<EventWizardItem>(rules, event);
 
 watch(() => event.value.startDate, (val) => {
-  if (!event.value.endDate && val) {
-    event.value.endDate = formatISO(addHours(new Date(event.value.startDate), 1));
+  event.value.rrule = undefined;
+
+  if (!val) {
+    return;
+  }
+
+  if (!event.value.endDate || event.value.endDate < val) {
+    event.value.endDate = formatISO(addHours(new Date(val), 1));
+  }
+});
+
+watch(() => event.value.endDate, (val) => {
+  event.value.rrule = undefined;
+
+  if (!val || !event.value.startDate) {
+    return;
+  }
+
+  if (val < event.value.startDate) {
+    validator.value.$touch();
   }
 });
 
@@ -32,6 +50,7 @@ watch(() => event.value.startDate, (val) => {
       id="start-date"
       v-model="event.startDate"
       label="When does the event start?"
+      required
       enable-time-picker
       :v="validator.startDate" />
 
@@ -39,15 +58,18 @@ watch(() => event.value.startDate, (val) => {
       id="start-date"
       v-model="event.endDate"
       label="When does the event end?"
+      required
       enable-time-picker
       :v="validator.endDate" />
-
     <hr>
 
     <div>
+      <p class="text-gray-700 mb-3">
+        Optional
+      </p>
       <input-date
         id="last-booking-date"
-        v-model="event.last_booking_date"
+        v-model="event.lastBookingDate"
         enable-time-picker
         label="Last booking date" />
       <small>The last date users will be allowed to book onto this event</small>

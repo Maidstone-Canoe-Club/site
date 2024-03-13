@@ -6,20 +6,40 @@ const emits = defineEmits(["prev", "advance"]);
 const props = defineProps<{
   currentStepIndex: number,
   currentStepIsLast: boolean,
-  validator: Validation,
+  isValid?: boolean,
+  validator?: Validation,
+  onSubmit:(() => Promise<any>)
 }>();
 
 const nextButtonLabel = computed(() => props.currentStepIsLast ? "Submit" : "Next");
 const disablePrev = computed(() => props.currentStepIndex === 0);
 
+const internalIsValid = computed(() => {
+  if (props.validator) {
+    return !props.validator.$invalid;
+  }
+
+  return props.isValid;
+});
 function onPrev () {
   emits("prev");
 }
 
 function onAdvance () {
-  props.validator.$touch();
-  if (!props.validator.$invalid) {
+  if (props.currentStepIsLast) {
+    return;
+  }
+
+  props.validator?.$touch();
+  if (internalIsValid.value) {
     emits("advance");
+  }
+}
+
+async function submit () {
+  props.validator?.$touch();
+  if (internalIsValid.value) {
+    await props.onSubmit();
   }
 }
 
@@ -28,6 +48,7 @@ function onAdvance () {
 <template>
   <div class="flex flex-row-reverse justify-between gap-2">
     <a-button
+      :action="currentStepIsLast && internalIsValid ? submit : undefined"
       @click="onAdvance">
       {{ nextButtonLabel }}
     </a-button>

@@ -44,7 +44,7 @@ interface Props {
 const emits = defineEmits(["update:modelValue"]);
 
 const props = withDefaults(defineProps<Props>(), {
-  label: null,
+  label: undefined,
   required: false,
   disabled: false,
   currencySymbol: "£",
@@ -57,7 +57,7 @@ const error = computed(() => {
   }
 });
 
-const isValid = computed(() => !props.v?.$invalid ?? true);
+const isValid = computed(() => !props.v?.$invalid || true);
 
 const internalValue = computed(() => formatPrice(props.modelValue));
 

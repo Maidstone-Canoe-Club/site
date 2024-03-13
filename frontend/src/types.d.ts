@@ -46,7 +46,7 @@ export type EventType = "pool_session"
 export type EventAllowedRoles = "none" | "non-members" | "juniors" | "members";
 
 export interface EventItem {
-  id?: number,
+  id?: string,
   title: string,
   description?: string,
   location?: string,
@@ -71,6 +71,7 @@ export interface EventItem {
   leaders?: string[],
   user_created?: string,
   date_created?: string,
+  rrule?: string
 }
 
 export interface NewsItem {

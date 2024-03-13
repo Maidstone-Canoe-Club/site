@@ -1,19 +1,19 @@
 ﻿<template>
-  <template v-if="user">
+  <div
+    v-if="user"
+    class="relative"
+    :class="sizeClass">
     <img
       v-if="hasAvatar"
-      class="rounded-full"
+      class="rounded-full absolute inset-0 z-10"
       :width="imageSize"
       :height="imageSize"
-      :class="sizeClass"
       :src="avatarUrl!"
-      alt="User avatar">
+      alt="">
     <UserCircleIcon
-      v-else
-      class="text-gray-300"
-      :class="sizeClass"
+      class="text-gray-300 absolute block inset-0 z-9"
       aria-hidden="true" />
-  </template>
+  </div>
 </template>
 
 <script setup lang="ts">
