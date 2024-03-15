@@ -114,6 +114,7 @@ const canChangeLeaders = computed(() => {
       multiple />
 
     <div class="footer">
+      <hr class="mb-6">
       <slot v-bind="{validator}" />
     </div>
   </div>

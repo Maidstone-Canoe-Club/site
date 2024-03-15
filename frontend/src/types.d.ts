@@ -51,7 +51,7 @@ export interface EventItem {
   description?: string,
   location?: string,
   start_date: Date,
-  end_date?: Date,
+  end_date: Date,
   type: EventType,
   price?: number,
   junior_price?: number,
@@ -72,6 +72,15 @@ export interface EventItem {
   user_created?: string,
   date_created?: string,
   rrule?: string
+}
+
+export interface EventBooking {
+  id: string,
+  user: DirectusUser,
+  event: EventItem,
+  date: string,
+  instance: number,
+  status: string
 }
 
 export interface NewsItem {

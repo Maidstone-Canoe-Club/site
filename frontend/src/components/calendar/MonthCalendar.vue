@@ -166,14 +166,14 @@ function getEventBorderColor (event: CalendarEvent) {
     return "border-orange-500";
   case "fun_session":
     return "border-violet-500";
-  case "social_event":
+  case "social_events":
     return "border-rose-500";
   case "beginners_course":
     return "border-green-500";
   case "race_training":
     return "border-yellow-500";
   case "race":
-    return "border-line-500";
+    return "border-lime-500";
   case "coaching":
     return "border-pink-500";
   case "meetings":
@@ -199,7 +199,7 @@ function getEventDotColor (event: CalendarEvent) {
     return "bg-orange-500";
   case "fun_session":
     return "bg-violet-500";
-  case "social_event":
+  case "social_events":
     return "bg-rose-500";
   case "beginners_course":
     return "bg-green-500";
@@ -271,7 +271,7 @@ function getEventDotColor (event: CalendarEvent) {
                   <nuxt-link
                     v-tooltip="event.title"
                     :to="event.href"
-                    :class="getEventBorderColor(event)"
+                    :class="[!day.isCurrentMonth ? 'opacity-50' : '', getEventBorderColor(event)]"
                     class="flex group border-l-4 border-blue-500 pl-1 transition-colors"
                     @mouseenter="hoveringEnter(event)"
                     @mouseleave="hoveringLeave()">
@@ -307,7 +307,7 @@ function getEventDotColor (event: CalendarEvent) {
               <time
                 :datetime="day.date"
                 :class="[day.isSelected && 'flex h-6 w-6 items-center justify-center rounded-full', day.isSelected && day.isToday && 'bg-indigo-600', day.isSelected && !day.isToday && 'bg-gray-900', 'ml-auto']">
-                {{ day.date.split('-').pop().replace(/^0/, '') }}
+                {{ day.date.split('-').pop()?.replace(/^0/, '') }}
               </time>
               <span class="sr-only">{{ day.events.length }} events</span>
               <span v-if="day.events.length > 0" class="mt-auto flex flex-wrap-reverse -mx-0.5">

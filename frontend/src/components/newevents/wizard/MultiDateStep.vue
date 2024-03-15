@@ -118,6 +118,7 @@ const isValid = computed(() => {
       </a-button>
     </div>
     <div class="footer">
+      <hr class="mb-6">
       <slot :is-valid="isValid" />
     </div>
   </div>

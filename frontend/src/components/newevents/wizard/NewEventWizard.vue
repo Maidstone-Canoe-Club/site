@@ -57,6 +57,7 @@ const eventDates = reactive<EventMultiDate[]>([
 export type WizardStep = {
   id: string,
   component: Component,
+  props?: Record<string, any>
 }
 
 const steps = computed(() => {
@@ -83,8 +84,11 @@ const steps = computed(() => {
     });
   } else if (newEvent.occurrenceType === "recurring") {
     result.push({
-      id: "recurring-date",
-      component: RecurringDateStep
+      id: "single",
+      component: SingleDateStep,
+      props: {
+        hideLastOccurrence: true
+      }
     });
     result.push({
       id: "recurring-rule",
@@ -147,7 +151,7 @@ async function onSubmit () {
 
 <template>
   <div class="m-auto max-w-xl space-y-8 mt-12">
-    <pre>{{ newEvent }}</pre>
+    <!--    <pre>{{ newEvent }}</pre>-->
     <!--    <pre>{{ eventDates }}</pre>-->
     <!--    <pre>currentStepIndex: {{ currentStepIndex }}</pre>-->
     <!--    <pre>currentStepIsLast: {{ currentStepIsLast }}</pre>-->
@@ -161,6 +165,7 @@ async function onSubmit () {
       :is="currentStep.component"
       v-model="newEvent"
       v-model:event-dates="eventDates"
+      v-bind="currentStep.props"
       #="{validator, isValid}">
       <EventWizardControls
         :current-step-index="currentStepIndex"

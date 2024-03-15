@@ -6,6 +6,8 @@
     auto-apply
     :close-on-auto-apply="false"
     :enable-time-picker="enableTimePicker ?? false"
+    :min-date="minDate"
+    :max-date="maxDate"
     utc
     locale="en-GB">
     <template #calendar-icon>
@@ -34,6 +36,8 @@ const emits = defineEmits(["update:modelValue"]);
 const props = defineProps<{
   modelValue: Date | number | null | undefined,
   enableTimePicker?: boolean,
+  minDate?: Date | string
+  maxDate?: Date | string
   placeholder?: string
 }>();
 

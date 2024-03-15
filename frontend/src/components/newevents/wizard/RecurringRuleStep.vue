@@ -130,15 +130,17 @@ const exampleEvents = computed(() => [{
 
     <div>
       <ul class="flex flex-wrap gap-3">
-        <li
-          v-for="(example, index) in examples"
-          :key="index">
-          <button
-            class="rounded bg-indigo-50 px-2 py-1 text-sm font-semibold text-indigo-600 shadow-sm hover:bg-indigo-100 border border-indigo-300"
-            @click="() => useExample(example)">
-            {{ example }}
-          </button>
-        </li>
+        <ul class="flex flex-wrap gap-3">
+          <li
+            v-for="(example, index) in examples"
+            :key="index">
+            <button
+              class="rounded bg-indigo-50 px-2 py-1 text-sm font-semibold text-indigo-600 shadow-sm hover:bg-indigo-100 border border-indigo-300"
+              @click="() => useExample(example)">
+              {{ example }}
+            </button>
+          </li>
+        </ul>
       </ul>
     </div>
 

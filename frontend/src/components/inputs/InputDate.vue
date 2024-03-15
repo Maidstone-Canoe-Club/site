@@ -14,6 +14,8 @@
         v-model="internalValue"
         class="shadow-sm"
         :enable-time-picker="enableTimePicker"
+        :min-date="minDate"
+        :max-date="maxDate"
         v-bind="$attrs" />
     </div>
     <p
@@ -35,6 +37,8 @@ interface Props {
   required?: boolean,
   disabled?: boolean,
   enableTimePicker?: boolean,
+  minDate?: Date | string,
+  maxDate?: Date | string,
   v?: Validation | null,
   isValid?: boolean
 }
@@ -45,6 +49,8 @@ const props = withDefaults(defineProps<Props>(), {
   label: undefined,
   required: false,
   disabled: false,
+  minDate: undefined,
+  maxDate: undefined,
   v: null,
   isValid: true
 });

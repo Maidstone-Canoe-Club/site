@@ -4,6 +4,10 @@ import { useVuelidate } from "@vuelidate/core";
 import { addHours, formatISO } from "date-fns";
 import type { EventWizardItem } from "~/components/newevents/wizard/NewEventWizard.vue";
 
+defineProps<{
+  hideLastOccurrence?: boolean
+}>();
+
 const event = defineModel<EventWizardItem>({ required: true });
 
 const rules = {
@@ -52,6 +56,7 @@ watch(() => event.value.endDate, (val) => {
       label="When does the event start?"
       required
       enable-time-picker
+      :max-date="event.endDate"
       :v="validator.startDate" />
 
     <input-date
@@ -60,10 +65,12 @@ watch(() => event.value.endDate, (val) => {
       label="When does the event end?"
       required
       enable-time-picker
+      :min-date="event.startDate"
       :v="validator.endDate" />
-    <hr>
 
-    <div>
+    <div v-if="!hideLastOccurrence">
+      <hr>
+
       <p class="text-gray-700 mb-3">
         Optional
       </p>
@@ -76,6 +83,7 @@ watch(() => event.value.endDate, (val) => {
     </div>
 
     <div class="footer">
+      <hr class="mb-6">
       <slot v-bind="{validator}" />
     </div>
   </div>

@@ -1,10 +1,4 @@
-﻿import {
-  addDays,
-  addWeeks,
-  addMonths,
-  addYears
-} from "date-fns";
-import { RRule } from "rrule";
+﻿import { RRule } from "rrule";
 import type { EventItem } from "~/types";
 
 export function getEventInstanceForDate (eventItem: EventItem, date: Date): number {
@@ -27,7 +21,7 @@ export function getEventInstanceForDate (eventItem: EventItem, date: Date): numb
 export function getEventUrl (eventItem: EventItem, date?: Date) {
   let href = `/events/${eventItem.id}`;
 
-  if (eventItem.isRecurring && date) {
+  if (eventItem.is_recurring && date) {
     const instance = getEventInstanceForDate(eventItem, date);
     href += `?instance=${instance}`;
   }
@@ -35,26 +29,25 @@ export function getEventUrl (eventItem: EventItem, date?: Date) {
   return href;
 }
 
-export function getDateFromInstance (date: string, instance: number, recurringType?: string) {
-  let result = new Date(date);
-  if (instance && recurringType) {
-    switch (recurringType) {
-    case "0": // daily
-      result = addDays(new Date(date), instance - 1);
-      break;
-    case "1": // weekly
-      result = addWeeks(new Date(date), instance - 1);
-      break;
-    case "2": // monthly
-      result = addMonths(new Date(date), instance - 1);
-      break;
-    case "3": // yearly
-      result = addYears(new Date(date), instance - 1);
-      break;
-    default:
-      throw new Error("Invalid recurring pattern type: " + recurringType);
-    }
-  }
+export function getDatesOfInstance (event: EventItem, instance: number) {
+  const startDate = new Date(event.start_date);
+  const endDate = new Date(event.end_date);
 
-  return result;
+  const duration = endDate.getTime() - startDate.getTime();
+  const ruleData = RRule.fromString(event.rrule!);
+
+  // TODO: This will need some optimisation in the future.
+  // Has to iterator over each date to get to the current instance
+  const all = ruleData.all((_, i) => {
+    return i < instance + 1;
+  });
+
+  const start = all[instance];
+  start.setHours(startDate.getHours(), startDate.getMinutes(), startDate.getSeconds());
+  const end = new Date(endDate.getTime() + duration);
+
+  return {
+    start,
+    end
+  };
 }

@@ -13,6 +13,17 @@ export async function get(req: any, res: any, services: any, database: any) {
   try {
     const start = new Date(decodeURIComponent(req.query.start));
     const end = new Date(decodeURIComponent(req.query.end));
+    const fields = [
+      "id",
+      "title",
+      "start_date",
+      "end_date",
+      "last_occurrence",
+      "is_recurring",
+      "status",
+      "type",
+      "rrule"
+    ];
 
     const eventsService = new ItemsService("events", {
       knex: database,
@@ -21,7 +32,7 @@ export async function get(req: any, res: any, services: any, database: any) {
     });
 
     let events = await eventsService.readByQuery({
-      fields: ["*"], // TODO: Optimize
+      fields,
       filter: {
         _and: [
           {
@@ -36,40 +47,35 @@ export async function get(req: any, res: any, services: any, database: any) {
                 end_date: {_gt: start}
               },
               {
-                end_date: {_null: true}
+                _and: [
+                  {
+                    is_recurring: {_eq: true}
+                  },
+                  {
+                    last_occurence: {_null: true}
+                  },
+                ]
               },
-              {
-                last_occurence: {_gt: start}
-              },
-              {
-                last_occurence: {_null: true}
-              }
+
             ]
           }
         ]
       }
     });
 
-    console.log("got events", events.length, events);
-
     events = events?.filter((e: any) => {
       if (e.is_recurring) {
         if (e.rrule) {
-
-          console.log("checking recurring event", e.title);
           const rule = RRule.fromString(e.rrule);
           const occurrences = rule.between(start, end, true).length;
-          console.log("occurrences: " + occurrences);
           return occurrences > 0;
         }
-        console.warn("recurring event missing rrule", e.title);
+
         return false;
       }
 
       return true;
     });
-
-    console.log("filtered events", events.length, events);
 
     return res.send(events);
   } catch (err) {
@@ -77,4 +83,3 @@ export async function get(req: any, res: any, services: any, database: any) {
     return res.status(500).send("Error fetching events");
   }
 }
-

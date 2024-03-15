@@ -164,7 +164,6 @@
               :user-id="user?.id"
               :junior-price="event.junior_price"
               :instance="instance"
-              :pattern-type="eventInfo.patternType"
               :already-booked="alreadyBooked"
               :has-required-booking="eventInfo.hasRequiredBooking"
               :other-booking-required="eventInfo.otherBookingRequired"
@@ -238,8 +237,8 @@ import Dinero from "dinero.js";
 import { format, isSameDay } from "date-fns";
 import type { DirectusUser } from "nuxt-directus/dist/runtime/types";
 import type { Ref } from "vue";
-import { getDateFromInstance } from "~/utils/events";
 import type { EventItem } from "~/types";
+import { getDatesOfInstance } from "~/utils/events";
 
 const { getItemById, getItems } = useDirectusItems();
 const directus = useDirectus();
@@ -249,7 +248,6 @@ const user : Ref<DirectusUser> = useDirectusUser();
 const instance = route.query.instance ? parseInt(route.query.instance as string, 10) : null;
 
 const childEvents = ref();
-const recurringPattern = ref();
 
 const messageAttendeesModalOpen = ref(false);
 const attendeeDownloadModalOpen = ref(false);
@@ -316,7 +314,7 @@ if (!route.params.slug && slug) {
 
   redirect += slug;
 
-  if (instance) {
+  if (instance !== null) {
     redirect += `?instance=${instance}`;
   }
   await navigateTo(redirect, {
@@ -349,7 +347,7 @@ const userIsLeader = computed(() => {
 });
 
 async function loadInfo () {
-  let url = `/events/info?eventId=${event.value.id}`;
+  let url = `/events/info?eventId=${event.value!.id}`;
   if (instance) {
     url += "&instance=" + instance;
   }
@@ -375,23 +373,6 @@ if (event.value.has_multiple) {
   });
 
   childEvents.value = events.value;
-}
-
-if (event.value?.is_recurring) {
-  const { data: pattern } = await useAsyncData("recurring-pattern-" + event.value.id, async () => {
-    return await getItems({
-      collection: "recurring_event_patterns",
-      params: {
-        filter: {
-          event: {
-            _eq: event.value.id
-          }
-        }
-      }
-    });
-  });
-
-  recurringPattern.value = pattern.value.length ? pattern.value[0] : null;
 }
 
 const sessionDates = computed(() => {
@@ -420,13 +401,14 @@ const sessionDates = computed(() => {
     });
   }
 
-  if (event.value.is_recurring) {
+  if (event.value.is_recurring && instance !== null) {
     result = [];
-    const type = recurringPattern.value.type;
+
+    const { start, end } = getDatesOfInstance(event.value, instance);
 
     result.push({
-      start: getDateFromInstance(event.value.start_date, instance, type),
-      end: getDateFromInstance(event.value.end_date, instance, type)
+      start,
+      end
     });
   }
 
@@ -474,7 +456,7 @@ onMounted(() => {
 });
 
 const eventImage = computed(() => {
-  if (event.value.image) {
+  if (event.value!.image) {
     const directusUrl = useDirectusUrl();
     let url = `${directusUrl}/assets/${event.value.image}?format=webp&height=450`;
 
@@ -499,7 +481,6 @@ function formatDate (date: string) {
 }
 
 async function onRefresh () {
-  console.log("refreshing");
   eventInfo.value = await loadInfo();
 }
 

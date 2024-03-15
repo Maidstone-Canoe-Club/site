@@ -1,31 +1,32 @@
 ﻿import Stripe from "stripe";
-import { addDays, addMonths, addWeeks, addYears, format } from "date-fns";
-import { ofetch } from "ofetch";
+import { format } from "date-fns";
+import { RRule } from "rrule";
+import { DirectusUser } from "nuxt-directus/dist/runtime/types";
+import type { EventItem } from "~/types";
 
 const stripe = new Stripe(process.env.STRIPE_KEY);
 
-export function getDateFromInstance (date: string, instance: number, recurringType?: string) {
-  let result = new Date(date);
-  if (instance && recurringType) {
-    switch (recurringType) {
-    case "0": // daily
-      result = addDays(new Date(date), instance - 1);
-      break;
-    case "1": // weekly
-      result = addWeeks(new Date(date), instance - 1);
-      break;
-    case "2": // monthly
-      result = addMonths(new Date(date), instance - 1);
-      break;
-    case "3": // yearly
-      result = addYears(new Date(date), instance - 1);
-      break;
-    default:
-      throw new Error("Invalid recurring pattern type: " + recurringType);
-    }
-  }
+export function getDatesOfInstance (event: EventItem, instance: number) {
+  const startDate = new Date(event.start_date);
+  const endDate = new Date(event.end_date);
 
-  return result;
+  const duration = endDate.getTime() - startDate.getTime();
+  const ruleData = RRule.fromString(event.rrule!);
+
+  // TODO: This will need some optimisation in the future.
+  // Has to iterator over each date to get to the current instance
+  const all = ruleData.all((_, i) => {
+    return i < instance + 1;
+  });
+
+  const start = all[instance];
+  start.setHours(startDate.getHours(), startDate.getMinutes(), startDate.getSeconds());
+  const end = new Date(endDate.getTime() + duration);
+
+  return {
+    start,
+    end
+  };
 }
 
 export default defineEventHandler(async (event) => {
@@ -35,12 +36,15 @@ export default defineEventHandler(async (event) => {
 
   const eventId = query.eventId;
   const userId = query.userId;
-  const instance = query.instance;
+  const instance = query.instance as number;
   const patternType = query.patternType;
   const userIds = body.userIds;
 
   try {
-    const checkoutData = await ofetch(`/checkout/data?eventId=${eventId}`, {
+    const checkoutData = await $fetch<{
+      event: EventItem,
+      users: DirectusUser[]
+    }>(`/checkout/data?eventId=${eventId}`, {
       method: "POST",
       baseURL: process.env.NUXT_PUBLIC_DIRECTUS_URL,
       body: {
@@ -51,12 +55,12 @@ export default defineEventHandler(async (event) => {
     const eventItem = checkoutData.event;
     const users = checkoutData.users;
 
-    const date = getDateFromInstance(eventItem.start_date, instance, patternType);
+    const date = getDatesOfInstance(checkoutData.event, instance).start;
     const eventDate = format(date, "do MMMM yyyy");
     const productName = `${eventItem.title}: ${eventDate}`;
 
     const authToken = getCookie(event, "directus_token");
-    const customerId = await ofetch(`/checkout/customer?userId=${userId}`, {
+    const customerId = await $fetch<string>(`/checkout/customer?userId=${userId}`, {
       method: "GET",
       baseURL: process.env.NUXT_PUBLIC_DIRECTUS_URL,
       headers: {
@@ -73,11 +77,7 @@ export default defineEventHandler(async (event) => {
     const lineItems = [];
     const orders = [];
 
-    console.log("product name", productName);
-
     for (const user of users) {
-      console.log("adding user", user.id);
-
       let name = productName;
 
       let price = eventItem.price;
@@ -134,15 +134,13 @@ export default defineEventHandler(async (event) => {
       });
     }
 
-    const orderIds = await ofetch("/payments/orders", {
+    const orderIds = await $fetch<string[]>("/payments/orders", {
       method: "POST",
       baseURL: process.env.NUXT_PUBLIC_DIRECTUS_URL,
       body: {
         orders
       }
     });
-
-    console.log("created orders");
 
     const formattedOrderIds = Array.isArray(orderIds) ? orderIds.join(",") : orderIds;
 
@@ -162,8 +160,6 @@ export default defineEventHandler(async (event) => {
       success_url: `${baseUrl}/payments/success?redirect=${redirectUrl}`,
       cancel_url: `${baseUrl}/payments/cancel?redirect=${redirectUrl}&o=${encodeURIComponent(btoa(formattedOrderIds))}`
     });
-
-    console.log("created session");
 
     return sendRedirect(event, session.url, 302);
   } catch (e) {
