@@ -61,7 +61,7 @@ const debouncedSmartGeneration = useDebounceFn(async () => {
   loading.value = true;
 
   try {
-    const res = await $fetch<string | undefined>("/api/newevents", {
+    const res = await $fetch<string | undefined>("/api/event-rule", {
       query: {
         prompt: internalRawValue.value
       },

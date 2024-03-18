@@ -2,7 +2,7 @@
 import type { Component } from "vue";
 import type { DirectusUser } from "nuxt-directus/dist/runtime/types";
 import {
-  NewEventTypeStep,
+  EventTypeStep,
   EventBasicsStep,
   SingleDateStep,
   MultiDateStep,
@@ -10,7 +10,7 @@ import {
 } from "#components";
 import type { NewEventItem, OccurrenceType } from "~/types/events";
 import type { EventType } from "~/types/events";
-import type { EventMultiDate } from "~/components/newevents/wizard/MultiDateStep.vue";
+import type { EventMultiDate } from "~/components/events/wizard/MultiDateStep.vue";
 
 export type EventWizardAllowedRole = {
   id: string,
@@ -40,8 +40,7 @@ const directus = useDirectus();
 
 const newEvent = reactive<EventWizardItem>({
   occurrenceType: "single",
-  name: "Test event",
-  location: "Lee Valley White Water Center",
+  location: "Maidstone Canoe Club",
   allowedRoles: [],
   leaders: []
 });
@@ -63,7 +62,7 @@ const steps = computed(() => {
   const result: WizardStep[] = [
     {
       id: "type",
-      component: NewEventTypeStep
+      component: EventTypeStep
     },
     {
       id: "basics",

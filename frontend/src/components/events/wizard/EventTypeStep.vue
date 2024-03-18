@@ -1,8 +1,8 @@
 ﻿<script setup lang="ts">
 import { required } from "@vuelidate/validators";
 import { useVuelidate } from "@vuelidate/core";
-import type { EventWizardItem } from "~/components/newevents/wizard/NewEventWizard.vue";
-import ValidationMessages from "~/components/newevents/wizard/ValidationMessages.vue";
+import type { EventWizardItem } from "~/components/events/wizard/EventWizard.vue";
+import ValidationMessages from "~/components/events/wizard/ValidationMessages.vue";
 import type { OccurrenceType } from "~/types/events";
 
 type EventType = {
