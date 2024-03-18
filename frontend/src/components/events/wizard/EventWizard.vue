@@ -6,7 +6,6 @@ import {
   EventBasicsStep,
   SingleDateStep,
   MultiDateStep,
-  RecurringDateStep,
   RecurringRuleStep
 } from "#components";
 import type { NewEventItem, OccurrenceType } from "~/types/events";
