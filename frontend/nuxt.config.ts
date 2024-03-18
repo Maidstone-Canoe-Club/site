@@ -20,6 +20,10 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   srcDir: "src/",
 
+  features: {
+    devLogs: false
+  },
+
   site: {
     url: process.env.BASE_URL
   },

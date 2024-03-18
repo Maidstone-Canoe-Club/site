@@ -24,7 +24,7 @@
     "@types/node": "^20.11.4",
     "eslint": "^8.37.0",
     "eslint-plugin-vue": "^9.17.0",
-    "nuxt": "^3.10.3",
+    "nuxt": "^3.11.0",
     "nuxt-headlessui": "^1.1.5",
     "nuxt-og-image": "^3.0.0-rc.38",
     "typescript": "^5.3.3",
