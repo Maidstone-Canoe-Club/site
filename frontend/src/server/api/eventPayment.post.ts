@@ -10,6 +10,13 @@ export function getDatesOfInstance (event: EventItem, instance: number) {
   const startDate = new Date(event.start_date);
   const endDate = new Date(event.end_date);
 
+  if (!event.is_recurring) {
+    return {
+      start: startDate,
+      end: endDate
+    };
+  }
+
   const duration = endDate.getTime() - startDate.getTime();
   const ruleData = RRule.fromString(event.rrule!);
 
