@@ -51,7 +51,7 @@ dependencies:
     specifier: ^5.5.0
     version: 5.6.0
   nuxt-umami:
-    specifier: ^2.5.7
+    specifier: ^2.6.0
     version: 2.6.0
   openai:
     specifier: ^4.26.1

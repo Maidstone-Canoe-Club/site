@@ -43,8 +43,7 @@
               variant="info"
               heading="Disclaimer">
               <p>
-                All our trips are run by club members like you, and unless specifically described otherwise
-                are
+                All our trips are run by club members like you, and unless specifically described otherwise, they are
                 <nuxt-link
                   to="/my-first-trip"
                   class="underline">
@@ -55,16 +54,12 @@
               <p>
                 If you think that you would benefit from the support of a formal river leader or coach, please
                 contact the trip organiser in advance - we can usually arrange something! Otherwise you should be
-                confident
-                that your own ability matches the trip as planned.
+                confident that your own ability matches the trip as planned.
               </p>
 
               <p>
-                If your trip is being led by someone - a more
-                experienced
-                paddler, river leader or a coach - it is your responsibility to mention any medical or other issues
-                which
-                may arise during the trip.
+                If your trip is being led by someone, a more experienced paddler, river leader, or a coach - it
+                is your responsibility to mention any medical or other issues which may arise during the trip.
               </p>
             </alert-box>
           </div>
@@ -166,7 +161,7 @@
           </div>
 
           <div v-if="leaders && leaders.length">
-            <strong>{{ event.is_peer_paddle? "Organisers" : "Leaders" }}</strong>
+            <strong>{{ event.is_peer_paddle ? "Organisers" : "Leaders" }}</strong>
             <ul
               class="mt-2 flex flex-col gap-2">
               <li
@@ -233,7 +228,9 @@
                 </div>
                 <div class="ml-3 flex-1 md:flex md:justify-between">
                   <p class="text-sm text-blue-700">
-                    {{ event.is_peer_paddle ? "You cannot book onto a peer paddle" : "Bookings are now closed for this event" }}
+                    {{
+                      event.is_peer_paddle ? "You cannot book onto a peer paddle" : "Bookings are now closed for this event"
+                    }}
                   </p>
                 </div>
               </div>
