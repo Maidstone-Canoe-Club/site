@@ -268,6 +268,11 @@ if (!event.value) {
 
 const slug = slugify(event.value.title);
 
+defineOgImageComponent("EventImage", {
+  headline: "Event",
+  event: event.value
+});
+
 const formattedAllowedRoles = computed(() => {
   if (!event.value) {
     return null;
