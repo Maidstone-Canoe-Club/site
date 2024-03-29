@@ -11,7 +11,7 @@ export async function create(req: any, res: any, services: any, database: any) {
   try {
     const eventItem = req.body.eventItem;
     const eventDates = req.body.eventDates;
-    const leaders = req.body.eventItem.leaders;
+    const leaders = req.body.leaders;
 
     console.log("creating new event");
     console.log("event item", eventItem);
@@ -56,10 +56,8 @@ export async function create(req: any, res: any, services: any, database: any) {
     let id: string;
 
     if (newEventItem.occurrenceType === "single") {
-      console.log("creating single event");
       id = await createSingleEvent(newEventItem, eventService);
     } else if (newEventItem.has_multiple) {
-      console.log("creating multi event");
       if (!eventDates || !eventDates.length) {
         console.error("Cannot create multi event with no dates provided");
         return res.status(400).send("Cannot create multi event with no dates provided");
@@ -67,7 +65,6 @@ export async function create(req: any, res: any, services: any, database: any) {
 
       id = await createMultiDateEvent(newEventItem, eventDates, eventService);
     } else if (newEventItem.is_recurring) {
-      console.log("creating recurring event");
       id = await createSingleEvent(newEventItem, eventService);
     } else {
       console.error(`Cannot create event, unknown event type: ${eventItem.occurrenceType}`);
@@ -84,29 +81,6 @@ export async function create(req: any, res: any, services: any, database: any) {
     }
 
     return res.send(id);
-
-    // create event leaders
-    // const eventLeadersService = new ItemsService("events_directus_users", {
-    //   knex: database,
-    //   schema: req.schema,
-    //   accountability: req.accountability
-    // });
-
-    // if (eventType === "single") {
-    //   const id = await createSingleEvent(eventItem, eventService, res);
-    //   await createLeaders(id, leaders, eventLeadersService, eventService);
-    //   return res.send(id);
-    // } else if (eventType === "multi") {
-    //   const ids = await createMultiEvent(eventItem, eventDates, eventService, res);
-    //
-    //   for (const id of ids) {
-    //     await createLeaders(id, leaders, eventLeadersService, eventService);
-    //   }
-    //
-    //   return res.send(ids);
-    // } else {
-    //   return res.status(400).send("unknown event type");
-    // }
   } catch (err) {
     console.error("Error creating event", err);
     return res.status(500).send("Error creating event");

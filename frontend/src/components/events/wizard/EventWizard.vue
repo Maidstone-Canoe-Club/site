@@ -121,7 +121,6 @@ function toNewEventItem (eventItem: EventWizardItem) : NewEventItem {
     last_occurrence: eventItem.lastOccurrence,
     last_booking_date: eventItem.lastBookingDate,
     allowed_roles: eventItem.allowedRoles.map(r => r.id),
-    leaders: eventItem.leaders.map(r => r.id),
     rrule: eventItem.rrule!,
     occurrenceType: eventItem.occurrenceType!,
     type: eventItem.type!
@@ -135,7 +134,8 @@ async function onSubmit () {
       method: "POST",
       body: {
         eventItem: toNewEventItem(newEvent),
-        eventDates
+        eventDates,
+        leaders: newEvent.leaders.map(r => r.id)
       }
     });
 
