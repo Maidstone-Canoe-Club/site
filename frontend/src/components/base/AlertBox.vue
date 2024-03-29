@@ -18,7 +18,7 @@
           {{ heading }}
         </h3>
         <div
-          class="text-sm"
+          class="text-sm space-y-2"
           :class="alertClasses.content">
           <slot />
         </div>
@@ -39,7 +39,7 @@ import type { FunctionalComponent } from "vue";
 export type Variant = "warning" | "error" | "success" | "info";
 
 interface IProps {
-  variant: Variant,
+  variant?: Variant,
   heading: string,
 }
 
@@ -79,11 +79,11 @@ const variants: Record<Variant, IVariant> = {
     content: "text-yellow-700"
   },
   info: {
-    base: "bg-yellow-50",
+    base: "bg-blue-50",
     icon: InformationCircleIcon,
-    iconColor: "text-yellow-400",
-    heading: "text-yellow-800",
-    content: "text-yellow-700"
+    iconColor: "text-blue-400",
+    heading: "text-blue-800",
+    content: "text-blue-700"
   }
 };
 
