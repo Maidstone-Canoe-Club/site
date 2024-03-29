@@ -30,14 +30,14 @@ async function onClick () {
 }
 
 async function onSubscribe () {
-  window.umami?.track("news-post-subscribe");
+  umTrackEvent("news-post-subscribe");
   hasSubscription.value = await directus<boolean>("/news-posts/subscribe", {
     method: "POST"
   });
 }
 
 async function onUnsubscribe () {
-  window.umami?.track("news-post-unsubscribe");
+  umTrackEvent("news-post-unsubscribe");
   const result = await directus("/news-posts/unsubscribe", {
     method: "POST"
   });

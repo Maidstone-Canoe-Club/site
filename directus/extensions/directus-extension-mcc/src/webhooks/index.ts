@@ -14,7 +14,7 @@ export default defineEndpoint((router, {services, database}) => {
     admin: true
   };
 
-  router.post("/mail-inbound", async (req, res) => {
+  router.post("/mail-inbound", async (req: any, res: any) => {
     try {
       const data: InboundEmail = req.body;
 
@@ -54,7 +54,7 @@ export default defineEndpoint((router, {services, database}) => {
       }
 
       return res.status(200).send("ok");
-    } catch (e) {
+    } catch (e: any) {
       console.log("something went wrong", e);
       return res.status(500).send(e.message);
     }
@@ -136,7 +136,15 @@ async function handleMailingList(data: InboundEmail, toAddress: FullAddress, mai
 
       for (const subscriber of chunk) {
         const bodyInput = data.HtmlBody || data.TextBody;
-        const body = await renderMailBody(bodyInput, mailingList.id, mailService);
+
+        let sentFromMessage;
+        if (data.FromName) {
+          sentFromMessage = `This email to the ${mailingList.name} list was sent by ${data.FromName} (${data.From})`;
+        } else {
+          sentFromMessage = `This email to the ${mailingList.name} list was sent from ${data.From}`;
+        }
+
+        const body = await renderMailBody(bodyInput, mailingList.id, sentFromMessage, mailService);
         const unsubscribeUrl = getUnsubscribeUrl(mailingList.id);
 
         emailsToSend.push(
@@ -144,7 +152,6 @@ async function handleMailingList(data: InboundEmail, toAddress: FullAddress, mai
             To: subscriber.email,
             From: from,
             Subject: data.Subject,
-            // TextBody: data.StrippedTextReply,
             HtmlBody: body,
             ReplyTo: buildReplyToEmailAddress(mailingList),
             TrackOpens: true,
@@ -176,23 +183,24 @@ async function handleMailingList(data: InboundEmail, toAddress: FullAddress, mai
       console.log(`sending ${emailsToSend.length} emails`);
       await sendBatchEmail(emailsToSend);
     }
-  } catch (e) {
+  } catch (e: any) {
     console.log("something went wrong handling mailing list email", e, e.message, e.data);
   }
 }
 
-function getUnsubscribeUrl(listId: string){
+function getUnsubscribeUrl(listId: string) {
   const encodedList = encodeURIComponent(btoa(listId));
   return `${process.env.PUBLIC_URL}/unsubscribe/mailing-list?l=${encodedList}`;
 }
 
-async function renderMailBody(htmlBody: string, listId: string, mailService: any){
+async function renderMailBody(htmlBody: string, listId: string, sentFromMessage: string, mailService: any) {
   return await mailService.renderTemplate("broadcast-email", {
     content: htmlBody,
-    url: getUnsubscribeUrl(listId)
+    url: getUnsubscribeUrl(listId),
+    sentFromMessage
   });
 }
 
 function buildReplyToEmailAddress(mailingList: MailingList) {
-  return `${mailingList.email_name}@${process.env.EMAIL_DOMAIN}`;
+  return `${mailingList.name} <${mailingList.email_name}@${process.env.EMAIL_DOMAIN}>`;
 }
