@@ -3,7 +3,7 @@ import { helpers, required } from "@vuelidate/validators";
 import { datetime, RRule } from "rrule";
 import { useVuelidate } from "@vuelidate/core";
 import { format } from "date-fns";
-import type { EventWizardItem } from "~/components/newevents/wizard/NewEventWizard.vue";
+import type { EventWizardItem } from "~/components/events/wizard/EventWizard.vue";
 
 const event = defineModel<EventWizardItem>({ required: true });
 

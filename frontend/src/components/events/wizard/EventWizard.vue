@@ -6,7 +6,9 @@ import {
   EventBasicsStep,
   SingleDateStep,
   MultiDateStep,
-  RecurringRuleStep
+  RecurringRuleStep,
+  EventPricingStep,
+  EventComplianceStep
 } from "#components";
 import type { NewEventItem, OccurrenceType } from "~/types/events";
 import type { EventType } from "~/types/events";
@@ -28,12 +30,21 @@ export type EventWizardItem = {
   endDate?: Date | string,
   lastBookingDate?: Date,
   lastOccurrence?: Date,
+  advancedPricing?: boolean,
+  memberPrice?: number,
+  nonMemberPrice?: number,
+  coachPrice?: number,
+  juniorPrice?: number,
+  price?: number,
   dates?: {
     startDate: Date,
     endDate: Date,
   }[],
   rrule?: string,
   occurrenceType?: OccurrenceType,
+  requiredPaddlerAbility?: string,
+  isPeerPaddle: boolean,
+  disclaimer?: string
 }
 
 const directus = useDirectus();
@@ -42,7 +53,8 @@ const newEvent = reactive<EventWizardItem>({
   occurrenceType: "single",
   location: "Maidstone Canoe Club",
   allowedRoles: [],
-  leaders: []
+  leaders: [],
+  isPeerPaddle: true
 });
 
 const eventDates = reactive<EventMultiDate[]>([
@@ -55,6 +67,7 @@ const eventDates = reactive<EventMultiDate[]>([
 export type WizardStep = {
   id: string,
   component: Component,
+  disabled?: boolean,
   props?: Record<string, any>
 }
 
@@ -65,10 +78,21 @@ const steps = computed(() => {
       component: EventTypeStep
     },
     {
+      id: "compliance",
+      component: EventComplianceStep
+    },
+    {
       id: "basics",
       component: EventBasicsStep
     }
   ];
+
+  if (newEvent.allowedRoles.filter(x => x.id !== "none").length > 0) {
+    result.push({
+      id: "price",
+      component: EventPricingStep
+    });
+  }
 
   if (newEvent.occurrenceType === "single") {
     result.push({
@@ -103,15 +127,23 @@ const currentStepIsLast = computed(() => currentStepIndex.value === steps.value.
 
 function onPrev () {
   currentStepIndex.value -= 1;
+
+  if (currentStep.value.disabled) {
+    onPrev();
+  }
 }
 
 function onAdvance () {
   if (!currentStepIsLast.value) {
     currentStepIndex.value += 1;
+
+    if (currentStep.value.disabled) {
+      onAdvance();
+    }
   }
 }
 
-function toNewEventItem (eventItem: EventWizardItem) : NewEventItem {
+function toNewEventItem (eventItem: EventWizardItem): NewEventItem {
   return {
     title: eventItem.name!,
     description: eventItem.description,
@@ -123,13 +155,15 @@ function toNewEventItem (eventItem: EventWizardItem) : NewEventItem {
     allowed_roles: eventItem.allowedRoles.map(r => r.id),
     rrule: eventItem.rrule!,
     occurrenceType: eventItem.occurrenceType!,
-    type: eventItem.type!
+    type: eventItem.type!,
+    required_paddler_ability: eventItem.requiredPaddlerAbility,
+    is_peer_paddle: eventItem.isPeerPaddle,
+    disclaimer: eventItem.disclaimer
   };
 }
 
 async function onSubmit () {
   try {
-    console.log("SUBMIT!");
     const newId = await directus("/events/create/", {
       method: "POST",
       body: {

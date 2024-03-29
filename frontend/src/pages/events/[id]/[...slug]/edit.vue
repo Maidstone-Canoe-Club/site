@@ -20,7 +20,7 @@ const route = useRoute();
 const { data: event } = await useAsyncData(`event-item-${route.params.id}`, async () => {
   return await getItemById({
     collection: "events",
-    id: route.params.id
+    id: route.params.id as string
   });
 });
 

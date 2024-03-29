@@ -1,5 +1,5 @@
 ﻿<script setup lang="ts">
-import type { EventWizardItem } from "~/components/newevents/wizard/NewEventWizard.vue";
+import type { EventWizardItem } from "~/components/events/wizard/EventWizard.vue";
 
 const event = defineModel<EventWizardItem>({ required: true });
 

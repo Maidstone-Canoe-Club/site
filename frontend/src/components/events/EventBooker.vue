@@ -20,13 +20,6 @@
         <div
           v-else
           class="w-full">
-          <!--        <advanced-booker-->
-          <!--          v-if="advancedPricing"-->
-          <!--          :event="event"-->
-          <!--          :payment-url="paymentUrl"-->
-          <!--          :already-booked="alreadyBooked"-->
-          <!--          :spaces-left="spacesLeft" />-->
-          <!--        <template v-else>-->
           <multi-booker
             v-if="canBookJuniors"
             :event="event"
@@ -48,7 +41,6 @@
             :already-booked="alreadyBooked"
             :spaces-left="spacesLeft"
             @refresh="onRefresh" />
-        <!--        </template>-->
         </div>
       </template>
       <div v-else>

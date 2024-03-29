@@ -2,7 +2,7 @@
 import { helpers, required } from "@vuelidate/validators";
 import { useVuelidate } from "@vuelidate/core";
 import { addHours, formatISO } from "date-fns";
-import type { EventWizardItem } from "~/components/newevents/wizard/NewEventWizard.vue";
+import type { EventWizardItem } from "~/components/events/wizard/EventWizard.vue";
 
 defineProps<{
   hideLastOccurrence?: boolean
@@ -71,8 +71,8 @@ watch(() => event.value.endDate, (val) => {
     <div v-if="!hideLastOccurrence">
       <hr>
 
-      <p class="text-gray-700 mb-3">
-        Optional
+      <p class="text-gray-700 mb-3 mt-5">
+        Optional settings
       </p>
       <input-date
         id="last-booking-date"

@@ -484,11 +484,6 @@ export default defineEndpoint((router, {services, database}) => {
         accountability: req.accountability
       });
 
-      const recurringPatternService = new ItemsService("recurring_event_patterns", {
-        knex: database,
-        schema: req.schema,
-        accountability: adminAccountability
-      });
 
       const event = await eventsService.readOne(eventId);
 
@@ -511,14 +506,6 @@ export default defineEndpoint((router, {services, database}) => {
           message: "Event is full"
         });
       }
-
-      const patterns = await recurringPatternService.readByQuery({
-        filter: {
-          event: {
-            _eq: eventId
-          }
-        }
-      });
 
       const bookingResults = [];
 
@@ -549,13 +536,10 @@ export default defineEndpoint((router, {services, database}) => {
           continue;
         }
 
-        const recurringPattern = patterns && patterns.length ? patterns[0] : null;
-
         const bookingId = await eventBookingService.createOne({
           user: userId,
           event: eventId,
           instance: instance,
-          recurring_pattern: recurringPattern?.id,
           status: "booked"
         });
 

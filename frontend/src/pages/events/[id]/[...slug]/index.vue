@@ -34,9 +34,40 @@
             class="rounded-lg mb-5"
             :src="eventImage">
 
-          <rich-text
-            v-if="event.description"
-            :content="event.description" />
+          <div class="space-y-6">
+            <rich-text
+              v-if="event.description"
+              :content="event.description" />
+
+            <alert-box
+              variant="info"
+              heading="Disclaimer">
+              <p>
+                All our trips are run by club members like you, and unless specifically described otherwise
+                are
+                <nuxt-link
+                  to="/my-first-trip"
+                  class="underline">
+                  peer paddles.
+                </nuxt-link>
+              </p>
+
+              <p>
+                If you think that you would benefit from the support of a formal river leader or coach, please
+                contact the trip organiser in advance - we can usually arrange something! Otherwise you should be
+                confident
+                that your own ability matches the trip as planned.
+              </p>
+
+              <p>
+                If your trip is being led by someone - a more
+                experienced
+                paddler, river leader or a coach - it is your responsibility to mention any medical or other issues
+                which
+                may arise during the trip.
+              </p>
+            </alert-box>
+          </div>
         </div>
         <div class="md:col-span-4 space-y-6">
           <div
@@ -48,20 +79,35 @@
               </div>
               <div class="ml-3">
                 <h3 class="text-sm font-medium text-yellow-800">
-                  Event hidden
+                  <h3 class="text-sm font-medium text-yellow-800">
+                    Event hidden
+                  </h3>
+                  <div class="mt-2 text-sm text-yellow-700">
+                    <p class="mb-2">
+                      Only you can see this event as it has been hidden automatically.
+                    </p>
+                    <p>Events with a price need to be approved before being made public.</p>
+                  </div>
                 </h3>
-                <div class="mt-2 text-sm text-yellow-700">
-                  <p class="mb-2">
-                    Only you can see this event as it has been hidden automatically.
-                  </p>
-                  <p>Events with a price need to be approved before being made public.</p>
-                </div>
               </div>
             </div>
           </div>
 
           <div class="flex flex-col gap-1">
             <strong>Details</strong>
+
+            <div class="mt-2 flex items-center text-sm text-gray-500">
+              <UserGroupIcon
+                v-if="event.is_peer_paddle"
+                class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400"
+                aria-hidden="true" />
+              <FlagIcon
+                v-else
+                class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400"
+                aria-hidden="true" />
+              {{ event.is_peer_paddle ? "Peer paddle" : "Lead paddle" }}
+            </div>
+
             <div
               v-if="event.location"
               class="mt-2 flex items-center text-sm text-gray-500">
@@ -103,7 +149,7 @@
             <div
               v-if="formattedAllowedRoles"
               class="mt-2 flex items-center text-sm text-gray-500">
-              <UserGroupIcon class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
+              <IdentificationIcon class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
               <span>
                 {{ formattedAllowedRoles }}
               </span>
@@ -120,7 +166,7 @@
           </div>
 
           <div v-if="leaders && leaders.length">
-            <strong>Leaders</strong>
+            <strong>{{ event.is_peer_paddle? "Organisers" : "Leaders" }}</strong>
             <ul
               class="mt-2 flex flex-col gap-2">
               <li
@@ -157,20 +203,27 @@
           </div>
 
           <div class="mb-5">
-            <event-booker
-              v-if="canBook"
-              :event="event"
-              :price="event.price"
-              :user-id="user?.id"
-              :junior-price="event.junior_price"
-              :instance="instance"
-              :already-booked="alreadyBooked"
-              :has-required-booking="eventInfo.hasRequiredBooking"
-              :other-booking-required="eventInfo.otherBookingRequired"
-              :required-event-title="eventInfo.requiredEventTitle"
-              :bookings="bookings"
-              :spaces-left="eventInfo.spacesLeft"
-              @refresh="onRefresh" />
+            <div v-if="canBook" class="space-y-5">
+              <alert-box
+                v-if="event.required_paddler_ability"
+                heading="Required paddler skill level">
+                <p>{{ event.required_paddler_ability }}</p>
+              </alert-box>
+
+              <event-booker
+                :event="event"
+                :price="event.price"
+                :user-id="user?.id"
+                :junior-price="event.junior_price"
+                :instance="instance"
+                :already-booked="alreadyBooked"
+                :has-required-booking="eventInfo.hasRequiredBooking"
+                :other-booking-required="eventInfo.otherBookingRequired"
+                :required-event-title="eventInfo.requiredEventTitle"
+                :bookings="bookings"
+                :spaces-left="eventInfo.spacesLeft"
+                @refresh="onRefresh" />
+            </div>
             <div
               v-else
               class="rounded-md bg-blue-50 p-4">
@@ -180,7 +233,7 @@
                 </div>
                 <div class="ml-3 flex-1 md:flex md:justify-between">
                   <p class="text-sm text-blue-700">
-                    Bookings are now closed for this event
+                    {{ event.is_peer_paddle ? "You cannot book onto a peer paddle" : "Bookings are now closed for this event" }}
                   </p>
                 </div>
               </div>
@@ -230,7 +283,9 @@ import {
   UserGroupIcon,
   ExclamationTriangleIcon,
   EnvelopeIcon,
-  ArrowDownOnSquareStackIcon
+  ArrowDownOnSquareStackIcon,
+  FlagIcon,
+  IdentificationIcon
 } from "@heroicons/vue/16/solid";
 // @ts-ignore
 import Dinero from "dinero.js";
@@ -243,7 +298,7 @@ import { getDatesOfInstance } from "~/utils/events";
 const { getItemById, getItems } = useDirectusItems();
 const directus = useDirectus();
 const route = useRoute();
-const user : Ref<DirectusUser> = useDirectusUser();
+const user: Ref<DirectusUser> = useDirectusUser();
 
 const instance = route.query.instance ? parseInt(route.query.instance as string, 10) : null;
 
@@ -421,6 +476,10 @@ const sessionDates = computed(() => {
 });
 
 const canBook = computed(() => {
+  if (event.value.is_peer_paddle) {
+    return false;
+  }
+
   const lastBookingDate = event.value?.last_booking_date;
   if (lastBookingDate && new Date(lastBookingDate) < new Date()) {
     return false;

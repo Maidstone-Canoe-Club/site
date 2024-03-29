@@ -71,7 +71,10 @@ export interface EventItem {
   leaders?: string[],
   user_created?: string,
   date_created?: string,
-  rrule?: string
+  rrule?: string,
+  required_paddler_ability?: string,
+  is_peer_paddle: boolean,
+  disclaimer?: string
 }
 
 export interface EventBooking {

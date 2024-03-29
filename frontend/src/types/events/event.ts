@@ -49,5 +49,8 @@ export type NewEventItem = {
   leaders?: string[],
   rrule?: string,
   type: EventType,
-  occurrenceType: OccurrenceType
+  occurrenceType: OccurrenceType,
+  required_paddler_ability?: string,
+  is_peer_paddle: boolean,
+  disclaimer?: string
 }

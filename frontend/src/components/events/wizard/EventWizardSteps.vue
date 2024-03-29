@@ -1,6 +1,6 @@
 ﻿<script setup lang="ts">
 import { CheckIcon } from "@heroicons/vue/20/solid";
-import type { WizardStep } from "~/components/newevents/wizard/NewEventWizard.vue";
+import type { WizardStep } from "~/components/events/wizard/EventWizard.vue";
 
 const props = defineProps<{
   steps: WizardStep[],
@@ -18,13 +18,6 @@ function getStepStatus (stepIndex: number, currentIndex: number) {
   }
 }
 
-const internalSteps = computed(() => {
-  return props.steps.map((s: WizardStep, index: number) => ({
-    name: s.id,
-    status: getStepStatus(index, currentIndex.value)
-  }));
-});
-
 function changeStep (index: number) {
   currentIndex.value = index;
 }
@@ -35,21 +28,25 @@ function changeStep (index: number) {
   <nav aria-label="Progress">
     <ol role="list" class="flex items-center justify-between">
       <li
-        v-for="(step, index) in internalSteps"
-        :key="step.name"
-        :class="[index !== internalSteps.length - 1 ? 'pr-8 sm:pr-20 flex-grow' : '', 'relative']">
-        <template v-if="step.status === 'complete'">
+        v-for="(step, index) in steps"
+        :key="step.id"
+        :class="[index !== steps.length - 1 ? 'pr-8 sm:pr-20 flex-grow' : '', 'relative']">
+        <template v-if="getStepStatus(index, currentIndex) === 'complete'">
           <div class="absolute inset-0 flex items-center" aria-hidden="true">
-            <div class="h-0.5 w-full bg-indigo-600" />
+            <div
+              class="h-0.5 w-full"
+              :class="[step.disabled ? 'bg-indigo-400' : 'bg-indigo-600']" />
           </div>
-          <button
-            class="relative flex h-8 w-8 items-center justify-center rounded-full bg-indigo-600 hover:bg-indigo-900"
-            @click="() => changeStep(index as number)">
+          <component
+            :is="step.disabled ? 'span' : 'button'"
+            class="relative flex h-8 w-8 items-center justify-center rounded-full "
+            :class="[step.disabled ? 'bg-indigo-400' : 'bg-indigo-600 hover:bg-indigo-900']"
+            @click="step.disabled ? undefined : () => changeStep(index as number)">
             <CheckIcon class="h-5 w-5 text-white" aria-hidden="true" />
-            <span class="sr-only">{{ step.name }}</span>
-          </button>
+            <span class="sr-only">{{ step.id }}</span>
+          </component>
         </template>
-        <template v-else-if="step.status === 'current'">
+        <template v-else-if="getStepStatus(index, currentIndex) === 'current'">
           <div class="absolute inset-0 flex items-center" aria-hidden="true">
             <div class="h-0.5 w-full bg-gray-200" />
           </div>
@@ -58,7 +55,7 @@ function changeStep (index: number) {
             class="relative flex h-8 w-8 items-center justify-center rounded-full border-2 border-indigo-600 bg-white"
             aria-current="step">
             <span class="h-2.5 w-2.5 rounded-full bg-indigo-600" aria-hidden="true" />
-            <span class="sr-only">{{ step.name }}</span>
+            <span class="sr-only">{{ step.id }}</span>
           </a>
         </template>
         <template v-else>
@@ -67,9 +64,10 @@ function changeStep (index: number) {
           </div>
           <a
             href="#"
-            class="group relative flex h-8 w-8 items-center justify-center rounded-full border-2 border-gray-300 bg-white hover:border-gray-400">
+            class="group relative flex h-8 w-8 items-center justify-center rounded-full border-2  bg-white hover:border-gray-400"
+            :class="[step.disabled ? 'border-gray-100' : 'border-gray-300']">
             <span class="h-2.5 w-2.5 rounded-full bg-transparent group-hover:bg-gray-300" aria-hidden="true" />
-            <span class="sr-only">{{ step.name }}</span>
+            <span class="sr-only">{{ step.id }}</span>
           </a>
         </template>
       </li>

@@ -2,7 +2,7 @@
 import { useVuelidate } from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
 import type { EventType } from "~/types/events";
-import type { EventWizardItem } from "~/components/newevents/wizard/NewEventWizard.vue";
+import type { EventWizardItem } from "~/components/events/wizard/EventWizard.vue";
 
 const event = defineModel<EventWizardItem>({ required: true });
 
@@ -109,7 +109,7 @@ const canChangeLeaders = computed(() => {
     <user-search
       v-show="canChangeLeaders"
       v-model="event.leaders"
-      label="Event leaders"
+      :label="event.isPeerPaddle ? 'Event organiser(s)' : 'Event leader(s)'"
       placeholder="Start typing the name of a club member"
       multiple />
 

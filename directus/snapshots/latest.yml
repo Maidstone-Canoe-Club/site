@@ -4140,6 +4140,44 @@ fields:
       foreign_key_table: null
       foreign_key_column: null
   - collection: events
+    field: disclaimer
+    type: text
+    meta:
+      collection: events
+      conditions: null
+      display: null
+      display_options: null
+      field: disclaimer
+      group: null
+      hidden: false
+      interface: input-rich-text-html
+      note: null
+      options: null
+      readonly: false
+      required: false
+      sort: 37
+      special: null
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: disclaimer
+      table: events
+      data_type: text
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: events
     field: end_date
     type: timestamp
     meta:
@@ -4395,6 +4433,45 @@ fields:
       width: full
     schema:
       name: is_full_day
+      table: events
+      data_type: boolean
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: events
+    field: is_peer_paddle
+    type: boolean
+    meta:
+      collection: events
+      conditions: null
+      display: null
+      display_options: null
+      field: is_peer_paddle
+      group: null
+      hidden: false
+      interface: boolean
+      note: null
+      options: null
+      readonly: false
+      required: false
+      sort: 36
+      special:
+        - cast-boolean
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: is_peer_paddle
       table: events
       data_type: boolean
       default_value: null
@@ -4897,6 +4974,44 @@ fields:
       has_auto_increment: false
       foreign_key_table: events
       foreign_key_column: id
+  - collection: events
+    field: required_paddler_ability
+    type: text
+    meta:
+      collection: events
+      conditions: null
+      display: null
+      display_options: null
+      field: required_paddler_ability
+      group: null
+      hidden: false
+      interface: input-multiline
+      note: null
+      options: null
+      readonly: false
+      required: false
+      sort: 35
+      special: null
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: required_paddler_ability
+      table: events
+      data_type: text
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
   - collection: events
     field: rrule
     type: string
