@@ -4,8 +4,6 @@ import { endOfDay, endOfMonth, endOfWeek, startOfDay, startOfMonth, startOfWeek 
 import { useCalendarStore } from "~/store/calendarStore";
 import type { EventItem } from "~/types";
 
-const emits = defineEmits(["change"]);
-
 const calendarStore = useCalendarStore();
 const start = computed(() => new Date(calendarStore.year, calendarStore.month, 1));
 const end = computed(() => new Date(calendarStore.year, calendarStore.getMonth + 1, 0, 23, 59, 59));
@@ -49,11 +47,9 @@ const filters = computed<Filter[]>(() => [
   }
 ]);
 
-const selected = ref<Record<string, boolean>>({});
-
-watch(selected, (val) => {
-  emits("change", val);
-}, { deep: true });
+const selected = defineModel<Record<string, boolean>>("selected", {
+  default: {}
+});
 
 function isSelected (id: string) {
   const hasSelection = !!Object.keys(selected.value).filter(key => selected.value[key]).length;
