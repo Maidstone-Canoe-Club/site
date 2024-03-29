@@ -10,6 +10,7 @@
         :id="id"
         :value="internalValue"
         :required="required"
+        :placeholder="placeholder"
         :step="0.01"
         :min="0"
         class="block w-full rounded-md border-0 py-1.5 sm:text-sm sm:leading-6 pl-7"
@@ -35,6 +36,7 @@ interface Props {
   modelValue: number | null | undefined,
   id: string,
   label?: string,
+  placeholder?: string,
   required?: boolean,
   disabled?: boolean,
   currencySymbol?: string
@@ -45,6 +47,7 @@ const emits = defineEmits(["update:modelValue"]);
 
 const props = withDefaults(defineProps<Props>(), {
   label: undefined,
+  placeholder: undefined,
   required: false,
   disabled: false,
   currencySymbol: "£",
