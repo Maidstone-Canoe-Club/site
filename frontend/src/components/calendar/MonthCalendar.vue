@@ -55,13 +55,23 @@ const days = ref<CalendarDay[]>([]);
 const openDayModal = ref<boolean>(false);
 const renderExtraRow = computed<boolean>(() => days.value.length > 35);
 
+function formatShortTime (input: Date | string) {
+  const date = new Date(input);
+  const minutes = format(date, "mm");
+  if (minutes === "00") {
+    return format(date, "haa").toLowerCase();
+  } else {
+    return format(date, "h:mmaa").toLowerCase();
+  }
+}
+
 function eventItemToCalendarEvent (eventItem: EventItem, date: Date): CalendarEvent {
   return {
     id: eventItem.id!,
     title: eventItem.title,
     type: eventItem.type,
     dateTime: format(new Date(eventItem.start_date), "yyyy-MM-ddTHH:mm"),
-    time: format(new Date(eventItem.start_date), "h:mmaa"),
+    time: formatShortTime(eventItem.start_date),
     href: getEventUrl(eventItem, date)
   };
 }
@@ -214,6 +224,10 @@ function getEventDotColor (event: CalendarEvent) {
   default:
     return "bg-gray-300";
   }
+}
+
+function formatDate (input: Date | string) {
+  return format(new Date(input), "do MMMM");
 }
 
 </script>
@@ -403,23 +417,23 @@ function getEventDotColor (event: CalendarEvent) {
                 <div class="sm:flex sm:items-start">
                   <div class="mt-3 w-full text-center sm:mt-0 sm:text-left">
                     <DialogTitle as="h3" class="text-base font-semibold leading-6 text-gray-900">
-                      Events for {{ formatDate(selectedDay.date) }}
+                      Events for {{ formatDate(selectedDay!.date) }}
                     </DialogTitle>
                     <div class="mt-4 flex">
                       <ol class="flex-grow overflow-hidden bg-white text-sm divide-y divide-gray-100">
                         <li
-                          v-for="event in selectedDay.events"
+                          v-for="event in selectedDay!.events"
                           :key="event.id"
                           class="flex p-4 pr-6 group focus-within:bg-gray-50 hover:bg-gray-50">
                           <div class="flex-auto">
                             <p
                               class="font-semibold text-gray-900 border-l-4 pl-2"
                               :class="getEventBorderColor(event)">
-                              {{ event.name }}
+                              {{ event.title }}
                             </p>
                             <time
                               v-if="event.time"
-                              :datetime="event.datetime"
+                              :datetime="event.dateTime"
                               class="mt-2 flex items-center text-gray-700">
                               {{ event.time }}
                             </time>
@@ -427,7 +441,7 @@ function getEventDotColor (event: CalendarEvent) {
                           <nuxt-link
                             :to="event.href"
                             class="ml-6 flex-none self-center rounded-md bg-white px-3 py-2 font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 group-hover:opacity-100 hover:ring-gray-400 focus:opacity-100">
-                            View<span class="sr-only">, {{ event.name }}</span>
+                            View<span class="sr-only">, {{ event.title }}</span>
                           </nuxt-link>
                         </li>
                       </ol>
@@ -456,292 +470,6 @@ function getEventDotColor (event: CalendarEvent) {
     </TransitionRoot>
   </div>
 </template>
-
-<!--<script setup lang="ts">-->
-<!--import {-->
-<!--  ChevronLeftIcon,-->
-<!--  ChevronRightIcon,-->
-<!--  EllipsisHorizontalIcon,-->
-<!--  XMarkIcon-->
-<!--} from "@heroicons/vue/24/outline";-->
-<!--import enGB from "date-fns/locale/en-GB/index.js";-->
-<!--import { format, getISODay, setDefaultOptions } from "date-fns";-->
-<!--import { useCalendarStore } from "~/store/calendarStore";-->
-<!--import type { EventItem } from "~/types";-->
-
-<!--const props = withDefaults(defineProps<{-->
-<!--  events: EventItem[],-->
-<!--  loading: boolean-->
-<!--  displayEventsPerDay?: number-->
-<!--}>(), {-->
-<!--  displayEventsPerDay: 3-->
-<!--});-->
-
-<!--const eventHovering = ref<string | null>(null);-->
-
-<!--function hoveringEnter (event: EventItem) {-->
-<!--  eventHovering.value = event.href;-->
-<!--}-->
-
-<!--function hoveringLeave () {-->
-<!--  eventHovering.value = null;-->
-<!--}-->
-
-<!--function getHoverState (event: EventItem) {-->
-<!--  if (eventHovering.value === event.href) {-->
-<!--    return "underline  group-hover:text-indigo-600";-->
-<!--  }-->
-
-<!--  return null;-->
-<!--}-->
-
-<!--setDefaultOptions({-->
-<!--  locale: enGB,-->
-<!--  weekStartsOn: 1-->
-<!--});-->
-
-<!--type EventData = {-->
-<!--  id: number,-->
-<!--  name: string,-->
-<!--  time: string,-->
-<!--  datetime: string,-->
-<!--  href: string-->
-<!--}-->
-
-<!--type Day = {-->
-<!--  date: Date | string,-->
-<!--  events: EventData[],-->
-<!--  isCurrentMonth?: boolean,-->
-<!--  isToday?: boolean,-->
-<!--  isSelected?: boolean-->
-<!--}-->
-
-<!--const calendarStore = useCalendarStore();-->
-<!--calendarStore.$subscribe((mutation, state) => {-->
-<!--  prepareMonths();-->
-<!--  generateDays();-->
-<!--});-->
-
-<!--const monthLabel = ref();-->
-<!--const days = ref<Day[]>([]);-->
-<!--const selectedDay = computed(() => days.value.find((day: Day) => day.isSelected));-->
-<!--const openDayModal = ref(false);-->
-
-<!--function selectDay (day: Day) {-->
-<!--  if (selectedDay.value) {-->
-<!--    selectedDay.value.isSelected = false;-->
-<!--  }-->
-<!--  day.isSelected = true;-->
-<!--}-->
-
-<!--function openDay (day: Day) {-->
-<!--  if (selectedDay.value) {-->
-<!--    selectedDay.value.isSelected = false;-->
-<!--  }-->
-<!--  day.isSelected = true;-->
-<!--  openDayModal.value = true;-->
-<!--}-->
-
-<!--const prepareMonths = () => {-->
-<!--  monthLabel.value = new Intl.DateTimeFormat("en-GB", { month: "long" }).format(-->
-<!--    new Date(-->
-<!--      calendarStore.getYear,-->
-<!--      calendarStore.getMonth,-->
-<!--      calendarStore.getDay-->
-<!--    )-->
-<!--  );-->
-<!--};-->
-
-<!--function generateDays () {-->
-<!--  days.value = [];-->
-
-<!--  const firstDayOfMonth = getISODay(new Date(calendarStore.getYear, calendarStore.getMonth, 1)) - 1;-->
-<!--  const daysInCurrentMonth = new Date(calendarStore.getYear, calendarStore.getMonth + 1, 0).getDate();-->
-<!--  const totalGrid = firstDayOfMonth <= 5 ? 35 : 42;-->
-<!--  const lastMonthDays = totalGrid - daysInCurrentMonth - firstDayOfMonth;-->
-
-<!--  for (let i = firstDayOfMonth; i > 0; i&#45;&#45;) {-->
-<!--    const date = new Date(calendarStore.getYear, calendarStore.getMonth, 0);-->
-<!--    date.setDate(date.getDate() - i);-->
-<!--    days.value.push({-->
-<!--      date: format(date, "yyyy-MM-dd"),-->
-<!--      events: []-->
-<!--    });-->
-<!--  }-->
-
-<!--  for (let i = 0; i < daysInCurrentMonth; i++) {-->
-<!--    const date = new Date(calendarStore.getYear, calendarStore.getMonth, i + 1);-->
-<!--    const isToday = date.setHours(0, 0, 0, 0) === new Date().setHours(0, 0, 0, 0);-->
-<!--    days.value.push({-->
-<!--      date: format(date, "yyyy-MM-dd"),-->
-<!--      events: getEventsForDay(date),-->
-<!--      isCurrentMonth: true,-->
-<!--      isSelected: isToday,-->
-<!--      isToday-->
-<!--    });-->
-<!--  }-->
-
-<!--  const lastDayOfMonth = getISODay(new Date(calendarStore.getYear, calendarStore.getMonth, daysInCurrentMonth));-->
-<!--  const count = 7 - lastDayOfMonth;-->
-<!--  if (count !== 7) {-->
-<!--    for (let i = 0; i < count; i++) {-->
-<!--      const date = new Date(calendarStore.getYear, calendarStore.getMonth, i + 1);-->
-<!--      days.value.push({-->
-<!--        date: format(date, "yyyy-MM-dd"),-->
-<!--        events: []-->
-<!--      });-->
-<!--    }-->
-<!--  }-->
-<!--}-->
-
-<!--function getEventsForDay (date: Date): EventData[] {-->
-<!--  return props.events-->
-<!--    .sort((a, b) => {-->
-<!--      const aStart = new Date(a.start_date);-->
-<!--      const bEnd = new Date(b.start_date);-->
-<!--      return aStart - bEnd;-->
-<!--    })-->
-<!--    .filter((e) => {-->
-<!--      if (e.is_recurring) {-->
-<!--        return false;-->
-<!--      }-->
-
-<!--      const start = new Date(e.start_date).setHours(0, 0, 0, 0);-->
-<!--      const end = new Date(e.end_date).setHours(0, 0, 0, 0);-->
-<!--      const toCheck = date.setHours(0, 0, 0, 0);-->
-<!--      const dayMatches = start === toCheck;-->
-
-<!--      if (toCheck >= start && toCheck <= end) {-->
-<!--        return true;-->
-<!--      }-->
-
-<!--      return dayMatches;-->
-<!--    }).map((e) => {-->
-<!--      const startDate = new Date(e.start_date);-->
-<!--      let title = e.title;-->
-
-<!--      if (e.event_index && e.event_count) {-->
-<!--        title = `(${e.event_index}/${e.event_count}) ${e.title}`;-->
-<!--      }-->
-
-<!--      let href = `/events/${e.parent_event || e.id}`;-->
-
-<!--      if (e.instance) {-->
-<!--        href += "?instance=" + e.instance;-->
-<!--      }-->
-
-<!--      const eventStart = new Date(e.start_date).setHours(0, 0, 0, 0);-->
-<!--      const toCheck = date.setHours(0, 0, 0, 0);-->
-
-<!--      // Only show the time value is the event start date is the day we are loading events for-->
-<!--      // eg single events that span multiple days-->
-<!--      const showTime = eventStart === toCheck;-->
-
-<!--      return {-->
-<!--        id: e.id,-->
-<!--        status: e.status,-->
-<!--        name: title,-->
-<!--        // time: showTime ? format(startDate, "h:mmaa") : null,-->
-<!--        time: showTime ? formatShortTime(startDate) : null,-->
-<!--        datetime: `${format(startDate, "yyyy-MM-dd")}T${format(startDate, "H:mm")}`,-->
-<!--        parentId: e.parent_event,-->
-<!--        type: e.type,-->
-<!--        href-->
-<!--      };-->
-<!--    });-->
-<!--}-->
-
-<!--function formatShortTime (date: Date) {-->
-<!--  const minutes = format(date, "mm");-->
-<!--  if (minutes === "00") {-->
-<!--    return format(date, "haa");-->
-<!--  } else {-->
-<!--    return format(date, "h:mmaa");-->
-<!--  }-->
-<!--}-->
-
-<!--watch(() => props.events, () => {-->
-<!--  generateDays();-->
-<!--}, { immediate: true, deep: true });-->
-
-<!--onMounted(() => {-->
-<!--  prepareMonths();-->
-<!--});-->
-
-<!--const user = useDirectusUser();-->
-<!--const canAddEvent = computed(() => hasRole(user.value, "Member"));-->
-
-<!--function formatDate (input: Date) {-->
-<!--  return format(new Date(input), "do MMMM");-->
-<!--}-->
-
-<!--function getEventBorderColor (event: EventItem) {-->
-<!--  const hover = getHoverState(event);-->
-
-<!--  if (eventHovering.value && !hover) {-->
-<!--    return "border-gray-300";-->
-<!--  }-->
-
-<!--  switch (event.type) {-->
-<!--  case "club_paddle":-->
-<!--    return "border-blue-500";-->
-<!--  case "pool_session":-->
-<!--    return "border-cyan-500";-->
-<!--  case "paddles_trips_tours":-->
-<!--    return "border-orange-500";-->
-<!--  case "fun_session":-->
-<!--    return "border-violet-500";-->
-<!--  case "social_event":-->
-<!--    return "border-rose-500";-->
-<!--  case "beginners_course":-->
-<!--    return "border-green-500";-->
-<!--  case "race_training":-->
-<!--    return "border-yellow-500";-->
-<!--  case "race":-->
-<!--    return "border-line-500";-->
-<!--  case "coaching":-->
-<!--    return "border-pink-500";-->
-<!--  case "meetings":-->
-<!--    return "border-red-500";-->
-<!--  default:-->
-<!--    return "border-gray-300";-->
-<!--  }-->
-<!--}-->
-
-<!--function getEventDotColor (event: EventItem) {-->
-<!--  const hover = getHoverState(event);-->
-
-<!--  if (eventHovering.value && !hover) {-->
-<!--    return "bg-gray-300";-->
-<!--  }-->
-
-<!--  switch (event.type) {-->
-<!--  case "club_paddle":-->
-<!--    return "bg-blue-500";-->
-<!--  case "pool_session":-->
-<!--    return "bg-cyan-500";-->
-<!--  case "paddles_trips_tours":-->
-<!--    return "bg-orange-500";-->
-<!--  case "fun_session":-->
-<!--    return "bg-violet-500";-->
-<!--  case "social_event":-->
-<!--    return "bg-rose-500";-->
-<!--  case "beginners_course":-->
-<!--    return "bg-green-500";-->
-<!--  case "race_training":-->
-<!--    return "bg-yellow-500";-->
-<!--  case "race":-->
-<!--    return "bg-lime-500";-->
-<!--  case "coaching":-->
-<!--    return "bg-pink-500";-->
-<!--  case "meetings":-->
-<!--    return "bg-red-500";-->
-<!--  default:-->
-<!--    return "bg-gray-300";-->
-<!--  }-->
-<!--}-->
-
-<!--</script>-->
 
 <style scoped lang="scss">
 
