@@ -18,7 +18,7 @@ function onGoToday () {
 }
 
 const currentMonthYear = computed(() => {
-  return format(new Date(store.getYear, store.getMonth, store.getDay), "MMMM yyyy");
+  return format(new Date(store.getYear, store.getMonth, 1), "MMMM yyyy");
 });
 
 </script>
