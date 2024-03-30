@@ -76,33 +76,6 @@ watch(() => event.value.rrule, (val) => {
   previewDates.value = results;
 });
 
-// const ruleData = computed(() => event.value.rrule ? RRule.fromText(event.value.rrule) : undefined);
-
-// const previewDates = computed(() => {
-//   console.log("preview dates", ruleData.value);
-//   // if (!event.value.rrule) {
-//   //   return [];
-//   // }
-//
-//   // const ruleData = RRule.fromText(event.value.rrule);
-//
-//   if (!ruleData.value) {
-//     return [];
-//   }
-//
-//   const until = ruleData.value.options.until;
-//
-//   const results = ruleData.value.all((_, i) => {
-//     return !until ? i < 9 : true;
-//   }).map(d => format(d, "EEE do MMMM yyyy"));
-//
-//   if (!until) {
-//     results.push("Indefinitely...");
-//   }
-//
-//   return results;
-// });
-
 const exampleEvents = computed(() => [{
   start_date: event.value.startDate,
   end_date: event.value.endDate,
@@ -114,7 +87,6 @@ const exampleEvents = computed(() => [{
 <template>
   <div class="space-y-8">
     <div class="space-y-2">
-      <pre>{{ event.rrule }}</pre>
       <rule-parser
         id="event-rule"
         v-model="event.rrule"
