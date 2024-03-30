@@ -52,53 +52,7 @@ const currentMonthYear = computed(() => {
           <ChevronRightIcon class="h-5 w-5" aria-hidden="true" />
         </button>
       </div>
-      <div class="hidden md:ml-4 md:flex md:items-center">
-        <Menu as="div" class="relative">
-          <MenuButton
-            type="button"
-            class="flex items-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
-            Month view
-            <ChevronDownIcon class="-mr-1 h-5 w-5 text-gray-400" aria-hidden="true" />
-          </MenuButton>
-
-          <transition
-            enter-active-class="transition ease-out duration-100"
-            enter-from-class="transform opacity-0 scale-95"
-            enter-to-class="transform opacity-100 scale-100"
-            leave-active-class="transition ease-in duration-75"
-            leave-from-class="transform opacity-100 scale-100"
-            leave-to-class="transform opacity-0 scale-95">
-            <MenuItems
-              class="absolute right-0 z-10 mt-3 w-36 origin-top-right overflow-hidden rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-              <div class="py-1">
-                <MenuItem v-slot="{ active }">
-                  <a
-                    href="#"
-                    :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm']">Day
-                    view</a>
-                </MenuItem>
-                <MenuItem v-slot="{ active }">
-                  <a
-                    href="#"
-                    :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm']">Week
-                    view</a>
-                </MenuItem>
-                <MenuItem v-slot="{ active }">
-                  <a
-                    href="#"
-                    :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm']">Month
-                    view</a>
-                </MenuItem>
-                <MenuItem v-slot="{ active }">
-                  <a
-                    href="#"
-                    :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm']">Year
-                    view</a>
-                </MenuItem>
-              </div>
-            </MenuItems>
-          </transition>
-        </Menu>
+      <div class="hidden md:flex md:items-center">
         <div class="ml-6 h-6 w-px bg-gray-300" />
         <nuxt-link
           to="/events/new"
@@ -126,7 +80,7 @@ const currentMonthYear = computed(() => {
               <MenuItem v-slot="{ active }">
                 <nuxt-link
                   to="/events/new"
-                  :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'px-4 py-2 text-sm']">
+                  :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'px-4 py-2 text-sm block']">
                   Create event
                 </nuxt-link>
               </MenuItem>
@@ -137,32 +91,6 @@ const currentMonthYear = computed(() => {
                   href="#"
                   :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm']">Go to
                   today</a>
-              </MenuItem>
-            </div>
-            <div class="py-1">
-              <MenuItem v-slot="{ active }">
-                <a
-                  href="#"
-                  :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm']">Day
-                  view</a>
-              </MenuItem>
-              <MenuItem v-slot="{ active }">
-                <a
-                  href="#"
-                  :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm']">Week
-                  view</a>
-              </MenuItem>
-              <MenuItem v-slot="{ active }">
-                <a
-                  href="#"
-                  :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm']">Month
-                  view</a>
-              </MenuItem>
-              <MenuItem v-slot="{ active }">
-                <a
-                  href="#"
-                  :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm']">Year
-                  view</a>
               </MenuItem>
             </div>
           </MenuItems>
