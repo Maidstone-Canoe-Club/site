@@ -4580,7 +4580,7 @@ fields:
       options: null
       readonly: false
       required: false
-      sort: 33
+      sort: 34
       special: null
       translations: null
       validation: null
@@ -5014,7 +5014,7 @@ fields:
       foreign_key_column: null
   - collection: events
     field: rrule
-    type: string
+    type: text
     meta:
       collection: events
       conditions: null
@@ -5023,12 +5023,12 @@ fields:
       field: rrule
       group: null
       hidden: false
-      interface: input
+      interface: input-multiline
       note: null
       options: null
       readonly: false
       required: false
-      sort: 34
+      sort: 33
       special: null
       translations: null
       validation: null
@@ -5037,9 +5037,9 @@ fields:
     schema:
       name: rrule
       table: events
-      data_type: character varying
+      data_type: text
       default_value: null
-      max_length: 255
+      max_length: null
       numeric_precision: null
       numeric_scale: null
       is_nullable: true
