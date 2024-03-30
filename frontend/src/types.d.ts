@@ -46,12 +46,12 @@ export type EventType = "pool_session"
 export type EventAllowedRoles = "none" | "non-members" | "juniors" | "members";
 
 export interface EventItem {
-  id?: number,
+  id?: string,
   title: string,
   description?: string,
   location?: string,
   start_date: Date,
-  end_date?: Date,
+  end_date: Date,
   type: EventType,
   price?: number,
   junior_price?: number,
@@ -71,6 +71,19 @@ export interface EventItem {
   leaders?: string[],
   user_created?: string,
   date_created?: string,
+  rrule?: string,
+  required_paddler_ability?: string,
+  is_peer_paddle: boolean,
+  disclaimer?: string
+}
+
+export interface EventBooking {
+  id: string,
+  user: DirectusUser,
+  event: EventItem,
+  date: string,
+  instance: number,
+  status: string
 }
 
 export interface NewsItem {

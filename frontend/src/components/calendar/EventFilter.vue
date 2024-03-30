@@ -1,8 +1,8 @@
 ﻿<script setup lang="ts">
+import { RRule } from "rrule";
+import { endOfDay, endOfMonth, endOfWeek, startOfDay, startOfMonth, startOfWeek } from "date-fns";
 import { useCalendarStore } from "~/store/calendarStore";
 import type { EventItem } from "~/types";
-
-const emits = defineEmits(["change"]);
 
 const calendarStore = useCalendarStore();
 const start = computed(() => new Date(calendarStore.year, calendarStore.month, 1));
@@ -12,7 +12,19 @@ const props = defineProps<{
   events: EventItem[]
 }>();
 
-const filters = computed(() => [
+type FilterOption = {
+  value: string,
+  label: string,
+  class: string
+}
+
+type Filter = {
+  id: string,
+  name: string,
+  options: FilterOption[]
+}
+
+const filters = computed<Filter[]>(() => [
   {
     id: "type",
     name: "Event type",
@@ -24,7 +36,7 @@ const filters = computed(() => [
         label: "Paddles Trips Tours",
         class: "bg-orange-50 text-orange-600 ring-orange-500/20"
       },
-      { value: "social_event", label: "Social Events", class: "bg-rose-50 text-rose-600 ring-rose-500/20" },
+      { value: "social_events", label: "Social Events", class: "bg-rose-50 text-rose-600 ring-rose-500/20" },
       { value: "fun_session", label: "Fun Session", class: "bg-violet-50 text-violet-600 ring-violet-500/20" },
       { value: "race_training", label: "Race Training", class: "bg-yellow-50 text-yellow-600 ring-yellow-500/20" },
       { value: "race", label: "Race", class: "bg-lime-50 text-lime-600 ring-lime-500/20" },
@@ -35,11 +47,9 @@ const filters = computed(() => [
   }
 ]);
 
-const selected = ref<Record<string, boolean>>({});
-
-watch(selected, (val) => {
-  emits("change", val);
-}, { deep: true });
+const selected = defineModel<Record<string, boolean>>("selected", {
+  default: {}
+});
 
 function isSelected (id: string) {
   const hasSelection = !!Object.keys(selected.value).filter(key => selected.value[key]).length;
@@ -50,13 +60,46 @@ function isSelected (id: string) {
 }
 
 function getCount (type: string) {
-  return props.events.filter((e) => {
-    if (new Date(e.start_date) < end.value && (e.end_date === undefined || new Date(e.end_date) > start.value)) {
-      return e.type === type;
+  const nonRecurringCount = props.events.filter((e) => {
+    if (e.type === type) {
+      return new Date(e.start_date) < end.value && (e.end_date === undefined || new Date(e.end_date) > start.value);
     }
-
     return false;
   }).length;
+
+  let recurringCount = 0;
+
+  for (const event of props.events) {
+    if (event.type === type && event.is_recurring && event.rrule) {
+      const rule = RRule.fromString(event.rrule);
+
+      const nextDates = rule.between(
+        startOfDay(startOfWeek(startOfMonth(start.value), { weekStartsOn: 1 })),
+        endOfDay(endOfWeek(endOfMonth(end.value), { weekStartsOn: 1 }))
+      );
+
+      recurringCount += nextDates.length;
+    }
+  }
+
+  return nonRecurringCount + recurringCount;
+}
+
+function sortFilterOptions (options: FilterOption[]) {
+  return options.toSorted((a, b) => {
+    const countA = getCount(a.value);
+    const countB = getCount(b.value);
+
+    if (countA > 0) {
+      return -1;
+    }
+
+    if (countB > 0) {
+      return 1;
+    }
+
+    return 0;
+  });
 }
 
 </script>
@@ -69,7 +112,7 @@ function getCount (type: string) {
       :key="filter.id"
       class="flex gap-2 flex-wrap max-w-[600px]">
       <div
-        v-for="(option, optionIdx) in filter.options"
+        v-for="(option, optionIdx) in sortFilterOptions(filter.options)"
         :key="option.value">
         <span
           class="inline-flex items-center rounded-full px-2 py-1 text-sm font-medium ring-1 ring-inset"

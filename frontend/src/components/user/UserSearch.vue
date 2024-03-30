@@ -41,7 +41,7 @@
           v-slot="{ active, selected }"
           :value="user"
           as="template">
-          <li :class="['relative cursor-default select-none py-2 pl-3 pr-9', active ? 'bg-indigo-600 text-white' : 'text-gray-900']">
+          <li :class="['relative cursor-default select-none py-2 pl-3 pr-9 cursor-pointer', active ? 'bg-indigo-600 text-white' : 'text-gray-900']">
             <div class="flex items-center">
               <user-avatar :user="user" size-class="w-6 h-6" />
               <span :class="['ml-3 truncate', selected && 'font-semibold']">

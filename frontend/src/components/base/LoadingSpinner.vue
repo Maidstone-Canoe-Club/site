@@ -27,7 +27,6 @@ withDefaults(defineProps<{
 .spinner {
   animation: rotate 2s linear infinite;
   z-index: 2;
-  position: absolute;
   width: v-bind(size);
   height: v-bind(size);
   color: v-bind(color);

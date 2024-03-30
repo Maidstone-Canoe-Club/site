@@ -90,6 +90,7 @@
 <script setup lang="ts">
 import { LinkIcon } from "@heroicons/vue/20/solid";
 import { format } from "date-fns";
+import type { EventBooking } from "~/types";
 
 const showCancelModal = ref(false);
 
@@ -97,29 +98,49 @@ const directus = useDirectus();
 const user = useDirectusUser();
 const { getItems } = useDirectusItems();
 
-const bookings = ref(null);
+const bookings = ref<EventBooking[] | null>(null);
 const loading = ref(false);
 
-async function loadData () {
+function getDateOfBooking (booking: EventBooking) {
+  if (!booking.event.is_recurring) {
+    return new Date(booking.event.start_date);
+  }
+
+  return getDatesOfInstance(booking.event, booking.instance).start;
+}
+
+async function loadData (): Promise<EventBooking[] | null> {
   loading.value = true;
+  let result: EventBooking[] | null = null;
   try {
-    const result = await getItems({
+    const bookings = await getItems<EventBooking>({
       collection: "event_bookings",
       params: {
-        fields: ["*", "user.parent.id", "user.id", "user.first_name", "user.last_name", "recurring_pattern.*", "event.id", "event.title", "event.start_date"],
+        fields: [
+          "*",
+          "user.parent.id",
+          "user.id",
+          "user.first_name",
+          "user.last_name",
+          "event.id",
+          "event.rrule",
+          "event.is_recurring",
+          "event.title",
+          "event.start_date",
+          "event.end_date"],
         sort: ["-date_created"],
         filter: {
           _or: [
             {
               user: {
-                _eq: user.value.id
+                _eq: user.value!.id
               }
             },
             {
               user: {
                 parent: {
                   id: {
-                    _eq: user.value.id
+                    _eq: user.value!.id
                   }
                 }
               }
@@ -129,31 +150,33 @@ async function loadData () {
       }
     });
 
-    return result.map(b => ({
+    result = bookings.map(b => ({
       ...b,
-      date: getDateFromInstance(b.event.start_date, b.instance, b.recurring_pattern?.type)
+      date: getDateOfBooking(b)
     }));
   } finally {
     loading.value = false;
   }
+
+  return result;
 }
 
 function formatDate (input: string) {
-  return format(new Date(input), "do MMMM yyyy, hh:mmaaa");
+  return format(new Date(input), "do MMMM yyyy, h:mmaaa");
 }
 
 function formatStatus (input: string) {
   return input.charAt(0).toUpperCase() + input.slice(1);
 }
 
-function canCancelBooking (booking) {
+function canCancelBooking (booking: EventBooking) {
   if (booking.status === "cancelled") {
     return false;
   }
   return new Date() < new Date(booking.event.start_date);
 }
 
-function getEventLink (booking) {
+function getEventLink (booking: EventBooking) {
   let result = "/events/" + booking.event.id;
 
   if (booking.instance) {
@@ -163,11 +186,11 @@ function getEventLink (booking) {
   return result;
 }
 
-const eventToCancel = ref(null);
-const instanceToCancel = ref(null);
+const eventToCancel = ref<string | null>();
+const instanceToCancel = ref<number | null>();
 const userToCancel = ref(null);
 
-function onCancelBooking (booking) {
+function onCancelBooking (booking: EventBooking) {
   eventToCancel.value = booking.event.id;
   instanceToCancel.value = booking.instance;
   userToCancel.value = booking.user.id;

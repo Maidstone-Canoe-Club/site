@@ -367,7 +367,7 @@ function cancelBooking (viewingUser) {
 }
 
 function canCancelBooking (viewingUser) {
-  return hasRole(user.value, "committee") || props.userIsLeader || viewingUser.id === user.value.id;
+  return hasRole(user.value, "committee") || props.userIsLeader || viewingUser.id === user.value.id || viewingUser.parent === user.value.id;
 }
 
 async function onCancelBooking () {

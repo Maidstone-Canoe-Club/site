@@ -14,10 +14,17 @@
       <label :for="id" class="font-medium text-gray-900">{{ label }}</label>
       {{ ' ' }}
     </div>
+    <p
+      v-if="!isValid"
+      :id="`${id}-error`"
+      class="mt-2 text-sm text-red-600">
+      {{ error }}
+    </p>
   </div>
 </template>
 
 <script setup lang="ts">
+import type { Validation } from "@vuelidate/core";
 
 const emits = defineEmits(["update:modelValue"]);
 
@@ -25,7 +32,8 @@ const props = defineProps<{
   modelValue: boolean,
   id: string,
   name: string,
-  label?: string
+  label?: string,
+  v?: Validation | null
 }>();
 
 const internalValue = ref(props.modelValue);
@@ -36,6 +44,20 @@ watch(() => props.modelValue, (val) => {
 
 watch(internalValue, (val) => {
   emits("update:modelValue", val);
+});
+
+const error = computed(() => {
+  if (props.v && props.v?.$errors?.length >= 1) {
+    return props.v.$errors[0].$message;
+  }
+});
+
+const isValid = computed(() => {
+  if (props.v && props.v.$dirty) {
+    return !props.v.$invalid;
+  }
+
+  return true;
 });
 
 </script>

@@ -45,30 +45,17 @@
       </span>
     </div>
 
-    <form
+    <a-button
       v-if="usePaymentForm"
-      :action="paymentUrl"
-      method="POST">
-      <input
-        v-for="(u, index) in usersToBook"
-        id="userIds"
-        :key="index"
-        name="userIds"
-        type="hidden"
-        :value="u.id">
-      <button
-        type="submit"
-        :disabled="buttonDisabled"
-        class="w-full font-semibold px-2.5 py-3"
-        :class="payNowButtonClass">
-        {{ payNowLabel }}
-      </button>
-    </form>
+      :action="onTryBookNow"
+      hide-loader>
+      {{ payNowLabel }}
+    </a-button>
     <custom-button
       v-else
       class="w-full font-semibold px-2.5 py-3"
       :disabled="buttonDisabled"
-      :action="onBookNow">
+      :action="onTryBookNow">
       Book now
     </custom-button>
   </div>
@@ -145,16 +132,48 @@
         </div>
       </Dialog>
     </TransitionRoot>
+
+    <event-disclaimer-modal
+      v-if="usePaymentForm"
+      v-model:open="openDisclaimerModal"
+      :event="event"
+      :confirm-action="onBookNow">
+      <form
+        v-if="usePaymentForm"
+        :action="paymentUrl"
+        class="inline-flex w-full sm:col-start-2"
+        method="POST">
+        <input
+          v-for="(u, index) in usersToBook"
+          id="userIds"
+          :key="index"
+          name="userIds"
+          type="hidden"
+          :value="u.id">
+        <button
+          type="submit"
+          :disabled="buttonDisabled"
+          class="w-full font-semibold px-2.5 py-3"
+          :class="payNowButtonClass">
+          {{ payNowLabel }}
+        </button>
+      </form>
+    </event-disclaimer-modal>
+    <event-disclaimer-modal
+      v-else
+      v-model:open="openDisclaimerModal"
+      :event="event"
+      :confirm-action="onBookNow" />
   </client-only>
 </template>
 
 <script setup lang="ts">
 import { CheckIcon, ExclamationTriangleIcon, UsersIcon, PlusIcon } from "@heroicons/vue/24/outline";
+// @ts-ignore
 import Dinero from "dinero.js";
 import type { DirectusUser } from "nuxt-directus/dist/runtime/types";
 import { InformationCircleIcon } from "@heroicons/vue/20/solid";
 import type { EventItem } from "~/types";
-// @ts-ignore
 
 const emits = defineEmits(["refresh"]);
 
@@ -173,6 +192,7 @@ const user = useDirectusUser();
 const directus = useDirectus();
 
 const openResultModal = ref(false);
+const openDisclaimerModal = ref(false);
 const bookingSuccess = ref(true);
 const bookingResults = ref(null);
 
@@ -267,6 +287,10 @@ const payNowLabel = computed(() => {
 
 function userAlreadyBooked (id) {
   return !!props.currentBookings.find(x => x.user.id === id);
+}
+
+function onTryBookNow () {
+  openDisclaimerModal.value = true;
 }
 
 async function onBookNow () {

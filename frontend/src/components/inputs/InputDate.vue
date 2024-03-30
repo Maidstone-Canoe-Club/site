@@ -1,5 +1,5 @@
 ﻿<template>
-  <div :class="{invalid: !isValid}">
+  <div :class="{invalid: !internalIsValid}">
     <label
       v-if="label"
       :for="id"
@@ -14,10 +14,12 @@
         v-model="internalValue"
         class="shadow-sm"
         :enable-time-picker="enableTimePicker"
+        :min-date="minDate"
+        :max-date="maxDate"
         v-bind="$attrs" />
     </div>
     <p
-      v-if="!isValid"
+      v-if="!internalIsValid && error"
       :id="`${id}-error`"
       class="mt-2 text-sm text-red-600">
       {{ error }}
@@ -35,16 +37,22 @@ interface Props {
   required?: boolean,
   disabled?: boolean,
   enableTimePicker?: boolean,
-  v?: Validation | null
+  minDate?: Date | string,
+  maxDate?: Date | string,
+  v?: Validation | null,
+  isValid?: boolean
 }
 
-const emits = defineEmits(["update:modelValue"]);
+const emits = defineEmits(["update:modelValue", "change"]);
 
 const props = withDefaults(defineProps<Props>(), {
   label: undefined,
   required: false,
   disabled: false,
-  v: null
+  minDate: undefined,
+  maxDate: undefined,
+  v: null,
+  isValid: true
 });
 
 const error = computed(() => {
@@ -53,12 +61,12 @@ const error = computed(() => {
   }
 });
 
-const isValid = computed(() => {
+const internalIsValid = computed(() => {
   if (props.v && props.v.$dirty) {
     return !props.v.$invalid;
   }
 
-  return true;
+  return props.isValid;
 });
 
 const internalValue = computed<Date | number | null | undefined>({
@@ -67,6 +75,7 @@ const internalValue = computed<Date | number | null | undefined>({
   },
   set (val: Date | number | null | undefined) {
     emits("update:modelValue", val);
+    emits("change", val);
   }
 });
 

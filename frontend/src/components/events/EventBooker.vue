@@ -20,13 +20,6 @@
         <div
           v-else
           class="w-full">
-          <!--        <advanced-booker-->
-          <!--          v-if="advancedPricing"-->
-          <!--          :event="event"-->
-          <!--          :payment-url="paymentUrl"-->
-          <!--          :already-booked="alreadyBooked"-->
-          <!--          :spaces-left="spacesLeft" />-->
-          <!--        <template v-else>-->
           <multi-booker
             v-if="canBookJuniors"
             :event="event"
@@ -48,7 +41,6 @@
             :already-booked="alreadyBooked"
             :spaces-left="spacesLeft"
             @refresh="onRefresh" />
-        <!--        </template>-->
         </div>
       </template>
       <div v-else>
@@ -67,7 +59,6 @@ const emits = defineEmits(["refresh"]);
 const props = defineProps<{
   event: EventItem,
   instance?: string,
-  patternType?: string,
   alreadyBooked: boolean,
   hasRequiredBooking: boolean,
   otherBookingRequired: boolean,
@@ -109,14 +100,10 @@ async function loadJuniors () {
 }
 
 const paymentUrl = computed(() => {
-  let result = `/api/eventPayment?eventId=${props.event.id}&userId=${user.value.id}`;
+  let result = `/api/eventPayment?eventId=${props.event.id}&userId=${user.value!.id}`;
 
   if (props.instance) {
     result += `&instance=${props.instance}`;
-  }
-
-  if (props.patternType) {
-    result += `&patternType=${props.patternType}`;
   }
 
   return result;

@@ -132,6 +132,8 @@ const content = computed({
 
 ::v-deep(.ql-container) {
   min-height: inherit;
+  font-family: 'Karla', Arial, sans-serif;
+  font-size: 14px;
 }
 
 ::v-deep(.ql-editor) {

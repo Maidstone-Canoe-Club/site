@@ -76,6 +76,7 @@ services:
       STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
       NUXT_TURNSTILE_SECRET_KEY: ${NUXT_TURNSTILE_SECRET_KEY}
       NUXT_PUBLIC_TURNSTILE_SITE_KEY: ${NUXT_PUBLIC_TURNSTILE_SITE_KEY}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
     restart: unless-stopped
     extra_hosts:
       - "host.docker.internal:host-gateway"
