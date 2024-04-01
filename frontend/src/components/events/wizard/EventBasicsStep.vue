@@ -83,6 +83,8 @@ const canChangeLeaders = computed(() => {
       v-model="event.description"
       label="Description" />
 
+    <hr>
+
     <input-field
       id="location"
       v-model="event.location"

@@ -68,18 +68,29 @@ watch(() => event.value.endDate, (val) => {
       :min-date="event.startDate"
       :v="validator.endDate" />
 
-    <div v-if="!hideLastOccurrence">
-      <hr>
+    <div class="space-y-6">
+      <div class="relative">
+        <div class="absolute inset-0 flex items-center" aria-hidden="true">
+          <div class="w-full border-t border-gray-300" />
+        </div>
+        <div class="relative flex justify-start">
+          <span class="bg-gray-50 pr-2 text-md text-gray-500">Optional settings</span>
+        </div>
+      </div>
 
-      <p class="text-gray-700 mb-3 mt-5">
-        Optional settings
-      </p>
-      <input-date
-        id="last-booking-date"
-        v-model="event.lastBookingDate"
-        enable-time-picker
-        label="Last booking date" />
-      <small>The last date users will be allowed to book onto this event</small>
+      <input-toggle
+        v-model="event.allowBookingsAfterStart"
+        label="Allow bookings after event has started" />
+
+      <div
+        v-if="!hideLastOccurrence">
+        <input-date
+          id="last-booking-date"
+          v-model="event.lastBookingDate"
+          enable-time-picker
+          label="Last booking date" />
+        <small>The last date users will be allowed to book onto this event</small>
+      </div>
     </div>
 
     <div class="footer">

@@ -44,7 +44,8 @@ export type EventWizardItem = {
   occurrenceType?: OccurrenceType,
   requiredPaddlerAbility?: string,
   isPeerPaddle: boolean,
-  disclaimer?: string
+  disclaimer?: string,
+  allowBookingsAfterStart?: boolean
 }
 
 const directus = useDirectus();
@@ -158,7 +159,8 @@ function toNewEventItem (eventItem: EventWizardItem): NewEventItem {
     type: eventItem.type!,
     required_paddler_ability: eventItem.requiredPaddlerAbility,
     is_peer_paddle: eventItem.isPeerPaddle,
-    disclaimer: eventItem.disclaimer
+    disclaimer: eventItem.disclaimer,
+    allow_bookings_after_start: eventItem.allowBookingsAfterStart
   };
 }
 

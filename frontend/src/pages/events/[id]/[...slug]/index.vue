@@ -495,9 +495,12 @@ const canBook = computed(() => {
     return false;
   }
 
-  const lastBookingDate = event.value?.last_booking_date;
-  if (lastBookingDate && new Date(lastBookingDate) < new Date()) {
-    return false;
+  const canBookAfterStart = event.value.allow_booking_after_start;
+  if (!canBookAfterStart) {
+    const lastBookingDate = event.value?.last_booking_date;
+    if (lastBookingDate && new Date(lastBookingDate) < new Date()) {
+      return false;
+    }
   }
 
   if (sessionDates.value && sessionDates.value.length) {
