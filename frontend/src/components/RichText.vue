@@ -15,34 +15,38 @@ defineProps<{
 const contentContainer = ref();
 
 async function tryInterceptClick (event: any) {
-  if (event.target.tagName === "A") {
-    const url = new URL(event.target.href);
-    const page = new URL(window.location.toString());
+  const url = new URL(event.target.href);
+  const page = new URL(window.location.toString());
 
-    if (url.origin === page.origin) {
-      event.preventDefault();
+  if (url.origin === page.origin) {
+    event.preventDefault();
 
-      const options: NavigateToOptions = {
-        open: undefined
+    const options: NavigateToOptions = {
+      open: undefined
+    };
+
+    if (event.target.target && event.target.target === "_blank") {
+      options.open = {
+        target: "_blank"
       };
-
-      if (event.target.target && event.target.target === "_blank") {
-        options.open = {
-          target: "_blank"
-        };
-      }
-
-      await navigateTo(url.pathname, options);
     }
+
+    await navigateTo(url.pathname, options);
   }
 }
 
 onMounted(() => {
-  contentContainer.value.addEventListener("click", tryInterceptClick);
+  const elements = contentContainer.value.getElementsByTagName("a");
+  for (const el of elements) {
+    el.addEventListener("click", tryInterceptClick);
+  }
 });
 
 onBeforeUnmount(() => {
-  contentContainer.value.removeEventListener("click", tryInterceptClick);
+  const elements = contentContainer.value.getElementsByTagName("a");
+  for (const el of elements) {
+    el.removeEventListener("click", tryInterceptClick);
+  }
 });
 
 </script>
