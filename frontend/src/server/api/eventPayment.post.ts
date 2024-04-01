@@ -44,7 +44,6 @@ export default defineEventHandler(async (event) => {
   const eventId = query.eventId;
   const userId = query.userId;
   const instance = query.instance as number;
-  const patternType = query.patternType;
   const userIds = body.userIds;
 
   try {

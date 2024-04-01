@@ -820,29 +820,6 @@ collections:
       unarchive_value: null
     schema:
       name: orders
-  - collection: recurring_event_patterns
-    meta:
-      accountability: all
-      archive_app_filter: true
-      archive_field: null
-      archive_value: null
-      collapse: open
-      collection: recurring_event_patterns
-      color: '#2ECDA7'
-      display_template: null
-      group: Events
-      hidden: false
-      icon: event_repeat
-      item_duplication_fields: null
-      note: null
-      preview_url: null
-      singleton: false
-      sort: 2
-      sort_field: null
-      translations: null
-      unarchive_value: null
-    schema:
-      name: recurring_event_patterns
   - collection: stripe_customers
     meta:
       accountability: all
@@ -3160,6 +3137,122 @@ fields:
       foreign_key_table: directus_users
       foreign_key_column: id
   - collection: event_bookings
+    field: attendance_notes
+    type: text
+    meta:
+      collection: event_bookings
+      conditions: null
+      display: null
+      display_options: null
+      field: attendance_notes
+      group: null
+      hidden: false
+      interface: input-multiline
+      note: null
+      options: null
+      readonly: false
+      required: false
+      sort: 13
+      special: null
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: attendance_notes
+      table: event_bookings
+      data_type: text
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: event_bookings
+    field: attended
+    type: boolean
+    meta:
+      collection: event_bookings
+      conditions: null
+      display: null
+      display_options: null
+      field: attended
+      group: null
+      hidden: false
+      interface: boolean
+      note: null
+      options: null
+      readonly: false
+      required: false
+      sort: 11
+      special:
+        - cast-boolean
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: attended
+      table: event_bookings
+      data_type: boolean
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: event_bookings
+    field: completed
+    type: boolean
+    meta:
+      collection: event_bookings
+      conditions: null
+      display: null
+      display_options: null
+      field: completed
+      group: null
+      hidden: false
+      interface: boolean
+      note: null
+      options: null
+      readonly: false
+      required: false
+      sort: 12
+      special:
+        - cast-boolean
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: completed
+      table: event_bookings
+      data_type: boolean
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: event_bookings
     field: date_created
     type: timestamp
     meta:
@@ -3358,46 +3451,6 @@ fields:
       has_auto_increment: false
       foreign_key_table: null
       foreign_key_column: null
-  - collection: event_bookings
-    field: recurring_pattern
-    type: uuid
-    meta:
-      collection: event_bookings
-      conditions: null
-      display: null
-      display_options: null
-      field: recurring_pattern
-      group: null
-      hidden: false
-      interface: select-dropdown-m2o
-      note: null
-      options:
-        enableCreate: false
-      readonly: false
-      required: false
-      sort: 8
-      special:
-        - m2o
-      translations: null
-      validation: null
-      validation_message: null
-      width: full
-    schema:
-      name: recurring_pattern
-      table: event_bookings
-      data_type: uuid
-      default_value: null
-      max_length: null
-      numeric_precision: null
-      numeric_scale: null
-      is_nullable: true
-      is_unique: false
-      is_primary_key: false
-      is_generated: false
-      generation_expression: null
-      has_auto_increment: false
-      foreign_key_table: recurring_event_patterns
-      foreign_key_column: id
   - collection: event_bookings
     field: status
     type: string
@@ -3904,6 +3957,45 @@ fields:
       width: full
     schema:
       name: advanced_pricing
+      table: events
+      data_type: boolean
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: events
+    field: allow_booking_after_start
+    type: boolean
+    meta:
+      collection: events
+      conditions: null
+      display: null
+      display_options: null
+      field: allow_booking_after_start
+      group: null
+      hidden: false
+      interface: boolean
+      note: null
+      options: null
+      readonly: false
+      required: false
+      sort: 38
+      special:
+        - cast-boolean
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: allow_booking_after_start
       table: events
       data_type: boolean
       default_value: null
@@ -10996,520 +11088,6 @@ fields:
       has_auto_increment: false
       foreign_key_table: directus_users
       foreign_key_column: id
-  - collection: recurring_event_patterns
-    field: date_created
-    type: timestamp
-    meta:
-      collection: recurring_event_patterns
-      conditions: null
-      display: datetime
-      display_options:
-        relative: true
-      field: date_created
-      group: null
-      hidden: true
-      interface: datetime
-      note: null
-      options: null
-      readonly: true
-      required: false
-      sort: 3
-      special:
-        - date-created
-      translations: null
-      validation: null
-      validation_message: null
-      width: half
-    schema:
-      name: date_created
-      table: recurring_event_patterns
-      data_type: timestamp with time zone
-      default_value: null
-      max_length: null
-      numeric_precision: null
-      numeric_scale: null
-      is_nullable: true
-      is_unique: false
-      is_primary_key: false
-      is_generated: false
-      generation_expression: null
-      has_auto_increment: false
-      foreign_key_table: null
-      foreign_key_column: null
-  - collection: recurring_event_patterns
-    field: date_updated
-    type: timestamp
-    meta:
-      collection: recurring_event_patterns
-      conditions: null
-      display: datetime
-      display_options:
-        relative: true
-      field: date_updated
-      group: null
-      hidden: true
-      interface: datetime
-      note: null
-      options: null
-      readonly: true
-      required: false
-      sort: 5
-      special:
-        - date-updated
-      translations: null
-      validation: null
-      validation_message: null
-      width: half
-    schema:
-      name: date_updated
-      table: recurring_event_patterns
-      data_type: timestamp with time zone
-      default_value: null
-      max_length: null
-      numeric_precision: null
-      numeric_scale: null
-      is_nullable: true
-      is_unique: false
-      is_primary_key: false
-      is_generated: false
-      generation_expression: null
-      has_auto_increment: false
-      foreign_key_table: null
-      foreign_key_column: null
-  - collection: recurring_event_patterns
-    field: day_of_month
-    type: integer
-    meta:
-      collection: recurring_event_patterns
-      conditions: null
-      display: null
-      display_options: null
-      field: day_of_month
-      group: null
-      hidden: false
-      interface: input
-      note: null
-      options: null
-      readonly: false
-      required: false
-      sort: 6
-      special: null
-      translations: null
-      validation: null
-      validation_message: null
-      width: full
-    schema:
-      name: day_of_month
-      table: recurring_event_patterns
-      data_type: integer
-      default_value: null
-      max_length: null
-      numeric_precision: 32
-      numeric_scale: 0
-      is_nullable: true
-      is_unique: false
-      is_primary_key: false
-      is_generated: false
-      generation_expression: null
-      has_auto_increment: false
-      foreign_key_table: null
-      foreign_key_column: null
-  - collection: recurring_event_patterns
-    field: day_of_week
-    type: integer
-    meta:
-      collection: recurring_event_patterns
-      conditions: null
-      display: null
-      display_options: null
-      field: day_of_week
-      group: null
-      hidden: false
-      interface: input
-      note: null
-      options: null
-      readonly: false
-      required: false
-      sort: 7
-      special: null
-      translations: null
-      validation: null
-      validation_message: null
-      width: full
-    schema:
-      name: day_of_week
-      table: recurring_event_patterns
-      data_type: integer
-      default_value: null
-      max_length: null
-      numeric_precision: 32
-      numeric_scale: 0
-      is_nullable: true
-      is_unique: false
-      is_primary_key: false
-      is_generated: false
-      generation_expression: null
-      has_auto_increment: false
-      foreign_key_table: null
-      foreign_key_column: null
-  - collection: recurring_event_patterns
-    field: event
-    type: uuid
-    meta:
-      collection: recurring_event_patterns
-      conditions: null
-      display: null
-      display_options: null
-      field: event
-      group: null
-      hidden: false
-      interface: select-dropdown-m2o
-      note: null
-      options:
-        enableCreate: false
-      readonly: false
-      required: false
-      sort: 13
-      special:
-        - m2o
-      translations: null
-      validation: null
-      validation_message: null
-      width: full
-    schema:
-      name: event
-      table: recurring_event_patterns
-      data_type: uuid
-      default_value: null
-      max_length: null
-      numeric_precision: null
-      numeric_scale: null
-      is_nullable: true
-      is_unique: false
-      is_primary_key: false
-      is_generated: false
-      generation_expression: null
-      has_auto_increment: false
-      foreign_key_table: events
-      foreign_key_column: id
-  - collection: recurring_event_patterns
-    field: id
-    type: uuid
-    meta:
-      collection: recurring_event_patterns
-      conditions: null
-      display: null
-      display_options: null
-      field: id
-      group: null
-      hidden: true
-      interface: input
-      note: null
-      options: null
-      readonly: true
-      required: false
-      sort: 1
-      special:
-        - uuid
-      translations: null
-      validation: null
-      validation_message: null
-      width: full
-    schema:
-      name: id
-      table: recurring_event_patterns
-      data_type: uuid
-      default_value: null
-      max_length: null
-      numeric_precision: null
-      numeric_scale: null
-      is_nullable: false
-      is_unique: true
-      is_primary_key: true
-      is_generated: false
-      generation_expression: null
-      has_auto_increment: false
-      foreign_key_table: null
-      foreign_key_column: null
-  - collection: recurring_event_patterns
-    field: max_occurences
-    type: integer
-    meta:
-      collection: recurring_event_patterns
-      conditions: null
-      display: null
-      display_options: null
-      field: max_occurences
-      group: null
-      hidden: false
-      interface: input
-      note: null
-      options: null
-      readonly: false
-      required: false
-      sort: 11
-      special: null
-      translations: null
-      validation: null
-      validation_message: null
-      width: full
-    schema:
-      name: max_occurences
-      table: recurring_event_patterns
-      data_type: integer
-      default_value: null
-      max_length: null
-      numeric_precision: 32
-      numeric_scale: 0
-      is_nullable: true
-      is_unique: false
-      is_primary_key: false
-      is_generated: false
-      generation_expression: null
-      has_auto_increment: false
-      foreign_key_table: null
-      foreign_key_column: null
-  - collection: recurring_event_patterns
-    field: month_of_year
-    type: integer
-    meta:
-      collection: recurring_event_patterns
-      conditions: null
-      display: null
-      display_options: null
-      field: month_of_year
-      group: null
-      hidden: false
-      interface: input
-      note: null
-      options: null
-      readonly: false
-      required: false
-      sort: 9
-      special: null
-      translations: null
-      validation: null
-      validation_message: null
-      width: full
-    schema:
-      name: month_of_year
-      table: recurring_event_patterns
-      data_type: integer
-      default_value: null
-      max_length: null
-      numeric_precision: 32
-      numeric_scale: 0
-      is_nullable: true
-      is_unique: false
-      is_primary_key: false
-      is_generated: false
-      generation_expression: null
-      has_auto_increment: false
-      foreign_key_table: null
-      foreign_key_column: null
-  - collection: recurring_event_patterns
-    field: separation_count
-    type: integer
-    meta:
-      collection: recurring_event_patterns
-      conditions: null
-      display: null
-      display_options: null
-      field: separation_count
-      group: null
-      hidden: false
-      interface: input
-      note: null
-      options: null
-      readonly: false
-      required: false
-      sort: 10
-      special: null
-      translations: null
-      validation: null
-      validation_message: null
-      width: full
-    schema:
-      name: separation_count
-      table: recurring_event_patterns
-      data_type: integer
-      default_value: null
-      max_length: null
-      numeric_precision: 32
-      numeric_scale: 0
-      is_nullable: true
-      is_unique: false
-      is_primary_key: false
-      is_generated: false
-      generation_expression: null
-      has_auto_increment: false
-      foreign_key_table: null
-      foreign_key_column: null
-  - collection: recurring_event_patterns
-    field: type
-    type: string
-    meta:
-      collection: recurring_event_patterns
-      conditions: null
-      display: null
-      display_options: null
-      field: type
-      group: null
-      hidden: false
-      interface: select-dropdown
-      note: null
-      options:
-        choices:
-          - text: Daily
-            value: '0'
-          - text: Weekly
-            value: '1'
-          - text: Monthly
-            value: '2'
-          - text: Yearly
-            value: '3'
-      readonly: false
-      required: true
-      sort: 12
-      special: null
-      translations: null
-      validation: null
-      validation_message: null
-      width: full
-    schema:
-      name: type
-      table: recurring_event_patterns
-      data_type: character varying
-      default_value: null
-      max_length: 255
-      numeric_precision: null
-      numeric_scale: null
-      is_nullable: true
-      is_unique: false
-      is_primary_key: false
-      is_generated: false
-      generation_expression: null
-      has_auto_increment: false
-      foreign_key_table: null
-      foreign_key_column: null
-  - collection: recurring_event_patterns
-    field: user_created
-    type: uuid
-    meta:
-      collection: recurring_event_patterns
-      conditions: null
-      display: user
-      display_options: null
-      field: user_created
-      group: null
-      hidden: true
-      interface: select-dropdown-m2o
-      note: null
-      options:
-        template: '{{avatar.$thumbnail}} {{first_name}} {{last_name}}'
-      readonly: true
-      required: false
-      sort: 2
-      special:
-        - user-created
-      translations: null
-      validation: null
-      validation_message: null
-      width: half
-    schema:
-      name: user_created
-      table: recurring_event_patterns
-      data_type: uuid
-      default_value: null
-      max_length: null
-      numeric_precision: null
-      numeric_scale: null
-      is_nullable: true
-      is_unique: false
-      is_primary_key: false
-      is_generated: false
-      generation_expression: null
-      has_auto_increment: false
-      foreign_key_table: directus_users
-      foreign_key_column: id
-  - collection: recurring_event_patterns
-    field: user_updated
-    type: uuid
-    meta:
-      collection: recurring_event_patterns
-      conditions: null
-      display: user
-      display_options: null
-      field: user_updated
-      group: null
-      hidden: true
-      interface: select-dropdown-m2o
-      note: null
-      options:
-        template: '{{avatar.$thumbnail}} {{first_name}} {{last_name}}'
-      readonly: true
-      required: false
-      sort: 4
-      special:
-        - user-updated
-      translations: null
-      validation: null
-      validation_message: null
-      width: half
-    schema:
-      name: user_updated
-      table: recurring_event_patterns
-      data_type: uuid
-      default_value: null
-      max_length: null
-      numeric_precision: null
-      numeric_scale: null
-      is_nullable: true
-      is_unique: false
-      is_primary_key: false
-      is_generated: false
-      generation_expression: null
-      has_auto_increment: false
-      foreign_key_table: directus_users
-      foreign_key_column: id
-  - collection: recurring_event_patterns
-    field: week_of_month
-    type: string
-    meta:
-      collection: recurring_event_patterns
-      conditions: null
-      display: null
-      display_options: null
-      field: week_of_month
-      group: null
-      hidden: false
-      interface: input
-      note: null
-      options: null
-      readonly: false
-      required: false
-      sort: 8
-      special: null
-      translations: null
-      validation: null
-      validation_message: null
-      width: full
-    schema:
-      name: week_of_month
-      table: recurring_event_patterns
-      data_type: character varying
-      default_value: null
-      max_length: 255
-      numeric_precision: null
-      numeric_scale: null
-      is_nullable: true
-      is_unique: false
-      is_primary_key: false
-      is_generated: false
-      generation_expression: null
-      has_auto_increment: false
-      foreign_key_table: null
-      foreign_key_column: null
   - collection: stripe_customers
     field: customer_id
     type: string
@@ -11941,27 +11519,6 @@ relations:
       foreign_key_table: events
       foreign_key_column: id
       constraint_name: event_bookings_event_foreign
-      on_update: NO ACTION
-      on_delete: SET NULL
-  - collection: event_bookings
-    field: recurring_pattern
-    related_collection: recurring_event_patterns
-    meta:
-      junction_field: null
-      many_collection: event_bookings
-      many_field: recurring_pattern
-      one_allowed_collections: null
-      one_collection: recurring_event_patterns
-      one_collection_field: null
-      one_deselect_action: nullify
-      one_field: null
-      sort_field: null
-    schema:
-      table: event_bookings
-      column: recurring_pattern
-      foreign_key_table: recurring_event_patterns
-      foreign_key_column: id
-      constraint_name: event_bookings_recurring_pattern_foreign
       on_update: NO ACTION
       on_delete: SET NULL
   - collection: event_bookings
@@ -13091,69 +12648,6 @@ relations:
       constraint_name: orders_user_foreign
       on_update: NO ACTION
       on_delete: SET NULL
-  - collection: recurring_event_patterns
-    field: event
-    related_collection: events
-    meta:
-      junction_field: null
-      many_collection: recurring_event_patterns
-      many_field: event
-      one_allowed_collections: null
-      one_collection: events
-      one_collection_field: null
-      one_deselect_action: nullify
-      one_field: null
-      sort_field: null
-    schema:
-      table: recurring_event_patterns
-      column: event
-      foreign_key_table: events
-      foreign_key_column: id
-      constraint_name: recurring_event_patterns_event_foreign
-      on_update: NO ACTION
-      on_delete: SET NULL
-  - collection: recurring_event_patterns
-    field: user_created
-    related_collection: directus_users
-    meta:
-      junction_field: null
-      many_collection: recurring_event_patterns
-      many_field: user_created
-      one_allowed_collections: null
-      one_collection: directus_users
-      one_collection_field: null
-      one_deselect_action: nullify
-      one_field: null
-      sort_field: null
-    schema:
-      table: recurring_event_patterns
-      column: user_created
-      foreign_key_table: directus_users
-      foreign_key_column: id
-      constraint_name: recurring_event_patterns_user_created_foreign
-      on_update: NO ACTION
-      on_delete: NO ACTION
-  - collection: recurring_event_patterns
-    field: user_updated
-    related_collection: directus_users
-    meta:
-      junction_field: null
-      many_collection: recurring_event_patterns
-      many_field: user_updated
-      one_allowed_collections: null
-      one_collection: directus_users
-      one_collection_field: null
-      one_deselect_action: nullify
-      one_field: null
-      sort_field: null
-    schema:
-      table: recurring_event_patterns
-      column: user_updated
-      foreign_key_table: directus_users
-      foreign_key_column: id
-      constraint_name: recurring_event_patterns_user_updated_foreign
-      on_update: NO ACTION
-      on_delete: NO ACTION
   - collection: stripe_customers
     field: user
     related_collection: directus_users

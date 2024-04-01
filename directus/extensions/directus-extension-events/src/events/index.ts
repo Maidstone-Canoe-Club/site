@@ -49,12 +49,6 @@ export default defineEndpoint((router, {services, database}) => {
         accountability: adminAccountability
       });
 
-      const recurringPatternService = new ItemsService("recurring_event_patterns", {
-        knex: database,
-        schema: req.schema,
-        accountability: adminAccountability
-      });
-
       const eventLeadersService = new ItemsService("events_directus_users", {
         knex: database,
         schema: req.schema,
@@ -113,16 +107,6 @@ export default defineEndpoint((router, {services, database}) => {
           }
         }
       });
-
-      const patterns = await recurringPatternService.readByQuery({
-        filter: {
-          event: {
-            _eq: event.id
-          }
-        }
-      });
-
-      const pattern = patterns && patterns.length ? patterns[0] : null;
 
       if (!event) {
         return res.status(404).send("could not find event");
@@ -196,7 +180,6 @@ export default defineEndpoint((router, {services, database}) => {
       }
 
       return res.json({
-        patternType: pattern?.type,
         spacesLeft,
         alreadyBooked,
         bookings,

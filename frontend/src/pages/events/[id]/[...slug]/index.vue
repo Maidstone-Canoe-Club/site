@@ -184,6 +184,13 @@
             class="flex flex-col gap-2">
             <a-button
               variant="outline"
+              @click="onMarkAttendance">
+              <ClipboardDocumentCheckIcon class="size-5" />
+              Attendance
+            </a-button>
+
+            <a-button
+              variant="outline"
               @click="onMessageAttendees">
               <EnvelopeIcon class="size-5" />
               Message attendees
@@ -252,6 +259,13 @@
       </div>
     </div>
 
+    <attendance-modal
+      v-if="userIsLeader"
+      :open="markAttendanceModalOpen"
+      :bookings="bookings"
+      @refresh="onRefresh"
+      @dismiss="markAttendanceModalOpen = false" />
+
     <message-attendees-modal
       v-if="userIsLeader"
       :open="messageAttendeesModalOpen"
@@ -284,6 +298,9 @@ import {
   FlagIcon,
   IdentificationIcon
 } from "@heroicons/vue/16/solid";
+import {
+  ClipboardDocumentCheckIcon
+} from "@heroicons/vue/24/outline";
 // @ts-ignore
 import Dinero from "dinero.js";
 import { format, isSameDay } from "date-fns";
@@ -301,6 +318,7 @@ const instance = route.query.instance ? parseInt(route.query.instance as string,
 
 const childEvents = ref();
 
+const markAttendanceModalOpen = ref(false);
 const messageAttendeesModalOpen = ref(false);
 const attendeeDownloadModalOpen = ref(false);
 
@@ -477,9 +495,12 @@ const canBook = computed(() => {
     return false;
   }
 
-  const lastBookingDate = event.value?.last_booking_date;
-  if (lastBookingDate && new Date(lastBookingDate) < new Date()) {
-    return false;
+  const canBookAfterStart = event.value.allow_booking_after_start;
+  if (!canBookAfterStart) {
+    const lastBookingDate = event.value?.last_booking_date;
+    if (lastBookingDate && new Date(lastBookingDate) < new Date()) {
+      return false;
+    }
   }
 
   if (sessionDates.value && sessionDates.value.length) {
@@ -567,6 +588,10 @@ function onMessageAttendees () {
 
 function onDownloadAttendeeDetails () {
   attendeeDownloadModalOpen.value = true;
+}
+
+function onMarkAttendance () {
+  markAttendanceModalOpen.value = true;
 }
 
 </script>

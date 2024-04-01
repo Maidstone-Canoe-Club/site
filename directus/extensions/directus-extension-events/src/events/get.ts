@@ -22,7 +22,8 @@ export async function get(req: any, res: any, services: any, database: any) {
       "is_recurring",
       "status",
       "type",
-      "rrule"
+      "rrule",
+      "allow_booking_after_start"
     ];
 
     const eventsService = new ItemsService("events", {

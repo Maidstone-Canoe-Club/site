@@ -9,6 +9,7 @@ export type EventMultiDate = {
   endDate?: Date,
 }
 
+const event = defineModel<EventWizardItem>({ required: true });
 const eventDates = defineModel<EventMultiDate[]>("eventDates", { required: true });
 const errorMessages = reactive<(string | null)[]>([]);
 
@@ -111,12 +112,36 @@ const isValid = computed(() => {
         </div>
       </div>
       <a-button
-        class="mt-3"
+        class="mt-2"
         variant="outline"
         @click="addDate">
         Add date
       </a-button>
     </div>
+
+    <div
+      class="space-y-6">
+      <div class="relative">
+        <div class="absolute inset-0 flex items-center" aria-hidden="true">
+          <div class="w-full border-t border-gray-300" />
+        </div>
+        <div class="relative flex justify-start">
+          <span class="bg-gray-50 pr-2 text-md text-gray-500">Optional settings</span>
+        </div>
+      </div>
+
+      <input-toggle
+        v-model="event.allowBookingsAfterStart"
+        label="Allow bookings after event has started" />
+
+      <input-date
+        id="last-booking-date"
+        v-model="event.lastBookingDate"
+        enable-time-picker
+        label="Last booking date" />
+      <small>The last date users will be allowed to book onto this event</small>
+    </div>
+
     <div class="footer">
       <hr class="mb-6">
       <slot :is-valid="isValid" />

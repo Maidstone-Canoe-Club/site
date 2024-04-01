@@ -43,8 +43,9 @@ export function getDatesOfInstance (event: EventItem, instance: number) {
   });
 
   const start = all[instance];
+
   start.setHours(startDate.getHours(), startDate.getMinutes(), startDate.getSeconds());
-  const end = new Date(endDate.getTime() + duration);
+  const end = new Date(start.getTime() + duration);
 
   return {
     start,
