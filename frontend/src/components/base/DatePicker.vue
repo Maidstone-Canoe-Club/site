@@ -51,7 +51,7 @@ watch(internalValue, (val) => {
   emits("update:modelValue", val);
 });
 
-const formatDate = (date) => {
+const formatDate = (date: Date | number) => {
   let resultFormat = "dd MMM yyyy";
   if (props.enableTimePicker) {
     resultFormat += " - hh:mmaaa";
@@ -67,5 +67,10 @@ const formatDate = (date) => {
   display: flex;
   align-items: center;
   gap: .5rem;
+}
+
+::v-deep(.dp__menu),
+::v-deep(.dp__input){
+  font-family: 'Karla', Arial, sans-serif;
 }
 </style>
