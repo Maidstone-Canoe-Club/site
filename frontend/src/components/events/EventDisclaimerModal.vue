@@ -70,13 +70,20 @@ async function onConfirm () {
                       </li>
                       <li>
                         <p>
-                          Your medical information and emergency contact information are correct and up to date. You can check your
+                          Your medical information and emergency contact information are correct and up to date. You can
+                          check your
                           details on
                           <nuxt-link
                             to="/profile"
                             class="underline text-indigo-500">
                             your profile.
                           </nuxt-link>
+                        </p>
+                      </li>
+                      <li>
+                        <p>
+                          In the event that any relevant medical information changes between booking the course and the
+                          start of the event, you will inform the event leaders of those changes on the day of the event.
                         </p>
                       </li>
                     </ol>
