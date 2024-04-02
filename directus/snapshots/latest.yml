@@ -4871,6 +4871,44 @@ fields:
       foreign_key_table: null
       foreign_key_column: null
   - collection: events
+    field: min_age
+    type: integer
+    meta:
+      collection: events
+      conditions: null
+      display: null
+      display_options: null
+      field: min_age
+      group: null
+      hidden: false
+      interface: input
+      note: null
+      options: null
+      readonly: false
+      required: false
+      sort: 39
+      special: null
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: min_age
+      table: events
+      data_type: integer
+      default_value: null
+      max_length: null
+      numeric_precision: 32
+      numeric_scale: 0
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: events
     field: non_member_price
     type: float
     meta:

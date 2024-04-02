@@ -375,10 +375,19 @@ const formattedAllowedRoles = computed(() => {
   };
 
   if (roles.includes("non-members")) {
-    return camelCase(joinOrAnd(roles));
+    let result = camelCase(joinOrAnd(roles));
+    if (event.value.min_age) {
+      result += " (ages " + event.value.min_age + "+)";
+    }
+    return result;
   }
 
-  return camelCase(joinOrAnd(roles) + " only");
+  let result = camelCase(joinOrAnd(roles) + " only");
+  if (event.value.min_age) {
+    result += " (ages " + event.value.min_age + "+)";
+  }
+
+  return result;
 });
 
 if (!route.params.slug && slug) {

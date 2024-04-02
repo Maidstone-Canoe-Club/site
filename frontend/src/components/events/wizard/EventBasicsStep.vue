@@ -59,6 +59,8 @@ watch(() => event.value.allowedRoles, (val, oldVal) => {
   }
 }, { deep: true });
 
+const juniorTypeSelected = computed(() => !!event.value.allowedRoles.find(r => r.id === "juniors"));
+
 const user = useDirectusUser();
 
 const canChangeLeaders = computed(() => {
@@ -78,13 +80,6 @@ const canChangeLeaders = computed(() => {
       label="Event name"
       :v="validator.name" />
 
-    <input-wysiwyg
-      id="description"
-      v-model="event.description"
-      label="Description" />
-
-    <hr>
-
     <input-field
       id="location"
       v-model="event.location"
@@ -92,6 +87,19 @@ const canChangeLeaders = computed(() => {
       required
       label="Location"
       :v="validator.location" />
+
+    <input-wysiwyg
+      id="description"
+      v-model="event.description"
+      label="Description" />
+
+    <input-field
+      id="max-spaces"
+      v-model="event.maxSpaces"
+      name="max-spaces"
+      type="number"
+      label="Max spaces"
+      min="0" />
 
     <input-dropdown
       id="event-type"
@@ -107,6 +115,18 @@ const canChangeLeaders = computed(() => {
       :options="allowedRoles"
       label="Who can join this event?"
       :v="validator.allowedRoles" />
+
+    <input-field
+      v-if="juniorTypeSelected"
+      id="min-age"
+      v-model="event.minAge"
+      name="min-age"
+      type="number"
+      placeholder="Any age"
+      min="8"
+      label="Minimum attendee age" />
+
+    <hr>
 
     <user-search
       v-show="canChangeLeaders"

@@ -26,6 +26,7 @@ export type EventWizardItem = {
   type?: EventType,
   allowedRoles: EventWizardAllowedRole[],
   leaders: DirectusUser[],
+  maxSpaces?: number,
   startDate?: Date | string,
   endDate?: Date | string,
   lastBookingDate?: Date,
@@ -45,7 +46,8 @@ export type EventWizardItem = {
   requiredPaddlerAbility?: string,
   isPeerPaddle: boolean,
   disclaimer?: string,
-  allowBookingsAfterStart?: boolean
+  allowBookingsAfterStart?: boolean,
+  minAge?: number
 }
 
 const directus = useDirectus();
@@ -151,6 +153,7 @@ function toNewEventItem (eventItem: EventWizardItem): NewEventItem {
     location: eventItem.location!,
     start_date: eventItem.startDate!,
     end_date: eventItem.endDate!,
+    max_spaces: eventItem.maxSpaces,
     last_occurrence: eventItem.lastOccurrence,
     last_booking_date: eventItem.lastBookingDate,
     allowed_roles: eventItem.allowedRoles.map(r => r.id),
@@ -160,7 +163,8 @@ function toNewEventItem (eventItem: EventWizardItem): NewEventItem {
     required_paddler_ability: eventItem.requiredPaddlerAbility,
     is_peer_paddle: eventItem.isPeerPaddle,
     disclaimer: eventItem.disclaimer,
-    allow_bookings_after_start: eventItem.allowBookingsAfterStart
+    allow_bookings_after_start: eventItem.allowBookingsAfterStart,
+    min_age: eventItem.minAge
   };
 }
 
