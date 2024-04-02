@@ -43,6 +43,7 @@ export type NewEventItem = {
   location: string,
   start_date: Date | string,
   end_date: Date | string,
+  max_spaces?: number,
   last_occurrence?: Date
   last_booking_date?: Date,
   allowed_roles: string[],
@@ -53,5 +54,6 @@ export type NewEventItem = {
   required_paddler_ability?: string,
   is_peer_paddle: boolean,
   disclaimer?: string,
-  allow_bookings_after_start?: boolean
+  allow_bookings_after_start?: boolean,
+  min_age?: number
 }

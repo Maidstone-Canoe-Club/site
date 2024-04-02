@@ -13,6 +13,9 @@ export async function get(req: any, res: any, services: any, database: any) {
   try {
     const start = new Date(decodeURIComponent(req.query.start));
     const end = new Date(decodeURIComponent(req.query.end));
+    const types = req.query.types as string[] | undefined;
+    const count = req.query.count as number | undefined;
+
     const fields = [
       "id",
       "title",
@@ -23,7 +26,11 @@ export async function get(req: any, res: any, services: any, database: any) {
       "status",
       "type",
       "rrule",
-      "allow_booking_after_start"
+      "allowed_roles",
+      "allow_booking_after_start",
+      "min_age",
+      "parent_event",
+      "max_spaces"
     ];
 
     const eventsService = new ItemsService("events", {
@@ -32,36 +39,46 @@ export async function get(req: any, res: any, services: any, database: any) {
       accountability: adminAccountability
     });
 
+    const filter = {
+      _and: [
+        {
+          status: {_neq: "cancelled"}
+        },
+        {
+          start_date: {_lte: end}
+        },
+        {
+          _or: [
+            {
+              end_date: {_gt: start}
+            },
+            {
+              _and: [
+                {
+                  is_recurring: {_eq: true}
+                },
+                {
+                  last_occurence: {_null: true}
+                },
+              ]
+            },
+          ]
+        }
+      ]
+    };
+
+    if (types?.length) {
+      filter._and.push({
+        type: {
+          _in: types
+        }
+      });
+    }
+
     let events = await eventsService.readByQuery({
       fields,
-      filter: {
-        _and: [
-          {
-            status: {_neq: "cancelled"}
-          },
-          {
-            start_date: {_lte: end}
-          },
-          {
-            _or: [
-              {
-                end_date: {_gt: start}
-              },
-              {
-                _and: [
-                  {
-                    is_recurring: {_eq: true}
-                  },
-                  {
-                    last_occurence: {_null: true}
-                  },
-                ]
-              },
-
-            ]
-          }
-        ]
-      }
+      filter,
+      limit: count
     });
 
     events = events?.filter((e: any) => {
@@ -77,6 +94,31 @@ export async function get(req: any, res: any, services: any, database: any) {
 
       return true;
     });
+
+    const eventBookingService = new ItemsService("event_bookings", {
+      knex: database,
+      schema: req.schema,
+      accountability: adminAccountability
+    });
+
+    for (const event of events) {
+      const filter = {
+        _and: [
+          {
+            event: {
+              _eq: event.id
+            }
+          }
+        ]
+      };
+
+      // TODO: Figure out how to get recurring event booking stats
+
+      const bookings = await eventBookingService.readByQuery({
+        filter
+      });
+      event.bookings = bookings.length;
+    }
 
     return res.send(events);
   } catch (err) {

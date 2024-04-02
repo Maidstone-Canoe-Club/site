@@ -74,7 +74,10 @@ export interface EventItem {
   rrule?: string,
   required_paddler_ability?: string,
   is_peer_paddle: boolean,
-  disclaimer?: string
+  disclaimer?: string,
+  allow_bookings_after_start?: boolean,
+  min_age?: number,
+  bookings?: number
 }
 
 export interface EventBooking {
