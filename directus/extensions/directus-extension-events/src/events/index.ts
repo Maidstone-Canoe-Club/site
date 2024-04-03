@@ -1,6 +1,6 @@
 import {defineEndpoint} from "@directus/extensions-sdk";
 import {create} from "./create";
-import {get} from "./get";
+import {get, getConsentInfo} from "./get";
 
 export default defineEndpoint((router, {services, database}) => {
   const {
@@ -15,6 +15,10 @@ export default defineEndpoint((router, {services, database}) => {
 
   router.get("/", async (req: any, res: any) => {
     return await get(req, res, services, database);
+  });
+
+  router.get("/consent-info",  async (req: any, res: any) => {
+    return await getConsentInfo(req, res, services, database);
   });
 
   router.get("/info", async (req: any, res: any) => {
@@ -445,6 +449,8 @@ export default defineEndpoint((router, {services, database}) => {
       const eventId = req.query.eventId;
       const loggedInUserId = req.query.userId;
       const instance = req.query.instance;
+      const medicalConsent = req.query.medcon;
+      const photographyConsent = req.query.phocon;
       const userIds = req.body.userIds;
 
       if (!eventId) {
@@ -523,7 +529,9 @@ export default defineEndpoint((router, {services, database}) => {
           user: userId,
           event: eventId,
           instance: instance,
-          status: "booked"
+          status: "booked",
+          medical_consent: medicalConsent,
+          photography_consent: photographyConsent
         });
 
         bookingResults.push({

@@ -74,7 +74,7 @@
                       </div>
                     </template>
 
-                    <div v-else class="mt-3 sm:ml-4 sm:mt-0">
+                    <div v-else class="mt-3 sm:mt-0">
                       <DialogTitle as="h3" class="text-base font-semibold leading-6 text-gray-900">
                         <span class="flex gap-3 items-center">
                           <user-avatar
@@ -87,6 +87,15 @@
 
                       <div class="mt-4">
                         <dl class="space-y-4 sm:space-y-5">
+                          <a-button
+                            v-if="userIsLeader"
+                            variant="outline"
+                            target="_blank"
+                            :to="consentFormUrl">
+                            <DocumentCheckIcon class="size-4" />
+                            View consent form
+                          </a-button>
+
                           <div>
                             <dt class="text-sm font-medium text-gray-500 sm:w-40 sm:flex-shrink-0">
                               Date of birth
@@ -132,13 +141,14 @@
                                 </div>
                               </div>
                             </div>
-                            <button
-                              type="button"
-                              class="mt-5 w-full sm:w-auto rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                            <a-button
+                              class="mt-4"
+                              variant="outline"
                               @click="viewParent">
                               View parent
-                            </button>
+                            </a-button>
                           </div>
+
                           <template v-if="medicalInfo">
                             <div class="relative">
                               <div class="absolute inset-0 flex items-center" aria-hidden="true">
@@ -189,7 +199,9 @@
                           </template>
                         </dl>
                       </div>
-                      <div class="relative mt-6">
+                      <div
+                        v-if="!isJunior(viewingUser)"
+                        class="relative mt-6">
                         <div class="absolute inset-0 flex items-center" aria-hidden="true">
                           <div class="w-full border-t border-gray-300" />
                         </div>
@@ -282,7 +294,7 @@
 
 <script setup lang="ts">
 import { InformationCircleIcon } from "@heroicons/vue/20/solid";
-import { ExclamationTriangleIcon, TrashIcon } from "@heroicons/vue/24/outline";
+import { ExclamationTriangleIcon, TrashIcon, DocumentCheckIcon } from "@heroicons/vue/24/outline";
 import { format } from "date-fns";
 
 const emits = defineEmits(["refresh"]);
@@ -311,6 +323,7 @@ const emergencyLoading = ref(false);
 
 const showModal = ref(false);
 const viewingUser = ref(null);
+const viewingUserBooking = ref(null);
 const emergencyContactInfo = ref(null);
 const medicalInfo = ref(null);
 
@@ -326,6 +339,7 @@ async function viewUser (user) {
   medicalInfo.value = null;
   emergencyContactInfo.value = null;
   viewingUser.value = user;
+  viewingUserBooking.value = internalBookings.value.find(b => b.user.id === user.id)?.id;
   showModal.value = true;
 
   loading.value = true;
@@ -345,8 +359,8 @@ async function viewUser (user) {
     const result = results?.length ? results[0] : null;
 
     if (result && (result.allergies || result.asthma ||
-        result.epilepsy || result.diabetes ||
-        result.other || result.details)) {
+      result.epilepsy || result.diabetes ||
+      result.other || result.details)) {
       medicalInfo.value = result;
     }
   } catch (e) {
@@ -434,12 +448,15 @@ async function viewParent () {
         ]
       }
     });
+    viewingUserBooking.value = internalBookings.value.find(b => b.user.id === user.id)?.id;
   } catch (e) {
     console.log("error loading parent", e);
   } finally {
     loading.value = false;
   }
 }
+
+const consentFormUrl = computed(() => `/events/consent?booking=${viewingUserBooking.value}`);
 
 </script>
 

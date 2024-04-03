@@ -12,6 +12,8 @@ const props = withDefaults(defineProps<{
 });
 
 const open = defineModel<boolean>("open", { default: false });
+const medicalConsent = defineModel<boolean>("medicalConsent", { default: false });
+const photographyConsent = defineModel<boolean>("photographyConsent", { default: false });
 
 async function onConfirm () {
   if (props.confirmAction) {
@@ -83,7 +85,65 @@ async function onConfirm () {
                       <li>
                         <p>
                           In the event that any relevant medical information changes between booking the course and the
-                          start of the event, you will inform the event leaders of those changes on the day of the event.
+                          start of the event, you will inform the event leaders of those changes on the day of the
+                          event.
+                        </p>
+                      </li>
+                      <li>
+                        <p>
+                          I have had the activities explained and agree to myself / my son / my daughter to participate
+                          in the
+                          activities / event.
+                        </p>
+                      </li>
+                      <li>
+                        <p>
+                          I understand that the club / organisers accept no responsibility for loss, damage or injury
+                          caused by or
+                          during attendance of the organised activity / event except
+                          where such loss, damage or injury can be shown to result directly from the negligence of the
+                          club /
+                          organisers.
+                        </p>
+                      </li>
+                      <li>
+                        <p>
+                          I confirm to the best of my knowledge that myself / my son / my daughter does not suffer from
+                          any medical
+                          condition other than those declared.
+                        </p>
+                      </li>
+                      <li>
+                        <p>
+                          I understand that British Canoeing is insured for its civil liabilities as organiser of the
+                          event and that
+                          there is no personal accident cover for participants.
+                        </p>
+                      </li>
+                      <li>
+                        <p>
+                          I am responsible for completing this form accurately and including all details that might be
+                          needed by the
+                          person in charge. I am responsible for any errors and
+                          omissions to personal information and
+                          accept liability for any direct or indirect consequences that might
+                          arise from these errors or omissions.
+                        </p>
+                      </li>
+                      <!--                      <li>-->
+                      <!--                        I confirm that my son / daughter are not subject to any court order prohibiting publication of-->
+                      <!--                        their image.-->
+                      <!--                      </li>-->
+                      <li>
+                        <p>
+                          I consent to my son / daughter travelling by any form of transport arranged or approved by the
+                          organisation
+                          and related to the specific activity/event.
+                        </p>
+                      </li>
+                      <li>
+                        <p>
+                          I agree to be at the pick-up / drop-off point at the agreed time.
                         </p>
                       </li>
                     </ol>
@@ -91,6 +151,21 @@ async function onConfirm () {
                     <rich-text
                       v-if="event.disclaimer"
                       :content="event.disclaimer" />
+                  </div>
+
+                  <div class="mt-5 space-y-4">
+                    <input-checkbox
+                      id="medical-consent"
+                      v-model="medicalConsent"
+                      name="medical-consent"
+                      label="I consent to myself/my child receiving appropriate first aid, or, in the event of a medical emergency,
+          any treatment deemed necessary by a qualified medical practitioner." />
+                    <input-checkbox
+                      id="photography-consent"
+                      v-model="photographyConsent"
+                      name="photography-consent"
+                      label="I consent that photographs or video taken by authorised personnel of myself/my son/my daughter at
+          British Canoeing or club events may be used to promote paddlesport and help improve performance." />
                   </div>
                 </div>
               </div>

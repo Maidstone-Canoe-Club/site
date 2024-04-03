@@ -136,6 +136,8 @@
     <event-disclaimer-modal
       v-if="usePaymentForm"
       v-model:open="openDisclaimerModal"
+      v-model:medical-consent="medicalConsent"
+      v-model:photography-consent="photographyConsent"
       :event="event"
       :confirm-action="onBookNow">
       <form
@@ -162,6 +164,8 @@
     <event-disclaimer-modal
       v-else
       v-model:open="openDisclaimerModal"
+      v-model:medical-consent="medicalConsent"
+      v-model:photography-consent="photographyConsent"
       :event="event"
       :confirm-action="onBookNow" />
   </client-only>
@@ -195,6 +199,9 @@ const openResultModal = ref(false);
 const openDisclaimerModal = ref(false);
 const bookingSuccess = ref(true);
 const bookingResults = ref(null);
+
+const medicalConsent = ref(false);
+const photographyConsent = ref(false);
 
 const lastUsersBooked = ref();
 
@@ -295,7 +302,7 @@ function onTryBookNow () {
 
 async function onBookNow () {
   try {
-    let url = `/events/book?eventId=${props.event.id}&userId=${props.userId}`;
+    let url = `/events/book?eventId=${props.event.id}&userId=${props.userId}&medcon=${medicalConsent.value}&phocon=${photographyConsent.value}`;
 
     if (props.instance) {
       url += `&instance=${props.instance}`;
