@@ -15,6 +15,26 @@ const key = computed(() => user.value?.id || "");
 </script>
 
 <style lang="postcss">
+@tailwind components;
+
+html {
+  font-family: 'Karla', Arial, sans-serif;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Space Grotesk", Arial, sans-serif;
+}
+
+html, body, #__nuxt {
+  margin: 0;
+  height: 100%;
+}
+
 .page-enter-active,
 .page-leave-active {
   transition: all .2s ease-out;

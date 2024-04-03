@@ -20,7 +20,3 @@ const route = useRoute();
 const showVerificationBanner = computed(() => !route.path.startsWith("/confirm-email"));
 
 </script>
-
-<style scoped lang="scss">
-
-</style>
