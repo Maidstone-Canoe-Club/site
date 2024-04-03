@@ -47,11 +47,24 @@
         You aren't allowed to book onto this event
       </div>
     </template>
+
+    <template v-if="alreadyBooked && user.id === '878b8a9a-3995-4441-94ba-06b8558ddcc5'">
+      <a-button
+        class="w-full"
+        size="lg"
+        @click="onShowCheckin">
+        <QrCodeIcon class="size-5" />
+        Check-in
+      </a-button>
+      <checkin-viewer
+        v-model:open="openCheckinModal"
+        :checkin-code="checkinCode" />
+    </template>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ExclamationTriangleIcon } from "@heroicons/vue/20/solid";
+import { QrCodeIcon } from "@heroicons/vue/24/solid";
 import type { EventItem } from "~/types";
 
 const emits = defineEmits(["refresh"]);
@@ -75,6 +88,11 @@ const loginUrl = computed(() => `/login?redirect=${route.path}`);
 
 // const advancedPricing = computed(() => props.event.advanced_pricing);
 const advancedPricing = ref(false);
+const openCheckinModal = ref(false);
+
+function onShowCheckin () {
+  openCheckinModal.value = true;
+}
 
 const { data: juniors } = await useAsyncData("juniors-" + user.value?.id, async () => {
   return await loadJuniors();
@@ -173,6 +191,8 @@ const userHasRequiredBooking = computed(() => {
 
   return true;
 });
+
+const checkinCode = "cd15c415-1042-4766-81d3-8804c5fece62";
 
 </script>
 
