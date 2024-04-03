@@ -202,6 +202,14 @@
               <ArrowDownOnSquareStackIcon class="size-5" />
               Download attendee details
             </a-button>
+
+            <a-button
+              v-if="user.id === '878b8a9a-3995-4441-94ba-06b8558ddcc5'"
+              variant="outline"
+              @click="onCheckinOther">
+              <QrCodeIcon class="size-5" />
+              Check-in attendee
+            </a-button>
           </div>
 
           <div class="mb-5">
@@ -248,6 +256,7 @@
             class="flex items-center justify-center">
             {{ spacesLeftLabel }}
           </div>
+
           <event-attendees
             :bookings="bookings"
             :event-id="event.id"
@@ -280,6 +289,8 @@
       :event-id="event.id"
       :instance="instance"
       @dismiss="attendeeDownloadModalOpen = false" />
+
+    <checkin-other v-model:open="checkinOtherModalOpen" />
   </article>
 </template>
 
@@ -299,7 +310,8 @@ import {
   IdentificationIcon
 } from "@heroicons/vue/16/solid";
 import {
-  ClipboardDocumentCheckIcon
+  ClipboardDocumentCheckIcon,
+  QrCodeIcon
 } from "@heroicons/vue/24/outline";
 // @ts-ignore
 import Dinero from "dinero.js";
@@ -308,6 +320,7 @@ import type { DirectusUser } from "nuxt-directus/dist/runtime/types";
 import type { Ref } from "vue";
 import type { EventItem } from "~/types";
 import { getDatesOfInstance } from "~/utils/events";
+import CheckinOther from "~/components/events/CheckinOther.vue";
 
 const { getItemById, getItems } = useDirectusItems();
 const directus = useDirectus();
@@ -321,6 +334,7 @@ const childEvents = ref();
 const markAttendanceModalOpen = ref(false);
 const messageAttendeesModalOpen = ref(false);
 const attendeeDownloadModalOpen = ref(false);
+const checkinOtherModalOpen = ref(false);
 
 const { data: event } = await useAsyncData<EventItem>(`event-item-${route.params.id}`, async () => {
   return await getItemById<EventItem>({
@@ -601,6 +615,10 @@ function onDownloadAttendeeDetails () {
 
 function onMarkAttendance () {
   markAttendanceModalOpen.value = true;
+}
+
+function onCheckinOther () {
+  checkinOtherModalOpen.value = true;
 }
 
 </script>

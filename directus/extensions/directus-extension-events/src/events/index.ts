@@ -1,6 +1,7 @@
 import {defineEndpoint} from "@directus/extensions-sdk";
 import {create} from "./create";
 import {get, getConsentInfo} from "./get";
+import {nanoid} from "nanoid";
 
 export default defineEndpoint((router, {services, database}) => {
   const {
@@ -531,7 +532,8 @@ export default defineEndpoint((router, {services, database}) => {
           instance: instance,
           status: "booked",
           medical_consent: medicalConsent,
-          photography_consent: photographyConsent
+          photography_consent: photographyConsent,
+          checkin_code: nanoid()
         });
 
         bookingResults.push({
