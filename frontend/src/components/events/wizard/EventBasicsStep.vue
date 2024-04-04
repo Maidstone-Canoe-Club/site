@@ -59,8 +59,6 @@ watch(() => event.value.allowedRoles, (val, oldVal) => {
   }
 }, { deep: true });
 
-const juniorTypeSelected = computed(() => !!event.value.allowedRoles.find(r => r.id === "juniors"));
-
 const user = useDirectusUser();
 
 const canChangeLeaders = computed(() => {
@@ -98,6 +96,7 @@ const canChangeLeaders = computed(() => {
       v-model="event.maxSpaces"
       name="max-spaces"
       type="number"
+      placeholder="Unlimited"
       label="Max spaces"
       min="0" />
 
@@ -117,7 +116,6 @@ const canChangeLeaders = computed(() => {
       :v="validator.allowedRoles" />
 
     <input-field
-      v-if="juniorTypeSelected"
       id="min-age"
       v-model="event.minAge"
       name="min-age"

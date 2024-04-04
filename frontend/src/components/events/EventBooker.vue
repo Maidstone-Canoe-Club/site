@@ -104,7 +104,7 @@ async function loadJuniors () {
   if (user.value) {
     return await getUsers({
       params: {
-        fields: ["id", "first_name", "last_name", "role.name"],
+        fields: ["id", "first_name", "last_name", "role.name", "dob"],
         filter: {
           parent: {
             _eq: user.value.id
