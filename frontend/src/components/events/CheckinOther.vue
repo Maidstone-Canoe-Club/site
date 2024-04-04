@@ -106,7 +106,7 @@ async function onInit (promise: Promise<MediaTrackCapabilities>) {
                   </DialogTitle>
                   <div
                     v-if="showCamera"
-                    class="max-h-[300px] mt-6 rounded overflow-hidden">
+                    class="max-h-[600px] mt-6 rounded overflow-hidden">
                     <alert-box
                       v-if="errorMessage"
                       class="text-left mb-4"

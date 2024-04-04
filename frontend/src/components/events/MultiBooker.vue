@@ -252,16 +252,32 @@ const usePaymentForm = computed(() => {
   return false;
 });
 
+function userMeetsMinAge (user: DirectusUser) {
+  if (!props.event.min_age) {
+    return true;
+  }
+
+  const today = new Date();
+  const birthDate = new Date(user.dob);
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const m = today.getMonth() - birthDate.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+    age--;
+  }
+
+  return age >= props.event.min_age;
+}
+
 const usersThatCanBook = computed(() => {
   const result = [];
 
-  if (canBookNonJuniors.value && !userAlreadyBooked(user.value.id)) {
+  if (canBookNonJuniors.value && !userAlreadyBooked(user.value.id) && userMeetsMinAge(user.value)) {
     result.push(user.value);
   }
 
   if (props.juniors && props.juniors.length) {
     for (const j of props.juniors) {
-      if (!userAlreadyBooked(j.id)) {
+      if (!userAlreadyBooked(j.id) && userMeetsMinAge(j)) {
         result.push(j);
       }
     }

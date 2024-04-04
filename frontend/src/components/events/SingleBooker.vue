@@ -1,5 +1,12 @@
 ﻿<template>
   <div>
+    <template v-if="!meetsMinAge">
+      <alert-box variant="info">
+        <p>
+          You don't meet the minimum age requirement of <strong>{{ event.min_age }}</strong> to join this event.
+        </p>
+      </alert-box>
+    </template>
     <template v-if="spacesLeft === 0">
       <div class="rounded-md bg-blue-50 p-4 border border-blue-400">
         <div class="flex">
@@ -147,6 +154,22 @@ const photographyConsent = ref(false);
 function onTryBookNow () {
   openDisclaimerModal.value = true;
 }
+
+const meetsMinAge = computed(() => {
+  if (!props.event.min_age) {
+    return true;
+  }
+
+  const today = new Date();
+  const birthDate = new Date(user.value!.dob);
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const m = today.getMonth() - birthDate.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+    age--;
+  }
+
+  return age >= props.event.min_age;
+});
 
 async function onBookNow () {
   try {
