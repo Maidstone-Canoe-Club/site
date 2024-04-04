@@ -82,7 +82,8 @@ export default defineNuxtConfig({
     "@nuxtjs/turnstile",
     "floating-vue/nuxt",
     "nuxt-og-image",
-    "@nuxt/fonts"
+    "@nuxt/fonts",
+    "@nuxtjs/device"
   ],
 
   headlessui: {

@@ -4,19 +4,67 @@ import { QrCodeIcon } from "@heroicons/vue/24/outline";
 
 const open = defineModel<boolean>("open", { default: false });
 
+const showCamera = ref(false);
+const loading = ref(true);
+const errorMessage = ref<string | null>(null);
+
+const processing = ref(false);
+
 const content = ref("");
+
+watch(open, (val) => {
+  if (val) {
+    showCamera.value = false;
+    loading.value = true;
+    errorMessage.value = null;
+    content.value = "";
+  }
+});
 
 async function onDetect (promise: Promise<any>) {
   try {
+    processing.value = true;
     const {
       content,
       location
     } = await promise;
 
+    await new Promise((resolve) => {
+      setTimeout(() => {
+        resolve();
+      }, 2000);
+    });
+
     console.log("got content", content);
     console.log("got location", location);
   } catch (e) {
     console.error("error scanning code", e);
+  } finally {
+    processing.value = false;
+  }
+}
+
+function onError (error: any) {
+  console.error("error", error.name);
+  if (error.name === "NotAllowedError") {
+    errorMessage.value = "Unable to scan, camera is not allowed. Check your device permissions and refresh this page.";
+  } else {
+    errorMessage.value = "Something went wrong";
+  }
+}
+
+async function onInit (promise: Promise<MediaTrackCapabilities>) {
+  console.log("init");
+  try {
+    errorMessage.value = null;
+    const result = await promise;
+    console.log("camera ready!", result);
+  } catch (error: any) {
+    console.error("error", error.name);
+    errorMessage.value = "Something went wrong";
+  } finally {
+    console.log("done");
+    loading.value = false;
   }
 }
 
@@ -46,30 +94,60 @@ async function onDetect (promise: Promise<any>) {
             leave="ease-in duration-200"
             leave-from="opacity-100 translate-y-0 sm:scale-100"
             leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
-            <DialogPanel class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-sm sm:p-6">
+            <DialogPanel
+              class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-sm sm:p-6">
               <div>
                 <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
                   <QrCodeIcon class="h-6 w-6 text-blue-600" aria-hidden="true" />
                 </div>
                 <div class="mt-3 text-center sm:mt-5">
                   <DialogTitle as="h3" class="text-base font-semibold leading-6 text-gray-900">
-                    Payment successful
+                    Scan attendee code
                   </DialogTitle>
-                  <div class="mt-2">
+                  <div
+                    v-if="showCamera"
+                    class="max-h-[300px] mt-6 rounded overflow-hidden">
+                    <alert-box
+                      v-if="errorMessage"
+                      class="text-left mb-4"
+                      heading="Error"
+                      variant="error">
+                      {{ errorMessage }}
+                    </alert-box>
+                    <QrcodeStream
+                      v-show="!errorMessage"
+                      @camera-on="onInit"
+                      @error="onError"
+                      @detect="onDetect">
+                      <div
+                        v-if="loading"
+                        class="flex justify-center items-center h-full bg-gray-100 rounded">
+                        <loading-spinner
+                          color="#6366F1" />
+                      </div>
+                    </QrcodeStream>
+                  </div>
+                  <div
+                    v-else
+                    class="mt-2">
                     <p class="text-sm text-gray-700">
                       Enable camera permissions on your device and scan the attendee's QR code.
                     </p>
-                    <pre>{{ content }}</pre>
+                    <a-button
+                      class="w-full mt-4"
+                      @click="showCamera = true">
+                      {{ clickOrTap(true) + " to open camera" }}
+                    </a-button>
                   </div>
-                  <QrcodeStream
-                    class="max-h-[300px]"
-                    @detect="onDetect" />
                 </div>
               </div>
               <div class="mt-5 sm:mt-6">
-                <button type="button" class="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" @click="open = false">
+                <a-button
+                  class="w-full"
+                  variant="outline"
+                  @click="open = false">
                   Back
-                </button>
+                </a-button>
               </div>
             </DialogPanel>
           </TransitionChild>
