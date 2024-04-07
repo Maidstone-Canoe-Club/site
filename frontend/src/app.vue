@@ -35,6 +35,11 @@ html, body, #__nuxt {
   height: 100%;
 }
 
+.required:after {
+  content: " *";
+  color: red;
+}
+
 .page-enter-active,
 .page-leave-active {
   transition: all .2s ease-out;
