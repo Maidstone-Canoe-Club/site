@@ -1,11 +1,14 @@
-﻿const adminAccountability = {
+﻿import {format} from "date-fns";
+
+const adminAccountability = {
   admin: true
 };
 
 export async function create(req: any, res: any, services: any, database: any) {
   const {
     ItemsService,
-    UsersService
+    UsersService,
+    MailService
   } = services;
 
   try {
@@ -20,24 +23,44 @@ export async function create(req: any, res: any, services: any, database: any) {
 
     eventItem.status = "published";
 
-    // require approval if a price is set
-    if (eventItem.price || eventItem.junior_price || eventItem.member_price || eventItem.non_member_price || eventItem.coach_price) {
-      const loggedInUserId = req.accountability.user;
-      const userService = new UsersService({
+    const loggedInUserId = req.accountability.user;
+    const userService = new UsersService({
+      knex: database,
+      schema: req.schema,
+      accountability: adminAccountability
+    });
+    const user = await userService.readOne(loggedInUserId, {
+      fields: ["role.name"]
+    });
+
+    // roles that are allowed to create an event
+    const allowedRoles = ["coach", "committee", "administrator"];
+    let sendApprovalEmail = false;
+    let reviewers = [];
+
+    if (!allowedRoles.includes(user.role.name.toLowerCase())) {
+      const reviewersService = new ItemsService("reviewers", {
         knex: database,
         schema: req.schema,
         accountability: adminAccountability
       });
-      const user = await userService.readOne(loggedInUserId, {
-        fields: ["role.name"]
+
+      reviewers = await reviewersService.readByQuery({
+        fields: ["user.email"],
+        filter: {
+          area: {
+            _eq: "events"
+          }
+        }
       });
 
-      // roles that are allowed to create an event with a price
-      const allowedRoles = ["committee", "administrator"];
+      console.log("got reviewers", reviewers);
 
-      if (!allowedRoles.includes(user.role.name.toLowerCase())) {
+      if (!reviewers || reviewers.length === 0) {
+        console.warn("No event reviewers found! Publishing event");
+      } else {
         eventItem.status = "draft";
-        // TODO: Send email to committee
+        sendApprovalEmail = true;
       }
     }
 
@@ -69,6 +92,39 @@ export async function create(req: any, res: any, services: any, database: any) {
     } else {
       console.error(`Cannot create event, unknown event type: ${eventItem.occurrenceType}`);
       return res.status(400).send("Unknown event type");
+    }
+
+    if(sendApprovalEmail){
+      const mailService = new MailService({schema: req.schema, knex: database});
+
+      let eventDate;
+
+      if (eventItem.occurrenceType === "multi") {
+        eventDate = format(new Date(eventDates[0].startDate), "dd/MM/yyyy");
+      } else {
+        eventDate = format(new Date(eventItem.start_date), "dd/MM/yyyy");
+      }
+
+      const subject = `Event requires approval: ${eventItem.title} - ${eventDate}`;
+
+      const eventUrl = `${process.env.PUBLIC_URL}/events/${id}`;
+
+      for (const reviewer of reviewers) {
+        console.log("sending review mail to " + reviewer.user.email);
+        await mailService.send({
+          to: reviewer.user.email,
+          from: `events@${process.env.EMAIL_DOMAIN}`,
+          subject,
+          template: {
+            name: "event-approve",
+            data: {
+              eventTitle: eventItem.title,
+              eventDate,
+              eventUrl
+            }
+          }
+        });
+      }
     }
 
     if (leaders && leaders.length) {

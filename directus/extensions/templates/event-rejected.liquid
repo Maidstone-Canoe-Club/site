@@ -1,0 +1,14 @@
+﻿<div>
+    <p>Your event, <strong>{{ eventTitle }}</strong> has been not approved, it may still need some changes made before it can be made visible.</p>
+</div>
+
+{% if notes %}
+    <div>
+        <p>Notes from reviewer:</p>
+    </div>
+    <div>
+        <i>{{ notes }}</i>
+    </div>
+{% endif %}
+
+<a href="{{ eventUrl }}">Click here to view the event</a>

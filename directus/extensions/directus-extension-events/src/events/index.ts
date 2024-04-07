@@ -1,6 +1,8 @@
 import {defineEndpoint} from "@directus/extensions-sdk";
 import {create} from "./create";
 import {get, getConsentInfo} from "./get";
+import {review} from "./review";
+import {update} from "./update";
 import {nanoid} from "nanoid";
 
 export default defineEndpoint((router, {services, database}) => {
@@ -20,6 +22,10 @@ export default defineEndpoint((router, {services, database}) => {
 
   router.get("/consent-info",  async (req: any, res: any) => {
     return await getConsentInfo(req, res, services, database);
+  });
+
+  router.post("/review", async (req: any, res: any) => {
+    return await review(req, res, services, database);
   });
 
   router.get("/info", async (req: any, res: any) => {
@@ -55,6 +61,12 @@ export default defineEndpoint((router, {services, database}) => {
       });
 
       const eventLeadersService = new ItemsService("events_directus_users", {
+        knex: database,
+        schema: req.schema,
+        accountability: adminAccountability
+      });
+
+      const reviewersService = new ItemsService("reviewers", {
         knex: database,
         schema: req.schema,
         accountability: adminAccountability
@@ -165,6 +177,8 @@ export default defineEndpoint((router, {services, database}) => {
       const isCoachAndBooked = user && user.role.name.toLowerCase() === "coach"
                 && eventBookings.some(x => x.user.id === user.id);
 
+      let userCanApprove = false;
+
       if (user) {
         if (allowedRoles.includes(user.role.name.toLowerCase()) || userIsLeader || isCoachAndBooked) {
           bookings = eventBookings;
@@ -182,6 +196,25 @@ export default defineEndpoint((router, {services, database}) => {
         } else {
           bookings = eventBookings.filter(b => b.user.id === userId || b.user.parent === userId);
         }
+
+        const reviewers = await reviewersService.readByQuery({
+          filter: {
+            _and: [
+              {
+                user: {
+                  _eq: userId
+                }
+              },
+              {
+                area: {
+                  _eq: "events"
+                }
+              }
+            ]
+          }
+        });
+
+        userCanApprove = reviewers && reviewers.length;
       }
 
       return res.json({
@@ -192,7 +225,8 @@ export default defineEndpoint((router, {services, database}) => {
         leaders,
         otherBookingRequired,
         hasRequiredBooking,
-        requiredEventTitle
+        requiredEventTitle,
+        userCanApprove
       });
     } catch (e) {
       console.error("error getting event info", e);
@@ -444,7 +478,7 @@ export default defineEndpoint((router, {services, database}) => {
     }
   });
 
-  router.post("/book", async (req, res) => {
+  router.post("/book", async (req: any, res: any) => {
     try {
 
       const eventId = req.query.eventId;
@@ -659,7 +693,7 @@ export default defineEndpoint((router, {services, database}) => {
         accountability: adminAccountability
       });
 
-      const bookingsFilter = {
+      const bookingsFilter: any = {
         event: {
           _eq: eventId
         }
@@ -914,7 +948,7 @@ export default defineEndpoint((router, {services, database}) => {
         accountability: adminAccountability
       });
 
-      const bookingsFilter = {
+      const bookingsFilter: any = {
         event: {
           _eq: eventId
         }
