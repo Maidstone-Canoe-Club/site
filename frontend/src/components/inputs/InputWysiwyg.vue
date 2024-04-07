@@ -94,7 +94,7 @@ const isValid = computed(() => {
 
 const content = computed({
   get () {
-    return props.modelValue;
+    return props.modelValue?.replace(/[\r\n]/g, "");
   },
   set (value: string) {
     emits("update:modelValue", value);
@@ -141,6 +141,11 @@ const content = computed({
 }
 
 ::v-deep(p) {
+  @apply mb-3;
+}
+
+::v-deep(ol),
+::v-deep(ul) {
   @apply mb-3;
 }
 
