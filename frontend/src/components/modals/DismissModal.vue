@@ -1,6 +1,6 @@
 ﻿<template>
   <TransitionRoot as="template" :show="isOpen">
-    <Dialog as="div" class="relative z-10" @close="onCancel">
+    <Dialog as="div" class="relative z-10" @close="() => onCancel(true)">
       <TransitionChild
         as="template"
         enter="ease-out duration-300"
@@ -110,13 +110,15 @@ const props = withDefaults(defineProps<{
   cancelButton?: string
   action?: Function,
   hideActionButton?: boolean,
+  allowClickOutsideDismiss?: boolean,
   variant: "primary" | "secondary" | "outline" | "danger" | "warning" | "success";
 }>(), {
   title: undefined,
   action: undefined,
   actionButtonLabel: "Okay",
   cancelButton: "Cancel",
-  hideActionButton: false
+  hideActionButton: false,
+  allowClickOutsideDismiss: false
 });
 
 const isOpen = ref(props.open);
@@ -129,9 +131,11 @@ watch(isOpen, (val) => {
   emits("update:open", val);
 });
 
-function onCancel () {
-  isOpen.value = false;
-  emits("dismiss");
+function onCancel (outside: boolean) {
+  if ((outside && props.allowClickOutsideDismiss) || !outside) {
+    isOpen.value = false;
+    emits("dismiss");
+  }
 }
 
 async function actionWrapper () {
