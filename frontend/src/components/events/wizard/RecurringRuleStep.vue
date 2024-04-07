@@ -5,6 +5,11 @@ import { useVuelidate } from "@vuelidate/core";
 import { format } from "date-fns";
 import type { EventWizardItem } from "~/components/events/wizard/EventWizard.vue";
 
+defineProps<{
+  editMode: boolean,
+  changingAll?: boolean
+}>();
+
 const event = defineModel<EventWizardItem>({ required: true });
 
 const rules = {
@@ -86,6 +91,17 @@ const exampleEvents = computed(() => [{
 
 <template>
   <div class="space-y-8">
+    <alert-box
+      v-if="editMode && changingAll"
+      variant="error"
+      heading="Danger zone">
+      <p>You are changing how often this event occurs!</p>
+      <p>This will effect past and present instances of this event.</p>
+      <p>Any users who are booked onto upcoming events will receive an email saying the date of their booking has changed.</p>
+      <p>Users may need to cancel their booking if the new date or time doesn't work for them.</p>
+      <p>If you are not changing the date or time, you may proceed as normal and ignore this warning.</p>
+    </alert-box>
+
     <div class="space-y-2">
       <rule-parser
         id="event-rule"

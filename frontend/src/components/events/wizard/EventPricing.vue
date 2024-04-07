@@ -15,21 +15,6 @@ const showPrice = computed(() => event.value.allowedRoles.length && !event.value
 
 const showAdultPrice = computed(() => nonMembersAllowed.value || membersAllowed.value);
 
-const showPriceWarning = computed(() => {
-  if ((showPrice.value || juniorsAllowed.value) && hasExactRole(user.value, "member")) {
-    if (event.value.advancedPricing) {
-      return event.value.memberPrice ||
-        event.value.nonMemberPrice ||
-        event.value.coachPrice;
-    } else {
-      return event.value.price ||
-        event.value.juniorPrice;
-    }
-  }
-
-  return false;
-});
-
 function formatPrice (amount: number | undefined) {
   if (!amount) {
     return null;
@@ -133,27 +118,6 @@ function formatPrice (amount: number | undefined) {
           Leave blank for the event to be free for juniors.
         </span>
       </template>
-    </template>
-
-    <template v-if="showPriceWarning">
-      <div class="rounded-md bg-yellow-50 p-4">
-        <div class="flex">
-          <div class="flex-shrink-0">
-            <ExclamationTriangleIcon class="h-5 w-5 text-yellow-400" aria-hidden="true" />
-          </div>
-          <div class="ml-3">
-            <h3 class="text-sm font-medium text-yellow-800">
-              Event will be hidden
-            </h3>
-            <div class="mt-2 text-sm text-yellow-700">
-              <p>
-                This event will be hidden if you give this event a price, and will need to be approved before it
-                becomes visible
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
     </template>
   </div>
 </template>

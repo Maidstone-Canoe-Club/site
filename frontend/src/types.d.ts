@@ -77,7 +77,8 @@ export interface EventItem {
   disclaimer?: string,
   allow_bookings_after_start?: boolean,
   min_age?: number,
-  bookings?: number
+  bookings?: number,
+  visible_attendees?: boolean
 }
 
 export interface EventBooking {

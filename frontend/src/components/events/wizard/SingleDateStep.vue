@@ -4,9 +4,20 @@ import { useVuelidate } from "@vuelidate/core";
 import { addHours, formatISO } from "date-fns";
 import type { EventWizardItem } from "~/components/events/wizard/EventWizard.vue";
 
-defineProps<{
-  hideLastOccurrence?: boolean
-}>();
+const props = withDefaults(defineProps<{
+  startDateLabel?: string
+  endDateLabel?: string
+  hideLastOccurrence?: boolean,
+  changingInstance?: boolean,
+  changingAll?: boolean,
+  changingSingle?: boolean,
+  editMode: boolean,
+  bookingsCount?: number
+}>(), {
+  startDateLabel: "When does the event start?",
+  endDateLabel: "When does the event end?",
+  bookingsCount: 0
+});
 
 const event = defineModel<EventWizardItem>({ required: true });
 
@@ -46,14 +57,64 @@ watch(() => event.value.endDate, (val) => {
   }
 });
 
+const hasBookings = computed(() => props.bookingsCount > 0);
+
+const bookingCountWarning = computed(() => {
+  if (hasBookings.value) {
+    const single = props.bookingsCount === 1;
+    return `There ${single ? "is" : "are"} ${props.bookingsCount} ${single ? "booking" : "bookings"} listed for this event.
+    If you change the date or time, the ${single ? "user" : "users"} will receive an email notifying them the date of their booking has changed.`;
+  }
+
+  return null;
+});
+
 </script>
 
 <template>
   <div class="space-y-6">
+    <template v-if="editMode">
+      <p>
+        <i>
+          Note: Editing event dates is temporarily disabled.
+        </i>
+      </p>
+
+      <alert-box
+        v-if="changingAll"
+        variant="error"
+        heading="Danger zone">
+        <p>You are changing the start and end date of every instance of this event!</p>
+        <p>This will effect past and present instances of this event.</p>
+        <p>Any users who are booked onto upcoming events will receive an email saying the date of their booking has changed.</p>
+        <p>Users may need to cancel their booking if the new date or time doesn't work for them.</p>
+        <p>If you are not changing the date or time, you may proceed as normal and ignore this warning.</p>
+      </alert-box>
+
+      <alert-box
+        v-if="hasBookings && changingInstance"
+        heading="Changing the date or time?"
+        variant="error">
+        <p>If you are changing the date or time of this instance of this event, please read.</p>
+        <p><strong>{{ bookingCountWarning }}</strong></p>
+        <p>If you are not changing the date or time, you may proceed as normal and ignore this warning.</p>
+      </alert-box>
+
+      <alert-box
+        v-if="hasBookings && changingSingle"
+        heading="Changing the date or time?"
+        variant="error">
+        <p>If you are changing the date or time of this event, please read.</p>
+        <p><strong>{{ bookingCountWarning }}</strong></p>
+        <p>If you are not changing the date or time, you may proceed as normal and ignore this warning.</p>
+      </alert-box>
+    </template>
+
     <input-date
       id="start-date"
       v-model="event.startDate"
-      label="When does the event start?"
+      :label="startDateLabel"
+      :disabled="editMode"
       required
       enable-time-picker
       :max-date="event.endDate"
@@ -62,7 +123,8 @@ watch(() => event.value.endDate, (val) => {
     <input-date
       id="start-date"
       v-model="event.endDate"
-      label="When does the event end?"
+      :label="endDateLabel"
+      :disabled="editMode"
       required
       enable-time-picker
       :min-date="event.startDate"

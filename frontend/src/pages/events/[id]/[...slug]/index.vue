@@ -44,6 +44,7 @@
               :content="event.description" />
 
             <alert-box
+              v-if="event.type !== 'beginners_course'"
               variant="info"
               heading="Disclaimer">
               <p>
@@ -258,14 +259,14 @@
       </div>
     </div>
 
-    <attendance-modal
+    <lazy-attendance-modal
       v-if="userIsLeader"
       :open="markAttendanceModalOpen"
       :bookings="bookings"
       @refresh="onRefresh"
       @dismiss="markAttendanceModalOpen = false" />
 
-    <message-attendees-modal
+    <lazy-message-attendees-modal
       v-if="userIsLeader"
       :open="messageAttendeesModalOpen"
       :attendee-count="bookings.length"
@@ -273,14 +274,14 @@
       :instance="instance"
       @dismiss="messageAttendeesModalOpen = false" />
 
-    <attendee-download-modal
+    <lazy-attendee-download-modal
       :open="attendeeDownloadModalOpen"
       :event-title="event.title"
       :event-id="event.id"
       :instance="instance"
       @dismiss="attendeeDownloadModalOpen = false" />
 
-    <checkin-other v-model:open="checkinOtherModalOpen" />
+    <lazy-checkin-other v-model:open="checkinOtherModalOpen" />
   </article>
 </template>
 
@@ -310,7 +311,6 @@ import type { DirectusUser } from "nuxt-directus/dist/runtime/types";
 import type { Ref } from "vue";
 import type { EventItem } from "~/types";
 import { getDatesOfInstance } from "~/utils/events";
-import CheckinOther from "~/components/events/CheckinOther.vue";
 
 const { getItemById, getItems } = useDirectusItems();
 const directus = useDirectus();
@@ -510,6 +510,12 @@ const sessionDates = computed(() => {
     });
   }
 
+  if (result) {
+    result = result.sort((a, b) => {
+      return new Date(a.start).getTime() - new Date(b.start).getTime();
+    });
+  }
+
   return result;
 });
 
@@ -551,7 +557,23 @@ const editLink = computed(() => {
   return result;
 });
 
-const canEdit = computed(() => (user.value && event.value.user_created === user.value.id) || hasRole(user.value, "Coach"));
+const canEdit = computed(() => {
+  // // TODO: ONLY TEMP
+  // if (event.value!.is_recurring) {
+  //   return false;
+  // }
+
+  const userCreatedEvent = user.value && event.value!.user_created === user.value.id;
+  if (userCreatedEvent) {
+    return true;
+  }
+
+  if (hasRole(user.value, "committee")) {
+    return true;
+  }
+
+  return userIsLeader.value;
+});
 
 const contentColumn = ref(null);
 const imageWidth = ref(null);
