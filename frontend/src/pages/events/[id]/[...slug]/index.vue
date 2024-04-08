@@ -412,7 +412,7 @@ if (!route.params.slug && slug) {
 } else if (route.params.slug && route.params.slug[0] !== slug) {
   throw showError({
     statusCode: 404,
-    statusMessage: "News post not found"
+    statusMessage: "Event not found"
   });
 }
 
