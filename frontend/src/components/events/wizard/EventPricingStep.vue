@@ -33,7 +33,7 @@ const existingPaymentWarning = computed(() => {
       <p><strong>{{ existingPaymentWarning }}</strong></p>
       <p>
         <strong>
-          If you change the price, users who book onto this event will pay the new prices. Nothing will
+          If you change the price, users who book onto this event will pay the new price. Nothing will
           change for users who have already booked.
         </strong>
       </p>

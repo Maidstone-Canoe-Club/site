@@ -53,7 +53,6 @@ function formatDate (input: Date | string) {
             <div class="flex flex-col">
               <div>
                 {{ event.max_spaces }}
-                20
               </div>
               <div class="text-lg text-gray-600">
                 Max spaces
