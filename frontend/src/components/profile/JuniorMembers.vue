@@ -100,7 +100,7 @@ function addNew () {
   mode.value = "create";
 }
 
-async function edit (junior) {
+async function edit (junior: any) {
   try {
     const medicalInfoList = await getItems({
       collection: "medical_info",
