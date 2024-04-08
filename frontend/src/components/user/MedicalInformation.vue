@@ -80,8 +80,8 @@ const internalValue = ref<MedicalInformation>({
 watch(() => props.modelValue, (val) => {
   const value = val || {};
 
-  internalValue.value.hasData = checkHasData(value);
   internalValue.value = value;
+  internalValue.value.hasData = checkHasData(value);
 }, { deep: true, immediate: true });
 
 watch(internalValue, (val) => {
