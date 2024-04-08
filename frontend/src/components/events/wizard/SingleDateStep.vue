@@ -86,7 +86,10 @@ const bookingCountWarning = computed(() => {
         heading="Danger zone">
         <p>You are changing the start and end date of every instance of this event!</p>
         <p>This will effect past and present instances of this event.</p>
-        <p>Any users who are booked onto upcoming events will receive an email saying the date of their booking has changed.</p>
+        <p>
+          Any users who are booked onto upcoming events will receive an email saying the date of their booking has
+          changed.
+        </p>
         <p>Users may need to cancel their booking if the new date or time doesn't work for them.</p>
         <p>If you are not changing the date or time, you may proceed as normal and ignore this warning.</p>
       </alert-box>
@@ -151,7 +154,8 @@ const bookingCountWarning = computed(() => {
           v-model="event.lastBookingDate"
           enable-time-picker
           label="Last booking date" />
-        <small>The last date users will be allowed to book onto this event</small>
+        <small>The last date users will be allowed to book onto this event. By default users are able to book onto
+          the event up until the start date.</small>
       </div>
     </div>
 

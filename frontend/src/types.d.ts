@@ -46,6 +46,7 @@ export type EventType = "pool_session"
 export type EventAllowedRoles = "none" | "non-members" | "juniors" | "members";
 
 export interface EventItem {
+  status: "published" | "cancelled" | "draft" | "archived",
   id?: string,
   title: string,
   description?: string,
@@ -78,7 +79,8 @@ export interface EventItem {
   allow_bookings_after_start?: boolean,
   min_age?: number,
   bookings?: number,
-  visible_attendees?: boolean
+  visible_attendees?: boolean,
+  paddle_type?: "led_paddle" | "peer_paddle" | "coached_paddle"
 }
 
 export interface EventBooking {

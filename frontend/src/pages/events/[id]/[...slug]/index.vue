@@ -3,6 +3,8 @@
     <event-review-control
       v-if="userCanApprove"
       :event="event"
+      :reviewed-by="eventInfo.reviewedBy"
+      :review-notes="eventInfo.reviewNotes"
       class="mb-4" />
     <div class="lg:flex lg:items-center lg:justify-between">
       <div class="min-w-0 flex-1">
@@ -78,7 +80,7 @@
             <p class="mb-2">
               Only you can see this event as it has been hidden automatically.
             </p>
-            <p>Event need to be approved before being made public.</p>
+            <p>Events need to be approved before being made public.</p>
           </alert-box>
 
           <div class="flex flex-col gap-1">
@@ -93,7 +95,7 @@
                 v-else
                 class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400"
                 aria-hidden="true" />
-              {{ event.is_peer_paddle ? "Peer paddle" : "Lead paddle" }}
+              {{ event.is_peer_paddle ? "Peer paddle" : "Led paddle" }}
             </div>
 
             <div
@@ -196,13 +198,14 @@
               Download attendee details
             </a-button>
 
-            <a-button
-              v-if="isBetaTester"
-              variant="outline"
-              @click="onCheckinOther">
-              <QrCodeIcon class="size-5" />
-              Check-in attendee
-            </a-button>
+            <beta-wrapper>
+              <a-button
+                variant="outline"
+                @click="onCheckinOther">
+                <QrCodeIcon class="size-5" />
+                Check-in attendee
+              </a-button>
+            </beta-wrapper>
           </div>
 
           <div class="mb-5">
@@ -314,7 +317,6 @@ import type { Ref } from "vue";
 import type { EventItem } from "~/types";
 import { getDatesOfInstance } from "~/utils/events";
 
-const isBetaTester = useBetaTester();
 const { getItemById, getItems } = useDirectusItems();
 const directus = useDirectus();
 const route = useRoute();

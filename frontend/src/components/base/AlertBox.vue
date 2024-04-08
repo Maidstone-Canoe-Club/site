@@ -10,7 +10,7 @@
           class="w-5 h-5"
           aria-hidden="true" />
       </div>
-      <div class="ml-3 space-y-2">
+      <div class="ml-3 space-y-2 w-full">
         <h3
           v-if="heading"
           class="mb-2 font-medium text-sm"
@@ -72,11 +72,11 @@ const variants: Record<Variant, IVariant> = {
     content: "text-yellow-700"
   },
   success: {
-    base: "bg-yellow-50",
+    base: "bg-green-50",
     icon: CheckCircleIcon,
-    iconColor: "text-yellow-400",
-    heading: "text-yellow-800",
-    content: "text-yellow-700"
+    iconColor: "text-green-400",
+    heading: "text-green-800",
+    content: "text-green-700"
   },
   info: {
     base: "bg-blue-50",

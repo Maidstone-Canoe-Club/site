@@ -20,7 +20,7 @@ export default defineEndpoint((router, {services, database}) => {
     return await get(req, res, services, database);
   });
 
-  router.get("/consent-info",  async (req: any, res: any) => {
+  router.get("/consent-info", async (req: any, res: any) => {
     return await getConsentInfo(req, res, services, database);
   });
 
@@ -72,7 +72,14 @@ export default defineEndpoint((router, {services, database}) => {
         accountability: adminAccountability
       });
 
-      const event = await eventsService.readOne(eventId);
+      const event = await eventsService.readOne(eventId, {
+        fields: [
+          "*",
+          "reviewed_by.first_name",
+          "reviewed_by.last_name",
+        ]
+      });
+
       const otherBookingRequired = !!event.required_event;
       let hasRequiredBooking = false;
 
@@ -178,6 +185,8 @@ export default defineEndpoint((router, {services, database}) => {
                 && eventBookings.some(x => x.user.id === user.id);
 
       let userCanApprove = false;
+      let reviewedBy = null;
+      let reviewNotes = null;
 
       if (user) {
         if (allowedRoles.includes(user.role.name.toLowerCase()) || userIsLeader || isCoachAndBooked) {
@@ -215,6 +224,11 @@ export default defineEndpoint((router, {services, database}) => {
         });
 
         userCanApprove = reviewers && reviewers.length;
+
+        if (userCanApprove) {
+          reviewedBy = event.reviewed_by ? `${event.reviewed_by.first_name} ${event.reviewed_by.last_name}` : undefined;
+          reviewNotes = event.review_notes;
+        }
       }
 
       return res.json({
@@ -226,7 +240,9 @@ export default defineEndpoint((router, {services, database}) => {
         otherBookingRequired,
         hasRequiredBooking,
         requiredEventTitle,
-        userCanApprove
+        userCanApprove,
+        reviewedBy,
+        reviewNotes
       });
     } catch (e) {
       console.error("error getting event info", e);

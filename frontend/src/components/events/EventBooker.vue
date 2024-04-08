@@ -48,17 +48,19 @@
       </div>
     </template>
 
-    <template v-if="alreadyBooked && isBetaTester">
-      <a-button
-        class="w-full"
-        size="lg"
-        @click="onShowCheckin">
-        <QrCodeIcon class="size-5" />
-        Check-in
-      </a-button>
-      <checkin-viewer
-        v-model:open="openCheckinModal"
-        :checkin-code="checkinCode" />
+    <template v-if="alreadyBooked">
+      <beta-wrapper>
+        <a-button
+          class="w-full"
+          size="lg"
+          @click="onShowCheckin">
+          <QrCodeIcon class="size-5" />
+          Check-in
+        </a-button>
+        <checkin-viewer
+          v-model:open="openCheckinModal"
+          :checkin-code="checkinCode" />
+      </beta-wrapper>
     </template>
   </div>
 </template>
@@ -80,7 +82,6 @@ const props = defineProps<{
   bookings: any,
 }>();
 
-const isBetaTester = useBetaTester();
 const user = useDirectusUser();
 const route = useRoute();
 const { getUsers } = useDirectusUsers();
