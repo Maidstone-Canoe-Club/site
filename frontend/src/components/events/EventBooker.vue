@@ -48,7 +48,7 @@
       </div>
     </template>
 
-    <template v-if="alreadyBooked && user.id === '878b8a9a-3995-4441-94ba-06b8558ddcc5'">
+    <template v-if="alreadyBooked && isBetaTester">
       <a-button
         class="w-full"
         size="lg"
@@ -80,6 +80,7 @@ const props = defineProps<{
   bookings: any,
 }>();
 
+const isBetaTester = useBetaTester();
 const user = useDirectusUser();
 const route = useRoute();
 const { getUsers } = useDirectusUsers();
