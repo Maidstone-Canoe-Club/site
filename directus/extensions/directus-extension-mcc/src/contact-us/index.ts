@@ -1,6 +1,6 @@
 import {defineEndpoint} from "@directus/extensions-sdk";
 import {InboundEmail} from "../types";
-import {extractForwardTarget, handleMailForward} from "../mail-forwards";
+import {extractForwardTarget, handleMailForward, sendEmail} from "../mail-forwards";
 
 export default defineEndpoint((router, {services, database}) => {
   const {
@@ -108,14 +108,82 @@ export default defineEndpoint((router, {services, database}) => {
         accountability: adminAccountability
       });
 
-      const user = await userService.readOne(data.userId, {
+      const user = await userService.readOne(data.toUser, {
         fields: ["email"]
       });
 
       if (!user) {
-        console.error("Unknwo user");
+        console.error("Unknown user");
         return res.status(400).send("Unknown user");
       }
+
+      const mailForwardsService = new ItemsService("mail_forwards", {
+        knex: database,
+        schema: req.schema,
+        accountability: adminAccountability
+      });
+
+      const mailForwards = await mailForwardsService.readByQuery({
+        filter: {
+          target_email: {
+            _icontains: user.email
+          }
+        }
+      });
+
+      console.log("got forwards", mailForwards);
+
+      const mailService = new MailService({schema: req.schema, knex: database});
+      const sentFromMessage = `This email was sent by ${data.fromName} (${data.fromEmail})`;
+
+      const message = await mailService.renderTemplate("sent-from", {
+        content: data.message,
+        sentFromMessage
+      });
+
+
+      if (mailForwards && mailForwards.length) {
+        console.log("user has mail forward");
+        const mailForward = mailForwards[0];
+
+        const mailThreadsService = new ItemsService("mail_threads", {
+          knex: database,
+          schema: req.schema,
+          accountability: adminAccountability
+        });
+
+
+        const inboundEmail: InboundEmail = {
+          From: data.fromEmail,
+          FromName: data.fromName,
+          Subject: data.subject,
+          HtmlBody: message,
+          FromFull: {
+            Email: data.fromEmail,
+            Name: data.fromName
+          }
+        };
+
+        await handleMailForward(inboundEmail, undefined, mailForward, mailThreadsService, mailForwardsService);
+      } else {
+        console.log("no mail forward found, sending");
+
+        await sendEmail({
+          From: data.fromEmail,
+          FromName: data.fromName,
+          Subject: data.subject,
+          HtmlBody: message,
+          FromFull: {
+            Email: data.fromEmail,
+            Name: data.fromName
+          }
+        });
+      }
+
+      // Check if user has mail forward set
+      // Otherwise we have to send email to personal email
+
+      return res.send("ok");
 
     } catch (err: any) {
       console.error("error creating new contact user message", err);

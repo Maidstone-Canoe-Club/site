@@ -10,6 +10,8 @@ type Coach = {
   }
 }
 
+const { isBetaTester } = useBetaTester();
+
 const userIdToContact = ref("");
 const openContactFormModal = ref(false);
 
@@ -66,7 +68,7 @@ function onContact (id: string) {
             <span>
               {{ coach.user.first_name }} {{ coach.user.last_name }}
             </span>
-            <div>
+            <div v-if="isBetaTester">
               <a-button
                 size="xs"
                 variant="outline"
@@ -112,7 +114,7 @@ function onContact (id: string) {
       </TransitionRoot>
     </div>
     <p v-else>
-      Uh oh! No Coaches found!
+      Uh oh! No coaches found!
     </p>
   </section>
 </template>

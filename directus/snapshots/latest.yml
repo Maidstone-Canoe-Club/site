@@ -138,11 +138,11 @@ collections:
       archive_value: null
       collapse: open
       collection: coaches
-      color: null
+      color: '#A2B5CD'
       display_template: null
       group: null
       hidden: false
-      icon: null
+      icon: person_search
       item_duplication_fields: null
       note: null
       preview_url: null
@@ -1073,7 +1073,7 @@ fields:
     meta:
       collection: coaches
       conditions: null
-      display: null
+      display: user
       display_options: null
       field: user
       group: null
@@ -1083,7 +1083,7 @@ fields:
       options:
         template: '{{email}}'
       readonly: false
-      required: false
+      required: true
       sort: 2
       special:
         - m2o
@@ -2452,6 +2452,45 @@ fields:
       max_length: null
       numeric_precision: 32
       numeric_scale: 0
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: directus_users
+    field: beta_tester
+    type: boolean
+    meta:
+      collection: directus_users
+      conditions: null
+      display: null
+      display_options: null
+      field: beta_tester
+      group: null
+      hidden: false
+      interface: boolean
+      note: null
+      options: null
+      readonly: false
+      required: false
+      sort: 16
+      special:
+        - cast-boolean
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: beta_tester
+      table: directus_users
+      data_type: boolean
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
       is_nullable: true
       is_unique: false
       is_primary_key: false
