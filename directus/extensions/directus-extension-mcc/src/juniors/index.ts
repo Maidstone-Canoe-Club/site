@@ -54,7 +54,7 @@ export default defineEndpoint((router, {services, database}) => {
         bc_number: juniorUser.bc_number
       });
 
-      if (juniorUser.medicalInformation.hasData) {
+      if (juniorUser.medicalInformation?.hasData) {
         const medicalInfoService = new ItemsService("medical_info", {
           knex: database,
           schema: req.schema,
@@ -108,7 +108,7 @@ export default defineEndpoint((router, {services, database}) => {
         email_confirmed: true
       });
 
-      if (juniorUser.medicalInformation.hasData) {
+      if (juniorUser.medicalInformation?.hasData) {
         const medicalInfoService = new ItemsService("medical_info", {
           knex: database,
           schema: req.schema,
