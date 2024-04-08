@@ -166,22 +166,9 @@ export default defineEndpoint((router, {services, database}) => {
 
         await handleMailForward(inboundEmail, undefined, mailForward, mailThreadsService, mailForwardsService);
       } else {
-        console.log("no mail forward found, sending");
-
-        await sendEmail({
-          From: data.fromEmail,
-          FromName: data.fromName,
-          Subject: data.subject,
-          HtmlBody: message,
-          FromFull: {
-            Email: data.fromEmail,
-            Name: data.fromName
-          }
-        });
+        console.error("no mail forward found");
+        return res.status(400).send("No mail forward found");
       }
-
-      // Check if user has mail forward set
-      // Otherwise we have to send email to personal email
 
       return res.send("ok");
 
