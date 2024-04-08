@@ -1,18 +1,20 @@
 ﻿<script setup lang="ts">
 const { getItems } = useDirectusItems();
 
+type CoachUser = {
+  first_name: string,
+  last_name: string,
+  id: string,
+  avatar: string | null
+}
+
 type Coach = {
-  user: {
-    first_name: string,
-    last_name: string,
-    id: string,
-    avatar: string | null
-  }
+  user: CoachUser
 }
 
 const isBetaTester = useBetaTester();
 
-const userIdToContact = ref("");
+const userToContact = ref<CoachUser | null>(null);
 const openContactFormModal = ref(false);
 
 const data = await useAsyncData("coaches", async () => {
@@ -42,9 +44,14 @@ const coaches = computed<Coach[]>(() => {
   return [];
 });
 
-function onContact (id: string) {
-  userIdToContact.value = id;
+function onContact (user: any) {
+  userToContact.value = user;
   openContactFormModal.value = true;
+}
+
+function onCloseModal () {
+  userToContact.value = null;
+  openContactFormModal.value = false;
 }
 
 </script>
@@ -73,7 +80,7 @@ function onContact (id: string) {
               <a-button
                 size="xs"
                 variant="outline"
-                @click="() => onContact(coach.user.id)">
+                @click="() => onContact(coach.user)">
                 Contact
               </a-button>
             </div>
@@ -106,7 +113,12 @@ function onContact (id: string) {
                 leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
                 <DialogPanel
                   class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-sm sm:p-6">
-                  <contact-user-form :user-id="userIdToContact" />
+                  <div class="space-y-3">
+                    <strong>Send {{ userToContact?.first_name }} {{ userToContact?.last_name }} a message</strong>
+                    <contact-user-form
+                      :user-id="userToContact?.id"
+                      @close="onCloseModal" />
+                  </div>
                 </DialogPanel>
               </TransitionChild>
             </div>
