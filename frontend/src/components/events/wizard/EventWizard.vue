@@ -55,7 +55,8 @@ export type EventWizardItem = {
   allowBookingsAfterStart?: boolean,
   minAge?: number
   visibleAttendees?: boolean
-  notifyUsers?: boolean
+  notifyUsers?: boolean,
+  paddleType?: "peer_paddle" | "led_paddle" | "coached_paddle"
 }
 
 const props = defineProps<{
@@ -238,8 +239,8 @@ function existingEventToWizardEvent (eventItem: EventItem): EventWizardItem {
     description: eventItem.description,
     location: eventItem.location,
     type: eventItem.type,
-    allowedRoles: eventItem.allowed_roles ? roles.filter(r => eventItem.allowed_roles?.includes(r.id)) : [],
-    leaders: eventItem.leaders ? eventItem.leaders.map(l => l.directus_users_id) : [],
+    allowedRoles: eventItem.allowed_roles ? roles.filter((r: any) => eventItem.allowed_roles?.includes(r.id)) : [],
+    leaders: eventItem.leaders ? eventItem.leaders.map((l: any) => l.directus_users_id) : [],
     startDate: new Date(eventItem.start_date),
     endDate: new Date(eventItem.end_date),
     lastBookingDate: undefined,
@@ -258,7 +259,8 @@ function existingEventToWizardEvent (eventItem: EventItem): EventWizardItem {
     disclaimer: eventItem.disclaimer,
     allowBookingsAfterStart: eventItem.allow_bookings_after_start,
     minAge: eventItem.min_age,
-    visibleAttendees: eventItem.visible_attendees
+    visibleAttendees: eventItem.visible_attendees,
+    paddleType: eventItem.paddle_type
   };
 }
 
@@ -287,7 +289,8 @@ function toNewEventItem (eventItem: EventWizardItem): NewEventItem {
     junior_price: eventItem.juniorPrice,
     member_price: eventItem.memberPrice,
     non_member_price: eventItem.nonMemberPrice,
-    coach_price: eventItem.coachPrice
+    coach_price: eventItem.coachPrice,
+    paddle_type: eventItem.paddleType
   };
 }
 

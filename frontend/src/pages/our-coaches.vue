@@ -12,8 +12,6 @@ type Coach = {
   user: CoachUser
 }
 
-const isBetaTester = useBetaTester();
-
 const userToContact = ref<CoachUser | null>(null);
 const openContactFormModal = ref(false);
 
@@ -75,14 +73,14 @@ function onCloseModal () {
             <span>
               {{ coach.user.first_name }} {{ coach.user.last_name }}
             </span>
-            <div v-if="isBetaTester">
+            <beta-wrapper hide-indicator>
               <a-button
                 size="xs"
                 variant="outline"
                 @click="() => onContact(coach.user)">
                 Contact
               </a-button>
-            </div>
+            </beta-wrapper>
           </div>
         </div>
       </div>

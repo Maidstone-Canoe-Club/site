@@ -198,13 +198,14 @@
               Download attendee details
             </a-button>
 
-            <a-button
-              v-if="isBetaTester"
-              variant="outline"
-              @click="onCheckinOther">
-              <QrCodeIcon class="size-5" />
-              Check-in attendee
-            </a-button>
+            <beta-wrapper>
+              <a-button
+                variant="outline"
+                @click="onCheckinOther">
+                <QrCodeIcon class="size-5" />
+                Check-in attendee
+              </a-button>
+            </beta-wrapper>
           </div>
 
           <div class="mb-5">
@@ -316,7 +317,6 @@ import type { Ref } from "vue";
 import type { EventItem } from "~/types";
 import { getDatesOfInstance } from "~/utils/events";
 
-const isBetaTester = useBetaTester();
 const { getItemById, getItems } = useDirectusItems();
 const directus = useDirectus();
 const route = useRoute();

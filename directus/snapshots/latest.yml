@@ -5250,6 +5250,51 @@ fields:
       foreign_key_table: null
       foreign_key_column: null
   - collection: events
+    field: paddle_type
+    type: string
+    meta:
+      collection: events
+      conditions: null
+      display: labels
+      display_options: null
+      field: paddle_type
+      group: null
+      hidden: false
+      interface: select-dropdown
+      note: null
+      options:
+        choices:
+          - text: Led paddle
+            value: led_paddle
+          - text: Peer Paddle
+            value: peer_paddle
+          - text: Coached Paddle
+            value: coached_paddle
+      readonly: false
+      required: false
+      sort: 42
+      special: null
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: paddle_type
+      table: events
+      data_type: character varying
+      default_value: null
+      max_length: 255
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: events
     field: parent_event
     type: uuid
     meta:

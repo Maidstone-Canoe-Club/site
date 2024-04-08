@@ -26,6 +26,35 @@ function onPreviewDisclaimer () {
   showPreview.value = true;
 }
 
+const paddleTypes = [
+  {
+    id: "led_paddle",
+    name: "Led paddle"
+  }, {
+    id: "peer_paddle",
+    name: "Peer paddle"
+  },
+  {
+    id: "coached_paddle",
+    name: "Coached paddle"
+  }
+];
+const selectedPaddleType = ref(paddleTypes.find(t => t.id === event.value.paddleType));
+
+watch(selectedPaddleType, (val) => {
+  if (val) {
+    event.value.paddleType = val.id;
+  } else {
+    event.value.paddleType = undefined;
+  }
+}, { deep: true });
+
+watch(() => event.value.paddleType, (val) => {
+  if (selectedPaddleType.value?.id !== val) {
+    selectedPaddleType.value = paddleTypes.find(p => p.id === val);
+  }
+});
+
 </script>
 
 <template>
@@ -41,6 +70,13 @@ function onPreviewDisclaimer () {
         If the event is a peer paddle, users will not be able to book onto this event.
       </div>
     </div>
+
+    <beta-wrapper>
+      <input-radio-group
+        v-model="selectedPaddleType"
+        by="id"
+        :options="paddleTypes" />
+    </beta-wrapper>
 
     <div class="space-y-2">
       <input-text-area
