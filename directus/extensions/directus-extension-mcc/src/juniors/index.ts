@@ -65,7 +65,12 @@ export default defineEndpoint((router, {services, database}) => {
           accountability: adminAccountability
         });
         juniorUser.medicalInformation.user = newUserId;
-        await medicalInfoService.updateOne(juniorUser.medicalInformation.id, juniorUser.medicalInformation);
+
+        if(juniorUser.medicalInformation.id) {
+          await medicalInfoService.updateOne(juniorUser.medicalInformation.id, juniorUser.medicalInformation);
+        }else{
+          await medicalInfoService.createOne(juniorUser.medicalInformation);
+        }
       }
 
       return res.send(newUserId);
