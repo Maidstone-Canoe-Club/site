@@ -129,6 +129,7 @@ function onClose () {
         <div class="flex w-full justify-end items-center gap-2">
           <a-button
             variant="outline"
+            hide-loader
             :action="onClose">
             Cancel
           </a-button>
