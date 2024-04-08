@@ -10,7 +10,7 @@ type Coach = {
   }
 }
 
-const { isBetaTester } = useBetaTester();
+const isBetaTester = useBetaTester();
 
 const userIdToContact = ref("");
 const openContactFormModal = ref(false);

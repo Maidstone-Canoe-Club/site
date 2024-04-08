@@ -5,7 +5,5 @@
     return user.value?.beta_tester ?? false;
   });
 
-  return {
-    isBetaTester
-  };
+  return isBetaTester;
 }

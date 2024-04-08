@@ -195,7 +195,7 @@
             </a-button>
 
             <a-button
-              v-if="user.id === '878b8a9a-3995-4441-94ba-06b8558ddcc5'"
+              v-if="isBetaTester"
               variant="outline"
               @click="onCheckinOther">
               <QrCodeIcon class="size-5" />
@@ -312,6 +312,7 @@ import type { Ref } from "vue";
 import type { EventItem } from "~/types";
 import { getDatesOfInstance } from "~/utils/events";
 
+const isBetaTester = useBetaTester();
 const { getItemById, getItems } = useDirectusItems();
 const directus = useDirectus();
 const route = useRoute();
