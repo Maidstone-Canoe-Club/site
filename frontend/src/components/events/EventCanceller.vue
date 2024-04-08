@@ -10,11 +10,6 @@ const props = defineProps<{
 const user = useDirectusUser();
 const directus = useDirectus();
 
-const canCancelEvent = computed(() => {
-  const eventFinished = !props.event.is_recurring && new Date(props.event.start_date) < new Date();
-  return !eventFinished && hasRole(user.value, "committee");
-});
-
 const cancelAll = ref(false);
 const showConfirmModal = ref(false);
 
@@ -48,9 +43,7 @@ async function onCancel () {
 </script>
 
 <template>
-  <div
-    v-if="canCancelEvent"
-    class="rounded-md bg-red-50 p-4 border border-red-200">
+  <div class="rounded-md bg-red-50 p-4 border border-red-200">
     <div class="flex">
       <div class="flex-shrink-0">
         <ExclamationTriangleIcon class="h-5 w-5 text-red-400" aria-hidden="true" />
@@ -65,7 +58,7 @@ async function onCancel () {
             refunded and will have to be arranged through the club treasurer.
           </p>
 
-          <p>
+          <p class="mb-3">
             Any users booked onto the event will receive an email notifying them the event has been cancelled.
           </p>
 
@@ -73,11 +66,13 @@ async function onCancel () {
             <p>This is a recurring event, so you can either:</p>
             <a-button
               variant="danger"
+              hide-loader
               :action="tryCancel">
               Cancel just this event
             </a-button>
             <a-button
               variant="danger"
+              hide-loader
               :action="() => tryCancel(true)">
               Cancel all recurring events
             </a-button>
@@ -85,6 +80,7 @@ async function onCancel () {
           <template v-else>
             <a-button
               variant="danger"
+              hide-loader
               :action="tryCancel">
               Cancel event
             </a-button>

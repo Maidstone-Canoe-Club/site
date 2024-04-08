@@ -5,7 +5,8 @@
       :event="event"
       :reviewed-by="eventInfo.reviewedBy"
       :review-notes="eventInfo.reviewNotes"
-      class="mb-4" />
+      class="mb-4"
+      @refresh="onRefresh" />
     <div class="lg:flex lg:items-center lg:justify-between">
       <div class="min-w-0 flex-1">
         <event-type-badge
@@ -19,14 +20,18 @@
       <div
         v-if="canEdit"
         class="mt-5 flex lg:ml-4 lg:mt-0">
-        <span class="sm:ml-3">
-          <a-button
-            variant="outline"
-            :to="editLink">
-            <PencilIcon class="-ml-0.5 h-5 w-5 text-gray-400" aria-hidden="true" />
-            Edit
-          </a-button>
-        </span>
+        <a-button
+          :to="editLink"
+          variant="outline">
+          Edit
+        </a-button>
+        <a-button
+          v-if="canCancelEvent"
+          variant="danger"
+          class="ml-3"
+          @click="closeModalOpen = true">
+          Cancel
+        </a-button>
       </div>
     </div>
 
@@ -287,6 +292,11 @@
       @dismiss="attendeeDownloadModalOpen = false" />
 
     <lazy-checkin-other v-model:open="checkinOtherModalOpen" />
+
+    <lazy-event-cancel-modal
+      v-model="closeModalOpen"
+      :event="event"
+      :instance="instance" />
   </article>
 </template>
 
@@ -330,6 +340,7 @@ const markAttendanceModalOpen = ref(false);
 const messageAttendeesModalOpen = ref(false);
 const attendeeDownloadModalOpen = ref(false);
 const checkinOtherModalOpen = ref(false);
+const closeModalOpen = ref(false);
 
 const { data: event } = await useAsyncData<EventItem>(`event-item-${route.params.id}`, async () => {
   return await getItemById<EventItem>({
@@ -589,7 +600,6 @@ onMounted(() => {
 
 const eventImage = computed(() => {
   if (event.value!.image) {
-    const directusUrl = useDirectusUrl();
     let url = `${directusUrl}/assets/${event.value.image}?format=webp&height=450`;
 
     if (imageWidth.value) {
@@ -636,6 +646,11 @@ const spacesLeftLabel = computed(() => {
   }
 
   return result;
+});
+
+const canCancelEvent = computed(() => {
+  const eventFinished = !event.value.is_recurring && new Date(event.value.start_date) < new Date();
+  return !eventFinished && canEdit.value;
 });
 
 function onMessageAttendees () {

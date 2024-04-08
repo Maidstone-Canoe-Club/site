@@ -2,29 +2,33 @@
   <div>
     <event-filter
       :events="events"
+      :exceptions="exceptions"
       :selected="selectedFilters" />
     <calendar-controls />
     <month-calendar
       class="mt-5"
       :events="filteredEvents"
+      :exceptions="exceptions"
       :loading="loading" />
   </div>
 </template>
 
 <script setup lang="ts">
 import { useCalendarStore } from "~/store/calendarStore";
-import type { EventItem } from "~/types";
+import type { EventException, EventItem } from "~/types";
 
 const calendarStore = useCalendarStore();
 
 const selectedFilters = ref<Record<string, boolean>>({});
 const filters = ref<string[]>([]);
 const events = ref<EventItem[]>([]);
+const exceptions = ref<EventException[]>([]);
 const loading = ref(false);
 
 const filteredEvents = computed(() => events.value.filter(e => filters.value.length === 0 ? true : filters.value.includes(e.type)));
 
 const directus = useDirectus();
+const { getItems } = useDirectusItems();
 
 const start = computed(() => new Date(calendarStore.year, calendarStore.month, 1));
 const end = computed(() => new Date(calendarStore.year, calendarStore.getMonth + 1, 0, 23, 59, 59));
@@ -44,6 +48,17 @@ async function fetchEvents () {
       query: {
         start: encodeURIComponent(start.value.toISOString()),
         end: encodeURIComponent(end.value.toISOString())
+      }
+    });
+
+    exceptions.value = await getItems<EventException>({
+      collection: "event_exception",
+      params: {
+        filter: {
+          event: {
+            _in: events.value.map(e => e.id)
+          }
+        }
       }
     });
   } catch (e) {

@@ -92,6 +92,13 @@ export interface EventBooking {
   status: string
 }
 
+export interface EventException {
+  id: string
+  event: string,
+  is_cancelled: boolean,
+  instance?: string
+}
+
 export interface NewsItem {
   id: number | undefined,
   status: "published" | "draft" | "scheduled",

@@ -298,7 +298,7 @@ export default defineEndpoint((router, {services, database}) => {
           accountability: adminAccountability
         });
 
-        const filter = {
+        const filter: any = {
           _and: [
             {
               event: {
@@ -355,7 +355,7 @@ export default defineEndpoint((router, {services, database}) => {
             }
           }
 
-          await eventBookingService.updateBatch(eventBookings.map(x => ({
+          await eventBookingService.updateBatch(eventBookings.map((x: any) => ({
             id: x.id,
             status: x.status
           })));
@@ -368,6 +368,26 @@ export default defineEndpoint((router, {services, database}) => {
         if (!event.is_recurring || (event.is_recurring && cancelEntireEvent)) {
           // Cancel the event
           console.log("The event is a single, multi-day or is recurring and is cancelled");
+
+          if (event.has_multiple) {
+            const childEvents = await eventsService.readByQuery({
+              fields: ["id", "parent_event", "status"],
+              filter: {
+                parent_event: {
+                  _eq: event.id
+                }
+              }
+            });
+
+            if (childEvents && childEvents.length) {
+              await eventsService.updateBatch(childEvents.map((e: any) => ({
+                id: e.id,
+                status: "cancelled"
+              })));
+            } else {
+              console.warn("Multi day event doesn't have any child events to cancel");
+            }
+          }
           event.status = "cancelled";
           await eventsService.updateOne(eventId, event);
         } else {

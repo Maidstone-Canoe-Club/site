@@ -3,6 +3,8 @@ import { CheckIcon, XMarkIcon } from "@heroicons/vue/24/outline";
 import { MagnifyingGlassIcon } from "@heroicons/vue/24/outline";
 import type { EventItem } from "~/types";
 
+const emits = defineEmits(["refresh"]);
+
 const props = defineProps<{
   event: EventItem,
   reviewedBy?: string,
@@ -32,6 +34,7 @@ async function onReviewed (result: "approve" | "reject") {
     });
 
     modalOpen.value = false;
+    emits("refresh");
   } catch (err: any) {
     console.error("error reviewing event", err);
     errorMessage.value = "Something went wrong reviewing this event";
