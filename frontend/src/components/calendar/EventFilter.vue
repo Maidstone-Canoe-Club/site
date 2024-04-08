@@ -2,14 +2,15 @@
 import { RRule } from "rrule";
 import { endOfDay, endOfMonth, endOfWeek, startOfDay, startOfMonth, startOfWeek } from "date-fns";
 import { useCalendarStore } from "~/store/calendarStore";
-import type { EventItem } from "~/types";
+import type { EventException, EventItem } from "~/types";
 
 const calendarStore = useCalendarStore();
 const start = computed(() => new Date(calendarStore.year, calendarStore.month, 1));
 const end = computed(() => new Date(calendarStore.year, calendarStore.getMonth + 1, 0, 23, 59, 59));
 
 const props = defineProps<{
-  events: EventItem[]
+  events: EventItem[],
+  exceptions: EventException[]
 }>();
 
 type FilterOption = {
@@ -59,6 +60,10 @@ function isSelected (id: string) {
   return true;
 }
 
+function isInstanceCancelled (event: EventItem, instance: string) {
+  return props.exceptions?.find(e => e.event === event.id && e.instance === instance)?.is_cancelled ?? false;
+}
+
 function getCount (type: string) {
   const nonRecurringCount = props.events.filter((e) => {
     if (e.type === type) {
@@ -76,7 +81,10 @@ function getCount (type: string) {
       const nextDates = rule.between(
         startOfDay(startOfWeek(startOfMonth(start.value), { weekStartsOn: 1 })),
         endOfDay(endOfWeek(endOfMonth(end.value), { weekStartsOn: 1 }))
-      );
+      ).filter((d) => {
+        const instance = getEventInstanceForDate(event, d);
+        return !isInstanceCancelled(event, instance.toString());
+      });
 
       recurringCount += nextDates.length;
     }

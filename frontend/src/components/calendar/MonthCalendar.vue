@@ -20,7 +20,7 @@ import {
   endOfDay
 } from "date-fns";
 import { RRule } from "rrule";
-import type { EventItem } from "~/types";
+import type { EventException, EventItem } from "~/types";
 import { useCalendarStore } from "~/store/calendarStore";
 
 type CalendarEvent = {
@@ -42,6 +42,7 @@ type CalendarDay = {
 
 const props = withDefaults(defineProps<{
   events: EventItem[],
+  exceptions: EventException[],
   displayEventsPerDay?: number,
   loading: boolean
 }>(), {
@@ -91,6 +92,11 @@ function getEventsForDate (date: Date): CalendarEvent[] {
       return withinDateRange || (eventIsSingleDay && isSameDay(start, date));
     }
 
+    const instance = getEventInstanceForDate(e, date);
+    if (isInstanceCancelled(e, instance.toString())) {
+      return false;
+    }
+
     if (e.rrule) {
       const rule = RRule.fromString(e.rrule);
 
@@ -122,6 +128,10 @@ function generateDays (): CalendarDay[] {
     isSelected: false,
     events: getEventsForDate(date)
   }));
+}
+
+function isInstanceCancelled (event: EventItem, instance: string) {
+  return props.exceptions?.find(e => e.event === event.id && e.instance === instance)?.is_cancelled ?? false;
 }
 
 watch(() => props.events, () => {
