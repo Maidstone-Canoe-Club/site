@@ -11711,7 +11711,7 @@ fields:
     meta:
       collection: reviewers
       conditions: null
-      display: null
+      display: labels
       display_options: null
       field: area
       group: null
@@ -11725,7 +11725,7 @@ fields:
           - text: News
             value: news
       readonly: false
-      required: false
+      required: true
       sort: 7
       special: null
       translations: null
@@ -11873,7 +11873,7 @@ fields:
     meta:
       collection: reviewers
       conditions: null
-      display: null
+      display: user
       display_options: null
       field: user
       group: null
@@ -11883,7 +11883,7 @@ fields:
       options:
         template: '{{email}}'
       readonly: false
-      required: false
+      required: true
       sort: 6
       special:
         - m2o

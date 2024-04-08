@@ -1,5 +1,5 @@
 ﻿<div>
-    <p>Your event, <strong>{{ eventTitle }}</strong> has been not approved, it may still need some changes made before it can be made visible.</p>
+    <p>Your event, <strong>{{ eventTitle }}</strong> has been not approved, you'll need to make some changes before it can be made visible.</p>
 </div>
 
 {% if notes %}
@@ -11,4 +11,6 @@
     </div>
 {% endif %}
 
-<a href="{{ eventUrl }}">Click here to view the event</a>
+<div>
+    <a href="{{ eventUrl }}">Click here to view the event</a>
+</div>

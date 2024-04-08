@@ -170,7 +170,8 @@ const bookingCountWarning = computed(() => {
         v-model="event.lastBookingDate"
         enable-time-picker
         label="Last booking date" />
-      <small>The last date users will be allowed to book onto this event</small>
+      <small>The last date users will be allowed to book onto this event. By default users are able to book onto
+        the event up until the first session start date.</small>
     </div>
 
     <div class="footer">

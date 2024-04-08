@@ -37,11 +37,6 @@ export async function review(req: any, res: any, services: any, database: any) {
       return res.status(400).send("Unknown event");
     }
 
-    if (event.status !== "draft") {
-      console.error("Trying to review event that doesn't need reviewing");
-      return res.status(400).send("Event unable to be reviewed");
-    }
-
     const reviewersService = new ItemsService("reviewers", {
       knex: database,
       schema: req.schema,
@@ -98,6 +93,7 @@ export async function review(req: any, res: any, services: any, database: any) {
 
     } else if (result === "reject") {
       console.log(`event ${event.title} (${event.id}) rejected by ${userId}`);
+      status = "draft";
 
       await mailService.send({
         to: createdBy.email,

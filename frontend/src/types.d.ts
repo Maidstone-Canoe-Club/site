@@ -46,6 +46,7 @@ export type EventType = "pool_session"
 export type EventAllowedRoles = "none" | "non-members" | "juniors" | "members";
 
 export interface EventItem {
+  status: "published" | "cancelled" | "draft" | "archived",
   id?: string,
   title: string,
   description?: string,

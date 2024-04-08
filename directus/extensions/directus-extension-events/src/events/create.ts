@@ -36,31 +36,33 @@ export async function create(req: any, res: any, services: any, database: any) {
     // roles that are allowed to create an event
     const allowedRoles = ["coach", "committee", "administrator"];
     let sendApprovalEmail = false;
+    let sendNotificationEmail = false;
     let reviewers = [];
 
-    if (!allowedRoles.includes(user.role.name.toLowerCase())) {
-      const reviewersService = new ItemsService("reviewers", {
-        knex: database,
-        schema: req.schema,
-        accountability: AdminAccountability
-      });
+    const reviewersService = new ItemsService("reviewers", {
+      knex: database,
+      schema: req.schema,
+      accountability: AdminAccountability
+    });
 
-      reviewers = await reviewersService.readByQuery({
-        fields: ["user.email"],
-        filter: {
-          area: {
-            _eq: "events"
-          }
+    reviewers = await reviewersService.readByQuery({
+      fields: ["user.email"],
+      filter: {
+        area: {
+          _eq: "events"
         }
-      });
+      }
+    });
 
-      console.log("got reviewers", reviewers);
-
-      if (!reviewers || reviewers.length === 0) {
-        console.warn("No event reviewers found! Publishing event");
-      } else {
+    console.log("got reviewers", reviewers);
+    if (!reviewers || reviewers.length === 0) {
+      console.warn("No event reviewers found! Publishing event");
+    } else {
+      if (!allowedRoles.includes(user.role.name.toLowerCase())) {
         eventItem.status = "draft";
         sendApprovalEmail = true;
+      } else {
+        sendNotificationEmail = true;
       }
     }
 
@@ -94,20 +96,19 @@ export async function create(req: any, res: any, services: any, database: any) {
       return res.status(400).send("Unknown event type");
     }
 
-    if(sendApprovalEmail){
-      const mailService = new MailService({schema: req.schema, knex: database});
+    const mailService = new MailService({schema: req.schema, knex: database});
 
-      let eventDate;
+    const eventUrl = `${process.env.PUBLIC_URL}/events/${id}`;
+    let eventDate;
 
-      if (eventItem.occurrenceType === "multi") {
-        eventDate = format(new Date(eventDates[0].startDate), "dd/MM/yyyy");
-      } else {
-        eventDate = format(new Date(eventItem.start_date), "dd/MM/yyyy");
-      }
+    if (eventItem.occurrenceType === "multi") {
+      eventDate = format(new Date(eventDates[0].startDate), "dd/MM/yyyy");
+    } else {
+      eventDate = format(new Date(eventItem.start_date), "dd/MM/yyyy");
+    }
 
-      const subject = `Event requires approval: ${eventItem.title} - ${eventDate}`;
-
-      const eventUrl = `${process.env.PUBLIC_URL}/events/${id}`;
+    if (sendApprovalEmail) {
+      const subject = `New event requires approval: ${eventItem.title} - ${eventDate}`;
 
       for (const reviewer of reviewers) {
         console.log("sending review mail to " + reviewer.user.email);
@@ -117,6 +118,27 @@ export async function create(req: any, res: any, services: any, database: any) {
           subject,
           template: {
             name: "event-approve",
+            data: {
+              eventTitle: eventItem.title,
+              eventDate,
+              eventUrl
+            }
+          }
+        });
+      }
+    }
+
+    if (sendNotificationEmail) {
+      const subject = `New event created: ${eventItem.title} - ${eventDate}`;
+
+      for (const reviewer of reviewers) {
+        console.log("sending notification mail to " + reviewer.user.email);
+        await mailService.send({
+          to: reviewer.user.email,
+          from: `events@${process.env.EMAIL_DOMAIN}`,
+          subject,
+          template: {
+            name: "event-created",
             data: {
               eventTitle: eventItem.title,
               eventDate,
