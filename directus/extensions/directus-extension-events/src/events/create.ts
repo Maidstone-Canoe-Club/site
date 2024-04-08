@@ -1,8 +1,5 @@
 ﻿import {format} from "date-fns";
-
-const adminAccountability = {
-  admin: true
-};
+import {AdminAccountability} from "./utils";
 
 export async function create(req: any, res: any, services: any, database: any) {
   const {
@@ -27,8 +24,11 @@ export async function create(req: any, res: any, services: any, database: any) {
     const userService = new UsersService({
       knex: database,
       schema: req.schema,
-      accountability: adminAccountability
+      accountability: AdminAccountability
     });
+
+    console.log("logged in user", loggedInUserId);
+
     const user = await userService.readOne(loggedInUserId, {
       fields: ["role.name"]
     });
@@ -42,7 +42,7 @@ export async function create(req: any, res: any, services: any, database: any) {
       const reviewersService = new ItemsService("reviewers", {
         knex: database,
         schema: req.schema,
-        accountability: adminAccountability
+        accountability: AdminAccountability
       });
 
       reviewers = await reviewersService.readByQuery({
@@ -131,7 +131,7 @@ export async function create(req: any, res: any, services: any, database: any) {
       const eventLeadersService = new ItemsService("events_directus_users", {
         knex: database,
         schema: req.schema,
-        accountability: req.accountability
+        accountability: AdminAccountability
       });
       await createLeaders(id, leaders, eventLeadersService, eventService);
     }
