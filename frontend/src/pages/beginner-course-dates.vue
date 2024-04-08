@@ -51,12 +51,12 @@ function getAgeLabel (event: CourseEventItem) {
   const juniorsAllowed = event.allowed_roles?.includes("juniors");
 
   if (adultsAllowed && !juniorsAllowed) {
-    return "Ages 18+";
+    return `Ages ${event.min_age || "18"}+`;
   }
 
   if (juniorsAllowed && !adultsAllowed) {
     if (event.min_age) {
-      return "Ages " + event.min_age + " - 17";
+      return `Ages ${event.min_age} - 17`;
     }
     return "Under 18 only";
   }
@@ -70,6 +70,12 @@ function getAgeLabel (event: CourseEventItem) {
 
     return result;
   }
+
+  if (event.min_age) {
+    return `Ages ${event.min_age}+`;
+  }
+
+  return "Adults only";
 }
 
 function getEventSessions (event: CourseEventItem) {
@@ -164,7 +170,7 @@ function getEventSessions (event: CourseEventItem) {
             variant="primary"
             :disabled="event.spacesLeft === 0"
             :to="event.spacesLeft > 0 ? getEventUrl(event) : undefined">
-            {{ event.spacesLeft === 0 ? "Course full" : "Book now" }}
+            {{ event.spacesLeft === 0 ? "Course full" : "View course" }}
           </a-button>
         </div>
       </li>

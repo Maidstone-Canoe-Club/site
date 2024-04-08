@@ -596,7 +596,14 @@ const eventImage = computed(() => {
   return null;
 });
 
-function renderSessionDate (date) {
+function renderSessionDate (date: any) {
+
+  // For some reason when navigating to the edit page,
+  // this method is called and the start and end dates are undefined
+  if (date.start === undefined || date.end === undefined) {
+    return "";
+  }
+
   if (isSameDay(new Date(date.start), new Date(date.end))) {
     return formatDate(date.start) + " - " + format(new Date(date.end), "h:mmaa");
   }
