@@ -11,7 +11,7 @@
         class="shadow-sm"
         style="min-height: 300px"
         content-type="html"
-        toolbar="minimal" />
+        :toolbar="toolbar" />
       <template #fallback>
         <div class="flex p-7 justify-center items-center">
           <loading-spinner color="#aaa" />
@@ -43,6 +43,14 @@ const props = defineProps<{
   label?: string
   v?: Validation | null
 }>();
+
+const toolbar = computed(() => [
+  [{ header: 1 }, { header: 2 }],
+  ["bold", "italic", "underline", "strike"],
+  [{ list: "ordered" }, { list: "bullet" }],
+  ["link"],
+  ["clean"]
+]);
 
 const directusUrl = useDirectusUrl();
 const { token } = useDirectusToken();
