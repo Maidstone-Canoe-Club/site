@@ -35,6 +35,8 @@ export default defineEndpoint((router, {services, database}) => {
     try {
       const juniorUser = req.body.user;
 
+      console.log("updating junior", juniorUser);
+
       if (!juniorUser) {
         return res.status(400).send("missing user");
       }
@@ -53,6 +55,8 @@ export default defineEndpoint((router, {services, database}) => {
         parent: juniorUser.parentId,
         bc_number: juniorUser.bc_number
       });
+
+      console.log("updated", newUserId);
 
       if (juniorUser.medicalInformation?.hasData) {
         const medicalInfoService = new ItemsService("medical_info", {
