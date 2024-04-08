@@ -63,6 +63,7 @@ function onContact (id: string) {
         <div class="flex gap-5 items-center font-semibold">
           <user-avatar
             :user="coach.user"
+            :image-size="64"
             size-class="size-16" />
           <div class="flex flex-col gap-0.5">
             <span>
