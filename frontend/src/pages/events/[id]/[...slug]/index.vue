@@ -1,5 +1,9 @@
 ﻿<template>
   <article class="mt-10 text-pretty">
+    <event-review-control
+      v-if="userCanApprove"
+      :event="event"
+      class="mb-4" />
     <div class="lg:flex lg:items-center lg:justify-between">
       <div class="min-w-0 flex-1">
         <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
@@ -40,6 +44,7 @@
               :content="event.description" />
 
             <alert-box
+              v-if="event.type !== 'beginners_course'"
               variant="info"
               heading="Disclaimer">
               <p>
@@ -65,28 +70,14 @@
           </div>
         </div>
         <div class="md:col-span-4 space-y-6">
-          <div
+          <alert-box
             v-if="event.status === 'draft'"
-            class="rounded-md bg-yellow-50 p-4 border border-yellow-400">
-            <div class="flex">
-              <div class="flex-shrink-0">
-                <ExclamationTriangleIcon class="h-5 w-5 text-yellow-400" aria-hidden="true" />
-              </div>
-              <div class="ml-3">
-                <h3 class="text-sm font-medium text-yellow-800">
-                  <h3 class="text-sm font-medium text-yellow-800">
-                    Event hidden
-                  </h3>
-                  <div class="mt-2 text-sm text-yellow-700">
-                    <p class="mb-2">
-                      Only you can see this event as it has been hidden automatically.
-                    </p>
-                    <p>Events with a price need to be approved before being made public.</p>
-                  </div>
-                </h3>
-              </div>
-            </div>
-          </div>
+            heading="Event hidden">
+            <p class="mb-2">
+              Only you can see this event as it has been hidden automatically.
+            </p>
+            <p>Event need to be approved before being made public.</p>
+          </alert-box>
 
           <div class="flex flex-col gap-1">
             <strong>Details</strong>
@@ -268,14 +259,14 @@
       </div>
     </div>
 
-    <attendance-modal
+    <lazy-attendance-modal
       v-if="userIsLeader"
       :open="markAttendanceModalOpen"
       :bookings="bookings"
       @refresh="onRefresh"
       @dismiss="markAttendanceModalOpen = false" />
 
-    <message-attendees-modal
+    <lazy-message-attendees-modal
       v-if="userIsLeader"
       :open="messageAttendeesModalOpen"
       :attendee-count="bookings.length"
@@ -283,14 +274,14 @@
       :instance="instance"
       @dismiss="messageAttendeesModalOpen = false" />
 
-    <attendee-download-modal
+    <lazy-attendee-download-modal
       :open="attendeeDownloadModalOpen"
       :event-title="event.title"
       :event-id="event.id"
       :instance="instance"
       @dismiss="attendeeDownloadModalOpen = false" />
 
-    <checkin-other v-model:open="checkinOtherModalOpen" />
+    <lazy-checkin-other v-model:open="checkinOtherModalOpen" />
   </article>
 </template>
 
@@ -320,7 +311,6 @@ import type { DirectusUser } from "nuxt-directus/dist/runtime/types";
 import type { Ref } from "vue";
 import type { EventItem } from "~/types";
 import { getDatesOfInstance } from "~/utils/events";
-import CheckinOther from "~/components/events/CheckinOther.vue";
 
 const { getItemById, getItems } = useDirectusItems();
 const directus = useDirectus();
@@ -422,7 +412,7 @@ if (!route.params.slug && slug) {
 } else if (route.params.slug && route.params.slug[0] !== slug) {
   throw showError({
     statusCode: 404,
-    statusMessage: "News post not found"
+    statusMessage: "Event not found"
   });
 }
 
@@ -435,10 +425,11 @@ const { data: eventInfo } = await useAsyncData(`event-info-${event.value.id}`, a
 const alreadyBooked = computed(() => eventInfo.value?.alreadyBooked ?? false);
 const bookings = computed(() => eventInfo.value?.bookings ?? []);
 const leaders = computed(() => eventInfo.value?.leaders ?? []);
+const userCanApprove = computed(() => eventInfo.value?.userCanApprove ?? false);
 
 const userIsLeader = computed(() => {
   if (leaders.value && leaders.value.length && user.value) {
-    return !!leaders.value.find(x => x.directus_users_id.id === user.value.id);
+    return !!leaders.value.find((x: any) => x.directus_users_id.id === user.value.id);
   }
 
   return false;
@@ -462,9 +453,18 @@ if (event.value.has_multiple) {
       collection: "events",
       params: {
         filter: {
-          parent_event: {
-            _eq: event.value.id
-          }
+          _and: [
+            {
+              parent_event: {
+                _eq: event.value.id
+              }
+            },
+            {
+              status: {
+                _neq: "cancelled"
+              }
+            }
+          ]
         }
       }
     });
@@ -510,6 +510,12 @@ const sessionDates = computed(() => {
     });
   }
 
+  if (result) {
+    result = result.sort((a, b) => {
+      return new Date(a.start).getTime() - new Date(b.start).getTime();
+    });
+  }
+
   return result;
 });
 
@@ -551,7 +557,23 @@ const editLink = computed(() => {
   return result;
 });
 
-const canEdit = computed(() => (user.value && event.value.user_created === user.value.id) || hasRole(user.value, "Coach"));
+const canEdit = computed(() => {
+  // // TODO: ONLY TEMP
+  // if (event.value!.is_recurring) {
+  //   return false;
+  // }
+
+  const userCreatedEvent = user.value && event.value!.user_created === user.value.id;
+  if (userCreatedEvent) {
+    return true;
+  }
+
+  if (hasRole(user.value, "committee")) {
+    return true;
+  }
+
+  return userIsLeader.value;
+});
 
 const contentColumn = ref(null);
 const imageWidth = ref(null);

@@ -1,13 +1,22 @@
 ﻿<script setup lang="ts">
 import { TrashIcon } from "@heroicons/vue/24/outline";
 import { nanoid } from "nanoid";
-import { addHours, formatISO } from "date-fns";
+import { addHours } from "date-fns";
+import type { EventWizardItem } from "~/components/events/wizard/EventWizard.vue";
 
 export type EventMultiDate = {
   id?: string,
   startDate?: Date,
   endDate?: Date,
+  index?: number
 }
+
+const props = withDefaults(defineProps<{
+  editMode: boolean,
+  bookingsCount?: number
+}>(), {
+  bookingsCount: 0
+});
 
 const event = defineModel<EventWizardItem>({ required: true });
 const eventDates = defineModel<EventMultiDate[]>("eventDates", { required: true });
@@ -59,10 +68,31 @@ const isValid = computed(() => {
   return true;
 });
 
+const hasBookings = computed(() => props.bookingsCount > 0);
+
+const bookingCountWarning = computed(() => {
+  if (hasBookings.value) {
+    const single = props.bookingsCount === 1;
+    return `There ${single ? "is" : "are"} ${props.bookingsCount} ${single ? "booking" : "bookings"} listed for this event.
+    If you change the date or time, the ${single ? "user" : "users"} will receive an email notifying them the date of their booking has changed.`;
+  }
+
+  return null;
+});
+
 </script>
 
 <template>
   <div class="space-y-6">
+    <alert-box
+      v-if="editMode"
+      variant="error"
+      heading="Changing the date or time?">
+      <p>If you are changing the date or time or removing one of the session dates below, please read.</p>
+      <p><strong>{{ bookingCountWarning }}</strong></p>
+      <p>If you are not changing any dates or times, you may proceed as normal and ignore this warning.</p>
+    </alert-box>
+
     <div class="flex flex-col gap-5">
       <div
         v-for="(date, index) in eventDates"
@@ -90,6 +120,7 @@ const isValid = computed(() => {
           <div class="flex justify-end flex-col ml-3">
             <a-button
               v-tooltip="'Remove date'"
+              :disabled="eventDates.length === 1"
               variant="danger"
               class="mb-[1px]"
               @click="removeDate(index)">

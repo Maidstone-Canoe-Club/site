@@ -11,7 +11,8 @@
         :name="name"
         :rows="rows"
         class="block w-full rounded-md border-0 py-1.5 sm:text-sm sm:leading-6"
-        :class="inputClass" />
+        :class="inputClass"
+        v-bind="$attrs" />
     </div>
     <p
       v-if="!isValid"

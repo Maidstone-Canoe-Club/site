@@ -40,7 +40,7 @@ const eventTypes: EventTypeOption[] = [
   { id: "meetings", name: "Meetings" }
 ];
 
-const eventType = ref<EventTypeOption | null>(null);
+const eventType = ref<EventTypeOption | undefined>(eventTypes.find(t => t.id === event.value.type));
 
 watch(eventType, (val) => {
   if (val) {
@@ -105,6 +105,7 @@ const canChangeLeaders = computed(() => {
       v-model="eventType"
       :options="eventTypes"
       label="Event type"
+      required
       :v="validator.type" />
 
     <input-dropdown
@@ -112,6 +113,7 @@ const canChangeLeaders = computed(() => {
       v-model="event.allowedRoles"
       multiple
       :options="allowedRoles"
+      required
       label="Who can join this event?"
       :v="validator.allowedRoles" />
 
@@ -123,6 +125,16 @@ const canChangeLeaders = computed(() => {
       placeholder="Any age"
       min="8"
       label="Minimum attendee age" />
+
+    <div>
+      <input-checkbox
+        id="visible-attendees"
+        v-model="event.visibleAttendees"
+        name="visible-attendees"
+        label="Are attendees visible?" />
+      <small>When enabled, event attendees can see who else has booked onto the same event. Enable this for events like
+        the Sunday Paddle, but not for events like Beginners Courses.</small>
+    </div>
 
     <hr>
 

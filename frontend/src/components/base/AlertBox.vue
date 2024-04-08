@@ -18,7 +18,7 @@
           {{ heading }}
         </h3>
         <div
-          class="text-sm space-y-2"
+          class="text-sm space-y-2 w-full"
           :class="alertClasses.content">
           <slot />
         </div>

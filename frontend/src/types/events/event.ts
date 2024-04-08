@@ -43,7 +43,7 @@ export type NewEventItem = {
   location: string,
   start_date: Date | string,
   end_date: Date | string,
-  max_spaces?: number,
+  max_spaces: number | null,
   last_occurrence?: Date
   last_booking_date?: Date,
   allowed_roles: string[],
@@ -55,5 +55,12 @@ export type NewEventItem = {
   is_peer_paddle: boolean,
   disclaimer?: string,
   allow_bookings_after_start?: boolean,
-  min_age?: number
+  min_age?: number,
+  visible_attendees?: boolean,
+  notifyUsers?: boolean,
+  price?: number
+  junior_price?: number
+  coach_price?: number,
+  member_price?: number,
+  non_member_price?: number
 }

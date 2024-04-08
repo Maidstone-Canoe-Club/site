@@ -269,7 +269,7 @@ function formatDate (input: Date | string) {
             <div
               v-for="day in days"
               :key="day.date"
-              class="min-h-[120px]"
+              class="h-[156px]"
               :class="[day.isCurrentMonth ? 'bg-white' : 'bg-gray-50 text-gray-500', 'relative px-1 py-2']">
               <time
                 :datetime="day.date"

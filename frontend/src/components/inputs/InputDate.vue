@@ -14,6 +14,7 @@
         v-model="internalValue"
         class="shadow-sm"
         :enable-time-picker="enableTimePicker"
+        :disabled="disabled"
         :min-date="minDate"
         :max-date="maxDate"
         v-bind="$attrs" />

@@ -1,9 +1,13 @@
 ﻿<script setup lang="ts">
 import type { EventWizardItem } from "~/components/events/wizard/EventWizard.vue";
 
+const props = defineProps<{
+  editMode: boolean
+}>();
+
 const event = defineModel<EventWizardItem>({ required: true });
 
-const confirm = ref<boolean>(false);
+const confirm = ref<boolean>(props.editMode);
 const showPreview = ref<boolean>(false);
 
 const isValid = computed(() => {

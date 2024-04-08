@@ -1,8 +1,5 @@
-﻿import {RRule} from "rrule";
-
-const adminAccountability = {
-  admin: true
-};
+﻿import {AdminAccountability, isUserLeader} from "./utils";
+import {RRule} from "rrule";
 
 export async function getConsentInfo(req: any, res: any, services: any, database: any) {
   const {
@@ -28,31 +25,25 @@ export async function getConsentInfo(req: any, res: any, services: any, database
     const userService = new UsersService({
       knex: database,
       schema: req.schema,
-      accountability: adminAccountability
+      accountability: AdminAccountability
     });
 
     const eventsService = new ItemsService("events", {
       knex: database,
       schema: req.schema,
-      accountability: adminAccountability
+      accountability: AdminAccountability
     });
 
     const eventBookingService = new ItemsService("event_bookings", {
       knex: database,
       schema: req.schema,
-      accountability: adminAccountability
-    });
-
-    const eventLeadersService = new ItemsService("events_directus_users", {
-      knex: database,
-      schema: req.schema,
-      accountability: adminAccountability
+      accountability: AdminAccountability
     });
 
     const emergencyContactsService = new ItemsService("emergency_contacts", {
       knex: database,
       schema: req.schema,
-      accountability: adminAccountability
+      accountability: AdminAccountability
     });
 
     const booking = await eventBookingService.readOne(bookingId);
@@ -73,23 +64,7 @@ export async function getConsentInfo(req: any, res: any, services: any, database
 
     console.log("got event", event);
 
-    const leaders = await eventLeadersService.readByQuery({
-      fields: ["*", "directus_users_id.first_name", "directus_users_id.last_name", "directus_users_id.avatar", "directus_users_id.id"],
-      filter: {
-        events_id: {
-          _eq: event.id
-        }
-      }
-    });
-
-    if (!leaders || leaders.length === 0) {
-      console.error("No leaders found for event");
-      return res.status(400).send("No leaders found for event");
-    }
-
-    console.log("got leaders", leaders);
-
-    const userIsLeader = leaders.find(x => x.directus_users_id.id === userId);
+    const userIsLeader = await isUserLeader(req, services, database, event.id, userId);
     if (!userIsLeader) {
       console.error(`Non-leader tried to load consent form for booking: ${bookingId}`);
       return res.status(401).send("Not allowed");
@@ -122,7 +97,7 @@ export async function getConsentInfo(req: any, res: any, services: any, database
     const medicalInfoService = new ItemsService("medical_info", {
       knex: database,
       schema: req.schema,
-      accountability: adminAccountability
+      accountability: AdminAccountability
     });
 
     const medicalInfos = await medicalInfoService.readByQuery({
@@ -208,13 +183,13 @@ export async function get(req: any, res: any, services: any, database: any) {
     const eventsService = new ItemsService("events", {
       knex: database,
       schema: req.schema,
-      accountability: adminAccountability
+      accountability: AdminAccountability
     });
 
     const filter: any = {
       _and: [
         {
-          status: {_neq: "cancelled"}
+          status: {_eq: "published"}
         },
         {
           start_date: {_lte: end}
@@ -270,7 +245,7 @@ export async function get(req: any, res: any, services: any, database: any) {
     const eventBookingService = new ItemsService("event_bookings", {
       knex: database,
       schema: req.schema,
-      accountability: adminAccountability
+      accountability: AdminAccountability
     });
 
     for (const event of events) {
