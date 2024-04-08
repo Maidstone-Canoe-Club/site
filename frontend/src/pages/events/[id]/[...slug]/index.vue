@@ -204,13 +204,13 @@
           </div>
 
           <div class="mb-5">
+            <alert-box
+              v-if="event.required_paddler_ability"
+              class="mb-5"
+              heading="Required paddler skill level">
+              <p>{{ event.required_paddler_ability }}</p>
+            </alert-box>
             <div v-if="canBook" class="space-y-5">
-              <alert-box
-                v-if="event.required_paddler_ability"
-                heading="Required paddler skill level">
-                <p>{{ event.required_paddler_ability }}</p>
-              </alert-box>
-
               <event-booker
                 :event="event"
                 :price="event.price"
@@ -598,7 +598,6 @@ const eventImage = computed(() => {
 });
 
 function renderSessionDate (date: any) {
-
   // For some reason when navigating to the edit page,
   // this method is called and the start and end dates are undefined
   if (date.start === undefined || date.end === undefined) {
