@@ -5,6 +5,7 @@ import {extractForwardTarget, handleMailForward} from "../mail-forwards";
 export default defineEndpoint((router, {services, database}) => {
   const {
     ItemsService,
+    UsersService,
     MailService
   } = services;
 
@@ -12,7 +13,7 @@ export default defineEndpoint((router, {services, database}) => {
     admin: true
   };
 
-  router.post("/", async (req, res) => {
+  router.post("/", async (req: any, res: any) => {
     try {
       const data = req.body;
 
@@ -22,7 +23,11 @@ export default defineEndpoint((router, {services, database}) => {
         return res.status(400).send("missing data");
       }
 
-      const contactUsService = new ItemsService("contact_us_message", {knex: database, schema: req.schema, accountability: adminAccountability});
+      const contactUsService = new ItemsService("contact_us_message", {
+        knex: database,
+        schema: req.schema,
+        accountability: adminAccountability
+      });
 
       await contactUsService.createOne({
         from_name: data.fromName,
@@ -32,7 +37,11 @@ export default defineEndpoint((router, {services, database}) => {
         message: data.message
       });
 
-      const mailForwardsService = new ItemsService("mail_forwards", {knex: database, schema: req.schema, accountability: adminAccountability});
+      const mailForwardsService = new ItemsService("mail_forwards", {
+        knex: database,
+        schema: req.schema,
+        accountability: adminAccountability
+      });
 
       const forward = await mailForwardsService.readOne(data.to.send_to);
 
@@ -48,7 +57,11 @@ export default defineEndpoint((router, {services, database}) => {
         return res.status(500).send("could not extract mail forward target");
       }
 
-      const mailThreadsService = new ItemsService("mail_threads", {knex: database, schema: req.schema, accountability: adminAccountability});
+      const mailThreadsService = new ItemsService("mail_threads", {
+        knex: database,
+        schema: req.schema,
+        accountability: adminAccountability
+      });
 
       const mailService = new MailService({schema: req.schema, knex: database});
 
@@ -73,9 +86,40 @@ export default defineEndpoint((router, {services, database}) => {
       await handleMailForward(inboundEmail, undefined, extractedForward, mailThreadsService, mailForwardsService);
 
       return res.send(true);
-    } catch (e) {
+    } catch (e: any) {
       console.error("error creating new contact us message", e);
       return res.status(500).send("error creating new contact us message");
+    }
+  });
+
+  router.post("/user", async (req: any, res: any) => {
+    try {
+      const data = req.body;
+
+      console.log("got contact user message:", data);
+
+      if (!data) {
+        return res.status(400).send("missing data");
+      }
+
+      const userService = new UsersService({
+        knex: database,
+        schema: req.schema,
+        accountability: adminAccountability
+      });
+
+      const user = await userService.readOne(data.userId, {
+        fields: ["email"]
+      });
+
+      if (!user) {
+        console.error("Unknwo user");
+        return res.status(400).send("Unknown user");
+      }
+
+    } catch (err: any) {
+      console.error("error creating new contact user message", err);
+      return res.status(500).send("error creating new contact user message");
     }
   });
 });
