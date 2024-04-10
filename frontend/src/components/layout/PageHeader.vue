@@ -27,3 +27,19 @@ const navItems = computed(() => {
 <style scoped lang="scss">
 
 </style>
+<!--consent info on view attendee modal-->
+
+<!--welfare = marty + vensa-->
+<!--secretaty = christine dark-->
+<!--john = chair-->
+<!--matt-->
+<!--memsec, bousin = james-->
+<!--treasurer = geoff-->
+
+<!--junior club-->
+<!--have to be a member to book-->
+<!--non-members can sign up but have to payu the one time fee-->
+
+<!--add way to book some other user onto event when you are leader-->
+
+<!--add sessions to event attendance-->
