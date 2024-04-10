@@ -5,6 +5,10 @@ import { helpers, required, requiredIf } from "@vuelidate/validators";
 import type { Ref } from "vue";
 import type { NewsItem } from "~/types";
 
+definePageMeta({
+  middleware: ["auth"]
+});
+
 const showPublish = ref(false);
 
 const title = ref("");
@@ -30,7 +34,7 @@ const v$: Ref<Validation> = useVuelidate(rules, {
   publishDate
 });
 
-const { createItems } = useDirectusItems();
+const directus = useDirectus();
 
 const showError = ref(false);
 const errorMessage = ref<string | null>(null);
@@ -45,17 +49,19 @@ async function onCreate () {
   v$.value.$touch();
   if (!v$.value.$invalid) {
     try {
-      const result = await createItems<NewsItem>({
-        collection: "news",
-        items: {
-          title: title.value,
-          content: content.value,
-          publish_date: publishDate.value,
-          status: publishDate.value ? "scheduled" : "published"
+      const result = await directus<{ id: string }>("/news-posts/create", {
+        method: "post",
+        body: {
+          data: {
+            title: title.value,
+            content: content.value,
+            publish_date: publishDate.value,
+            status: publishDate.value ? "scheduled" : "published"
+          }
         }
       });
 
-      await navigateTo("/news/" + result.id);
+      await navigateTo(`/news/${result.id}`);
     } catch (e) {
       errorMessage.value = "Unable to create the news post";
       showError.value = true;
@@ -111,7 +117,8 @@ function closeModal () {
       </div>
 
       <a-button
-        :action="onCreate">
+        :action="onCreate"
+        keep-loading>
         Create
       </a-button>
     </div>

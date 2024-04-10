@@ -68,7 +68,7 @@ const { data: items } = await useAsyncData("news-items-", async () => {
 });
 
 const canCreatePost = computed(() => {
-  return hasRole(user.value, "coach");
+  return hasRole(user.value, "coach") || user.value?.trusted_user;
 });
 
 async function loadData () {
