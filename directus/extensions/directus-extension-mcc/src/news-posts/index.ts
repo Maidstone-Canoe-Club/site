@@ -2,10 +2,72 @@ import {defineEndpoint} from "@directus/extensions-sdk";
 import {nanoid} from "nanoid";
 
 export default defineEndpoint((router, {services, database, logger}) => {
-  const {ItemsService} = services;
+  const {
+    ItemsService,
+    UsersService
+  } = services;
   const adminAccountability = {
     admin: true
   };
+
+  router.post("/create", async (req: any, res: any) => {
+    try {
+      const userId = req.accountability.user;
+      const data = req.body.data;
+
+      if (!userId) {
+        return res.status(401).send("Missing user");
+      }
+
+      if (!data) {
+        return res.status(400).send("Missing data");
+      }
+
+      const userService = new UsersService({
+        knex: database,
+        schema: req.schema,
+        accountability: adminAccountability
+      });
+
+      const user = await userService.readOne(userId, {
+        fields: ["id", "trusted_user", "role.name"]
+      });
+
+      if (!user) {
+        return res.status(400).send("Unknown user");
+      }
+
+      const allowedRoles = ["coach", "committee"];
+      const hasRole = allowedRoles.includes(user.role.name.toLowerCase());
+      const isTrusted = user.trusted_user;
+
+      if (!hasRole && !isTrusted) {
+        logger.info(`User is not allowed to create a news post: ${userId}`);
+        return res.status(401).send("Unauthorized");
+      }
+
+      const newsService = new ItemsService("news", {
+        knex: database,
+        schema: req.schema,
+        accountability: adminAccountability
+      });
+
+      const newId = await newsService.createOne(data);
+
+      await newsService.updateOne(newId, {
+        user_created: {
+          id: userId
+        }
+      });
+
+      return res.send({
+        id: newId
+      });
+    } catch (err: any) {
+      logger.error(err, "An error occured when creating news post");
+      return res.status(500).send("An error occured when creating a news post");
+    }
+  });
 
   router.post("/subscribe", async (req: any, res: any) => {
     const userId = req.accountability.user;
@@ -77,7 +139,7 @@ export default defineEndpoint((router, {services, database, logger}) => {
 
         if (subscribers?.length) {
           console.log("deleting many", subscribers);
-          await subscribersService.deleteMany(subscribers.map(x => x.id));
+          await subscribersService.deleteMany(subscribers.map((x: any) => x.id));
         }
 
         return res.status(200).send(true);
