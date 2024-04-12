@@ -36,16 +36,20 @@ async function tryInterceptClick (event: any) {
 }
 
 onMounted(() => {
-  const elements = contentContainer.value.getElementsByTagName("a");
-  for (const el of elements) {
-    el.addEventListener("click", tryInterceptClick);
+  const elements = contentContainer.value?.getElementsByTagName("a");
+  if (elements) {
+    for (const el of elements) {
+      el.addEventListener("click", tryInterceptClick);
+    }
   }
 });
 
 onBeforeUnmount(() => {
-  const elements = contentContainer.value.getElementsByTagName("a");
-  for (const el of elements) {
-    el.removeEventListener("click", tryInterceptClick);
+  const elements = contentContainer.value?.getElementsByTagName("a");
+  if (elements) {
+    for (const el of elements) {
+      el.removeEventListener("click", tryInterceptClick);
+    }
   }
 });
 
