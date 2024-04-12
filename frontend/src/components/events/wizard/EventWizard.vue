@@ -37,9 +37,9 @@ export type EventWizardItem = {
   endDate?: Date | string,
   lastBookingDate?: Date,
   lastOccurrence?: Date,
-  advancedPricing?: boolean,
   memberPrice?: number,
   nonMemberPrice?: number,
+  nonMemberJuniorPrice?: number,
   coachPrice?: number,
   juniorPrice?: number,
   price?: number,
@@ -56,7 +56,10 @@ export type EventWizardItem = {
   minAge?: number
   visibleAttendees?: boolean
   notifyUsers?: boolean,
-  paddleType?: "peer_paddle" | "led_paddle" | "coached_paddle"
+  paddleType?: "peer_paddle" | "led_paddle" | "coached_paddle",
+  paymentReference?: string,
+  oneTimePayment: boolean,
+  advancedPricing: boolean
 }
 
 const props = defineProps<{
@@ -65,7 +68,7 @@ const props = defineProps<{
   bookingsCount?: number
 }>();
 
-const editMode = computed(() => props.events && props.events.length > 0);
+const editMode = computed<boolean>(() => !!props.events && props.events.length > 0);
 
 const directus = useDirectus();
 
@@ -247,6 +250,7 @@ function existingEventToWizardEvent (eventItem: EventItem): EventWizardItem {
     lastOccurrence: eventItem.last_occurence ? new Date(eventItem.last_occurence) : undefined,
     memberPrice: eventItem.member_price,
     nonMemberPrice: eventItem.non_member_price,
+    nonMemberJuniorPrice: eventItem.non_member_junior_price,
     coachPrice: eventItem.coach_price,
     juniorPrice: eventItem.junior_price,
     price: eventItem.price,
@@ -260,7 +264,10 @@ function existingEventToWizardEvent (eventItem: EventItem): EventWizardItem {
     allowBookingsAfterStart: eventItem.allow_bookings_after_start,
     minAge: eventItem.min_age,
     visibleAttendees: eventItem.visible_attendees,
-    paddleType: eventItem.paddle_type
+    paddleType: eventItem.paddle_type,
+    paymentReference: eventItem.payment_reference,
+    oneTimePayment: eventItem.one_time_payment || false,
+    advancedPricing: eventItem.advanced_pricing || false
   };
 }
 
@@ -289,8 +296,12 @@ function toNewEventItem (eventItem: EventWizardItem): NewEventItem {
     junior_price: eventItem.juniorPrice,
     member_price: eventItem.memberPrice,
     non_member_price: eventItem.nonMemberPrice,
+    non_member_junior_price: eventItem.nonMemberJuniorPrice,
     coach_price: eventItem.coachPrice,
-    paddle_type: eventItem.paddleType
+    paddle_type: eventItem.paddleType,
+    payment_reference: eventItem.paymentReference,
+    one_time_payment: eventItem.oneTimePayment,
+    advanced_pricing: eventItem.advancedPricing
   };
 }
 
@@ -328,7 +339,12 @@ async function onSubmit () {
       });
     }
 
-    await navigateTo(`/events/${eventId}`);
+    let returnUrl = `/events/${eventId}`;
+    if (props.instance) {
+      returnUrl += `?instance=${props.instance}`;
+    }
+
+    await navigateTo(returnUrl);
   } catch (e) {
     console.error("create event error", e);
   }

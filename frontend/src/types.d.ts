@@ -59,6 +59,7 @@ export interface EventItem {
   advanced_pricing?: boolean,
   member_price?: number,
   non_member_price?: number,
+  non_member_junior_price?: number,
   coach_price?: number,
   is_full_day: boolean,
   is_recurring: boolean,
@@ -80,7 +81,9 @@ export interface EventItem {
   min_age?: number,
   bookings?: number,
   visible_attendees?: boolean,
-  paddle_type?: "led_paddle" | "peer_paddle" | "coached_paddle"
+  paddle_type?: "led_paddle" | "peer_paddle" | "coached_paddle",
+  payment_reference?: string,
+  one_time_payment?: boolean
 }
 
 export interface EventBooking {

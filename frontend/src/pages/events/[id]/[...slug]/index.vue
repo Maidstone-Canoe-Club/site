@@ -127,18 +127,18 @@
             </div>
 
             <div
-              v-if="event.price || event.junior_price"
-              class="mt-2 flex items-center text-sm text-gray-500">
+              v-if="eventPrices && eventPrices.length"
+              class="mt-2 flex text-sm text-gray-500">
               <CurrencyPoundIcon class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
-              <template v-if="event.price">
-                {{ formatPrice(event.price) }} per adult
-              </template>
-              <template v-if="event.price && event.junior_price">
-                &ndash;
-              </template>
-              <template v-if="event.junior_price">
-                {{ formatPrice(event.junior_price) }} per junior
-              </template>
+              <div class="flex items-center">
+                <ul>
+                  <li
+                    v-for="(eventPrice, index) in eventPrices"
+                    :key="index">
+                    {{ eventPrice }}
+                  </li>
+                </ul>
+              </div>
             </div>
 
             <div
@@ -206,6 +206,7 @@
             <beta-wrapper>
               <a-button
                 variant="outline"
+                class="w-full"
                 @click="onCheckinOther">
                 <QrCodeIcon class="size-5" />
                 Check-in attendee
@@ -233,6 +234,7 @@
                 :required-event-title="eventInfo.requiredEventTitle"
                 :bookings="bookings"
                 :spaces-left="eventInfo.spacesLeft"
+                :paid-user-ids="eventInfo.paidUserIds"
                 @refresh="onRefresh" />
             </div>
             <div
@@ -305,7 +307,6 @@ import {
   CalendarIcon,
   CurrencyPoundIcon,
   MapPinIcon,
-  PencilIcon,
   UsersIcon,
   InformationCircleIcon,
   UserGroupIcon,
@@ -342,19 +343,21 @@ const attendeeDownloadModalOpen = ref(false);
 const checkinOtherModalOpen = ref(false);
 const closeModalOpen = ref(false);
 
-const { data: event } = await useAsyncData<EventItem>(`event-item-${route.params.id}`, async () => {
+const { data: eventResponse } = await useAsyncData<EventItem>(`event-item-${route.params.id}`, async () => {
   return await getItemById<EventItem>({
     collection: "events",
     id: route.params.id as string
   });
 });
 
-if (!event.value) {
+if (!eventResponse.value) {
   throw showError({
     statusCode: 404,
     statusMessage: "Event not found"
   });
 }
+
+const event = computed(() => eventResponse.value!);
 
 const slug = slugify(event.value.title);
 
@@ -434,13 +437,22 @@ if (!route.params.slug && slug) {
 
 useHead({ title: event.value.title });
 
-const { data: eventInfo } = await useAsyncData(`event-info-${event.value.id}`, async () => {
+const { data: eventInfoResponse } = await useAsyncData(`event-info-${event.value.id}`, async () => {
   return await loadInfo();
 });
 
-const alreadyBooked = computed(() => eventInfo.value?.alreadyBooked ?? false);
-const bookings = computed(() => eventInfo.value?.bookings ?? []);
-const leaders = computed(() => eventInfo.value?.leaders ?? []);
+if (!eventInfoResponse.value) {
+  throw showError({
+    statusCode: 400,
+    statusMessage: "Could not load event details"
+  });
+}
+
+const eventInfo = ref(eventInfoResponse.value!);
+
+const alreadyBooked = computed(() => eventInfo.value.alreadyBooked ?? false);
+const bookings = computed(() => eventInfo.value.bookings ?? []);
+const leaders = computed(() => eventInfo.value.leaders ?? []);
 const userCanApprove = computed(() => eventInfo.value?.userCanApprove ?? false);
 
 const userIsLeader = computed(() => {
@@ -488,6 +500,36 @@ if (event.value.has_multiple) {
 
   childEvents.value = events.value;
 }
+
+const eventPrices = computed(() => {
+  const prices: string[] = [];
+
+  if (event.value.member_price) {
+    prices.push(`${formatPrice(event.value.member_price)} per adult member`);
+  }
+
+  if (event.value.non_member_price) {
+    prices.push(`${formatPrice(event.value.non_member_price)} per adult non-member`);
+  }
+
+  if (event.value.junior_price) {
+    prices.push(`${formatPrice(event.value.junior_price)} per junior`);
+  }
+
+  if (event.value.non_member_junior_price) {
+    prices.push(`${formatPrice(event.value.non_member_junior_price)} per non-member junior`);
+  }
+
+  if (event.value.coach_price) {
+    prices.push(`${formatPrice(event.value.coach_price)} per coach`);
+  }
+
+  if (event.value.price) {
+    prices.push(`${formatPrice(event.value.price)} per adult`);
+  }
+
+  return prices;
+});
 
 const sessionDates = computed(() => {
   let result = null;

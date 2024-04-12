@@ -88,7 +88,7 @@ export async function update(req: any, res: any, services: any, database: any) {
         console.error("Unable to update event");
       }
 
-      return res.send(result.eventId);
+      return res.send(result);
     }
 
     console.error(`Event not saved, unknown occurrence type: ${event.occurrenceType}`);
@@ -320,9 +320,12 @@ async function updateRecurringEvent(req: any, services: any, database: any, even
     return await eventService.updateOne(event.id, event);
   }else if(editType ==="single-instance"){
     // not ready yet
+    console.log("cannot save single instance recurring event yet");
   }else{
     console.error("unknown edit type: " + editType);
   }
+
+  return null;
 }
 
 async function updateLeaders(req: any, services: any, database: any, eventId: string, leaders: string[]) {

@@ -189,31 +189,24 @@ async function onBookNow () {
     });
     emits("refresh");
 
-    bookingSuccess.value = bookingResult.filter(x => !x.result).length === 0;
-    resultMessages.value = bookingResult.map(x => x.message);
+    bookingSuccess.value = bookingResult.filter((x: any) => !x.result).length === 0;
+    resultMessages.value = bookingResult.map((x: any) => x.message);
     openResultModal.value = true;
   } catch (e) {
     console.error("Error booking onto event", e);
   }
 }
 
-const userPrice = computed(() => {
-  if (props.event.coach_price && (hasExactRole(user.value, "coach") || hasExactRole(user.value, "committee"))) {
-    return props.event.coach_price;
-  } else if (props.event.member_price && hasExactRole(user.value, "member")) {
-    return props.event.member_price;
-  } else if (props.event.non_member_price && hasExactRole(user.value, "unapproved")) {
-    return props.event.non_member_price;
-  } else {
-    return props.event.price;
-  }
-});
-
 const payNowLabel = computed(() => {
-  return "Pay " + renderPrice(userPrice.value) + " now";
+  if (props.price) {
+    return "Pay " + renderPrice(props.price) + " now";
+  }
+
+  return null;
 });
 
 const hasPrice = computed(() => {
+  // Juniors cant pay using the single event booker so we don't need to check for a junior price
   return props.event.price || props.event.coach_price || props.event.member_price || props.event.non_member_price;
 });
 

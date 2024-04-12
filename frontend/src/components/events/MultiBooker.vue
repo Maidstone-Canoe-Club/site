@@ -22,10 +22,25 @@
     </div>
     <ul class="flex flex-col gap-4 sm:gap-3 mb-4">
       <li v-for="(u, index) in usersThatCanBook" :key="index">
-        <input-toggle
-          v-model="u.shouldBook"
-          :disabled="isFull && !u.shouldBook"
-          :label="toggleLabel(u)" />
+        <div class="flex justify-between items-center">
+          <span class="text-sm font-semibold">{{ u.first_name }} {{ u.last_name }}</span>
+
+          <div class="flex gap-2">
+            <span
+              v-if="hasPaid(u)"
+              class="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
+              Paid
+            </span>
+            <span
+              v-else
+              class="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">
+              {{ renderPrice(getPriceForUser(u)) || "Free" }}
+            </span>
+            <input-toggle
+              v-model="u.shouldBook"
+              :disabled="isFull && !u.shouldBook" />
+          </div>
+        </div>
       </li>
     </ul>
 
@@ -152,6 +167,12 @@
           name="userIds"
           type="hidden"
           :value="u.id">
+        <input
+          v-if="paymentReference"
+          id="ref"
+          name="ref"
+          type="hidden"
+          :value="preloadPayload">
         <button
           type="submit"
           :disabled="buttonDisabled"
@@ -186,10 +207,17 @@ const props = defineProps<{
   instance?: string,
   price?: number,
   juniorPrice?: number,
+  nonMemberJuniorPrice?: number,
+  coachPrice?: number,
+  memberPrice?: number,
+  nonMemberPrice?: number,
   paymentUrl?: string,
   currentBookings?: any,
   spacesLeft?: number,
-  juniors?: DirectusUser[]
+  juniors?: DirectusUser[],
+  oneTimePayment?: boolean,
+  paymentReference?: string,
+  paidUserIds?: string[]
 }>();
 
 const user = useDirectusUser();
@@ -222,23 +250,49 @@ const totalPrice = computed(() => {
   let total = 0;
 
   for (const user of usersToBook.value) {
-    const isJunior = hasExactRole(user, "junior");
-    if (isJunior && props.juniorPrice) {
-      total += props.juniorPrice;
-    }
-
-    if (!isJunior && props.price) {
-      total += props.price;
+    const userPrice = getPriceForUser(user);
+    if (userPrice) {
+      total += userPrice;
     }
   }
 
   return total;
 });
 
+function hasPaid (user: any) {
+  const paid = props.paidUserIds?.includes(user.id);
+  return !!paid;
+}
+
+function getPriceForUser (user: any) {
+  let amount = null;
+
+  if (hasPaid(user)) {
+    return null;
+  }
+
+  const isJunior = hasExactRole(user, "junior");
+  if (isJunior) {
+    if (props.nonMemberJuniorPrice) {
+      amount = user.bc_number ? props.juniorPrice : props.nonMemberJuniorPrice;
+    } else {
+      amount = props.juniorPrice;
+    }
+  } else if (hasExactRole(user, "coach") || user.is_coach) {
+    amount = props.coachPrice;
+  } else if (hasRole(user, "member")) {
+    amount = props.memberPrice;
+  } else if (hasRole(user, "unapproved")) {
+    amount = props.nonMemberPrice;
+  }
+
+  return amount;
+}
+
 const isFull = computed(() => usersToBook.value.length === props.spacesLeft);
 
 const usePaymentForm = computed(() => {
-  if (!props.price && !props.juniorPrice) {
+  if (!props.price && !props.juniorPrice && !props.nonMemberJuniorPrice) {
     return false;
   }
 
@@ -246,7 +300,15 @@ const usePaymentForm = computed(() => {
   const total = totalPrice.value;
 
   if (shouldBookUsers.length && total > 0) {
-    return true;
+    let usersMustPay = false;
+    for (const user of shouldBookUsers) {
+      if (!hasPaid(user)) {
+        usersMustPay = true;
+        break;
+      }
+    }
+
+    return usersMustPay;
   }
 
   return false;
@@ -344,11 +406,7 @@ async function onBookNow () {
   }
 }
 
-function toggleLabel (user) {
-  return `${user.first_name} ${user.last_name}`;
-}
-
-function renderPrice (amount: number) {
+function renderPrice (amount: number | null) {
   if (!amount) {
     return null;
   }
@@ -365,7 +423,7 @@ const payNowButtonClass = computed(() => {
   return result;
 });
 
-function getUser (userId) {
+function getUser (userId: string) {
   const user = lastUsersBooked.value.find(x => x.id === userId);
   if (!user) {
     return "Unknown user";

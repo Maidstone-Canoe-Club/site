@@ -3,6 +3,7 @@
     <label
       v-if="label"
       :for="id"
+      :class="{'required': required}"
       class="block text-sm font-medium leading-6 text-gray-900">{{ label }}</label>
     <div class="flex flex-row gap-1 mt-2">
       <input-field

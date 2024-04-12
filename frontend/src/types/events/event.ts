@@ -63,5 +63,9 @@ export type NewEventItem = {
   coach_price?: number,
   member_price?: number,
   non_member_price?: number,
-  paddle_type?: "led_paddle" | "coached_paddle" | "peer_paddle"
+  non_member_junior_price?: number,
+  paddle_type?: "led_paddle" | "coached_paddle" | "peer_paddle",
+  payment_reference?: string,
+  one_time_payment?: boolean,
+  advanced_pricing?: boolean
 }
