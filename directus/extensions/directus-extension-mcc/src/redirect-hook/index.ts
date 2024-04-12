@@ -31,14 +31,11 @@ async function handleEventRename(payload: any, meta: any, services: any, context
   await handlePayloadTitleChange(payload, "events", meta, services, context);
 }
 
-async function handlePayloadTitleChange(payload: any, collection: string,  meta: any, services: any, context: any){
+async function handlePayloadTitleChange(payload: any, collection: string, meta: any, services: any, context: any) {
   const {ItemsService} = services;
   const accountability = {
     admin: true
   };
-
-  const newSlug = slugify(payload.title);
-  console.log(`new ${collection} slug`, newSlug);
 
   const itemsService = new ItemsService(collection, {schema: context.schema, accountability});
   const redirectService = new ItemsService("redirects", {schema: context.schema, accountability});
@@ -47,29 +44,52 @@ async function handlePayloadTitleChange(payload: any, collection: string,  meta:
     fields: ["title", "id"]
   });
 
+  const newSlug = slugify(payload.title);
   const oldSlug = slugify(item.title);
 
   const oldUrl = `/${collection}/${item.id}/${oldSlug}`;
   const newUrl = `/${collection}/${item.id}/${newSlug}`;
 
   if (oldUrl !== newUrl) {
+
     const existing = await redirectService.readByQuery({
       fields: ["url_old", "url_new", "id"],
       filter: {
         _and: [
           {
-            url_old: {_eq: newUrl},
+            url_old: {_eq: oldUrl}
           },
           {
-            url_new: {_eq: oldUrl}
+            url_new: {_eq: newUrl}
           }
         ]
       }
     });
 
     if (existing && existing.length) {
-      console.log(`found ${existing.length} opposite redirect(s) to new redirect, deleting...`);
-      await redirectService.deleteMany(existing.map((e: any) => e.id));
+      console.log("A matching redirect already exists, skipping");
+      return;
+    }
+
+    const matching = await redirectService.readByQuery({
+      fields: ["url_old", "url_new", "id"],
+      filter: {
+        url_new: {
+          _eq: oldUrl
+        }
+      }
+    });
+
+    if (matching && matching.length) {
+      for (const match of matching) {
+        if (match.url_old === newUrl) {
+          await redirectService.deleteOne(match.id);
+        } else {
+          await redirectService.updateOne(match.id, {
+            url_new: newUrl
+          });
+        }
+      }
     }
 
     await redirectService.createOne({
@@ -77,7 +97,8 @@ async function handlePayloadTitleChange(payload: any, collection: string,  meta:
       url_new: newUrl,
       response_code: "301"
     });
-    console.log(`created new ${collection} redirect: ${oldUrl} -> ${newUrl}`);
+
+    console.log(`new redirect: ${oldUrl} -> ${newUrl}`);
   } else {
     console.error(`Cannot create redirect with same URLs: ${oldSlug}`);
   }
