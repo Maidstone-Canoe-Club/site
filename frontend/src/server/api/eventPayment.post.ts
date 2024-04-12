@@ -45,6 +45,7 @@ export default defineEventHandler(async (event) => {
   const userId = query.userId;
   const instance = query.instance as number;
   const userIds = body.userIds;
+  const paymentReference = query.ref;
 
   try {
     const checkoutData = await $fetch<{
@@ -88,30 +89,36 @@ export default defineEventHandler(async (event) => {
 
       let price = eventItem.price;
       let isJunior = false;
+      const role = user.role.name.toLowerCase();
 
-      if (eventItem.advanced_pricing) {
-        switch (user.role.name.toLowerCase()) {
-        case "member":
-          name += " (Member pricing)";
-          price = eventItem.member_price;
-          break;
-        case "non_member":
-          name += " (Non-member pricing)";
-          price = eventItem.non_member_price;
-          break;
-        case "committee":
-        case "coach":
-          name += " (Coach pricing)";
-          price = eventItem.coach_price;
-          break;
-        default:
-          console.warn("Unhandled user role when setting price: " + user.role.name);
-          break;
-        }
-      } else if (user.role.name === "Junior") {
-        name += " (Junior)";
-        price = eventItem.junior_price;
+      if (role === "junior") {
         isJunior = true;
+        if (eventItem.non_member_junior_price) {
+          if (user.bc_number) {
+            name += " (Junior member)";
+            price = eventItem.junior_price;
+          } else {
+            name += " (Junior non-member)";
+            price = eventItem.non_member_junior_price;
+          }
+        } else {
+          name += " (Junior)";
+          price = eventItem.junior_price;
+        }
+      } else if (role === "coach" || user.is_coach) {
+        name += " (Coach pricing)";
+        price = eventItem.coach_price;
+      } else if (role === "member" || role === "committee") {
+        name += " (Member pricing)";
+        price = eventItem.member_price;
+      } else if (role === "unapproved") {
+        name += " (Non-member pricing)";
+        price = eventItem.non_member_price;
+      }
+
+      if (!price || price === 0) {
+        console.log(`Zero price for user: ${user.id}`);
+        continue;
       }
 
       lineItems.push({
@@ -131,6 +138,7 @@ export default defineEventHandler(async (event) => {
         customer_id: customerId,
         status: "pending",
         description: name,
+        payment_reference: paymentReference,
         metadata: JSON.stringify({
           event_id: eventId,
           instance,
@@ -159,7 +167,8 @@ export default defineEventHandler(async (event) => {
         customer_user_id: userId,
         user_ids: Array.isArray(userIds) ? userIds.join(",") : userIds,
         order_ids: formattedOrderIds,
-        event_instance: instance
+        event_instance: instance,
+        payment_reference: paymentReference
       },
       line_items: lineItems,
       mode: "payment",

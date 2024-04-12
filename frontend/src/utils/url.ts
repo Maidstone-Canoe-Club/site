@@ -11,3 +11,7 @@
 
   return result;
 }
+
+export function isExternal (url: string) {
+  return /^(https?:|mailto:|tel:)/.test(url);
+}

@@ -26,10 +26,17 @@
             :instance="instance"
             :price="event.price"
             :junior-price="event.junior_price"
+            :coach-price="event.coach_price"
+            :member-price="event.member_price"
+            :non-member-price="event.non_member_price"
+            :non-member-junior-price="event.non_member_junior_price"
+            :one-time-payment="event.one_time_payment"
+            :payent-refernce="event.payment_reference"
             :payment-url="paymentUrl"
             :current-bookings="bookings"
             :spaces-left="spacesLeft"
             :juniors="juniors"
+            :paid-user-ids="paidUserIds"
             @refresh="onRefresh" />
 
           <single-booker
@@ -79,6 +86,7 @@ const props = defineProps<{
   otherBookingRequired: boolean,
   requiredEventTitle?: string,
   spacesLeft?: number,
+  paidUserIds?: string[],
   bookings: any,
 }>();
 
@@ -100,7 +108,12 @@ const { data: juniors } = await useAsyncData("juniors-" + user.value?.id, async 
   return await loadJuniors();
 });
 
-const canBookJuniors = computed(() => juniors.value.length && (props.event.allowed_roles?.map(x => x.toLowerCase()).includes("juniors") ?? false));
+const canBookJuniors = computed(() => {
+  if (juniors.value) {
+    return juniors.value.length && (props.event.allowed_roles?.map(x => x.toLowerCase()).includes("juniors") ?? false);
+  }
+  return false;
+});
 
 async function loadJuniors () {
   if (user.value) {
@@ -124,6 +137,10 @@ const paymentUrl = computed(() => {
 
   if (props.instance) {
     result += `&instance=${props.instance}`;
+  }
+
+  if (props.event.payment_reference) {
+    result += `&ref=${props.event.payment_reference}`;
   }
 
   return result;
@@ -158,27 +175,48 @@ const userHasAllowedRole = computed(() => {
 
 const priceForUser = computed(() => {
   if (props.event.advanced_pricing) {
-    if (hasExactRole(user.value, "member")) {
-      return props.event.member_price;
-    } else if (hasExactRole(user.value, "non_member")) {
-      return props.event.non_member_price;
-    } else if (hasExactRole(user.value, "coach")) {
+    if (hasExactRole(user.value, "coach") || user.value?.is_coach) {
+      console.log("coach price", user.value.role.name);
       return props.event.coach_price;
+    } else if (hasExactRole(user.value, "member") || hasExactRole(user.value, "committee")) {
+      console.log("member price", user.value.role.name, props.event.member_price);
+      return props.event.member_price;
+    } else if (hasExactRole(user.value, "unapproved")) {
+      return props.event.non_member_price;
     }
 
     return null;
   } else {
     return props.event.price;
   }
+
+  // if (props.event.advanced_pricing) {
+  //   if (hasExactRole(user.value, "member")) {
+  //     return props.event.member_price;
+  //   } else if (hasExactRole(user.value, "non_member")) {
+  //     return props.event.non_member_price;
+  //   } else if (hasExactRole(user.value, "coach")) {
+  //     return props.event.coach_price;
+  //   }
+  //
+  //   return null;
+  // } else {
+  //   return props.event.price;
+  // }
 });
 
 function mapAllowedRoleToUserRole (allowedRole: string) {
   switch (allowedRole.toLowerCase()) {
-  case "non-members": return "Unapproved";
-  case "juniors": return "Junior";
-  case "members": return "Member";
-  case "none": return null;
-  default: throw new Error("Unknown allowed role: " + allowedRole);
+  case "non-members":
+    return "Unapproved";
+  case "juniors":
+    return "Junior";
+  case "members":
+    return "Member";
+  case "none":
+    return null;
+  default:
+    throw new Error("Unknown allowed role: " + allowedRole);
   }
 }
 

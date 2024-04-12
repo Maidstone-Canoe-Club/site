@@ -76,5 +76,6 @@ export const BlankEventTemplate: EventWizardItem = {
   location: "Maidstone Canoe Club",
   allowedRoles: [],
   leaders: [],
-  isPeerPaddle: true
+  isPeerPaddle: true,
+  oneTimePayment: false
 };

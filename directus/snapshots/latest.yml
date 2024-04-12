@@ -2855,6 +2855,45 @@ fields:
       foreign_key_table: null
       foreign_key_column: null
   - collection: directus_users
+    field: is_coach
+    type: boolean
+    meta:
+      collection: directus_users
+      conditions: null
+      display: null
+      display_options: null
+      field: is_coach
+      group: null
+      hidden: false
+      interface: boolean
+      note: Used to indicate if user who doesn't have the coach role is a coach
+      options: null
+      readonly: false
+      required: false
+      sort: 18
+      special:
+        - cast-boolean
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: is_coach
+      table: directus_users
+      data_type: boolean
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: directus_users
     field: mobile
     type: string
     meta:
@@ -4329,7 +4368,7 @@ fields:
       options: null
       readonly: false
       required: false
-      sort: 38
+      sort: 39
       special:
         - cast-boolean
       translations: null
@@ -4379,7 +4418,7 @@ fields:
         previewThreshold: 4
       readonly: false
       required: false
-      sort: 29
+      sort: 30
       special:
         - cast-json
       translations: null
@@ -4418,12 +4457,12 @@ fields:
       options: null
       readonly: false
       required: false
-      sort: 20
+      sort: 21
       special: null
       translations: null
       validation: null
       validation_message: null
-      width: full
+      width: half
     schema:
       name: coach_price
       table: events
@@ -4589,7 +4628,7 @@ fields:
       options: null
       readonly: false
       required: false
-      sort: 37
+      sort: 38
       special: null
       translations: null
       validation: null
@@ -4665,7 +4704,7 @@ fields:
       options: null
       readonly: false
       required: false
-      sort: 26
+      sort: 27
       special: null
       translations: null
       validation: null
@@ -4703,7 +4742,7 @@ fields:
       options: null
       readonly: false
       required: false
-      sort: 27
+      sort: 28
       special: null
       translations: null
       validation: null
@@ -4741,7 +4780,7 @@ fields:
       options: null
       readonly: false
       required: false
-      sort: 24
+      sort: 25
       special:
         - cast-boolean
       translations: null
@@ -4858,7 +4897,7 @@ fields:
       options: null
       readonly: false
       required: false
-      sort: 21
+      sort: 22
       special:
         - cast-boolean
       translations: null
@@ -4897,7 +4936,7 @@ fields:
       options: null
       readonly: false
       required: false
-      sort: 36
+      sort: 37
       special:
         - cast-boolean
       translations: null
@@ -4936,7 +4975,7 @@ fields:
       options: null
       readonly: false
       required: false
-      sort: 22
+      sort: 23
       special:
         - cast-boolean
       translations: null
@@ -4981,7 +5020,7 @@ fields:
       translations: null
       validation: null
       validation_message: null
-      width: full
+      width: half
     schema:
       name: junior_price
       table: events
@@ -5014,7 +5053,7 @@ fields:
       options: null
       readonly: false
       required: false
-      sort: 34
+      sort: 35
       special: null
       translations: null
       validation: null
@@ -5052,7 +5091,7 @@ fields:
       options: null
       readonly: false
       required: false
-      sort: 23
+      sort: 24
       special: null
       translations: null
       validation: null
@@ -5091,7 +5130,7 @@ fields:
         enableCreate: false
       readonly: false
       required: false
-      sort: 30
+      sort: 31
       special:
         - m2m
       translations: null
@@ -5152,7 +5191,7 @@ fields:
       options: null
       readonly: false
       required: false
-      sort: 28
+      sort: 29
       special: null
       translations: null
       validation: null
@@ -5190,12 +5229,12 @@ fields:
       options: null
       readonly: false
       required: false
-      sort: 19
+      sort: 20
       special: null
       translations: null
       validation: null
       validation_message: null
-      width: full
+      width: half
     schema:
       name: member_price
       table: events
@@ -5228,7 +5267,7 @@ fields:
       options: null
       readonly: false
       required: false
-      sort: 39
+      sort: 40
       special: null
       translations: null
       validation: null
@@ -5242,6 +5281,44 @@ fields:
       max_length: null
       numeric_precision: 32
       numeric_scale: 0
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: events
+    field: non_member_junior_price
+    type: float
+    meta:
+      collection: events
+      conditions: null
+      display: null
+      display_options: null
+      field: non_member_junior_price
+      group: null
+      hidden: false
+      interface: input
+      note: null
+      options: null
+      readonly: false
+      required: false
+      sort: 19
+      special: null
+      translations: null
+      validation: null
+      validation_message: null
+      width: half
+    schema:
+      name: non_member_junior_price
+      table: events
+      data_type: real
+      default_value: null
+      max_length: null
+      numeric_precision: 24
+      numeric_scale: null
       is_nullable: true
       is_unique: false
       is_primary_key: false
@@ -5271,7 +5348,7 @@ fields:
       translations: null
       validation: null
       validation_message: null
-      width: full
+      width: half
     schema:
       name: non_member_price
       table: events
@@ -5279,6 +5356,45 @@ fields:
       default_value: null
       max_length: null
       numeric_precision: 24
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: events
+    field: one_time_payment
+    type: boolean
+    meta:
+      collection: events
+      conditions: null
+      display: null
+      display_options: null
+      field: one_time_payment
+      group: null
+      hidden: false
+      interface: boolean
+      note: null
+      options: null
+      readonly: false
+      required: false
+      sort: 45
+      special:
+        - cast-boolean
+      translations: null
+      validation: null
+      validation_message: null
+      width: half
+    schema:
+      name: one_time_payment
+      table: events
+      data_type: boolean
+      default_value: null
+      max_length: null
+      numeric_precision: null
       numeric_scale: null
       is_nullable: true
       is_unique: false
@@ -5311,7 +5427,7 @@ fields:
             value: coached_paddle
       readonly: false
       required: false
-      sort: 42
+      sort: 43
       special: null
       translations: null
       validation: null
@@ -5350,7 +5466,7 @@ fields:
         enableCreate: false
       readonly: false
       required: false
-      sort: 25
+      sort: 26
       special:
         - m2o
       translations: null
@@ -5374,6 +5490,44 @@ fields:
       foreign_key_table: events
       foreign_key_column: id
   - collection: events
+    field: payment_reference
+    type: string
+    meta:
+      collection: events
+      conditions: null
+      display: null
+      display_options: null
+      field: payment_reference
+      group: null
+      hidden: false
+      interface: input
+      note: null
+      options: null
+      readonly: false
+      required: false
+      sort: 44
+      special: null
+      translations: null
+      validation: null
+      validation_message: null
+      width: half
+    schema:
+      name: payment_reference
+      table: events
+      data_type: character varying
+      default_value: null
+      max_length: 255
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: events
     field: price
     type: float
     meta:
@@ -5395,7 +5549,7 @@ fields:
       translations: null
       validation: null
       validation_message: null
-      width: full
+      width: half
     schema:
       name: price
       table: events
@@ -5468,7 +5622,7 @@ fields:
         template: '{{title}}'
       readonly: false
       required: false
-      sort: 32
+      sort: 33
       special:
         - m2o
       translations: null
@@ -5507,7 +5661,7 @@ fields:
       options: null
       readonly: false
       required: false
-      sort: 35
+      sort: 36
       special: null
       translations: null
       validation: null
@@ -5545,7 +5699,7 @@ fields:
       options: null
       readonly: false
       required: false
-      sort: 41
+      sort: 42
       special: null
       translations: null
       validation: null
@@ -5584,7 +5738,7 @@ fields:
         template: '{{email}}'
       readonly: false
       required: false
-      sort: 40
+      sort: 41
       special:
         - m2o
       translations: null
@@ -5623,7 +5777,7 @@ fields:
       options: null
       readonly: false
       required: false
-      sort: 33
+      sort: 34
       special: null
       translations: null
       validation: null
@@ -5944,7 +6098,7 @@ fields:
       options: null
       readonly: false
       required: false
-      sort: 31
+      sort: 32
       special:
         - cast-boolean
       translations: null
@@ -11444,7 +11598,7 @@ fields:
       options: null
       readonly: false
       required: false
-      sort: 9
+      sort: 10
       special: null
       translations: null
       validation: null
@@ -11490,6 +11644,44 @@ fields:
       width: full
     schema:
       name: payment_intent
+      table: orders
+      data_type: character varying
+      default_value: null
+      max_length: 255
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: orders
+    field: payment_reference
+    type: string
+    meta:
+      collection: orders
+      conditions: null
+      display: null
+      display_options: null
+      field: payment_reference
+      group: null
+      hidden: false
+      interface: input
+      note: null
+      options: null
+      readonly: false
+      required: false
+      sort: 9
+      special: null
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: payment_reference
       table: orders
       data_type: character varying
       default_value: null

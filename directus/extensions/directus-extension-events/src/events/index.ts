@@ -80,6 +80,10 @@ export default defineEndpoint((router, {services, database}) => {
         ]
       });
 
+      if (!event) {
+        return res.status(404).send("could not find event");
+      }
+
       const otherBookingRequired = !!event.required_event;
       let hasRequiredBooking = false;
 
@@ -132,10 +136,6 @@ export default defineEndpoint((router, {services, database}) => {
         }
       });
 
-      if (!event) {
-        return res.status(404).send("could not find event");
-      }
-
       const eventBookings = await eventBookingService
         .readByQuery({
           fields: [
@@ -180,13 +180,14 @@ export default defineEndpoint((router, {services, database}) => {
       const allowedRoles = ["committee", "administrator"];
       let bookings = [];
 
-      const userIsLeader = leaders.find(x => x.directus_users_id.id === userId);
+      const userIsLeader = leaders.find((x: any) => x.directus_users_id.id === userId);
       const isCoachAndBooked = user && user.role.name.toLowerCase() === "coach"
-                && eventBookings.some(x => x.user.id === user.id);
+                && eventBookings.some((x: any) => x.user.id === user.id);
 
       let userCanApprove = false;
-      let reviewedBy = null;
-      let reviewNotes = null;
+      let reviewedBy = undefined;
+      let reviewNotes = undefined;
+      let paidUserIds = [];
 
       if (user) {
         if (allowedRoles.includes(user.role.name.toLowerCase()) || userIsLeader || isCoachAndBooked) {
@@ -229,6 +230,38 @@ export default defineEndpoint((router, {services, database}) => {
           reviewedBy = event.reviewed_by ? `${event.reviewed_by.first_name} ${event.reviewed_by.last_name}` : undefined;
           reviewNotes = event.review_notes;
         }
+
+        if(event.one_time_payment && event.payment_reference) {
+          const ordersService = new ItemsService("orders", {
+            knex: database,
+            schema: req.schema,
+            accountability: adminAccountability
+          });
+
+          const orders = await ordersService.readByQuery({
+            filter: {
+              _and: [
+                {
+                  user: {
+                    _eq: userId
+                  }
+                },
+                {
+                  payment_reference: {
+                    _eq: event.payment_reference
+                  }
+                },
+                {
+                  status: {
+                    _eq: "paid"
+                  }
+                }
+              ]
+            }
+          });
+
+          paidUserIds = orders.map((o: any) => JSON.parse(o.metadata).booked_user);
+        }
       }
 
       return res.json({
@@ -242,7 +275,8 @@ export default defineEndpoint((router, {services, database}) => {
         requiredEventTitle,
         userCanApprove,
         reviewedBy,
-        reviewNotes
+        reviewNotes,
+        paidUserIds
       });
     } catch (e) {
       console.error("error getting event info", e);
@@ -544,15 +578,27 @@ export default defineEndpoint((router, {services, database}) => {
         accountability: req.accountability
       });
 
-
       const event = await eventsService.readOne(eventId);
+      const filter: any = {
+        _and: [
+          {
+            event: {
+              _eq: eventId
+            }
+          }
+        ]
+      };
+
+      if(instance){
+        filter._and.push({
+          instance: {
+            _eq: instance
+          }
+        });
+      }
 
       const existingBookings = await eventBookingService.readByQuery({
-        filter: {
-          event: {
-            _eq: eventId
-          }
-        }
+        filter
       });
 
       const currentBookings = existingBookings.length;

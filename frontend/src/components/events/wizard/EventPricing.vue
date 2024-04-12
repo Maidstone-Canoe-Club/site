@@ -1,5 +1,4 @@
 ﻿<script setup lang="ts">
-import { ExclamationTriangleIcon } from "@heroicons/vue/24/outline";
 // @ts-ignore
 import Dinero from "dinero.js";
 import type { EventWizardItem } from "~/components/events/wizard/EventWizard.vue";
@@ -21,6 +20,15 @@ function formatPrice (amount: number | undefined) {
   }
   return Dinero({ amount, currency: "GBP" }).toFormat("0.00");
 }
+
+watch(() => event.value.advancedPricing, () => {
+  event.value.price = undefined;
+  event.value.juniorPrice = undefined;
+  event.value.memberPrice = undefined;
+  event.value.nonMemberPrice = undefined;
+  event.value.coachPrice = undefined;
+  event.value.nonMemberJuniorPrice = undefined;
+});
 
 </script>
 
@@ -80,10 +88,20 @@ function formatPrice (amount: number | undefined) {
           id="junior-price"
           v-model="event.juniorPrice"
           placeholder="Free"
-          label="Junior price"
+          label="Member junior price"
           name="junior-price" />
         <span class="text-sm text-gray-500">
           Leave blank for the event to be free for juniors.
+        </span>
+
+        <input-currency
+          id="non-member-junior-price"
+          v-model="event.nonMemberJuniorPrice"
+          placeholder="Free"
+          label="Non-member junior price"
+          name="non-member-junior-price" />
+        <span class="text-sm text-gray-500">
+          Leave blank for the event to be free for non-member juniors.
         </span>
       </template>
 
@@ -92,6 +110,26 @@ function formatPrice (amount: number | undefined) {
           You need to choose who can join this event before setting a price.
         </p>
       </template>
+
+      <template v-if="event.occurrenceType === 'recurring'">
+        <input-toggle
+          id="one-time-payment"
+          v-model="event.oneTimePayment"
+          label="Allow one-time payment"
+          name="one-time-payment" />
+        <span class="text-sm text-gray-500">
+          If you enable one-time payments, attendees will be able to join all instances of this
+          event after they have made the one-time payment. Otherwise all instances of this
+          event will require payment.
+        </span>
+      </template>
+
+      <input-field
+        id="payment-reference"
+        v-model="event.paymentReference"
+        :required="event.oneTimePayment"
+        name="payment-reference"
+        label="Payment reference" />
     </template>
 
     <template v-else>
