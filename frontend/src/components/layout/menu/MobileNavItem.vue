@@ -52,7 +52,9 @@ defineProps<{
 
 async function onLinkClick (href: string) {
   emits("close");
-  await navigateTo(href);
+  await navigateTo(href, {
+    external: isExternal(href)
+  });
 }
 
 </script>

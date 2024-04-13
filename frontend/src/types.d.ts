@@ -44,6 +44,7 @@ export type EventType = "pool_session"
   | "meetings";
 
 export type EventAllowedRoles = "none" | "non-members" | "juniors" | "members";
+export type EventPaddleType = "led_paddle" | "peer_paddle" | "coached_paddle";
 
 export interface EventItem {
   status: "published" | "cancelled" | "draft" | "archived",
@@ -75,13 +76,12 @@ export interface EventItem {
   date_created?: string,
   rrule?: string,
   required_paddler_ability?: string,
-  is_peer_paddle: boolean,
   disclaimer?: string,
   allow_bookings_after_start?: boolean,
   min_age?: number,
   bookings?: number,
   visible_attendees?: boolean,
-  paddle_type?: "led_paddle" | "peer_paddle" | "coached_paddle",
+  paddle_type?: EventPaddleType,
   payment_reference?: string,
   one_time_payment?: boolean
 }

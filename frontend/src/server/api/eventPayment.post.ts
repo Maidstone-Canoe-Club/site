@@ -91,33 +91,43 @@ export default defineEventHandler(async (event) => {
       let isJunior = false;
       const role = user.role.name.toLowerCase();
 
-      if (role === "junior") {
-        isJunior = true;
-        if (eventItem.non_member_junior_price) {
-          if (user.bc_number) {
-            name += " (Junior member)";
-            price = eventItem.junior_price;
+      if (eventItem.advanced_pricing) {
+        if (role === "junior") {
+          isJunior = true;
+          if (eventItem.non_member_junior_price) {
+            if (user.bc_number) {
+              name += " (Junior member)";
+              price = eventItem.junior_price;
+            } else {
+              name += " (Junior non-member)";
+              price = eventItem.non_member_junior_price;
+            }
           } else {
-            name += " (Junior non-member)";
-            price = eventItem.non_member_junior_price;
+            name += " (Junior)";
+            price = eventItem.junior_price;
           }
+        } else if (role === "coach" || user.is_coach) {
+          name += " (Coach pricing)";
+          price = eventItem.coach_price;
+        } else if (role === "member" || role === "committee") {
+          name += " (Member pricing)";
+          price = eventItem.member_price;
+        } else if (role === "unapproved") {
+          name += " (Non-member pricing)";
+          price = eventItem.non_member_price;
         } else {
-          name += " (Junior)";
-          price = eventItem.junior_price;
+          console.warn(`Unhandled role when setting line item price: ${role}`);
         }
-      } else if (role === "coach" || user.is_coach) {
-        name += " (Coach pricing)";
-        price = eventItem.coach_price;
-      } else if (role === "member" || role === "committee") {
-        name += " (Member pricing)";
-        price = eventItem.member_price;
-      } else if (role === "unapproved") {
-        name += " (Non-member pricing)";
-        price = eventItem.non_member_price;
+      } else if (role === "junior") {
+        isJunior = true;
+        name += " (Junior)";
+        price = eventItem.junior_price;
+      } else {
+        price = eventItem.price;
       }
 
       if (!price || price === 0) {
-        console.log(`Zero price for user: ${user.id}`);
+        console.warn(`Zero price for user: ${user.id}`);
         continue;
       }
 
@@ -146,6 +156,10 @@ export default defineEventHandler(async (event) => {
           is_junior: isJunior
         })
       });
+    }
+
+    if (!lineItems.length) {
+      console.warn("No line items found when creating payment");
     }
 
     const orderIds = await $fetch<string[]>("/payments/orders", {

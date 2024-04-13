@@ -68,7 +68,7 @@ export const BeginnersCourseTemplate: EventWizardItem = {
   price: 6500,
   juniorPrice: 4500,
   leaders: [],
-  isPeerPaddle: false
+  paddleType: "coached_paddle"
 };
 
 export const BlankEventTemplate: EventWizardItem = {
@@ -76,6 +76,5 @@ export const BlankEventTemplate: EventWizardItem = {
   location: "Maidstone Canoe Club",
   allowedRoles: [],
   leaders: [],
-  isPeerPaddle: true,
   oneTimePayment: false
 };

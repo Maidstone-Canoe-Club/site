@@ -141,7 +141,7 @@ const canChangeLeaders = computed(() => {
     <user-search
       v-show="canChangeLeaders"
       v-model="event.leaders"
-      :label="event.isPeerPaddle ? 'Event organiser(s)' : 'Event leader(s)'"
+      :label="event.paddleType === 'peer_paddle' ? 'Event organiser(s)' : 'Event leader(s)'"
       placeholder="Start typing the name of a club member"
       multiple />
 

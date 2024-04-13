@@ -50,7 +50,6 @@ export type EventWizardItem = {
   rrule?: string,
   occurrenceType?: OccurrenceType,
   requiredPaddlerAbility?: string,
-  isPeerPaddle: boolean,
   disclaimer?: string,
   allowBookingsAfterStart?: boolean,
   minAge?: number
@@ -259,7 +258,6 @@ function existingEventToWizardEvent (eventItem: EventItem): EventWizardItem {
     rrule: eventItem.rrule,
     occurrenceType,
     requiredPaddlerAbility: eventItem.required_paddler_ability,
-    isPeerPaddle: eventItem.is_peer_paddle,
     disclaimer: eventItem.disclaimer,
     allowBookingsAfterStart: eventItem.allow_bookings_after_start,
     minAge: eventItem.min_age,
@@ -286,7 +284,6 @@ function toNewEventItem (eventItem: EventWizardItem): NewEventItem {
     occurrenceType: eventItem.occurrenceType!,
     type: eventItem.type!,
     required_paddler_ability: eventItem.requiredPaddlerAbility,
-    is_peer_paddle: eventItem.isPeerPaddle,
     disclaimer: eventItem.disclaimer,
     allow_bookings_after_start: eventItem.allowBookingsAfterStart,
     min_age: eventItem.minAge,
@@ -343,7 +340,7 @@ async function onSubmit () {
     if (props.instance) {
       returnUrl += `?instance=${props.instance}`;
     }
-
+    console.log("return url", returnUrl);
     await navigateTo(returnUrl);
   } catch (e) {
     console.error("create event error", e);

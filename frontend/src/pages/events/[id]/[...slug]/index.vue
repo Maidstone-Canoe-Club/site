@@ -92,15 +92,24 @@
             <strong>Details</strong>
 
             <div class="mt-2 flex items-center text-sm text-gray-500">
-              <UserGroupIcon
-                v-if="event.is_peer_paddle"
-                class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400"
-                aria-hidden="true" />
-              <FlagIcon
-                v-else
-                class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400"
-                aria-hidden="true" />
-              {{ event.is_peer_paddle ? "Peer paddle" : "Led paddle" }}
+              <template v-if="event.paddle_type === 'peer_paddle'">
+                <UserGroupIcon
+                  class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400"
+                  aria-hidden="true" />
+                Peer paddle
+              </template>
+              <template v-else-if="event.paddle_type === 'led_paddle'">
+                <FlagIcon
+                  class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400"
+                  aria-hidden="true" />
+                Led paddle
+              </template>
+              <template v-else-if="event.paddle_type === 'coached_paddle'">
+                <LifebuoyIcon
+                  class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400"
+                  aria-hidden="true" />
+                Coached paddle
+              </template>
             </div>
 
             <div
@@ -161,7 +170,7 @@
           </div>
 
           <div v-if="leaders && leaders.length">
-            <strong>{{ event.is_peer_paddle ? "Organisers" : "Leaders" }}</strong>
+            <strong>{{ event.paddle_type === 'peer_paddle' ? "Organisers" : "Leaders" }}</strong>
             <ul
               class="mt-2 flex flex-col gap-2">
               <li
@@ -247,7 +256,7 @@
                 <div class="ml-3 flex-1 md:flex md:justify-between">
                   <p class="text-sm text-blue-700">
                     {{
-                      event.is_peer_paddle ? "You cannot book onto a peer paddle" : "Bookings are now closed for this event"
+                      event.paddle_type === 'peer_paddle' ? "You cannot book onto a peer paddle" : "Bookings are now closed for this event"
                     }}
                   </p>
                 </div>
@@ -314,7 +323,8 @@ import {
   EnvelopeIcon,
   ArrowDownOnSquareStackIcon,
   FlagIcon,
-  IdentificationIcon
+  IdentificationIcon,
+  LifebuoyIcon
 } from "@heroicons/vue/16/solid";
 import {
   ClipboardDocumentCheckIcon,
@@ -578,7 +588,7 @@ const sessionDates = computed(() => {
 });
 
 const canBook = computed(() => {
-  if (event.value.is_peer_paddle) {
+  if (event.value.paddle_type === "peer_paddle") {
     return false;
   }
 

@@ -99,15 +99,40 @@ const { data: options } = await useAsyncData("contact-us-options", async () => {
   });
 });
 
+const route = useRoute();
+const to = route.query.to;
+
 const turnstileOptions = {
   action: "contact-us"
 };
 
+const toOptions = [
+  "web",
+  "fun-session",
+  "committee",
+  "racing",
+  "membership",
+  "incident",
+  "beginners-course",
+  "mailing-list"
+];
+
+function getOptionFromQuery () {
+  if (to) {
+    const index = toOptions.findIndex(val => val === to.toLowerCase().trim());
+    if (index >= 0) {
+      return options.value?.[index];
+    }
+  }
+
+  return null;
+}
+
 const formData = ref({
   fromName: "",
   fromEmail: "",
-  to: null,
-  subject: "",
+  to: getOptionFromQuery() || null,
+  subject: getOptionFromQuery()?.default_subject || "",
   message: "",
   token: ""
 });
