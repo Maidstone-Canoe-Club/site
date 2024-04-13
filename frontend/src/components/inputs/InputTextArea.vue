@@ -29,7 +29,7 @@ import type { Validation } from "@vuelidate/core";
 const emits = defineEmits(["update:modelValue"]);
 
 const props = withDefaults(defineProps<{
-  modelValue: string,
+  modelValue: string | undefined,
   id: string,
   name: string,
   label: string,

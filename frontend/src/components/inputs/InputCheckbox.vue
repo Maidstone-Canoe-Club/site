@@ -1,18 +1,21 @@
 ﻿<template>
-  <div class="relative flex items-start">
-    <div class="flex h-6 items-center">
-      <input
-        :id="id"
-        v-model="internalValue"
-        :name="name"
-        type="checkbox"
-        class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
-    </div>
-    <div
-      v-if="label"
-      class="ml-3 text-sm leading-6">
-      <label :for="id" class="font-medium text-gray-900">{{ label }}</label>
-      {{ ' ' }}
+  <div>
+    <div class="relative flex items-start">
+      <div class="flex h-6 items-center">
+        <input
+          :id="id"
+          v-model="internalValue"
+          :name="name"
+          type="checkbox"
+          class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+          :class="[!isValid ? 'focus:ring-red-400 border-red-300 bg-red-50' : '']">
+      </div>
+      <div
+        v-if="label"
+        class="ml-3 text-sm leading-6">
+        <label :for="id" class="font-medium text-gray-900">{{ label }}</label>
+        {{ ' ' }}
+      </div>
     </div>
     <p
       v-if="!isValid"

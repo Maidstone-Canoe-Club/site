@@ -52,7 +52,6 @@ export type NewEventItem = {
   type: EventType,
   occurrenceType: OccurrenceType,
   required_paddler_ability?: string,
-  is_peer_paddle: boolean,
   disclaimer?: string,
   allow_bookings_after_start?: boolean,
   min_age?: number,
