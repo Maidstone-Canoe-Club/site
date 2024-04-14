@@ -69,6 +69,19 @@ const formatDate = (date: Date | number) => {
   gap: .5rem;
 }
 
+::v-deep(.dp__active_date) {
+  background-color: #4646e5;
+}
+
+::v-deep(.dp__button_bottom){
+  color: white;
+  background-color: #4646e5;
+
+  &:hover {
+    background-color: #6366f1;
+  }
+}
+
 ::v-deep(.dp__menu),
 ::v-deep(.dp__input){
   font-family: 'Karla', Arial, sans-serif;
