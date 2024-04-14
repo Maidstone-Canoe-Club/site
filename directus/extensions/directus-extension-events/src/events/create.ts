@@ -74,7 +74,7 @@ export async function create(req: any, res: any, services: any, database: any) {
 
     const newEventItem = {
       ...eventItem,
-      has_multiple: eventItem.occurrenceType === "multi",
+      has_multiple: eventItem.occurrenceType === "multi" && eventDates && eventDates.length > 1,
       is_recurring: eventItem.occurrenceType === "recurring"
     };
 
@@ -82,18 +82,18 @@ export async function create(req: any, res: any, services: any, database: any) {
 
     if (newEventItem.occurrenceType === "single") {
       id = await createSingleEvent(newEventItem, eventService);
-    } else if (newEventItem.has_multiple) {
+    } else if (newEventItem.occurrenceType === "multi") {
       if (!eventDates || !eventDates.length) {
         console.error("Cannot create multi event with no dates provided");
         return res.status(400).send("Cannot create multi event with no dates provided");
       }
 
       id = await createMultiDateEvent(newEventItem, eventDates, eventService);
-    } else if (newEventItem.is_recurring) {
+    } else if (eventItem.occurrenceType === "recurring") {
       id = await createSingleEvent(newEventItem, eventService);
     } else {
-      console.error(`Cannot create event, unknown event type: ${eventItem.occurrenceType}`);
-      return res.status(400).send("Unknown event type");
+      console.error(`Cannot create event, unknown event occurrence type: ${eventItem.occurrenceType}`);
+      return res.status(400).send("Unknown event occurrence type");
     }
 
     const mailService = new MailService({schema: req.schema, knex: database});
