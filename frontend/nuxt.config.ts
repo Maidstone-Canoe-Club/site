@@ -7,7 +7,9 @@ export default defineNuxtConfig({
   srcDir: "src/",
 
   site: {
-    url: process.env.BASE_URL
+    name: "Maidstone Canoe Club",
+    url: process.env.BASE_URL,
+    description: "Kayak, Canoe and SUP Club in Maidstone, Kent, UK"
   },
 
   runtimeConfig: {
@@ -39,7 +41,10 @@ export default defineNuxtConfig({
         lang: "en"
       },
       meta: [
-        { name: "description", content: "Maidstone Canoe Club - Kayak, Canoe and SUP Club in Maidstone, Kent, UK" },
+        { name: "og:title", content: "Maidstone Canoe Club" },
+        { name: "og:description", content: "Kayak, Canoe and SUP Club in Maidstone, Kent, UK" },
+        { name: "og:type", content: "website" },
+        { name: "og:site_name", content: "Maidstone Canoe Club" },
         { name: "apple-mobile-web-app-title", content: "Maidstone Canoe Club" },
         { name: "application-name", content: "Maidstone Canoe Club" },
         { name: "msapplication-TileColor", content: "#cbeeff" },
