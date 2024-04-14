@@ -60,15 +60,23 @@ export const BeginnersCourseTemplate: EventWizardItem = {
   location: "Maidstone Canoe Club",
   type: "beginners_course",
   occurrenceType: "multi",
-  allowedRoles: [{
-    id: "non-members",
-    name: "Non-members"
-  }],
+  allowedRoles: [
+    {
+      id: "non-members",
+      name: "Non-members"
+    },
+    {
+      id: "juniors",
+      name: "Juniors"
+    }
+  ],
   maxSpaces: 8,
   price: 6500,
   juniorPrice: 4500,
   leaders: [],
-  paddleType: "coached_paddle"
+  paddleType: "coached_paddle",
+  advancedPricing: false,
+  oneTimePayment: false
 };
 
 export const BlankEventTemplate: EventWizardItem = {
@@ -76,5 +84,6 @@ export const BlankEventTemplate: EventWizardItem = {
   location: "Maidstone Canoe Club",
   allowedRoles: [],
   leaders: [],
+  advancedPricing: false,
   oneTimePayment: false
 };

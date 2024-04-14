@@ -552,7 +552,7 @@ const sessionDates = computed(() => {
     });
   }
 
-  if (event.value?.has_multiple && childEvents.value?.length) {
+  if (event.value.has_multiple && childEvents.value?.length) {
     result = [];
     result.push({
       start: event.value.start_date,
