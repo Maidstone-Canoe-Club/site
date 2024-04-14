@@ -14,7 +14,9 @@ const props = defineProps<{
   label?: string
   hideLabel?: string
   by?: string,
-  v?: Validation | null
+  v?: Validation | null,
+  required?: boolean,
+  disabled?: boolean
 }>();
 
 const selected = defineModel<RadioGroupOption | undefined>({
@@ -42,7 +44,10 @@ const isValid = computed(() => {
     <RadioGroup
       v-model="selected"
       :by="by">
-      <RadioGroupLabel :class="[hideLabel ? 'sr-only' : 'block text-sm font-medium leading-6 text-gray-900 mb-2']">
+      <RadioGroupLabel
+        :class="[
+          hideLabel ? 'sr-only' : 'block text-sm font-medium leading-6 text-gray-900 mb-2',
+          required ? 'required' : '']">
         Paddle type
       </RadioGroupLabel>
       <div
@@ -53,7 +58,7 @@ const isValid = computed(() => {
           id="id"
           :key="option.id"
           v-slot="{ checked, active }"
-          :disabled="option.disabled"
+          :disabled="option.disabled || disabled"
           as="template"
           :value="option">
           <div
@@ -62,13 +67,14 @@ const isValid = computed(() => {
               index === options.length - 1 ? 'rounded-bl-md rounded-br-md' : '',
               checked ? 'z-9 border-indigo-200 bg-indigo-50' : 'border-gray-200',
               !isValid ? 'bg-red-50' : '',
-              'relative flex cursor-pointer border p-4 focus:outline-none',
-              option.disabled ? 'opacity-60' : '']">
+              'relative flex border p-4 focus:outline-none',
+              option.disabled || disabled ? 'opacity-60 cursor-default' : 'cursor-pointer']">
             <span
               :class="[
                 checked ? 'bg-indigo-600 border-transparent' : 'bg-white border-gray-300',
                 active ? 'ring-2 ring-offset-2 ring-indigo-600' : '',
-                'mt-0.5 h-4 w-4 shrink-0 cursor-pointer rounded-full border flex items-center justify-center']"
+                'mt-0.5 h-4 w-4 shrink-0 rounded-full border flex items-center justify-center',
+                option.disabled || disabled ? '' : 'cursor-pointer']"
               aria-hidden="true">
               <span class="rounded-full bg-white w-1.5 h-1.5" />
             </span>

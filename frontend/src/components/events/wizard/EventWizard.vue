@@ -55,7 +55,7 @@ export type EventWizardItem = {
   minAge?: number
   visibleAttendees?: boolean
   notifyUsers?: boolean,
-  paddleType?: "peer_paddle" | "led_paddle" | "coached_paddle",
+  paddleType?: "peer_paddle" | "led_paddle" | "coached_paddle" | "other",
   paymentReference?: string,
   oneTimePayment: boolean,
   advancedPricing: boolean

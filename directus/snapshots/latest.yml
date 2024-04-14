@@ -5425,6 +5425,8 @@ fields:
             value: peer_paddle
           - text: Coached Paddle
             value: coached_paddle
+          - text: Other
+            value: other
       readonly: false
       required: false
       sort: 43
@@ -5437,7 +5439,7 @@ fields:
       name: paddle_type
       table: events
       data_type: character varying
-      default_value: null
+      default_value: other
       max_length: 255
       numeric_precision: null
       numeric_scale: null
