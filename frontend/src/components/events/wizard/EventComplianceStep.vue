@@ -3,7 +3,7 @@ import { useVuelidate } from "@vuelidate/core";
 import { required, requiredIf, and, helpers } from "@vuelidate/validators";
 import type { Ref } from "vue";
 import type { EventWizardItem } from "~/components/events/wizard/EventWizard.vue";
-import type { EventPaddleType } from "~/types";
+import type { EventPaddleType, EventType } from "~/types";
 
 const props = defineProps<{
   editMode: boolean
@@ -13,6 +13,35 @@ const event = defineModel<EventWizardItem>({ required: true });
 
 const confirm = ref<boolean>(props.editMode);
 const showPreview = ref<boolean>(false);
+
+type EventTypeOption = {
+  id: EventType,
+  name: string
+}
+
+const eventTypes: EventTypeOption[] = [
+  { id: "beginners_course", name: "Beginners course" },
+  { id: "club_paddle", name: "Regular club paddle" },
+  { id: "pool_session", name: "Pool session" },
+  { id: "paddles_trips_tours", name: "Paddles, trips & tours" },
+  { id: "race_training", name: "Race training" },
+  { id: "coaching", name: "Coaching" },
+  { id: "social_event", name: "Social event" },
+  { id: "fun_session", name: "Fun session" },
+  { id: "race", name: "Race" },
+  { id: "meetings", name: "Meetings" }
+];
+
+const eventType = ref<EventTypeOption | undefined>(eventTypes.find(t => t.id === event.value.type));
+
+watch(eventType, (val) => {
+  if (val) {
+    event.value.type = val.id;
+    if (val.id === "meetings") {
+      event.value.paddleType = "other";
+    }
+  }
+}, { deep: true });
 
 function confirmIsValid () {
   if (event.value.paddleType === "peer_paddle") {
@@ -24,15 +53,12 @@ function confirmIsValid () {
 
 const rules = {
   event: {
+    type: { required },
     paddleType: { required: helpers.withMessage("You must choose a paddle type", required) }
   },
   confirm: {
     required: helpers.withMessage(
       "Must be checked in order to proceed",
-      // requiredIf(() => {
-      //   console.log("checking if", event.value.paddleType !== "peer_paddle");
-      //   return event.value.paddleType !== "peer_paddle";
-      // })
       confirmIsValid
     )
   }
@@ -42,14 +68,6 @@ const validator = useVuelidate<{ event: Ref<EventWizardItem>, confirm: Ref<boole
   event,
   confirm
 });
-
-// const isValid = computed(() => {
-//   if (event.value.paddleType === "peer_paddle") {
-//     return true;
-//   }
-//
-//   return confirm.value;
-// });
 
 watch(() => event.value.paddleType, () => {
   confirm.value = false;
@@ -87,8 +105,7 @@ watch(selectedPaddleType, (val) => {
     event.value.paddleType = undefined;
   }
 
-  // Stops the validation message appearing if the user failed to choose a paddle
-  // type
+  // Stops the validation message appearing if the user failed to choose a paddle type
   validator.value.$reset();
 }, { deep: true });
 
@@ -104,9 +121,20 @@ watch(() => event.value.paddleType, (val) => {
   <div class="space-y-6">
     <strong>Important information</strong>
 
-    <div class="space-y-2">
+    <input-dropdown
+      id="event-type"
+      v-model="eventType"
+      :options="eventTypes"
+      label="Event type"
+      required
+      :v="validator.type" />
+
+    <div
+      class="space-y-2">
       <input-radio-group
         v-model="selectedPaddleType"
+        :disabled="!eventType || eventType.id === 'meetings'"
+        :required="eventType && eventType.id !== 'meetings'"
         by="id"
         :options="paddleTypes"
         :v="validator.event.paddleType" />
