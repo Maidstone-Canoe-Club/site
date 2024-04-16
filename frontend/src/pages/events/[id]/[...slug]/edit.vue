@@ -23,7 +23,7 @@ const directus = useDirectus();
 
 const route = useRoute();
 
-const { data: events } = await useAsyncData<EventItem[]>(`event-item-${route.params.id}`, async () => {
+const { data: events } = await useAsyncData<EventItem[]>(`event-item-edit-${route.params.id}`, async () => {
   const events: EventItem[] = [];
   const event = await getItemById<EventItem | undefined>({
     collection: "events",
@@ -79,7 +79,7 @@ if (!events.value || events.value.length === 0) {
   });
 }
 
-const { data: eventInfo } = await useAsyncData(`event-info-${route.params.id}`, async () => {
+const { data: eventInfo } = await useAsyncData(`event-info-edit-${route.params.id}`, async () => {
   let url = `/events/info?eventId=${route.params.id}`;
   if (instance.value) {
     url += "&instance=" + instance.value;
