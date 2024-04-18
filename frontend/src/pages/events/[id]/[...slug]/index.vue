@@ -53,7 +53,7 @@
               :content="event.description" />
 
             <alert-box
-              v-if="event.type !== 'beginners_course'"
+              v-if="event.type !== 'beginners_course' && event.type !== 'coaching'"
               variant="info"
               heading="Disclaimer">
               <p>
