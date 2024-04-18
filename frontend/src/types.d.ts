@@ -71,6 +71,7 @@ export interface EventItem {
   event_index?: number,
   max_spaces?: number,
   allowed_roles?: EventAllowedRoles[],
+  last_booking_date?: Date,
   leaders?: string[],
   user_created?: string,
   date_created?: string,
