@@ -71,10 +71,11 @@ export const BeginnersCourseTemplate: EventWizardItem = {
     }
   ],
   maxSpaces: 8,
+  minAge: 14,
   price: 6500,
   juniorPrice: 4500,
   leaders: [],
-  paddleType: "coached_paddle",
+  paddleType: "led_paddle",
   advancedPricing: false,
   oneTimePayment: false
 };

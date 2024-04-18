@@ -1,6 +1,6 @@
 ﻿<script setup lang="ts">
 import { useVuelidate } from "@vuelidate/core";
-import { required, requiredIf, and, helpers } from "@vuelidate/validators";
+import { required, helpers } from "@vuelidate/validators";
 import type { Ref } from "vue";
 import type { EventWizardItem } from "~/components/events/wizard/EventWizard.vue";
 import type { EventPaddleType, EventType } from "~/types";
@@ -39,6 +39,10 @@ watch(eventType, (val) => {
     event.value.type = val.id;
     if (val.id === "meetings") {
       event.value.paddleType = "other";
+    } else if (val.id === "beginners_course") {
+      event.value.paddleType = "led_paddle";
+    } else {
+      event.value.paddleType = undefined;
     }
   }
 }, { deep: true });
@@ -79,7 +83,8 @@ function onPreviewDisclaimer () {
 
 type PaddleType = {
   id: EventPaddleType,
-  name: string
+  name: string,
+  description?: string
 }
 
 const paddleTypes: PaddleType[] = [
@@ -94,6 +99,11 @@ const paddleTypes: PaddleType[] = [
   {
     id: "coached_paddle",
     name: "Coached paddle"
+  },
+  {
+    id: "other",
+    name: "Other",
+    description: "Select when the event is not a paddle"
   }
 ];
 const selectedPaddleType = ref<PaddleType | undefined>(paddleTypes.find(t => t.id === event.value.paddleType));

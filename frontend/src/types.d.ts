@@ -44,7 +44,7 @@ export type EventType = "pool_session"
   | "meetings";
 
 export type EventAllowedRoles = "none" | "non-members" | "juniors" | "members";
-export type EventPaddleType = "led_paddle" | "peer_paddle" | "coached_paddle";
+export type EventPaddleType = "led_paddle" | "peer_paddle" | "coached_paddle" | "other";
 
 export interface EventItem {
   status: "published" | "cancelled" | "draft" | "archived",
