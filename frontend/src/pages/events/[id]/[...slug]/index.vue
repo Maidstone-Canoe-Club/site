@@ -486,7 +486,7 @@ async function loadInfo () {
 }
 
 if (event.value.has_multiple) {
-  const { data: events } = await useAsyncData("event-item" + event.value.id + "-children", async () => {
+  const { data: events } = await useAsyncData(`event-item-${event.value.id}-children`, async () => {
     return await getItems({
       collection: "events",
       params: {

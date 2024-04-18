@@ -21,7 +21,7 @@
 const { getItems, updateItem, createItems } = useDirectusItems();
 const user = useDirectusUser();
 
-const { data: medicalInfo } = await useAsyncData("medical-info", async () => {
+const { data: medicalInfo } = await useAsyncData(`medical-info-${user.value!.id}`, async () => {
   return await loadData();
 });
 

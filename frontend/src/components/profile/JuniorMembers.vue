@@ -66,7 +66,7 @@ const mode = ref<"create" | "edit" | null>(null);
 
 const juniorValue = ref(blankData());
 
-const { data: juniors } = await useAsyncData("juniors-" + user.value.id, async () => {
+const { data: juniors } = await useAsyncData(`juniors-${user.value!.id}`, async () => {
   return await loadData();
 });
 
@@ -76,7 +76,7 @@ async function loadData () {
       // TODO: and role === junior
       filter: {
         parent: {
-          _eq: user.value.id
+          _eq: user.value!.id
         }
       }
     }
@@ -92,7 +92,7 @@ async function onFormComplete () {
 function blankData () {
   return {
     medicalInformation: {},
-    parentId: user.value.id
+    parentId: user.value!.id
   };
 }
 
