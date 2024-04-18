@@ -112,7 +112,8 @@ function getEventSessions (event: CourseEventItem) {
       class="divide-y divide-gray-200">
       <li v-for="event in filteredEvents" :key="event.id" class="flex items-start justify-between gap-x-6 py-5">
         <div class="min-w-0 space-y-1">
-          <div class="mt-1 flex items-center gap-x-2 text-sm leading-5 text-gray-500">
+          <strong>{{ event.title }}</strong>
+          <div class="mt-1 flex items-center gap-2 flex-wrap text-sm leading-5 text-gray-500">
             <template v-if="getSessionCountLabel(event)">
               <span
                 class="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">
