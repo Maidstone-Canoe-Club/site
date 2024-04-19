@@ -120,7 +120,6 @@ const bookingCountWarning = computed(() => {
       :disabled="editMode"
       required
       enable-time-picker
-      :max-date="event.endDate"
       :v="validator.startDate" />
 
     <input-date

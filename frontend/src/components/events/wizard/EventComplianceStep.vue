@@ -48,7 +48,7 @@ watch(eventType, (val) => {
 }, { deep: true });
 
 function confirmIsValid () {
-  if (event.value.paddleType === "peer_paddle") {
+  if (event.value.paddleType === "peer_paddle" || event.value.paddleType === "other") {
     return true;
   }
 
@@ -171,7 +171,7 @@ watch(() => event.value.paddleType, (val) => {
       </div>
     </div>
 
-    <template v-if="event.paddleType && event.paddleType !== 'peer_paddle'">
+    <template v-if="event.paddleType && event.paddleType !== 'peer_paddle' && event.paddleType !== 'other'">
       <div class="space-y-2">
         <input-wysiwyg
           id="disclaimer"
