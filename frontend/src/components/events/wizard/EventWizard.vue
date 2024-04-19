@@ -108,7 +108,7 @@ const steps = computed(() => {
     }
   );
 
-  if (newEvent.value.allowedRoles.filter(x => x.id !== "none").length > 0) {
+  if (newEvent.value.allowedRoles.filter(x => x.id !== "none").length > 0 && newEvent.value.paddleType !== "peer_paddle") {
     result.push({
       id: "price",
       component: EventPricingStep
