@@ -77,14 +77,14 @@ import { format } from "date-fns";
 const user = useDirectusUser();
 const { getItems } = useDirectusItems();
 
-const { data: payments } = await useAsyncData("payment-history-" + user.value.id, async () => {
+const { data: payments } = await useAsyncData(`payment-history-${user.value!.id}`, async () => {
   const items = await getItems({
     collection: "orders",
     params: {
       sort: ["-date_created"],
       filter: {
         user: {
-          _eq: user.value.id
+          _eq: user.value!.id
         }
       }
     }

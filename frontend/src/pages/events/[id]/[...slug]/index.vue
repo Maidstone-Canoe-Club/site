@@ -53,7 +53,7 @@
               :content="event.description" />
 
             <alert-box
-              v-if="event.type !== 'beginners_course'"
+              v-if="event.type !== 'beginners_course' && event.type !== 'coaching'"
               variant="info"
               heading="Disclaimer">
               <p>
@@ -486,7 +486,7 @@ async function loadInfo () {
 }
 
 if (event.value.has_multiple) {
-  const { data: events } = await useAsyncData("event-item" + event.value.id + "-children", async () => {
+  const { data: events } = await useAsyncData(`event-item-${event.value.id}-children`, async () => {
     return await getItems({
       collection: "events",
       params: {

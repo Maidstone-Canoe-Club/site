@@ -272,18 +272,24 @@ function getPriceForUser (user: any) {
   }
 
   const isJunior = hasExactRole(user, "junior");
-  if (isJunior) {
-    if (props.nonMemberJuniorPrice) {
-      amount = user.bc_number ? props.juniorPrice : props.nonMemberJuniorPrice;
-    } else {
-      amount = props.juniorPrice;
+  if (props.event.advanced_pricing) {
+    if (isJunior) {
+      if (props.nonMemberJuniorPrice) {
+        amount = user.bc_number ? props.juniorPrice : props.nonMemberJuniorPrice;
+      } else {
+        amount = props.juniorPrice;
+      }
+    } else if (hasExactRole(user, "coach") || user.is_coach) {
+      amount = props.coachPrice;
+    } else if (hasExactRole(user, "member") || hasExactRole(user, "committee")) {
+      amount = props.memberPrice;
+    } else if (hasExactRole(user, "unapproved")) {
+      amount = props.nonMemberPrice;
     }
-  } else if (hasExactRole(user, "coach") || user.is_coach) {
-    amount = props.coachPrice;
-  } else if (hasRole(user, "member")) {
-    amount = props.memberPrice;
-  } else if (hasRole(user, "unapproved")) {
-    amount = props.nonMemberPrice;
+  } else if (isJunior) {
+    amount = props.juniorPrice;
+  } else {
+    amount = props.price;
   }
 
   return amount;

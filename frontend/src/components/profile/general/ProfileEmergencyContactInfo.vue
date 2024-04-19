@@ -21,7 +21,7 @@
 const { getItems, createItems, deleteItems, updateItem } = useDirectusItems();
 const user = useDirectusUser();
 
-const { data: contacts } = await useAsyncData("emergency-contacts", async () => {
+const { data: contacts } = await useAsyncData(`emergency-contacts-${user.value!.id}`, async () => {
   return await loadData();
 });
 

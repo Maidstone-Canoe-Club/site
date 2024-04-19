@@ -108,7 +108,7 @@ const steps = computed(() => {
     }
   );
 
-  if (newEvent.value.allowedRoles.filter(x => x.id !== "none").length > 0) {
+  if (newEvent.value.allowedRoles.filter(x => x.id !== "none").length > 0 && newEvent.value.paddleType !== "peer_paddle") {
     result.push({
       id: "price",
       component: EventPricingStep
@@ -245,7 +245,7 @@ function existingEventToWizardEvent (eventItem: EventItem): EventWizardItem {
     leaders: eventItem.leaders ? eventItem.leaders.map((l: any) => l.directus_users_id) : [],
     startDate: new Date(eventItem.start_date),
     endDate: new Date(eventItem.end_date),
-    lastBookingDate: undefined,
+    lastBookingDate: eventItem.last_booking_date,
     lastOccurrence: eventItem.last_occurence ? new Date(eventItem.last_occurence) : undefined,
     memberPrice: eventItem.member_price,
     nonMemberPrice: eventItem.non_member_price,

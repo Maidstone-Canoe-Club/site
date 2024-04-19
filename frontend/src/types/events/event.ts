@@ -1,4 +1,6 @@
-﻿export type EventType = "pool_session"
+﻿import type { EventPaddleType } from "~/types";
+
+export type EventType = "pool_session"
   | "club_paddle"
   | "race_training"
   | "coaching"
@@ -63,7 +65,7 @@ export type NewEventItem = {
   member_price?: number,
   non_member_price?: number,
   non_member_junior_price?: number,
-  paddle_type?: "led_paddle" | "coached_paddle" | "peer_paddle",
+  paddle_type?: EventPaddleType,
   payment_reference?: string,
   one_time_payment?: boolean,
   advanced_pricing?: boolean
