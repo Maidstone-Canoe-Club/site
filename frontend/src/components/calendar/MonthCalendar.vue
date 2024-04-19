@@ -125,7 +125,7 @@ function generateDays (): CalendarDay[] {
     date: format(date, "yyy-MM-dd"),
     isCurrentMonth: getMonth(date) === store.month,
     isToday: isToday(date),
-    isSelected: false,
+    isSelected: isToday(date),
     events: getEventsForDate(date)
   }));
 }
@@ -326,11 +326,21 @@ function formatDate (input: Date | string) {
               v-for="(day, daySmallIndex) in days"
               :key="daySmallIndex"
               type="button"
-              :class="[day.isCurrentMonth ? 'bg-white' : 'bg-gray-50', (day.isSelected || day.isToday) && 'font-semibold', day.isSelected && 'text-white', !day.isSelected && day.isToday && 'text-indigo-600', !day.isSelected && day.isCurrentMonth && !day.isToday && 'text-gray-900', !day.isSelected && !day.isCurrentMonth && !day.isToday && 'text-gray-500', 'flex h-14 flex-col px-3 py-2 hover:bg-gray-100 focus:z-10']"
+              :class="[
+                day.isCurrentMonth ? 'bg-white' : 'bg-gray-50',
+                (day.isSelected || day.isToday) && 'font-semibold',
+                day.isSelected && 'text-white',
+                !day.isSelected && day.isToday && 'text-indigo-600',
+                !day.isSelected && day.isCurrentMonth && !day.isToday && 'text-gray-900',
+                !day.isSelected && !day.isCurrentMonth && !day.isToday && 'text-gray-500',
+                'flex h-14 flex-col px-3 py-2 hover:bg-gray-100 focus:z-10']"
               @click="selectDay(day)">
               <time
                 :datetime="day.date"
-                :class="[day.isSelected && 'flex h-6 w-6 items-center justify-center rounded-full', day.isSelected && day.isToday && 'bg-indigo-600', day.isSelected && !day.isToday && 'bg-gray-900', 'ml-auto']">
+                :class="[
+                  day.isToday && 'bg-indigo-600 text-white',
+                  day.isSelected && !day.isToday && 'bg-gray-900',
+                  'flex h-6 w-6 items-center justify-center rounded-full ml-auto']">
                 {{ day.date.split('-').pop()?.replace(/^0/, '') }}
               </time>
               <span class="sr-only">{{ day.events.length }} events</span>
