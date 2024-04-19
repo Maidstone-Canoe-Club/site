@@ -170,7 +170,7 @@
           </div>
 
           <div v-if="leaders && leaders.length">
-            <strong>{{ event.paddle_type === 'peer_paddle' ? "Organisers" : "Leaders" }}</strong>
+            <strong>{{ event.paddle_type === 'peer_paddle' || event.paddle_type === 'other' ? "Organisers" : "Leaders" }}</strong>
             <ul
               class="mt-2 flex flex-col gap-2">
               <li
