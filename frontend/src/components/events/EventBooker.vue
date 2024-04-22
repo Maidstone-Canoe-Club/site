@@ -104,7 +104,7 @@ function onShowCheckin () {
   openCheckinModal.value = true;
 }
 
-const { data: juniors } = await useAsyncData(`juniors-bookings-${user.value.id}`, async () => {
+const { data: juniors } = await useAsyncData(`juniors-bookings-${user.value?.id}`, async () => {
   return await loadJuniors();
 });
 
