@@ -194,7 +194,7 @@ function viewInfo (index: number) {
                 </div>
 
                 <alert-box
-                  heading="Please confirm the above is correct"
+                  heading="Please confirm the info above is correct"
                   variant="info"
                   class="mt-4">
                   <slot name="alert">
