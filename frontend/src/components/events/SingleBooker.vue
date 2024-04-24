@@ -22,21 +22,13 @@
       </div>
     </template>
     <template v-else-if="!alreadyBooked">
-      <form
+      <a-button
         v-if="hasPrice"
-        :action="paymentUrl"
-        method="POST">
-        <input
-          id="userIds"
-          type="hidden"
-          :value="user.id"
-          name="userIds">
-        <button
-          type="submit"
-          class="w-full rounded-md bg-indigo-600 px-2.5 py-3 font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-          {{ payNowLabel }}
-        </button>
-      </form>
+        :action="onTryBookNow"
+        class="w-full font-semibold px-2.5 py-3"
+        hide-loader>
+        {{ payNowLabel }}
+      </a-button>
       <custom-button
         v-else
         class="w-full font-semibold px-2.5 py-3"
@@ -113,6 +105,30 @@
       </TransitionRoot>
 
       <event-disclaimer-modal
+        v-if="hasPrice"
+        v-model:open="openDisclaimerModal"
+        v-model:medical-consent="medicalConsent"
+        v-model:photography-consent="photographyConsent"
+        :event="event"
+        :confirm-action="onBookNow">
+        <form
+          class="inline-flex w-full sm:col-start-2"
+          :action="paymentUrl"
+          method="POST">
+          <input
+            id="userIds"
+            type="hidden"
+            :value="user.id"
+            name="userIds">
+          <a-button
+            type="submit"
+            class="w-full">
+            {{ payNowLabel }}
+          </a-button>
+        </form>
+      </event-disclaimer-modal>
+      <event-disclaimer-modal
+        v-else
         v-model:open="openDisclaimerModal"
         v-model:medical-consent="medicalConsent"
         v-model:photography-consent="photographyConsent"
