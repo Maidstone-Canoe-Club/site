@@ -40,7 +40,7 @@ export type Variant = "warning" | "error" | "success" | "info";
 
 interface IProps {
   variant?: Variant,
-  heading: string,
+  heading?: string,
 }
 
 interface IVariant {
@@ -53,7 +53,7 @@ interface IVariant {
 
 const props = withDefaults(defineProps<IProps>(), {
   variant: "warning",
-  headingText: undefined
+  heading: undefined
 });
 
 const variants: Record<Variant, IVariant> = {

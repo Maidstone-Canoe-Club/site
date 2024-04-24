@@ -148,6 +148,11 @@
       </Dialog>
     </TransitionRoot>
 
+    <medical-info-modal
+      v-model:open="openMedicalInfoModal"
+      :users="usersToBook"
+      @continue="onMedicalInfoConfirmed" />
+
     <event-disclaimer-modal
       v-if="usePaymentForm"
       v-model:open="openDisclaimerModal"
@@ -225,6 +230,8 @@ const directus = useDirectus();
 
 const openResultModal = ref(false);
 const openDisclaimerModal = ref(false);
+const openMedicalInfoModal = ref(false);
+
 const bookingSuccess = ref(true);
 const bookingResults = ref(null);
 
@@ -245,6 +252,11 @@ const canBookNonJuniors = computed(() => {
 
   return false;
 });
+
+function onMedicalInfoConfirmed () {
+  openMedicalInfoModal.value = false;
+  openDisclaimerModal.value = true;
+}
 
 const totalPrice = computed(() => {
   let total = 0;
@@ -381,7 +393,8 @@ function userAlreadyBooked (id) {
 }
 
 function onTryBookNow () {
-  openDisclaimerModal.value = true;
+  openMedicalInfoModal.value = true;
+  // openDisclaimerModal.value = true;
 }
 
 async function onBookNow () {
