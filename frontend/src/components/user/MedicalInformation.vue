@@ -3,7 +3,7 @@
     <h3
       v-if="!hideHeading"
       class="font-bold text-xl">
-      Medical information
+      {{ heading || "Medical information" }}
     </h3>
     <div class="flex flex-col gap-1">
       <span class="block text-sm font-medium leading-6 text-gray-900">
@@ -47,13 +47,15 @@
 <script setup lang="ts">
 
 export type MedicalInformation = {
+  id?: string,
   hasData: boolean,
   allergies: boolean,
   asthma: boolean,
   epilepsy: boolean,
   diabetes: boolean,
   other: boolean,
-  details?: string
+  details?: string,
+  user?: string
 }
 
 const emits = defineEmits(["update:modelValue"]);
@@ -61,10 +63,12 @@ const emits = defineEmits(["update:modelValue"]);
 const props = withDefaults(defineProps<{
   checkboxesLabel?: string,
   modelValue: MedicalInformation
-  hideHeading?: boolean
+  hideHeading?: boolean,
+  heading?: string
 }>(), {
   checkboxesLabel: "Do you have any of the following:",
-  hideHeading: false
+  hideHeading: false,
+  heading: undefined
 });
 
 const internalValue = ref<MedicalInformation>({

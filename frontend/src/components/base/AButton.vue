@@ -7,7 +7,7 @@
     :type="type"
     :class="buttonClass"
     class="relative"
-    :disabled="props.disabled || internalLoading"
+    :disabled="internalDisabled || internalLoading"
     @click="onClick">
     <slot />
     <transition
@@ -57,7 +57,8 @@ const props = withDefaults(defineProps<{
   action?:(() => Promise<any>) | (() => void),
   loading?: boolean
   keepLoading?: boolean,
-  hideLoader?: boolean
+  hideLoader?: boolean,
+  disableTimeoutMs?: number
 }>(), {
   variant: "primary",
   size: "md",
@@ -69,8 +70,11 @@ const props = withDefaults(defineProps<{
   action: undefined,
   loading: false,
   keepLoading: false,
-  hideLoader: false
+  hideLoader: false,
+  disableTimeoutMs: undefined
 });
+
+const internalDisabled = ref(props.disabled || !!props.disableTimeoutMs);
 
 const internalLoading = ref(false);
 
@@ -102,8 +106,8 @@ const buttonClass = computed(() => {
   const variant = variantsMapping[props.variant];
   const size = sizesMapping[props.size];
   const disabledClasses = [
-    props.disabled ? "opacity-50" : "",
-    internalLoading.value || props.disabled ? "cursor-not-allowed" : ""
+    internalDisabled.value ? "opacity-50" : "",
+    internalLoading.value || internalDisabled.value ? "cursor-not-allowed" : ""
   ];
 
   return [
@@ -133,4 +137,13 @@ async function onClick () {
     }
   }
 }
+
+onMounted(() => {
+  if (props.disableTimeoutMs && props.disableTimeoutMs > 0) {
+    setTimeout(() => {
+      internalDisabled.value = false;
+    }, props.disableTimeoutMs);
+  }
+});
+
 </script>

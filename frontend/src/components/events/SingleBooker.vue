@@ -104,6 +104,11 @@
         </Dialog>
       </TransitionRoot>
 
+      <medical-info-modal
+        v-model:open="openMedicalInfoModal"
+        :users="[user]"
+        @continue="onMedicalInfoConfirmed" />
+
       <event-disclaimer-modal
         v-if="hasPrice"
         v-model:open="openDisclaimerModal"
@@ -161,6 +166,7 @@ const directus = useDirectus();
 
 const openResultModal = ref(false);
 const openDisclaimerModal = ref(false);
+const openMedicalInfoModal = ref(false);
 const bookingSuccess = ref(true);
 const resultMessages = ref<string[]>([]);
 
@@ -168,6 +174,11 @@ const medicalConsent = ref(false);
 const photographyConsent = ref(false);
 
 function onTryBookNow () {
+  openMedicalInfoModal.value = true;
+}
+
+function onMedicalInfoConfirmed () {
+  openMedicalInfoModal.value = false;
   openDisclaimerModal.value = true;
 }
 
