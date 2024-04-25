@@ -66,7 +66,10 @@ export interface EventItem {
   is_recurring: boolean,
   last_occurence?: Date,
   has_multiple: boolean,
-  parent_event?: number,
+  parent_event?: {
+    id: string,
+    status: string
+  },
   event_count?: number,
   event_index?: number,
   max_spaces?: number,

@@ -20,7 +20,7 @@ export function getEventInstanceForDate (eventItem: EventItem, date: Date): numb
 }
 
 export function getEventUrl (eventItem: EventItem, date?: Date) {
-  let href = `/events/${eventItem.parent_event || eventItem.id}`;
+  let href = `/events/${eventItem.parent_event?.id || eventItem.id}`;
 
   if (eventItem.is_recurring && date) {
     const instance = getEventInstanceForDate(eventItem, date);

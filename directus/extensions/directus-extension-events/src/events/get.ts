@@ -176,8 +176,9 @@ export async function get(req: any, res: any, services: any, database: any) {
       "allowed_roles",
       "allow_booking_after_start",
       "min_age",
-      "parent_event",
-      "max_spaces"
+      "parent_event.id",
+      "parent_event.status",
+      "max_spaces",
     ];
 
     const eventsService = new ItemsService("events", {
@@ -229,6 +230,12 @@ export async function get(req: any, res: any, services: any, database: any) {
     });
 
     events = events?.filter((e: any) => {
+      if(e.parent_event){
+        if(e.parent_event.status === "cancelled"){
+          return false;
+        }
+      }
+
       if (e.is_recurring) {
         if (e.rrule) {
           const rule = RRule.fromString(e.rrule);

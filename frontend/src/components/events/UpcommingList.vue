@@ -50,7 +50,7 @@ function formatDate (event: EventItem) {
 }
 
 function getSessionCount (event: CourseEventItem) {
-  return events.value?.filter(e => e.id === event.id || e.parent_event === event.id).length ?? 0;
+  return events.value?.filter(e => e.id === event.id || (e.parent_event && e.parent_event.id === event.id)).length ?? 0;
 }
 
 function getSessionCountLabel (event: CourseEventItem) {
@@ -98,7 +98,7 @@ function getAgeLabel (event: CourseEventItem) {
 function getEventSessions (event: CourseEventItem) {
   return [
     event,
-    ...events.value!.filter(e => e.parent_event === event.id)
+    ...events.value!.filter(e => e.parent_event && e.parent_event.id === event.id)
   ];
 }
 
