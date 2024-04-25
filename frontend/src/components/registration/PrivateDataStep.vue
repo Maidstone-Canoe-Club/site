@@ -51,6 +51,7 @@
 
         <emergency-contact-information
           v-model="internalEmergencyContacts"
+          add-button-label="Add"
           :show-validation="showContactsValidation"
           class="mt-6" />
       </div>
