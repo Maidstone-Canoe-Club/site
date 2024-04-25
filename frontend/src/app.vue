@@ -45,6 +45,14 @@ const isRandomCheck = ref(false);
 const showMedicalInfoModal = ref(false);
 
 onMounted(() => {
+  tryMedicalInfoCheck();
+});
+
+watch(user, () => {
+  tryMedicalInfoCheck();
+});
+
+function tryMedicalInfoCheck () {
   if (user.value) {
     // There is a 0.5% chance to show the medical info confirmation check when a logged-in user visits
     // the site. If the last medical check was over 60 days ago, there a chance to show the
@@ -75,7 +83,7 @@ onMounted(() => {
       }
     }
   }
-});
+}
 
 </script>
 
