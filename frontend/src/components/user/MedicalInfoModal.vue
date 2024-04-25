@@ -60,6 +60,16 @@ async function loadData () {
     const result = await getItems<MedicalInformation>({
       collection: "medical_info",
       params: {
+        fields: [
+          "id",
+          "user",
+          "allergies",
+          "asthma",
+          "details",
+          "diabetes",
+          "epilepsy",
+          "other"
+        ],
         filter: {
           user: {
             _in: userIds
