@@ -45,11 +45,11 @@ const isRandomCheck = ref(false);
 const showMedicalInfoModal = ref(false);
 
 onMounted(() => {
-  tryMedicalInfoCheck();
+  // tryMedicalInfoCheck();
 });
 
 watch(user, () => {
-  tryMedicalInfoCheck();
+  // tryMedicalInfoCheck();
 });
 
 function tryMedicalInfoCheck () {
