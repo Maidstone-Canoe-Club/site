@@ -74,7 +74,8 @@ const props = withDefaults(defineProps<{
   disableTimeoutMs: undefined
 });
 
-const internalDisabled = ref(props.disabled || !!props.disableTimeoutMs);
+const isDisabled = ref(!!props.disableTimeoutMs);
+const internalDisabled = computed(() => props.disabled || isDisabled.value);
 
 const internalLoading = ref(false);
 
@@ -141,7 +142,7 @@ async function onClick () {
 onMounted(() => {
   if (props.disableTimeoutMs && props.disableTimeoutMs > 0) {
     setTimeout(() => {
-      internalDisabled.value = false;
+      isDisabled.value = false;
     }, props.disableTimeoutMs);
   }
 });
