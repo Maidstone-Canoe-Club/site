@@ -173,9 +173,14 @@ const resultMessages = ref<string[]>([]);
 const medicalConsent = ref(false);
 const photographyConsent = ref(false);
 
+const betaTester = useBetaTester();
+
 function onTryBookNow () {
-  // openMedicalInfoModal.value = true;
-  openDisclaimerModal.value = true;
+  if (betaTester.value) {
+    openMedicalInfoModal.value = true;
+  } else {
+    openDisclaimerModal.value = true;
+  }
 }
 
 function onMedicalInfoConfirmed () {

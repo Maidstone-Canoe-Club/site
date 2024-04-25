@@ -392,9 +392,14 @@ function userAlreadyBooked (id) {
   return !!props.currentBookings.find(x => x.user.id === id);
 }
 
+const betaTester = useBetaTester();
+
 function onTryBookNow () {
-  // openMedicalInfoModal.value = true;
-  openDisclaimerModal.value = true;
+  if (betaTester.value) {
+    openMedicalInfoModal.value = true;
+  } else {
+    openDisclaimerModal.value = true;
+  }
 }
 
 async function onBookNow () {
