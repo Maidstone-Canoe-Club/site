@@ -393,8 +393,8 @@ function userAlreadyBooked (id) {
 }
 
 function onTryBookNow () {
-  openMedicalInfoModal.value = true;
-  // openDisclaimerModal.value = true;
+  // openMedicalInfoModal.value = true;
+  openDisclaimerModal.value = true;
 }
 
 async function onBookNow () {

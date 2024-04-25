@@ -174,7 +174,8 @@ const medicalConsent = ref(false);
 const photographyConsent = ref(false);
 
 function onTryBookNow () {
-  openMedicalInfoModal.value = true;
+  // openMedicalInfoModal.value = true;
+  openDisclaimerModal.value = true;
 }
 
 function onMedicalInfoConfirmed () {
