@@ -7,6 +7,9 @@
         add-button-label="Add" />
     </div>
     <div class="flex items-center justify-end gap-x-6 border-t border-gray-900/10 px-4 py-4 sm:px-8">
+      <span
+        v-if="status"
+        class="text-sm">{{ status }}</span>
       <a-button
         type="submit"
         :action="onSave">
@@ -25,6 +28,7 @@ const { data: contacts } = await useAsyncData(`emergency-contacts-${user.value!.
   return await loadData();
 });
 
+const status = ref<string>();
 const showContactsValidation = ref(false);
 
 async function loadData () {
@@ -51,6 +55,12 @@ async function onSave () {
   }
 
   try {
+    await new Promise<void>((resolve) => {
+      setTimeout(() => {
+        resolve();
+      }, 500);
+    });
+
     const toAdd = [];
     const toRemove = [];
     const toUpdate = [];
@@ -91,7 +101,10 @@ async function onSave () {
         });
       }
     }
-
+    status.value = "Saved!";
+    setTimeout(() => {
+      status.value = undefined;
+    }, 3000);
     if (toAdd.length || toRemove.length || toUpdate.length) {
       await loadData();
     } else {
@@ -99,6 +112,10 @@ async function onSave () {
     }
   } catch (e) {
     console.error("error saving emergency contacts", e);
+    status.value = "Unable to save emergency contacts";
+    setTimeout(() => {
+      status.value = undefined;
+    }, 3000);
   }
 }
 

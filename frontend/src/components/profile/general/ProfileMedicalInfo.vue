@@ -7,11 +7,14 @@
         hide-heading />
     </div>
     <div class="flex items-center justify-end gap-x-6 border-t border-gray-900/10 px-4 py-4 sm:px-8">
-      <custom-button
-        type="submit"
-        :action="onSave">
+      <span
+        v-if="status"
+        class="text-sm">{{ status }}</span>
+      <a-button
+        :action="onSave"
+        type="submit">
         Save
-      </custom-button>
+      </a-button>
     </div>
   </div>
 </template>
@@ -24,6 +27,8 @@ const user = useDirectusUser();
 const { data: medicalInfo } = await useAsyncData(`medical-info-${user.value!.id}`, async () => {
   return await loadData();
 });
+
+const status = ref<string>();
 
 async function loadData () {
   const items = await getItems({
@@ -42,6 +47,12 @@ async function loadData () {
 
 async function onSave () {
   try {
+    await new Promise<void>((resolve) => {
+      setTimeout(() => {
+        resolve();
+      }, 500);
+    });
+
     const toSave = {
       allergies: medicalInfo.value.allergies,
       asthma: medicalInfo.value.asthma,
@@ -66,9 +77,17 @@ async function onSave () {
       });
     }
 
+    status.value = "Saved!";
+    setTimeout(() => {
+      status.value = undefined;
+    }, 3000);
     await loadData();
   } catch (e) {
     console.error("error updating medical information", e);
+    status.value = "Unable to save medical info";
+    setTimeout(() => {
+      status.value = undefined;
+    }, 3000);
   }
 }
 

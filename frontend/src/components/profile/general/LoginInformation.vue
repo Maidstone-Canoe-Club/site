@@ -35,11 +35,14 @@
       </div>
     </div>
     <div class="flex items-center justify-end gap-x-6 border-t border-gray-900/10 px-4 py-4 sm:px-8">
-      <custom-button
+      <span
+        v-if="status"
+        class="text-sm">{{ status }}</span>
+      <a-button
         type="submit"
         :action="onSave">
         Save
-      </custom-button>
+      </a-button>
     </div>
   </form>
 </template>
@@ -50,11 +53,19 @@ const user = useDirectusUser();
 const { updateUser } = useDirectusUsers();
 const { fetchUser } = useDirectusAuth();
 
+const status = ref<string>();
+
 const newPassword = ref("");
 const confirmPassword = ref("");
 
 async function onSave () {
   try {
+    await new Promise<void>((resolve) => {
+      setTimeout(() => {
+        resolve();
+      }, 500);
+    });
+
     const userToSave = {
       email: user.value!.email
     };
@@ -67,9 +78,19 @@ async function onSave () {
       id: user.value!.id,
       user: userToSave
     });
+
+    status.value = "Saved!";
+    setTimeout(() => {
+      status.value = undefined;
+    }, 3000);
+
     await fetchUser();
   } catch (e) {
     console.error("error updating login information", e);
+    status.value = "Unable to save login information";
+    setTimeout(() => {
+      status.value = undefined;
+    }, 3000);
   }
 }
 
