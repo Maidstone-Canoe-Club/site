@@ -392,14 +392,11 @@ function userAlreadyBooked (id) {
   return !!props.currentBookings.find(x => x.user.id === id);
 }
 
-const betaTester = useBetaTester();
+const route = useRoute();
 
 function onTryBookNow () {
-  if (betaTester.value) {
-    openMedicalInfoModal.value = true;
-  } else {
-    openDisclaimerModal.value = true;
-  }
+  umTrackEvent("check-medical-info", { page: route.fullPath });
+  openMedicalInfoModal.value = true;
 }
 
 async function onBookNow () {

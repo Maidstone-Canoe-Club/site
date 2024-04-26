@@ -39,20 +39,22 @@ import { differenceInDays } from "date-fns";
 provideUseId(() => useId());
 
 const user = useDirectusUser();
+const { updateUser } = useDirectusUsers();
 const key = computed(() => user.value?.id || "");
 
 const isRandomCheck = ref(false);
 const showMedicalInfoModal = ref(false);
+const route = useRoute();
 
 onMounted(() => {
-  // tryMedicalInfoCheck();
+  tryMedicalInfoCheck();
 });
 
 watch(user, () => {
-  // tryMedicalInfoCheck();
+  tryMedicalInfoCheck();
 });
 
-function tryMedicalInfoCheck () {
+async function tryMedicalInfoCheck () {
   if (user.value) {
     // There is a 0.5% chance to show the medical info confirmation check when a logged-in user visits
     // the site. If the last medical check was over 60 days ago, there a chance to show the
@@ -60,11 +62,10 @@ function tryMedicalInfoCheck () {
 
     if (Math.random() < 0.005) {
       isRandomCheck.value = true;
-      showMedicalInfoModal.value = true;
-      umTrackEvent("check-medical-info");
-      window.localStorage.setItem("last-med-check", new Date().toISOString());
+      showMedCheck();
+      await updateLastMedCheck();
     } else {
-      const lastMedicalCheck = window.localStorage.getItem("last-med-check");
+      const lastMedicalCheck = user.value.last_med_check;
       if (lastMedicalCheck) {
         const lastCheck = new Date(lastMedicalCheck);
 
@@ -73,16 +74,40 @@ function tryMedicalInfoCheck () {
           const daysOver = diff - 60;
           const chance = 0.1 + (daysOver * 0.1);
           if (Math.random() < chance) {
-            showMedicalInfoModal.value = true;
-            umTrackEvent("check-medical-info");
-            window.localStorage.setItem("last-med-check", new Date().toISOString());
+            showMedCheck();
+            await updateLastMedCheck();
           }
         }
       } else {
-        window.localStorage.setItem("last-med-check", new Date().toISOString());
+        showMedCheck();
+        await updateLastMedCheck();
       }
     }
   }
+}
+
+function showMedCheck () {
+  if (!user.value) {
+    return;
+  }
+
+  showMedicalInfoModal.value = true;
+  umTrackEvent("check-medical-info", { page: route.fullPath });
+  user.value.last_med_check = new Date();
+}
+
+async function updateLastMedCheck () {
+  if (!user.value) {
+    return;
+  }
+
+  user.value.last_med_check = new Date();
+  await updateUser({
+    id: user.value.id,
+    user: {
+      last_med_check: user.value.last_med_check
+    }
+  });
 }
 
 </script>
