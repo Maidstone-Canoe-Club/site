@@ -147,11 +147,14 @@
       </div>
     </div>
     <div class="flex items-center justify-end gap-x-6 border-t border-gray-900/10 px-4 py-4 sm:px-8">
-      <custom-button
+      <span
+        v-if="status"
+        class="text-sm">{{ status }}</span>
+      <a-button
         type="submit"
         :action="() => onSave('details')">
         Save
-      </custom-button>
+      </a-button>
     </div>
   </form>
 </template>
@@ -171,6 +174,8 @@ const { uploadFile } = useFileUploader();
 const directus = useDirectus();
 
 const uploadingAvatar = ref(false);
+
+const status = ref<string>();
 
 const rules = {
   first_name: { required },
@@ -227,6 +232,12 @@ async function onSave () {
 
   if (!v$.value.$invalid) {
     try {
+      await new Promise<void>((resolve) => {
+        setTimeout(() => {
+          resolve();
+        }, 500);
+      });
+
       const userToSave = {
         first_name: user.value!.first_name,
         last_name: user.value!.last_name,
@@ -244,9 +255,19 @@ async function onSave () {
         id: user.value!.id,
         user: userToSave
       });
+
+      status.value = "Saved!";
+      setTimeout(() => {
+        status.value = undefined;
+      }, 3000);
+
       await fetchUser();
     } catch (e) {
       console.error("could not save user details", e);
+      status.value = "Unable to save user details";
+      setTimeout(() => {
+        status.value = undefined;
+      }, 3000);
     }
   }
 }
