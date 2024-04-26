@@ -46,7 +46,7 @@ export default defineEndpoint((router, {services, database}) => {
       const forward = await mailForwardsService.readOne(data.to.send_to);
 
       if (!forward) {
-        return res.status(500).send("unknown mail forward");
+        return res.status(400).send("unknown mail forward");
       }
 
       const extractedForwards = await extractForwardTarget(forward.name, mailForwardsService);
