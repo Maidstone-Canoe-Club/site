@@ -117,7 +117,14 @@ async function onUpdate () {
       await updateItem({
         id: item.id!,
         collection: "medical_info",
-        item
+        item: {
+          allergies: item.allergies,
+          asthma: item.asthma,
+          diabetes: item.diabetes,
+          epilepsy: item.epilepsy,
+          other: item.other,
+          details: item.details
+        }
       });
     }
   }
