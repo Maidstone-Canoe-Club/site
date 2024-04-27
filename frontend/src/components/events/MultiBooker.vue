@@ -393,15 +393,10 @@ function userAlreadyBooked (id) {
 }
 
 const route = useRoute();
-const isBetaTester = useBetaTester();
 
 function onTryBookNow () {
-  if (isBetaTester.value) {
-    umTrackEvent("check-medical-info", { page: route.fullPath });
-    openMedicalInfoModal.value = true;
-  } else {
-    openDisclaimerModal.value = true;
-  }
+  umTrackEvent("check-medical-info", { page: route.fullPath });
+  openMedicalInfoModal.value = true;
 }
 
 async function onBookNow () {

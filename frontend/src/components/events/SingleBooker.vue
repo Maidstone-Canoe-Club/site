@@ -174,15 +174,10 @@ const medicalConsent = ref(false);
 const photographyConsent = ref(false);
 
 const route = useRoute();
-const isBetaTester = useBetaTester();
 
 function onTryBookNow () {
-  if (isBetaTester.value) {
-    umTrackEvent("check-medical-info", { page: route.fullPath });
-    openMedicalInfoModal.value = true;
-  } else {
-    openDisclaimerModal.value = true;
-  }
+  umTrackEvent("check-medical-info", { page: route.fullPath });
+  openMedicalInfoModal.value = true;
 }
 
 function onMedicalInfoConfirmed () {
