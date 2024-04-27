@@ -46,18 +46,12 @@ const isRandomCheck = ref(false);
 const showMedicalInfoModal = ref(false);
 const route = useRoute();
 
-const isBetaTester = useBetaTester();
-
 onMounted(() => {
-  if (isBetaTester.value) {
-    tryMedicalInfoCheck();
-  }
+  tryMedicalInfoCheck();
 });
 
 watch(user, () => {
-  if (isBetaTester.value) {
-    tryMedicalInfoCheck();
-  }
+  tryMedicalInfoCheck();
 });
 
 function tryMedicalInfoCheck () {

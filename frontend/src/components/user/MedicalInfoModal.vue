@@ -19,6 +19,7 @@ const {
   updateItem
 } = useDirectusItems();
 
+const user = useDirectusUser();
 const medicalInfo = ref<MedicalInformation[]>([]);
 const errorMessage = ref<string>();
 const loading = ref(false);
@@ -89,6 +90,22 @@ async function loadData () {
     } else {
       medicalInfo.value = userIds.map(id => blankMedicalInfo(id));
     }
+
+    medicalInfo.value = medicalInfo.value.sort((a, b) => {
+      const userA = props.users.find(u => u.id === a.user);
+      const userB = props.users.find(u => u.id === b.user);
+      if (userA.last_name > userB.last_name) {
+        return 1;
+      } else if (userA.last_name < userB.last_name) {
+        return -1;
+      } else if (userA.first_name > userB.first_name) {
+        return 1;
+      } else if (userA.first_name < userB.first_name) {
+        return -1;
+      } else {
+        return 0;
+      }
+    });
   } catch (err) {
     errorMessage.value = "There was an error loading your medical information, please try again later.";
     console.error("Error loading medical info");
@@ -163,6 +180,21 @@ function onErrorContinue () {
   open.value = false;
 }
 
+const singleSubHeading = computed(() => {
+  let result = "Do you have any of the following:";
+
+  const otherUser = props.users[0];
+  if (user.value!.id !== otherUser.id) {
+    result = "Does " + otherUser.first_name + " " + otherUser.last_name + " have any of the following:";
+  }
+
+  return result;
+});
+
+function isJunior (userId: string) {
+  return props.users.find(u => u.id === userId)?.role.name.toLowerCase() === "junior";
+}
+
 </script>
 
 <template>
@@ -224,16 +256,24 @@ function onErrorContinue () {
               <template v-else>
                 <div class="space-y-4">
                   <strong>
-                    {{ users.length === 1 ? "Confirm medical info" : ("Confirm medical info for " + users.length) }}
+                    {{ users.length === 1 ? "Confirm medical info" : ("Confirm medical info for " + users.length + " users") }}
                   </strong>
                   <slot />
-                  <template v-if="users.length > 1">
+                  <template v-if="medicalInfo.length > 1">
                     <div
                       v-for="(info,index) in medicalInfo"
                       :key="index"
                       class="space-y-4 border shadow rounded-lg p-4">
                       <div class="flex justify-between items-center">
-                        <p>{{ getUserLabel(info.user!) }}</p>
+                        <span class="flex items-center gap-2">
+                          <span
+                            :class="{
+                              'font-semibold': viewingInfoIndex === index
+                            }">{{ getUserLabel(info.user!) }}</span>
+                          <span
+                            v-if="isJunior(info.user!)"
+                            class="inline-flex items-center rounded-md bg-indigo-50 px-2 py-1 text-xs font-medium text-indigo-700 ring-1 ring-inset ring-indigo-700/10">Junior</span>
+                        </span>
                         <a-button
                           variant="primary"
                           size="xs"
@@ -250,6 +290,7 @@ function onErrorContinue () {
                   <div v-else>
                     <medical-information
                       v-model="medicalInfo[0]"
+                      :checkboxes-label="singleSubHeading"
                       hide-heading />
                   </div>
                 </div>
