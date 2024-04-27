@@ -2,7 +2,6 @@
   <nuxt-layout :key="key">
     <nuxt-page />
     <medical-info-modal
-      v-if="showMedicalInfoModal"
       v-model:open="showMedicalInfoModal"
       continue-label="Confirm"
       :users="[user]"

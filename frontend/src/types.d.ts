@@ -87,7 +87,8 @@ export interface EventItem {
   visible_attendees?: boolean,
   paddle_type?: EventPaddleType,
   payment_reference?: string,
-  one_time_payment?: boolean
+  one_time_payment?: boolean,
+  reviewed_by?: string
 }
 
 export interface EventBooking {
