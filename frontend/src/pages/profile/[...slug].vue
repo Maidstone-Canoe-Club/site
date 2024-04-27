@@ -32,6 +32,9 @@
             <user-details v-model="user" />
           </TabPanel>
           <TabPanel>
+            <my-events />
+          </TabPanel>
+          <TabPanel>
             <event-bookings />
           </TabPanel>
           <TabPanel>
@@ -53,7 +56,15 @@
 </template>
 
 <script setup lang="ts">
-import { CalendarDaysIcon, UserCircleIcon, UsersIcon, CreditCardIcon, EnvelopeIcon, Cog6ToothIcon } from "@heroicons/vue/24/outline";
+import {
+  CalendarDaysIcon,
+  UserCircleIcon,
+  UsersIcon,
+  CreditCardIcon,
+  EnvelopeIcon,
+  Cog6ToothIcon,
+  TicketIcon
+} from "@heroicons/vue/24/outline";
 import { useDirectusUser, definePageMeta } from "#imports";
 import { NuxtLink } from "#components";
 
@@ -81,7 +92,8 @@ const hash = ref(route.params.slug);
 const navigation = computed(() => {
   const items = [
     { name: "General", href: "/profile", icon: UserCircleIcon, current: true },
-    { name: "Event bookings", href: "/profile/events", icon: CalendarDaysIcon, current: hash.value === "events" },
+    { name: "My events", href: "/profile/my-events", icon: CalendarDaysIcon, current: hash.value === "my-events" },
+    { name: "Event bookings", href: "/profile/events", icon: TicketIcon, current: hash.value === "events" },
     { name: "Payment history", href: "/profile/payments", icon: CreditCardIcon, current: hash.value === "payments" },
     { name: "Email preferences", href: "/profile/mail", icon: EnvelopeIcon, current: hash.value === "mail" },
     { name: "Junior accounts", href: "/profile/juniors", icon: UsersIcon, current: hash.value === "juniors" }
