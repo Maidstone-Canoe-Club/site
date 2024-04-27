@@ -1,5 +1,6 @@
 ﻿<script setup lang="ts">
 import type { DirectusUser } from "nuxt-directus/dist/runtime/types";
+import { ExclamationTriangleIcon } from "@heroicons/vue/24/outline";
 import type { MedicalInformation } from "~/components/user/MedicalInformation.vue";
 
 const emits = defineEmits(["continue"]);
@@ -19,14 +20,16 @@ const {
 } = useDirectusItems();
 
 const medicalInfo = ref<MedicalInformation[]>([]);
+const errorMessage = ref<string>();
 const loading = ref(false);
 
 watch(open, async (val) => {
   if (val) {
+    errorMessage.value = undefined;
     viewingInfoIndex.value = undefined;
     await loadData();
   }
-});
+}, { immediate: true });
 
 function blankMedicalInfo (userId: string) {
   return {
@@ -87,6 +90,7 @@ async function loadData () {
       medicalInfo.value = userIds.map(id => blankMedicalInfo(id));
     }
   } catch (err) {
+    errorMessage.value = "There was an error loading your medical information, please try again later.";
     console.error("Error loading medical info");
   } finally {
     loading.value = false;
@@ -94,42 +98,53 @@ async function loadData () {
 }
 
 async function onUpdate () {
-  const toUpdate = [];
-  const toAdd = [];
-
-  for (const info of medicalInfo.value) {
-    if (info.id) {
-      toUpdate.push(info);
-    } else {
-      toAdd.push(info);
-    }
-  }
-
-  if (toAdd.length) {
-    await createItems({
-      collection: "medical_info",
-      items: toAdd
+  try {
+    await new Promise<void>((resolve) => {
+      setTimeout(() => {
+        resolve();
+      }, 750);
     });
-  }
 
-  if (toUpdate.length) {
-    for (const item of toUpdate) {
-      await updateItem({
-        id: item.id!,
+    const toUpdate = [];
+    const toAdd = [];
+
+    for (const info of medicalInfo.value) {
+      if (info.id) {
+        toUpdate.push(info);
+      } else {
+        toAdd.push(info);
+      }
+    }
+
+    if (toAdd.length) {
+      await createItems({
         collection: "medical_info",
-        item: {
-          allergies: item.allergies,
-          asthma: item.asthma,
-          diabetes: item.diabetes,
-          epilepsy: item.epilepsy,
-          other: item.other,
-          details: item.details
-        }
+        items: toAdd
       });
     }
-  }
 
-  emits("continue");
+    if (toUpdate.length) {
+      for (const item of toUpdate) {
+        await updateItem({
+          id: item.id!,
+          collection: "medical_info",
+          item: {
+            allergies: item.allergies,
+            asthma: item.asthma,
+            diabetes: item.diabetes,
+            epilepsy: item.epilepsy,
+            other: item.other,
+            details: item.details
+          }
+        });
+      }
+    }
+
+    emits("continue");
+  } catch (err: any) {
+    console.error("error saving medical info");
+    errorMessage.value = "There was an error when saving your medical information, please try again later.";
+  }
 }
 
 function onContinue () {
@@ -142,6 +157,10 @@ function viewInfo (index: number) {
   } else {
     viewingInfoIndex.value = index;
   }
+}
+
+function onErrorContinue () {
+  open.value = false;
 }
 
 </script>
@@ -172,8 +191,33 @@ function viewInfo (index: number) {
             leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
             <DialogPanel
               class="relative transform overflow-hidden w-full rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
+              <div v-if="errorMessage">
+                <div>
+                  <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-100">
+                    <ExclamationTriangleIcon class="h-6 w-6 text-red-600" aria-hidden="true" />
+                  </div>
+                  <div class="mt-3 text-center sm:mt-5">
+                    <DialogTitle as="h3" class="text-base font-semibold leading-6 text-gray-900">
+                      Confirm medical info error
+                    </DialogTitle>
+                    <div class="mt-2">
+                      <p class="text-sm text-gray-500">
+                        {{ errorMessage }}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div class="mt-5 sm:mt-6">
+                  <a-button
+                    type="button"
+                    class="inline-flex w-full"
+                    @click="onErrorContinue">
+                    Continue
+                  </a-button>
+                </div>
+              </div>
               <div
-                v-if="loading"
+                v-else-if="loading"
                 class="flex justify-center items-center p-6">
                 <loading-spinner color="#6366F1" />
               </div>
