@@ -3,10 +3,10 @@
     <nuxt-page />
     <medical-info-modal
       v-if="showMedicalInfoModal"
+      v-model:open="showMedicalInfoModal"
       continue-label="Confirm"
-      open
-      :users="[user.value]"
-      @continue="showMedicalInfoModal = false">
+      :users="[user]"
+      @continue="onMedicalInfoConfirmed">
       <div>
         <template v-if="isRandomCheck">
           🎉
@@ -60,7 +60,7 @@ watch(user, () => {
   }
 });
 
-async function tryMedicalInfoCheck () {
+function tryMedicalInfoCheck () {
   if (user.value) {
     // There is a 0.5% chance to show the medical info confirmation check when a logged-in user visits
     // the site. If the last medical check was over 60 days ago, there a chance to show the
@@ -69,7 +69,6 @@ async function tryMedicalInfoCheck () {
     if (Math.random() < 0.005) {
       isRandomCheck.value = true;
       showMedCheck();
-      await updateLastMedCheck();
     } else {
       const lastMedicalCheck = user.value.last_med_check;
       if (lastMedicalCheck) {
@@ -81,15 +80,18 @@ async function tryMedicalInfoCheck () {
           const chance = 0.1 + (daysOver * 0.1);
           if (Math.random() < chance) {
             showMedCheck();
-            await updateLastMedCheck();
           }
         }
       } else {
         showMedCheck();
-        await updateLastMedCheck();
       }
     }
   }
+}
+
+async function onMedicalInfoConfirmed () {
+  showMedicalInfoModal.value = false;
+  await updateLastMedCheck();
 }
 
 function showMedCheck () {
