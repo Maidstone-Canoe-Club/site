@@ -1,6 +1,5 @@
 ﻿<template>
   <div
-    v-if="user"
     class="relative"
     :class="sizeClass">
     <img
@@ -29,7 +28,12 @@ const props = withDefaults(defineProps<{
   sizeClass: "w-8 h-8"
 });
 
-const hasAvatar = computed(() => props.user!.avatar);
+const hasAvatar = computed(() => {
+  if (!props.user) {
+    return false;
+  }
+  return !!props.user.avatar;
+});
 const avatarUrl = computed(() => getAvatarUrl(props.user, props.imageSize));
 </script>
 
