@@ -5,7 +5,7 @@
         No junior accounts created
       </div>
       <table
-        v-else
+        v-else-if="!mode"
         class="min-w-full divide-y divide-gray-300">
         <thead>
           <tr>
@@ -38,12 +38,12 @@
           </tr>
         </tbody>
       </table>
-      <button
+      <a-button
         v-if="!mode"
-        class="mt-5 rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+        variant="primary"
         @click="addNew">
         Add new junior
-      </button>
+      </a-button>
     </div>
 
     <junior-form
@@ -51,7 +51,8 @@
       v-model="juniorValue"
       class="mt-5"
       :mode="mode"
-      @complete="onFormComplete" />
+      @complete="onFormComplete"
+      @back="onFormBack" />
   </div>
 </template>
 
@@ -97,6 +98,7 @@ function blankData () {
 }
 
 function addNew () {
+  juniorValue.value = blankData();
   mode.value = "create";
 }
 
@@ -126,6 +128,10 @@ async function edit (junior: any) {
 
 function formatDate (input: string) {
   return format(new Date(input), "do MMMM yyyy");
+}
+
+function onFormBack () {
+  mode.value = null;
 }
 
 </script>

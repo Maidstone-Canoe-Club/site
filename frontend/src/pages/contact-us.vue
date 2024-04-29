@@ -54,7 +54,9 @@
               name="mame"
               label="Message"
               :v="v$.message" />
-            <span class="text-sm text-gray-500">Max 1000 characters</span>
+            <span
+              class="text-sm"
+              :class="[charactersLeft < 0 ? 'text-red-500' : 'text-gray-500']">{{ charactersLeftLabel }}</span>
           </div>
         </div>
         <a-button
@@ -174,6 +176,17 @@ async function onSubmit () {
     }
   }
 }
+
+const charactersLeft = computed(() => 1000 - (formData.value.message?.length ?? 0));
+
+const charactersLeftLabel = computed(() => {
+  const left = charactersLeft.value;
+  if (left < 0) {
+    return `${-left} ${-left === 1 ? "character" : "characters"} over the limit`;
+  } else {
+    return `${left} ${left === 1 ? "character" : "characters"} left`;
+  }
+});
 
 </script>
 
