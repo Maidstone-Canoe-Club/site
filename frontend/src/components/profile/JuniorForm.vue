@@ -36,12 +36,25 @@
       v-model="internalValue.medicalInformation"
       checkboxes-label="Does the junior have any of the following:" />
 
-    <div class="flex">
-      <custom-button
+    <div
+      v-if="errorMessage"
+      class="text-red-500">
+      {{ errorMessage }}
+    </div>
+
+    <div class="flex gap-3">
+      <a-button
         class="whitespace-nowrap"
+        variant="primary"
         :action="submit">
         {{ mode === "edit" ? "Update junior" : "Create new junior" }}
-      </custom-button>
+      </a-button>
+
+      <a-button
+        variant="outline"
+        @click="onBack">
+        Back
+      </a-button>
     </div>
   </div>
 </template>
@@ -63,7 +76,7 @@ export type Junior = {
 
 const directus = useDirectus();
 
-const emits = defineEmits(["update:modelValue", "complete"]);
+const emits = defineEmits(["update:modelValue", "complete", "back"]);
 
 const props = defineProps<{
   modelValue: Junior,
@@ -76,6 +89,7 @@ const rules = {
   dob: { required }
 };
 
+const errorMessage = ref<string>();
 const internalValue = ref(props.modelValue);
 
 const v$: Ref<Validation> = useVuelidate(rules, internalValue);
@@ -89,17 +103,23 @@ watch(internalValue, (val) => {
 }, { deep: true });
 
 async function submit () {
+  errorMessage.value = undefined;
   v$.value.$touch();
 
   if (!v$.value.$invalid) {
-    if (props.mode === "create") {
-      await createJunior();
-    } else if (props.mode === "edit") {
-      await updateJunior();
-    }
+    try {
+      if (props.mode === "create") {
+        await createJunior();
+      } else if (props.mode === "edit") {
+        await updateJunior();
+      }
 
-    v$.value.$reset();
-    emits("complete");
+      v$.value.$reset();
+      emits("complete");
+    } catch (err: any) {
+      console.error("error saving junior");
+      errorMessage.value = `There was an error ${props.mode === "create" ? "creating" : "updating"} the junior`;
+    }
   }
 }
 
@@ -115,6 +135,10 @@ async function updateJunior () {
     method: "POST",
     body: { user: internalValue.value }
   });
+}
+
+function onBack () {
+  emits("back");
 }
 
 </script>
