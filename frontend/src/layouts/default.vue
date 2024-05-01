@@ -1,6 +1,5 @@
 ﻿<template>
   <div class="flex min-h-full flex-col bg-gray-50">
-    <nuxt-loading-indicator />
     <page-header />
     <email-verification-banner
       v-if="showVerificationBanner" />
