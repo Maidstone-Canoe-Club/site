@@ -93,7 +93,8 @@ function getSessionCountLabel (event: CourseEventItem) {
 }
 
 function getAgeLabel (event: CourseEventItem) {
-  const adultsAllowed = event.allowed_roles?.includes("non-members");
+  const adultsAllowed = event.allowed_roles?.includes("non-members") ||
+    event.allowed_roles?.includes("members");
   const juniorsAllowed = event.allowed_roles?.includes("juniors");
 
   if (adultsAllowed && !juniorsAllowed) {
