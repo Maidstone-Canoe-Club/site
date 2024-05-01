@@ -2162,7 +2162,7 @@ fields:
     meta:
       collection: committee
       conditions: null
-      display: null
+      display: user
       display_options: null
       field: user
       group: null

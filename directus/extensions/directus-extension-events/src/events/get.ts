@@ -1,5 +1,6 @@
 ﻿import {AdminAccountability, isUserLeader} from "./utils";
 import {RRule} from "rrule";
+import {setHours, setMinutes, setSeconds} from "date-fns";
 
 export async function getConsentInfo(req: any, res: any, services: any, database: any) {
   const {
@@ -162,6 +163,7 @@ export async function get(req: any, res: any, services: any, database: any) {
     const end = new Date(decodeURIComponent(req.query.end));
     const types = req.query.types as string[] | undefined;
     const count = req.query.count as number | undefined;
+    const bookings = req.query as boolean | undefined;
 
     const fields = [
       "id",
@@ -223,55 +225,113 @@ export async function get(req: any, res: any, services: any, database: any) {
       });
     }
 
-    let events = await eventsService.readByQuery({
+    const eventResults = await eventsService.readByQuery({
       fields,
       filter,
       limit: count
     });
 
-    events = events?.filter((e: any) => {
-      if(e.parent_event){
-        if(e.parent_event.status === "cancelled"){
-          return false;
-        }
+    let events = [];
+
+    for (const event of eventResults) {
+      if (event.parent_event && event.parent_event.status === "cancelled") {
+        continue;
       }
 
-      if (e.is_recurring) {
-        if (e.rrule) {
-          const rule = RRule.fromString(e.rrule);
-          const occurrences = rule.between(start, end, true).length;
-          return occurrences > 0;
-        }
-
-        return false;
+      if (!event.is_recurring) {
+        events.push(event);
+        continue;
       }
 
-      return true;
-    });
+      if (!event.rrule) {
+        console.warn(`Found recurring date without an rrrule: ${event.id}`);
+        continue;
+      }
 
-    const eventBookingService = new ItemsService("event_bookings", {
-      knex: database,
-      schema: req.schema,
-      accountability: AdminAccountability
-    });
+      const rule = RRule.fromString(event.rrule);
+      const occurrences = rule.between(start, end, true);
+      for (const occurrence of occurrences) {
+        const instances = rule.between(new Date(event.start_date), occurrence, true);
+        const endDate = new Date(event.end_date);
+        const combinedEndDate = setHours(setMinutes(setSeconds(occurrence, endDate.getSeconds()), endDate.getMinutes()), endDate.getHours());
 
-    for (const event of events) {
-      const filter = {
-        _and: [
-          {
-            event: {
-              _eq: event.id
-            }
+        events.push({
+          ...event,
+          start_date: occurrence,
+          end_date: combinedEndDate,
+          instance: instances.length - 1,
+        });
+      }
+    }
+
+    if (count && events.length > count) {
+      events = events.slice(0, count);
+    }
+
+    if (events.length) {
+      const eventExceptionService = new ItemsService("event_exception", {
+        knex: database,
+        schema: req.schema,
+        accountability: AdminAccountability
+      });
+
+      const eventIds = [...new Set(events.map(e => e.id))];
+
+      const exceptions = await eventExceptionService.readByQuery({
+        filter: {
+          event: {
+            _in: eventIds
           }
-        ]
+        }
+      });
+
+      const isInstanceCancelled = (event: any, instance: string) => {
+        return exceptions?.find((e: any) => e.event === event.id && e.instance === instance)?.is_cancelled ?? false;
       };
 
-      // TODO: Figure out how to get recurring event booking stats
+      if (exceptions && exceptions.length) {
+        events = events.filter(e => !(e.instance && isInstanceCancelled(e, e.instance)));
+      }
 
-      const bookings = await eventBookingService.readByQuery({
-        filter
-      });
-      event.bookings = bookings.length;
+      if (bookings) {
+        const eventBookingService = new ItemsService("event_bookings", {
+          knex: database,
+          schema: req.schema,
+          accountability: AdminAccountability
+        });
+
+        for (const event of events) {
+          let filter = {};
+
+          if (event.instance) {
+            filter = {
+              _and: [
+                {
+                  event: {
+                    _eq: event.id
+                  },
+                },
+                {
+                  instance: {
+                    _eq: event.instannce
+                  }
+                }
+              ]
+            };
+          } else {
+            filter = {
+              event: {
+                _eq: event.id
+              }
+            };
+          }
+
+          const bookings = await eventBookingService.readByQuery({
+            filter
+          });
+          event.bookings = bookings.length;
+        }
+      }
     }
 
     return res.send(events);

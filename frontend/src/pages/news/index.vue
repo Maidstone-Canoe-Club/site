@@ -31,7 +31,7 @@
         </h2>
         <time class="relative text-sm text-gray-500 mb-2">{{ formatDate(news.date_created) }}</time>
         <div
-          class="relative mt-1 text-sm line-clamp-4 overflow-hidden overflow-ellipsis news-items"
+          class="relative w-full mt-1 text-sm line-clamp-4 overflow-hidden overflow-ellipsis news-items"
           v-html="news.content" />
         <div class="mt-2 font-medium text-sm text-indigo-500 flex flex-row gap-2 items-center">
           Continue reading

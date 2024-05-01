@@ -131,7 +131,7 @@ export default defineEndpoint((router, {services, database}) => {
         }
       });
 
-      console.log("got forwards", mailForwards);
+      console.log("got forwards for", user.email, mailForwards);
 
       const mailService = new MailService({schema: req.schema, knex: database});
       const sentFromMessage = `This email was sent by ${data.fromName} (${data.fromEmail})`;

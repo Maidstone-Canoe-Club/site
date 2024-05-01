@@ -34,7 +34,11 @@
       </p>
     </div>
 
-    <upcomming-list :types="['beginners_course']" hide-titles />
+    <div class="mt-5 border border-gray-200 rounded-2xl bg-white shadow sm:rounded-lg">
+      <upcoming-list
+        :types="['beginners_course']"
+        event-full-label="Course full" />
+    </div>
   </section>
 </template>
 
