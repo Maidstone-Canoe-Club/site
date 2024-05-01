@@ -40,59 +40,60 @@ export async function update(req: any, res: any, services: any, database: any) {
     const userCreatedEvent = existingEvent.user_created === userId;
     const userHasRolePermission = await userHasRole(req, services, database, userId, ["committee", "administrator"]);
     const userIsLeader = await isUserLeader(req, services, database, event.id, userId);
-    if (!userIsLeader && !userHasRolePermission && !userCreatedEvent) {
-      console.error(`User without permission tried to edit event: ${event.id}`);
-      return res.status(401).send("Not allowed");
+
+    if(userCreatedEvent || userHasRolePermission || userIsLeader) {
+      console.log("user is leader and/or has role");
+
+      if (event.occurrenceType === "single") {
+        const result = await updateSingleEvent(req, services, database, event);
+        if (result) {
+          await updateLeaders(req, services, database, event.id, leaders);
+
+          if (event.notifyUsers || hasDateChange(event, existingEvent)) {
+            await notifyBookings(req, services, database, event);
+          }
+        } else {
+          console.error("Unable to update event");
+        }
+
+        return res.send(result);
+      } else if (event.occurrenceType === "multi") {
+        const result = await updateMultiDayEvent(req, services, database, event, eventDates);
+
+        if (result) {
+          await updateLeaders(req, services, database, event.id, leaders);
+
+          if (event.notifyUsers || result.datesChanged) {
+            await notifyBookings(req, services, database, event);
+          }
+
+        } else {
+          console.error("Unable to update event");
+        }
+
+        return res.send(result.eventId);
+      } else if (event.occurrenceType === "recurring") {
+        const result = await updateRecurringEvent(req, services, database, event, editType);
+
+        if (result) {
+          await updateLeaders(req, services, database, event.id, leaders);
+
+          if (event.notifyUsers || hasDateChange(event, existingEvent)) {
+            await notifyBookings(req, services, database, event);
+          }
+        } else {
+          console.error("Unable to update event");
+        }
+
+        return res.send(result);
+      }
+
+      console.error(`Event not saved, unknown occurrence type: ${event.occurrenceType}`);
+      return res.status(400).send("Unknown occurrence type.");
     }
+    console.error(`User without permission tried to edit event: ${event.id}`);
+    return res.status(401).send("Not allowed");
 
-    console.log("user is leader and/or has role");
-
-    if (event.occurrenceType === "single") {
-      const result = await updateSingleEvent(req, services, database, event);
-      if (result) {
-        await updateLeaders(req, services, database, event.id, leaders);
-
-        if (event.notifyUsers || hasDateChange(event, existingEvent)) {
-          await notifyBookings(req, services, database, event);
-        }
-      } else {
-        console.error("Unable to update event");
-      }
-
-      return res.send(result);
-    } else if (event.occurrenceType === "multi") {
-      const result = await updateMultiDayEvent(req, services, database, event, eventDates);
-
-      if (result) {
-        await updateLeaders(req, services, database, event.id, leaders);
-
-        if (event.notifyUsers || result.datesChanged) {
-          await notifyBookings(req, services, database, event);
-        }
-
-      } else {
-        console.error("Unable to update event");
-      }
-
-      return res.send(result.eventId);
-    }else if(event.occurrenceType === "recurring"){
-      const result = await updateRecurringEvent(req, services, database, event, editType);
-
-      if(result){
-        await updateLeaders(req, services, database, event.id, leaders);
-
-        if (event.notifyUsers || hasDateChange(event, existingEvent)) {
-          await notifyBookings(req, services, database, event);
-        }
-      } else {
-        console.error("Unable to update event");
-      }
-
-      return res.send(result);
-    }
-
-    console.error(`Event not saved, unknown occurrence type: ${event.occurrenceType}`);
-    return res.status(400).send("Unknown occurrence type.");
     // If the event is a single event
     // make the api call to update single event
     // if dates have changed or notify users checked
