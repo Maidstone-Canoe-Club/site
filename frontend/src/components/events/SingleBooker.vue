@@ -29,12 +29,12 @@
         hide-loader>
         {{ payNowLabel }}
       </a-button>
-      <custom-button
+      <a-button
         v-else
         class="w-full font-semibold px-2.5 py-3"
         :action="onTryBookNow">
         Book now
-      </custom-button>
+      </a-button>
     </template>
     <client-only>
       <TransitionRoot as="template" :show="openResultModal">

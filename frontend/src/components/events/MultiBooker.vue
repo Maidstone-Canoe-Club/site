@@ -66,13 +66,13 @@
       hide-loader>
       {{ payNowLabel }}
     </a-button>
-    <custom-button
+    <a-button
       v-else
       class="w-full font-semibold px-2.5 py-3"
       :disabled="buttonDisabled"
       :action="onTryBookNow">
       Book now
-    </custom-button>
+    </a-button>
   </div>
 
   <client-only>
