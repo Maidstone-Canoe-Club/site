@@ -303,12 +303,14 @@ export async function get(req: any, res: any, services: any, database: any) {
         for (const event of events) {
           let filter = {};
 
+          const eventId = event.parent_event?.id ?? event.id;
+
           if (event.instance) {
             filter = {
               _and: [
                 {
                   event: {
-                    _eq: event.id
+                    _eq: eventId
                   },
                 },
                 {
@@ -321,13 +323,18 @@ export async function get(req: any, res: any, services: any, database: any) {
           } else {
             filter = {
               event: {
-                _eq: event.id
+                _eq: eventId
               }
             };
           }
 
           const bookings = await eventBookingService.readByQuery({
-            filter
+            filter: {
+              ...filter,
+              status: {
+                _neq: "cancelled"
+              }
+            }
           });
           event.bookings = bookings.length;
         }
