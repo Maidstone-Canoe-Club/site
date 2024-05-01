@@ -1,4 +1,5 @@
 <template>
+  <nuxt-loading-indicator />
   <nuxt-layout :key="key">
     <nuxt-page />
     <medical-info-modal

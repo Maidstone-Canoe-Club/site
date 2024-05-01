@@ -15,7 +15,6 @@
     <div
       v-else
       class="flex min-h-full flex-col bg-gray-50 relative">
-      <nuxt-loading-indicator />
       <page-header
         class="z-10" />
       <email-verification-banner
