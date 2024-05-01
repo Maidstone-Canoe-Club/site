@@ -1,6 +1,4 @@
 ﻿<script setup lang="ts">
-import { RRule } from "rrule";
-import { endOfDay, endOfMonth, endOfWeek, startOfDay, startOfMonth, startOfWeek } from "date-fns";
 import { useCalendarStore } from "~/store/calendarStore";
 import type { EventException, EventItem } from "~/types";
 
@@ -60,37 +58,13 @@ function isSelected (id: string) {
   return true;
 }
 
-function isInstanceCancelled (event: EventItem, instance: string) {
-  return props.exceptions?.find(e => e.event === event.id && e.instance === instance)?.is_cancelled ?? false;
-}
-
 function getCount (type: string) {
-  const nonRecurringCount = props.events.filter((e) => {
+  return props.events.filter((e) => {
     if (e.type === type) {
       return new Date(e.start_date) < end.value && (e.end_date === undefined || new Date(e.end_date) > start.value);
     }
     return false;
   }).length;
-
-  let recurringCount = 0;
-
-  for (const event of props.events) {
-    if (event.type === type && event.is_recurring && event.rrule) {
-      const rule = RRule.fromString(event.rrule);
-
-      const nextDates = rule.between(
-        startOfDay(startOfWeek(startOfMonth(start.value), { weekStartsOn: 1 })),
-        endOfDay(endOfWeek(endOfMonth(end.value), { weekStartsOn: 1 }))
-      ).filter((d) => {
-        const instance = getEventInstanceForDate(event, d);
-        return !isInstanceCancelled(event, instance.toString());
-      });
-
-      recurringCount += nextDates.length;
-    }
-  }
-
-  return nonRecurringCount + recurringCount;
 }
 
 function sortFilterOptions (options: FilterOption[]) {

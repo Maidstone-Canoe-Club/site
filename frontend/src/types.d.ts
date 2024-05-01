@@ -37,7 +37,7 @@ export type EventType = "pool_session"
   | "race_training"
   | "coaching"
   | "paddles_trips_tours"
-  | "social_event"
+  | "social_events"
   | "fun_session"
   | "race"
   | "beginners_course"
@@ -88,7 +88,8 @@ export interface EventItem {
   paddle_type?: EventPaddleType,
   payment_reference?: string,
   one_time_payment?: boolean,
-  reviewed_by?: string
+  reviewed_by?: string,
+  instance?: number | string
 }
 
 export interface EventBooking {

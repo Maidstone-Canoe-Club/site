@@ -24,8 +24,9 @@
       </p>
     </div>
 
-    <upcomming-list
+    <upcoming-list
       :types="['coaching']"
+      event-full-label="Course full"
       no-items-found-message="There are no coached paddles or courses available yet." />
   </section>
 </template>

@@ -43,22 +43,13 @@ await fetchEvents();
 async function fetchEvents () {
   loading.value = true;
   try {
+    events.value = [];
     events.value = await directus<EventItem[]>("/events", {
       method: "get",
       query: {
         start: encodeURIComponent(start.value.toISOString()),
-        end: encodeURIComponent(end.value.toISOString())
-      }
-    });
-
-    exceptions.value = await getItems<EventException>({
-      collection: "event_exception",
-      params: {
-        filter: {
-          event: {
-            _in: events.value.map(e => e.id)
-          }
-        }
+        end: encodeURIComponent(end.value.toISOString()),
+        bookings: true
       }
     });
   } catch (e) {

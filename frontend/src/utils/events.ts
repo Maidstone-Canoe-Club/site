@@ -2,23 +2,6 @@
 import type { EventItem } from "~/types";
 import type { EventWizardItem } from "~/components/events/wizard/EventWizard.vue";
 
-export function getEventInstanceForDate (eventItem: EventItem, date: Date): number {
-  if (!eventItem.rrule) {
-    throw createError("Event is missing rule");
-  }
-
-  const rule = RRule.fromString(eventItem.rrule);
-  const eventStart = new Date(eventItem.start_date);
-  const untilDate = rule.options.until;
-
-  const end = new Date(date);
-  const endDate = untilDate && untilDate < end ? untilDate : date;
-
-  const occurrences = rule.between(eventStart, endDate, true);
-
-  return occurrences.length;
-}
-
 export function getEventUrl (eventItem: EventItem, date?: Date) {
   let href = `/events/${eventItem.parent_event?.id || eventItem.id}`;
 
@@ -26,9 +9,8 @@ export function getEventUrl (eventItem: EventItem, date?: Date) {
     href += `/${slugify(eventItem.title)}`;
   }
 
-  if (eventItem.is_recurring && date) {
-    const instance = getEventInstanceForDate(eventItem, date);
-    href += `?instance=${instance}`;
+  if (eventItem.instance !== null && eventItem.instance !== undefined) {
+    href += `?instance=${eventItem.instance}`;
   }
 
   return href;

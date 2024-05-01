@@ -26,7 +26,7 @@ const eventTypes: EventTypeOption[] = [
   { id: "paddles_trips_tours", name: "Paddles, trips & tours" },
   { id: "race_training", name: "Race training" },
   { id: "coaching", name: "Coaching" },
-  { id: "social_event", name: "Social event" },
+  { id: "social_events", name: "Social event" },
   { id: "fun_session", name: "Fun session" },
   { id: "race", name: "Race" },
   { id: "meetings", name: "Meetings" }

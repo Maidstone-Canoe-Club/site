@@ -1,32 +1,5 @@
 ﻿<template>
   <main class="mt-[77vh]">
-    <!--    <div class="mx-auto w-full max-w-7xl flex-grow px-4 sm:px-6 lg-px-8">-->
-    <!--      <h1 class="text-4xl font-bold">-->
-    <!--        Maidstone Canoe Club-->
-    <!--      </h1>-->
-    <!--      <p class="sm:w-2/3 mt-3">-->
-    <!--        Lorem ipsum dolor sit amet. Et sunt libero qui laborum impedit qui perferendis velit qui fugiat numquam. Eum-->
-    <!--        rerum quia aut quia laudantium At beatae voluptatem et ipsum nemo non impedit quisquam. Sit cumque dolorem aut-->
-    <!--        unde eligendi qui sunt soluta. Sit nemo dolores hic voluptates quam est aliquid soluta ab aliquam nostrum ea-->
-    <!--        nihil unde aut magni laudantium.-->
-    <!--      </p>-->
-    <!--    </div>-->
-
-    <!--    <div class="mt-16">-->
-    <!--      <div class="flex px-4 md:justify-center gap-5 md:gap-14 overflow-auto md:overflow-hidden pb-11 pt-3">-->
-    <!--        <div-->
-    <!--          v-for="(image, index) in images"-->
-    <!--          :key="index"-->
-    <!--          class="relative w-44 sm:w-72 aspect-[9/14] flex-none">-->
-    <!--          <img-->
-    <!--            class="absolute inset-0 w-full h-full object-cover rounded-2xl"-->
-    <!--            :class="index % 2 !== 0 ? 'mt-8 rotate-2': '-rotate-2'"-->
-    <!--            alt="alt text goes here"-->
-    <!--            :src="image">-->
-    <!--        </div>-->
-    <!--      </div>-->
-    <!--    </div>-->
-
     <div class="mx-auto w-full max-w-7xl flex-grow px-4 sm:px-6 lg-px-8 mt-16">
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-y-10">
         <div class="flex flex-col gap-3">
@@ -46,7 +19,7 @@
               </h2>
               <time class="relative order-first text-sm text-gray-500 mb-3">{{ formatDate(news.date_created) }}</time>
               <div
-                class="relative mt-2 text-sm line-clamp-4 overflow-hidden overflow-ellipsis news-items"
+                class="relative w-full mt-2 text-sm line-clamp-4 overflow-hidden overflow-ellipsis news-items"
                 v-html="news.content" />
               <div class="mt-4 font-medium text-sm text-indigo-500 flex flex-row gap-2 items-center">
                 Continue reading
@@ -55,12 +28,25 @@
             </article>
           </div>
         </div>
-        <div class="space-y-10 lg:pl-16 xl:pl-32">
-          <lazy-newsletter-subscriber />
 
-          <!--          <div class="mt-10 p-5 border border-gray-200 rounded-2xl">-->
-          <!--            <small>List of events this week</small>-->
-          <!--          </div>-->
+        <div class="space-y-10 lg:pl-16 xl:pl-32">
+          <div class="mt-10 py-5 border border-gray-200 rounded-2xl bg-white shadow sm:rounded-lg">
+            <div class="px-4 mb-2">
+              <h3 class="text-base font-semibold leading-6 text-gray-900">
+                Upcoming events
+              </h3>
+              <small class="text-gray-700 block">{{ dateRangeLabel }}</small>
+            </div>
+
+            <lazy-upcoming-list
+              lazy
+              :display-count="6"
+              event-full-label="Event full"
+              no-items-found-message="There are no upcoming events over the next seven days."
+              :start="eventsStart"
+              :date-formatter="eventDateFormatter"
+              :end="eventsEnd" />
+          </div>
         </div>
       </div>
     </div>
@@ -127,9 +113,9 @@
 <script setup lang="ts">
 import { HandRaisedIcon } from "@heroicons/vue/24/outline";
 import { ChevronRightIcon } from "@heroicons/vue/24/solid";
-import { format } from "date-fns";
+import { format, addDays, startOfDay, endOfDay, setHours, setMinutes, setSeconds } from "date-fns";
 import { useDirectusItems } from "#imports";
-import type { Home, NewsItem } from "~/types";
+import type { EventItem, Home, NewsItem } from "~/types";
 
 definePageMeta({
   layout: "no-container"
@@ -141,6 +127,39 @@ const { data: home } = await useAsyncData("home", async () => {
   return await getSingletonItem<Home>({
     collection: "home"
   });
+});
+
+const eventsStart = startOfDay(new Date());
+const eventsEnd = endOfDay(addDays(eventsStart, 7));
+
+function eventDateFormatter (event: EventItem) {
+  const startDate = new Date(event.start_date);
+  const endDate = new Date(event.end_date);
+
+  const startDay = format(startDate, "iiii do");
+  const startTime = formatShortTime(startDate);
+
+  const endDay = format(endDate, "iiii do");
+  const endTime = formatShortTime(endDate);
+
+  if (startDay !== endDay) {
+    return `${startDay} @ ${startTime} to ${endDay} @ ${endTime}`;
+  }
+
+  return `${startDay} @ ${startTime} - ${endTime}`;
+}
+
+const dateRangeLabel = computed(() => {
+  const startMonth = format(eventsStart, "MMM");
+  const endMonth = format(eventsEnd, "MMM");
+  const startDay = format(eventsStart, "do");
+  const endDay = format(eventsEnd, "do");
+
+  if (startMonth !== endMonth) {
+    return `${startDay} ${startMonth} - ${endDay} ${endMonth}`;
+  } else {
+    return `${startDay} - ${endDay} ${startMonth}`;
+  }
 });
 
 const { data: newsItems } = await useAsyncData("news-items-home", async () => {
@@ -200,7 +219,7 @@ function closeWelcome () {
 
 <style scoped lang="postcss">
 .news-items {
-  ::v-deep(img){
+  ::v-deep(img) {
     display: none;
   }
 }

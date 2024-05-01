@@ -1,8 +1,5 @@
 ﻿<script setup lang="ts">
 import {
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  EllipsisHorizontalIcon,
   XMarkIcon
 } from "@heroicons/vue/24/outline";
 import {
@@ -15,11 +12,8 @@ import {
   getMonth,
   isToday,
   isWithinInterval,
-  isSameDay,
-  startOfDay,
-  endOfDay
+  isSameDay
 } from "date-fns";
-import { RRule } from "rrule";
 import type { EventException, EventItem } from "~/types";
 import { useCalendarStore } from "~/store/calendarStore";
 
@@ -29,7 +23,9 @@ type CalendarEvent = {
   type: string,
   time: string,
   dateTime: string,
-  href: string
+  href: string,
+  bookings?: number,
+  maxSpaces?: number,
 }
 
 type CalendarDay = {
@@ -56,16 +52,6 @@ const days = ref<CalendarDay[]>([]);
 const openDayModal = ref<boolean>(false);
 const renderExtraRow = computed<boolean>(() => days.value.length > 35);
 
-function formatShortTime (input: Date | string) {
-  const date = new Date(input);
-  const minutes = format(date, "mm");
-  if (minutes === "00") {
-    return format(date, "haa").toLowerCase();
-  } else {
-    return format(date, "h:mmaa").toLowerCase();
-  }
-}
-
 function eventItemToCalendarEvent (eventItem: EventItem, date: Date): CalendarEvent {
   return {
     id: eventItem.id!,
@@ -73,7 +59,9 @@ function eventItemToCalendarEvent (eventItem: EventItem, date: Date): CalendarEv
     type: eventItem.type,
     dateTime: format(new Date(eventItem.start_date), "yyyy-MM-ddTHH:mm"),
     time: formatShortTime(eventItem.start_date),
-    href: getEventUrl(eventItem, date)
+    href: getEventUrl(eventItem, date),
+    bookings: eventItem.bookings,
+    maxSpaces: eventItem.max_spaces
   };
 }
 
@@ -82,34 +70,13 @@ function getEventsForDate (date: Date): CalendarEvent[] {
     const start = new Date(e.start_date);
     const end = new Date(e.end_date!);
 
-    if (!e.is_recurring) {
-      const withinDateRange = isWithinInterval(date, {
-        start,
-        end
-      });
+    const withinDateRange = isWithinInterval(date, {
+      start,
+      end
+    });
 
-      const eventIsSingleDay = isSameDay(start, end);
-      return withinDateRange || (eventIsSingleDay && isSameDay(start, date));
-    }
-
-    const instance = getEventInstanceForDate(e, date);
-    if (isInstanceCancelled(e, instance.toString())) {
-      return false;
-    }
-
-    if (e.rrule) {
-      const rule = RRule.fromString(e.rrule);
-
-      const nextDates = rule.between(
-        startOfDay(date),
-        endOfDay(date)
-      );
-
-      return nextDates.length > 0;
-    }
-
-    console.error("Recurring event is missing an rrule");
-    return false;
+    const eventIsSingleDay = isSameDay(start, end);
+    return withinDateRange || (eventIsSingleDay && isSameDay(start, date));
   }).map(e => eventItemToCalendarEvent(e, date));
 }
 
@@ -238,6 +205,19 @@ function getEventDotColor (event: CalendarEvent) {
 
 function formatDate (input: Date | string) {
   return format(new Date(input), "do MMMM");
+}
+
+function spacesLeftLabel (event: CalendarEvent) {
+  const count = event.bookings;
+  if (event.maxSpaces) {
+    if (event.maxSpaces === count) {
+      return "Event full";
+    }
+
+    return `${count || 0}/${event.maxSpaces} ${event.maxSpaces === 1 ? "attendee" : "attendees"}`;
+  }
+
+  return `${count} ${count === 1 ? "attendee" : "attendees"}`;
 }
 
 </script>
@@ -377,11 +357,10 @@ function formatDate (input: Date | string) {
                   class="flex items-center text-gray-700">
                   {{ event.time }}
                 </time>
-                <!--                TODO: Show spaces left or event full when events are refactored -->
-                <!--                <span-->
-                <!--                  class="inline-flex items-center rounded-full bg-indigo-50 px-1.5 py-0.5 text-xs font-semibold text-indigo-700 ring-1 ring-inset ring-indigo-700/10">-->
-                <!--                  17/17 spaces left-->
-                <!--                </span>-->
+                <span
+                  class="inline-flex items-center rounded-full bg-indigo-50 px-1.5 py-0.5 text-xs font-semibold text-indigo-700 ring-1 ring-inset ring-indigo-700/10">
+                  {{ spacesLeftLabel(event) }}
+                </span>
               </div>
             </div>
             <nuxt-link
