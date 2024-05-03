@@ -391,6 +391,15 @@ function sortEventDates (eventDates: EventMultiDate[]) {
           These features are rather complex and need a bit more time to finish and get right. In the meantime can still
           edit all of the details against events!
         </p>
+        <strong class="block">
+          If you need to change the date or time of an event, please contact the website
+          admin via the
+          <nuxt-link
+            class="underline"
+            to="/contact-us">
+            contact us form.
+          </nuxt-link>
+        </strong>
         <p>
           You won't see this message for long, just until the events editor is fully up and running.
         </p>

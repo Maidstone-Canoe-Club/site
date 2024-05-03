@@ -27,12 +27,14 @@
         :action="onTryBookNow"
         class="w-full font-semibold px-2.5 py-3"
         hide-loader>
+        <CreditCardIcon class="size-5" />
         {{ payNowLabel }}
       </a-button>
       <a-button
         v-else
         class="w-full font-semibold px-2.5 py-3"
         :action="onTryBookNow">
+        <TicketIcon class="size-5" />
         Book now
       </a-button>
     </template>
@@ -128,6 +130,7 @@
           <a-button
             type="submit"
             class="w-full">
+            <CreditCardIcon class="size-5" />
             {{ payNowLabel }}
           </a-button>
         </form>
@@ -145,7 +148,7 @@
 
 <script setup lang="ts">
 import { InformationCircleIcon } from "@heroicons/vue/20/solid";
-import { CheckIcon, ExclamationTriangleIcon } from "@heroicons/vue/24/outline";
+import { CheckIcon, ExclamationTriangleIcon, TicketIcon, CreditCardIcon } from "@heroicons/vue/24/outline";
 // @ts-ignore
 import Dinero from "dinero.js";
 import type { EventItem } from "~/types";
