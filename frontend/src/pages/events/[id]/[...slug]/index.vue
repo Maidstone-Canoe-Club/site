@@ -170,7 +170,9 @@
           </div>
 
           <div v-if="leaders && leaders.length">
-            <strong>{{ event.paddle_type === 'peer_paddle' || event.paddle_type === 'other' ? "Organisers" : "Leaders" }}</strong>
+            <strong>{{
+              event.paddle_type === 'peer_paddle' || event.paddle_type === 'other' ? "Organisers" : "Leaders"
+            }}</strong>
             <ul
               class="mt-2 flex flex-col gap-2">
               <li
@@ -255,9 +257,13 @@
                 </div>
                 <div class="ml-3 flex-1 md:flex md:justify-between">
                   <p class="text-sm text-blue-700">
-                    {{
-                      event.paddle_type === 'peer_paddle' ? "You cannot book onto a peer paddle" : "Bookings are now closed for this event"
-                    }}
+                    <template v-if="event.paddle_type === 'peer_paddle'">
+                      <strong>Peer paddles bookings are temporarily disabled</strong>. Please contact the event organiser to arrange
+                      bookings.
+                    </template>
+                    <template v-else>
+                      Bookings are now closed for this event
+                    </template>
                   </p>
                 </div>
               </div>

@@ -74,12 +74,6 @@ const bookingCountWarning = computed(() => {
 <template>
   <div class="space-y-6">
     <template v-if="editMode">
-      <p>
-        <i>
-          Note: Editing event dates is temporarily disabled.
-        </i>
-      </p>
-
       <alert-box
         v-if="changingAll"
         variant="error"
@@ -131,6 +125,21 @@ const bookingCountWarning = computed(() => {
       enable-time-picker
       :min-date="event.startDate"
       :v="validator.endDate" />
+
+    <alert-box
+      v-if="editMode"
+      heading="Temporarily disabled changing date/time">
+      <p>Editing the date and time of an event is still under development, but it's nearly finished!</p>
+      <strong class="block">
+        If you need to change the date or time of an event, please contact the website
+        admin via the
+        <nuxt-link
+          class="underline"
+          to="/contact-us">
+          contact us form.
+        </nuxt-link>
+      </strong>
+    </alert-box>
 
     <div class="space-y-6">
       <div class="relative">

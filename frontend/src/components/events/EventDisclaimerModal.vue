@@ -1,5 +1,5 @@
 ﻿<script setup lang="ts">
-import { CheckBadgeIcon } from "@heroicons/vue/24/outline";
+import { CheckBadgeIcon, TicketIcon } from "@heroicons/vue/24/outline";
 import type { EventItem } from "~/types";
 
 const props = withDefaults(defineProps<{
@@ -130,10 +130,6 @@ async function onConfirm () {
                           arise from these errors or omissions.
                         </p>
                       </li>
-                      <!--                      <li>-->
-                      <!--                        I confirm that my son / daughter are not subject to any court order prohibiting publication of-->
-                      <!--                        their image.-->
-                      <!--                      </li>-->
                       <li>
                         <p>
                           I consent to my son / daughter travelling by any form of transport arranged or approved by the
@@ -175,6 +171,7 @@ async function onConfirm () {
                     type="button"
                     class="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:col-start-2"
                     :action="onConfirm">
+                    <TicketIcon class="size-5" />
                     {{ bookNowLabel }}
                   </a-button>
                 </slot>
