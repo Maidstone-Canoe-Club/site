@@ -19,7 +19,7 @@ export async function userHasRole(req: any, services: any, database: any, userId
   });
 
   console.log("found user", user);
-  const includes = roles.includes(user.role.name);
+  const includes = roles.map(r => r.toLowerCase()).includes(user.role.name.toLowerCase());
 
   console.log("result", includes);
   return includes;
