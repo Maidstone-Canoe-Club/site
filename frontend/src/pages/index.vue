@@ -129,7 +129,7 @@ const { data: home } = await useAsyncData("home", async () => {
   });
 });
 
-const eventsStart = startOfDay(new Date());
+const eventsStart = new Date();
 const eventsEnd = endOfDay(addDays(eventsStart, 7));
 
 function eventDateFormatter (event: EventItem) {

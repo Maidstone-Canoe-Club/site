@@ -39,12 +39,12 @@
           </div>
         </div>
 
-        <custom-button
+        <a-button
           :action="onSubmit"
           class="flex w-full justify-center"
           type="submit">
           Sign in
-        </custom-button>
+        </a-button>
         <div v-if="error">
           <p
             v-for="(e, index) in error.errors"
@@ -88,7 +88,16 @@ const { login } = useDirectusAuth();
 const route = useRoute();
 
 const error: any = ref(null);
-const redirect = route.query.redirect as string || "/";
+const redirect = route.query.redirect as string | undefined | null;
+
+const redirectUrl = computed(() => {
+  let result = "/";
+
+  if (redirect) {
+    result = decodeURIComponent(redirect);
+  }
+  return result;
+});
 
 const rules = {
   email: {
@@ -109,7 +118,7 @@ async function onSubmit () {
   if (!v$.value.$invalid) {
     try {
       await login({ email: email.value, password: password.value });
-      await navigateTo(redirect);
+      await navigateTo(redirectUrl.value);
     } catch (e) {
       error.value = e.data;
     }
