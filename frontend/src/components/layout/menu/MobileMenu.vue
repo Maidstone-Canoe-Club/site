@@ -79,7 +79,7 @@ const props = defineProps<{
 const user = useDirectusUser();
 
 const route = useRoute();
-const loginUrl = computed(() => `/login?redirect=${route.fullPath}`);
+const loginUrl = computed(() => `/login?redirect=${encodeURIComponent(route.fullPath)}`);
 
 const mobileMenuOpen = ref(props.open);
 

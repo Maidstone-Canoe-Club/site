@@ -172,7 +172,7 @@ const user = useDirectusUser();
 const { logout } = useDirectusAuth();
 
 const route = useRoute();
-const loginUrl = computed(() => `/login?redirect=${route.fullPath}`);
+const loginUrl = computed(() => `/login?redirect=${encodeURIComponent(route.fullPath)}`);
 
 const mobileMenuOpen = ref(false);
 

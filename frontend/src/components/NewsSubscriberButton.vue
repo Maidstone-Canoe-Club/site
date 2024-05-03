@@ -19,7 +19,7 @@ if (user.value) {
 const buttonLabel = computed(() => hasSubscription.value ? "Unsubscribe" : "Subscribe to news posts");
 
 const route = useRoute();
-const loginUrl = computed(() => `/login?redirect=${route.fullPath}`);
+const loginUrl = computed(() => `/login?redirect=${encodeURIComponent(route.fullPath)}`);
 
 async function onClick () {
   if (hasSubscription.value) {

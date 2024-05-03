@@ -94,7 +94,7 @@ const user = useDirectusUser();
 const route = useRoute();
 const { getUsers } = useDirectusUsers();
 
-const loginUrl = computed(() => `/login?redirect=${route.path}`);
+const loginUrl = computed(() => `/login?redirect=${encodeURIComponent(route.fullPath)}`);
 
 // const advancedPricing = computed(() => props.event.advanced_pricing);
 const advancedPricing = ref(false);
