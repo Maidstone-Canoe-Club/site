@@ -54,6 +54,12 @@ export default defineEndpoint((router, {services, database}) => {
         accountability: adminAccountability
       });
 
+      const eventExceptionService = new ItemsService("event_exception", {
+        knex: database,
+        schema: req.schema,
+        accountability: adminAccountability
+      });
+
       const eventBookingService = new ItemsService("event_bookings", {
         knex: database,
         schema: req.schema,
@@ -231,7 +237,7 @@ export default defineEndpoint((router, {services, database}) => {
           reviewNotes = event.review_notes;
         }
 
-        if(event.one_time_payment && event.payment_reference) {
+        if (event.one_time_payment && event.payment_reference) {
           const ordersService = new ItemsService("orders", {
             knex: database,
             schema: req.schema,
@@ -264,6 +270,39 @@ export default defineEndpoint((router, {services, database}) => {
         }
       }
 
+      let isCancelled = event.status === "cancelled";
+      let cancelReason = event.cancel_reason;
+
+      if (event.is_recurring) {
+        const exceptions = await eventExceptionService.readByQuery({
+          filter: {
+            _and: [
+              {
+                event: {
+                  _eq: event.id
+                }
+              },
+              {
+                instance: {
+                  _eq: eventInstance
+                }
+              },
+              {
+                is_cancelled: {
+                  _eq: "true"
+                }
+              }
+            ]
+          }
+        });
+
+        if (exceptions && exceptions.length) {
+          const exception = exceptions[0];
+          isCancelled = true;
+          cancelReason = exception.cancel_reason;
+        }
+      }
+
       return res.json({
         spacesLeft,
         alreadyBooked,
@@ -276,7 +315,9 @@ export default defineEndpoint((router, {services, database}) => {
         userCanApprove,
         reviewedBy,
         reviewNotes,
-        paidUserIds
+        paidUserIds,
+        isCancelled,
+        cancelReason
       });
     } catch (e) {
       console.error("error getting event info", e);
@@ -292,6 +333,7 @@ export default defineEndpoint((router, {services, database}) => {
       const instance = req.query.instance;
       const cancelAll = req.query.cancelAll === "true";
       const loggedInUserId = req.accountability.user;
+      const reason = req.body.reason;
 
       if (!eventId) {
         return res.status(400).send("missing event id");
@@ -379,7 +421,8 @@ export default defineEndpoint((router, {services, database}) => {
                     name: "event-cancelled",
                     data: {
                       eventTitle: event.title,
-                      eventDate: new Date(event.start_date).toLocaleString()
+                      eventDate: new Date(event.start_date).toLocaleString(),
+                      reason
                     }
                   }
                 });
@@ -416,7 +459,8 @@ export default defineEndpoint((router, {services, database}) => {
             if (childEvents && childEvents.length) {
               await eventsService.updateBatch(childEvents.map((e: any) => ({
                 id: e.id,
-                status: "cancelled"
+                status: "cancelled",
+                cancel_reason: reason
               })));
             } else {
               console.warn("Multi day event doesn't have any child events to cancel");
@@ -437,7 +481,8 @@ export default defineEndpoint((router, {services, database}) => {
           await eventExceptionService.createOne({
             event: eventId,
             instance,
-            is_cancelled: true
+            is_cancelled: true,
+            cancel_reason: reason
             // TODO: There could be more options for a recurring event exception
           });
         }
@@ -589,7 +634,7 @@ export default defineEndpoint((router, {services, database}) => {
         ]
       };
 
-      if(instance){
+      if (instance) {
         filter._and.push({
           instance: {
             _eq: instance
