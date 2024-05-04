@@ -99,6 +99,10 @@ function eventStatus (event: EventItem) {
     return "Published";
   }
 
+  if (event.status === "cancelled") {
+    return "Cancelled";
+  }
+
   if (event.status === "draft") {
     if (event.reviewed_by) {
       return "Rejected";
@@ -204,12 +208,12 @@ async function onPrev () {
             <tr
               v-for="event in events"
               :key="event.id"
-              :class="{'bg-red-50': eventStatus(event) === 'Rejected'}">
+              :class="{'bg-red-50': ['Rejected', 'Cancelled'].includes(eventStatus(event)) }">
               <td class="w-full max-w-0 py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:w-auto sm:max-w-none sm:pl-0">
                 <nuxt-link
                   :to="getEventUrl(event)"
                   class="flex items-center gap-1"
-                  :class="[eventStatus(event) === 'Rejected' ? 'text-red-600 hover:text-red-900' : 'text-indigo-600 hover:text-indigo-900']">
+                  :class="[['Rejected', 'Cancelled'].includes(eventStatus(event)) ? 'text-red-600 hover:text-red-900' : 'text-indigo-600 hover:text-indigo-900']">
                   <LinkIcon class="w-4 h-4" />
                   <span
                     v-tooltip="event.title">
@@ -255,7 +259,9 @@ async function onPrev () {
                     {{ spacesTally(event) }}
                   </span>
                 </template>
-                <template v-else />
+                <template v-else>
+                  --
+                </template>
               </td>
               <td class="px-3 py-4 text-sm text-gray-500">
                 <span
@@ -263,7 +269,7 @@ async function onPrev () {
                   :class="{
                     'bg-green-50 text-green-700 ring-green-600/20': eventStatus(event) === 'Published',
                     'bg-blue-50 text-blue-700 ring-blue-700/20': eventStatus(event) === 'Draft',
-                    'bg-red-50 text-red-700 ring-red-600/10': eventStatus(event) === 'Rejected',
+                    'bg-red-50 text-red-700 ring-red-600/10': ['Rejected', 'Cancelled'].includes(eventStatus(event)),
                     'bg-orange-50 text-orange-700 ring-orange-600/10': eventStatus(event) === 'Awaiting Review'
                   }">
                   {{ eventStatus(event) }}
