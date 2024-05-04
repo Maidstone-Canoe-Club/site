@@ -73,7 +73,7 @@ const directus = useDirectus();
 
 const newEvent = ref<EventWizardItem>(initialEventItem());
 const editRecurringType = ref<EditRecurringType | undefined>();
-const eventDates = reactive<EventMultiDate[]>(initialEventDates());
+const eventDates = ref<EventMultiDate[]>(initialEventDates());
 
 export type WizardStep = {
   id: string,
@@ -199,7 +199,7 @@ function initialEventItem () {
     return existingEventToWizardEvent(props.events[0]);
   }
 
-  return BlankEventTemplate;
+  return { ...BlankEventTemplate };
 }
 
 function initialEventDates (): EventMultiDate[] {
@@ -321,7 +321,7 @@ async function onSubmit () {
         method: "POST",
         body: {
           event: toNewEventItem(newEvent.value),
-          eventDates: sortEventDates(eventDates),
+          eventDates: sortEventDates(eventDates.value),
           leaders: newEvent.value.leaders.map(r => r.id)
         }
       });
@@ -330,17 +330,18 @@ async function onSubmit () {
         method: "POST",
         body: {
           eventItem: toNewEventItem(newEvent.value),
-          eventDates: sortEventDates(eventDates),
+          eventDates: sortEventDates(eventDates.value),
           leaders: newEvent.value.leaders.map(r => r.id)
         }
       });
     }
 
-    let returnUrl = `/events/${eventId}`;
+    let returnUrl = `/events/${eventId}/${slugify(newEvent.value.name!)}`;
+
     if (props.instance) {
       returnUrl += `?instance=${props.instance}`;
     }
-    console.log("return url", returnUrl);
+
     await navigateTo(returnUrl);
   } catch (e) {
     console.error("create event error", e);
