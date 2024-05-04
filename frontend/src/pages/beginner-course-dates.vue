@@ -34,7 +34,7 @@
       </p>
     </div>
 
-    <div class="mt-5 border border-gray-200 rounded-2xl bg-white shadow sm:rounded-lg">
+    <div class="mt-5 border border-gray-200 rounded-2xl overflow-hidden bg-white shadow sm:rounded-lg">
       <upcoming-list
         :types="['beginners_course']"
         event-full-label="Course full" />

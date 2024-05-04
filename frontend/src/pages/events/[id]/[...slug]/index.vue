@@ -1,12 +1,29 @@
 ﻿<template>
   <article class="mt-10 text-pretty">
+    <alert-box
+      v-if="eventInfo.isCancelled"
+      class="mb-4"
+      variant="error"
+      heading="Event cancelled">
+      <p>
+        This event has been cancelled.
+      </p>
+
+      <div
+        v-if="eventInfo.cancelReason"
+        class="space-y-2">
+        <span class="block">Reason:</span>
+        <strong>{{ eventInfo.cancelReason }}</strong>
+      </div>
+    </alert-box>
     <event-review-control
-      v-if="userCanApprove"
+      v-else-if="userCanApprove"
       :event="event"
       :reviewed-by="eventInfo.reviewedBy"
       :review-notes="eventInfo.reviewNotes"
       class="mb-4"
       @refresh="onRefresh" />
+
     <div class="lg:flex lg:items-center lg:justify-between">
       <div class="min-w-0 flex-1">
         <event-type-badge
@@ -258,7 +275,8 @@
                 <div class="ml-3 flex-1 md:flex md:justify-between">
                   <p class="text-sm text-blue-700">
                     <template v-if="event.paddle_type === 'peer_paddle'">
-                      <strong>Peer paddles bookings are temporarily disabled</strong>. Please contact the event organiser to arrange
+                      <strong>Peer paddle bookings are temporarily disabled</strong>. Please contact the event organiser
+                      to arrange
                       bookings.
                     </template>
                     <template v-else>
@@ -594,6 +612,10 @@ const sessionDates = computed(() => {
 });
 
 const canBook = computed(() => {
+  if (eventInfo.value.isCancelled) {
+    return false;
+  }
+
   if (event.value.paddle_type === "peer_paddle") {
     return false;
   }
@@ -707,8 +729,7 @@ const spacesLeftLabel = computed(() => {
 });
 
 const canCancelEvent = computed(() => {
-  const eventFinished = !event.value.is_recurring && new Date(event.value.start_date) < new Date();
-  return !eventFinished && canEdit.value;
+  return !eventInfo.value.isCancelled;
 });
 
 function onMessageAttendees () {

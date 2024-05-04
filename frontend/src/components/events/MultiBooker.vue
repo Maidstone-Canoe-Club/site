@@ -45,7 +45,7 @@
     </ul>
 
     <div
-      class="flex justify-between mb-6">
+      class="flex flex-wrap gap-2  justify-between mb-6">
       <nuxt-link
         to="/profile/juniors"
         class="rounded flex items-center gap-1 bg-white px-2 py-1 text-xs font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
@@ -53,10 +53,10 @@
         <PlusIcon class="h-4" />
       </nuxt-link>
       <span
-        v-if="spacesLeft"
+        v-if="spacesLeftLabel"
         class="inline-flex items-center rounded-full bg-indigo-50 px-1.5 py-0.5 text-xs font-semibold text-indigo-700 ring-1 ring-inset ring-indigo-700/10">
         <UsersIcon class="h-5 mr-1" />
-        {{ usersToBook.length }}/{{ spacesLeft }}
+        {{ spacesLeftLabel }}
       </span>
     </div>
 
@@ -64,6 +64,7 @@
       v-if="usePaymentForm"
       :action="onTryBookNow"
       hide-loader>
+      <CreditCardIcon class="size-5" />
       {{ payNowLabel }}
     </a-button>
     <a-button
@@ -71,6 +72,7 @@
       class="w-full font-semibold px-2.5 py-3"
       :disabled="buttonDisabled"
       :action="onTryBookNow">
+      <TicketIcon class="size-5" />
       Book now
     </a-button>
   </div>
@@ -178,13 +180,14 @@
           name="ref"
           type="hidden"
           :value="preloadPayload">
-        <button
+        <a-button
           type="submit"
           :disabled="buttonDisabled"
           class="w-full font-semibold px-2.5 py-3"
           :class="payNowButtonClass">
+          <CreditCardIcon class="size-5" />
           {{ payNowLabel }}
-        </button>
+        </a-button>
       </form>
     </event-disclaimer-modal>
     <event-disclaimer-modal
@@ -198,7 +201,14 @@
 </template>
 
 <script setup lang="ts">
-import { CheckIcon, ExclamationTriangleIcon, UsersIcon, PlusIcon } from "@heroicons/vue/24/outline";
+import {
+  CheckIcon,
+  ExclamationTriangleIcon,
+  UsersIcon,
+  PlusIcon,
+  CreditCardIcon,
+  TicketIcon
+} from "@heroicons/vue/24/outline";
 // @ts-ignore
 import Dinero from "dinero.js";
 import type { DirectusUser } from "nuxt-directus/dist/runtime/types";
@@ -308,6 +318,15 @@ function getPriceForUser (user: any) {
 }
 
 const isFull = computed(() => usersToBook.value.length === props.spacesLeft);
+
+const spacesLeftLabel = computed(() => {
+  if (props.spacesLeft) {
+    const left = props.spacesLeft - usersToBook.value.length;
+    return left === 1 ? "1 space left" : left + " spaces left";
+  }
+
+  return null;
+});
 
 const usePaymentForm = computed(() => {
   if (!props.price && !props.juniorPrice && !props.nonMemberJuniorPrice) {

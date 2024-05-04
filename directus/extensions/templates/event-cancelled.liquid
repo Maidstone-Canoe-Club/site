@@ -1,1 +1,13 @@
-﻿<p>Your booking for the event <strong>{{ eventTitle }}</strong> scheduled for <strong>{{ eventDate }}</strong> has been removed as the event has been cancelled.</p>
+﻿<p>Your booking for the event <strong>{{ eventTitle }}</strong> scheduled for <strong>{{ eventDate }}</strong> has been
+    removed as the event has been cancelled.</p>
+
+{% if reason %}
+    <div>
+        <div>
+            <p>Cancellation reason:</p>
+        </div>
+        <p>
+            {{ reason }}
+        </p>
+    </div>
+{% endif %}

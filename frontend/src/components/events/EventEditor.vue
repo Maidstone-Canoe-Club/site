@@ -147,9 +147,9 @@
         label="Last booking date"
         name="last-booking-date" />
 
-      <event-canceller
-        :event="event"
-        :instance="instance" />
+<!--      <event-canceller-->
+<!--        :event="event"-->
+<!--        :instance="instance" />-->
       <div class="flex flex-row gap-2">
         <a-button
           :to="'/events/' + internalValue.id"
@@ -173,7 +173,6 @@ import { useVuelidate } from "@vuelidate/core";
 import type { Ref } from "vue";
 import type { Validation } from "@vuelidate/core";
 import type { EventItem } from "~/types";
-import EventCanceller from "~/components/events/EventCanceller.vue";
 
 const eventTypes = [
   { id: "beginners_course", name: "Beginners course" },
