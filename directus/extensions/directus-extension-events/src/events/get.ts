@@ -313,7 +313,7 @@ export async function get(req: any, res: any, services: any, database: any) {
 
           const eventId = event.parent_event?.id ?? event.id;
 
-          if (event.instance) {
+          if (event.instance !== undefined) {
             filter = {
               _and: [
                 {
@@ -323,7 +323,7 @@ export async function get(req: any, res: any, services: any, database: any) {
                 },
                 {
                   instance: {
-                    _eq: event.instannce
+                    _eq: event.instance
                   }
                 }
               ]
