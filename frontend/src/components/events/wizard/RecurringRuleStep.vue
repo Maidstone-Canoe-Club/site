@@ -111,7 +111,7 @@ const exampleEvents = computed(() => [{
         :raw-value="rawValue"
         :v="validator.rrule" />
       <p>
-        Write how many times this event should recur as a normal sentence. Click the buttons below to see different
+        Write how many times this event should repeat as a normal sentence. Click the buttons below to see different
         examples.
       </p>
     </div>
