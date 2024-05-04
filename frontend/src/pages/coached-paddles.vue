@@ -24,10 +24,12 @@
       </p>
     </div>
 
-    <upcoming-list
-      :types="['coaching']"
-      event-full-label="Course full"
-      no-items-found-message="There are no coached paddles or courses available yet." />
+    <div class="mt-5 border border-gray-200 rounded-2xl overflow-hidden bg-white shadow sm:rounded-lg">
+      <upcoming-list
+        :types="['coaching']"
+        event-full-label="Course full"
+        no-items-found-message="There are no coached paddles or courses available yet." />
+    </div>
   </section>
 </template>
 
