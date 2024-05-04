@@ -208,16 +208,16 @@ function formatDate (input: Date | string) {
 }
 
 function spacesLeftLabel (event: CalendarEvent) {
-  const count = event.bookings;
   if (event.maxSpaces) {
-    if (event.maxSpaces === count) {
+    const count = event.maxSpaces - (event.bookings || 0);
+    if (count === 0) {
       return "Event full";
     }
 
-    return `${count || 0}/${event.maxSpaces} ${event.maxSpaces === 1 ? "attendee" : "attendees"}`;
+    return count === 1 ? "1 space left" : `${count} spaces left`;
   }
 
-  return `${count} ${count === 1 ? "attendee" : "attendees"}`;
+  return null;
 }
 
 </script>
@@ -358,6 +358,7 @@ function spacesLeftLabel (event: CalendarEvent) {
                   {{ event.time }}
                 </time>
                 <span
+                  v-if="spacesLeftLabel(event)"
                   class="inline-flex items-center rounded-full bg-indigo-50 px-1.5 py-0.5 text-xs font-semibold text-indigo-700 ring-1 ring-inset ring-indigo-700/10">
                   {{ spacesLeftLabel(event) }}
                 </span>
