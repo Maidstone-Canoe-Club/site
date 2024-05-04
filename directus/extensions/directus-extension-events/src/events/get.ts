@@ -290,7 +290,15 @@ export async function get(req: any, res: any, services: any, database: any) {
       };
 
       if (exceptions && exceptions.length) {
-        events = events.filter(e => !(e.instance && isInstanceCancelled(e, e.instance)));
+        events = events.filter(e => {
+          if (e.instance !== undefined) {
+            if (isInstanceCancelled(e, `${e.instance}`)) {
+              return false;
+            }
+          }
+
+          return true;
+        });
       }
 
       if (bookings) {
