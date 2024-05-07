@@ -25,6 +25,7 @@ export default defineNuxtConfig({
 
   appConfig: {
     umami: {
+      ignoreLocalhost: true,
       version: 2
     }
   },
@@ -129,6 +130,9 @@ export default defineNuxtConfig({
   },
 
   vite: {
+    optimizeDeps: {
+      include: ["lodash-es"]
+    },
     build: {
       sourcemap: true
     },
@@ -150,6 +154,12 @@ export default defineNuxtConfig({
         usePolling: true,
         interval: 1000
       }
+    }
+  },
+
+  $development: {
+    nitro: {
+      publicAssets: []
     }
   }
 });

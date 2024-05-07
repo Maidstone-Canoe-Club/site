@@ -108,6 +108,7 @@
 
       <medical-info-modal
         v-model:open="openMedicalInfoModal"
+        save-label="Save changes and continue"
         :users="[user]"
         @continue="onMedicalInfoConfirmed" />
 

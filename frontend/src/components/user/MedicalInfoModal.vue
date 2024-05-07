@@ -1,13 +1,15 @@
 ﻿<script setup lang="ts">
 import type { DirectusUser } from "nuxt-directus/dist/runtime/types";
 import { ExclamationTriangleIcon } from "@heroicons/vue/24/outline";
+import { isEqual, cloneDeep } from "lodash-es";
 import type { MedicalInformation } from "~/components/user/MedicalInformation.vue";
 
 const emits = defineEmits(["continue"]);
 
 const props = defineProps<{
   users: DirectusUser[],
-  continueLabel?: string
+  continueLabel?: string,
+  saveLabel?: string
 }>();
 
 const open = defineModel<boolean>("open", { default: false });
@@ -20,9 +22,11 @@ const {
 } = useDirectusItems();
 
 const user = useDirectusUser();
+const originalMedicalInfo = ref<MedicalInformation[]>([]);
 const medicalInfo = ref<MedicalInformation[]>([]);
 const errorMessage = ref<string>();
 const loading = ref(false);
+const confirmInfo = ref(false);
 
 watch(open, async (val) => {
   if (val) {
@@ -32,6 +36,18 @@ watch(open, async (val) => {
   }
 }, { immediate: true });
 
+const isDirty = ref(false);
+
+watch(medicalInfo, (val) => {
+  const equal = isEqual(val, originalMedicalInfo.value);
+  if (!equal) {
+    isDirty.value = true;
+    confirmInfo.value = false;
+  } else {
+    isDirty.value = false;
+  }
+}, { deep: true });
+
 function blankMedicalInfo (userId: string) {
   return {
     allergies: false,
@@ -39,9 +55,9 @@ function blankMedicalInfo (userId: string) {
     epilepsy: false,
     diabetes: false,
     other: false,
-    hasData: false,
-    details: undefined,
-    user: userId
+    details: "",
+    user: userId,
+    hasData: false
   };
 }
 
@@ -106,6 +122,12 @@ async function loadData () {
         return 0;
       }
     });
+
+    medicalInfo.value.forEach((i) => {
+      i.hasData = false;
+      i.details = i.details ?? "";
+    });
+    originalMedicalInfo.value = cloneDeep(medicalInfo.value);
   } catch (err) {
     errorMessage.value = "There was an error loading your medical information, please try again later.";
     console.error("Error loading medical info");
@@ -295,30 +317,28 @@ function isJunior (userId: string) {
                   </div>
                 </div>
 
-                <alert-box
-                  heading="Please confirm the info above is correct"
-                  variant="info"
-                  class="mt-4">
-                  <slot name="alert">
-                    If no changes are needed, {{
-                      clickOrTap()
-                    }} continue. If you have made changes, {{ clickOrTap() }} the save button.
-                  </slot>
-                </alert-box>
+                <input-checkbox
+                  id="confirm-info"
+                  v-model="confirmInfo"
+                  class="mt-5"
+                  label="I confirm the information above is correct"
+                  name="confirm-info" />
 
-                <div class="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
+                <div class="mt-5 sm:mt-6">
                   <a-button
+                    v-if="isDirty"
                     type="button"
                     :action="onUpdate"
-                    :disable-timeout-ms="2000"
-                    class="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:col-start-2">
-                    Save changes
+                    :disabled="!confirmInfo"
+                    class="w-full">
+                    {{ saveLabel || "Save changes" }}
                   </a-button>
                   <a-button
+                    v-else
                     type="button"
                     variant="outline"
-                    class="mt-3 w-full sm:col-start-1 sm:mt-0"
-                    :disable-timeout-ms="2000"
+                    class="w-full"
+                    :disabled="!confirmInfo"
                     @click="onContinue">
                     {{ continueLabel || "Continue to booking" }}
                   </a-button>
