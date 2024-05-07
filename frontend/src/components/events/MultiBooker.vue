@@ -153,6 +153,7 @@
     <medical-info-modal
       v-model:open="openMedicalInfoModal"
       :users="usersToBook"
+      save-label="Save changes and continue"
       @continue="onMedicalInfoConfirmed" />
 
     <event-disclaimer-modal
