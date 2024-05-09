@@ -125,7 +125,10 @@ export interface NewsItem {
 
 export interface Home {
   title?: string
-  tagline?: string
+  tagline?: string,
+  hero_images: {
+    directus_files_id: string
+  }[]
 }
 
 export interface NewsSubscriber {
