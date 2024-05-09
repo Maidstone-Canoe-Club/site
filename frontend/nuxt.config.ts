@@ -88,6 +88,7 @@ export default defineNuxtConfig({
     "@nuxtjs/turnstile",
     "floating-vue/nuxt",
     "nuxt-og-image",
+    "nuxt-time",
     "@nuxt/fonts",
     "@nuxtjs/device",
     "@nuxt/image"
@@ -96,7 +97,7 @@ export default defineNuxtConfig({
   image: {
     directus: {
       // This URL needs to include the final `assets/` directory
-      baseURL: "http://host.docker.internal:8055/assets/"
+      baseURL: `${process.env.NUXT_PUBLIC_DIRECTUS_URL}/assets/`
     }
   },
 
