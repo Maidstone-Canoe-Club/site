@@ -89,8 +89,16 @@ export default defineNuxtConfig({
     "floating-vue/nuxt",
     "nuxt-og-image",
     "@nuxt/fonts",
-    "@nuxtjs/device"
+    "@nuxtjs/device",
+    "@nuxt/image"
   ],
+
+  image: {
+    directus: {
+      // This URL needs to include the final `assets/` directory
+      baseURL: "http://host.docker.internal:8055/assets/"
+    }
+  },
 
   headlessui: {
     prefix: ""
@@ -120,13 +128,15 @@ export default defineNuxtConfig({
   },
 
   nitro: {
-    publicAssets: [
-      {
-        baseURL: "images",
-        dir: "public/images",
-        maxAge: 31622400
-      }
-    ]
+    publicAssets: process.env.NODE_ENV === "production"
+      ? [
+        {
+          baseURL: "images",
+          dir: "public/images",
+          maxAge: 31622400
+        }
+      ]
+      : []
   },
 
   vite: {
@@ -154,12 +164,6 @@ export default defineNuxtConfig({
         usePolling: true,
         interval: 1000
       }
-    }
-  },
-
-  $development: {
-    nitro: {
-      publicAssets: []
     }
   }
 });
