@@ -144,12 +144,12 @@ const internalValue = ref<MedicalInformation>({
 });
 
 const firstAidConsent = ref<string | undefined>(
-  props.modelValue.first_aid_consent !== undefined
+  props.modelValue.first_aid_consent !== undefined && props.modelValue.first_aid_consent !== null
     ? props.modelValue.first_aid_consent === true ? "consent" : "no-consent"
     : undefined
 );
 const photographyConsent = ref<string | undefined>(
-  props.modelValue.photography_consent !== undefined
+  props.modelValue.photography_consent !== undefined && props.modelValue.photography_consent !== null
     ? props.modelValue.photography_consent === true ? "consent" : "no-consent"
     : undefined
 );
