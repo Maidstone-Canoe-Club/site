@@ -74,7 +74,7 @@
                           <strong>{{ user.email }}</strong>.
                         </p>
                         <p class="text-sm">
-                          If you aren't receiving an email, please let us know by contacting us at
+                          If you don't receive an email, please let us know by contacting us at
                           <a
                             class="text-indigo-600 underline"
                             href="mailto:web@maidstonecanoeclub.net">web@maidstonecanoeclub.net</a>.
