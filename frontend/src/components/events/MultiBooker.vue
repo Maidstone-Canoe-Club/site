@@ -246,7 +246,7 @@ const bookingResults = ref(null);
 
 const lastUsersBooked = ref();
 
-const nonJuniorRoles = ["members", "coach", "committee"];
+const nonJuniorRoles = ["members", "coach", "committee", "non-members"];
 const canBookNonJuniors = computed(() => {
   if (props.event.allowed_roles) {
     for (const role of props.event.allowed_roles) {
