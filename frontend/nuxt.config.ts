@@ -142,7 +142,25 @@ export default defineNuxtConfig({
 
   vite: {
     optimizeDeps: {
-      include: ["lodash-es"]
+      include: [
+        "lodash-es",
+        // workaround for optimized dependencies changes messages
+        // see https://github.com/nuxt/nuxt/issues/26783
+        "@unhead/vue",
+        "dinero.js",
+        "@vuelidate/validators",
+        "@vuelidate/core",
+        "rrule",
+        "nanoid",
+        "@vuepic/vue-datepicker",
+        "@heroicons/vue/16/solid",
+        "@vueup/vue-quill",
+        "@zxcvbn-ts/core",
+        "@zxcvbn-ts/language-common",
+        "vue-qrcode-reader",
+        "@vueuse/core",
+        "qrcode.vue"
+      ]
     },
     build: {
       sourcemap: true

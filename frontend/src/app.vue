@@ -57,6 +57,8 @@ watch(user, () => {
 });
 
 function tryMedicalInfoCheck () {
+  lastCheckDaysAgo.value = null;
+
   if (user.value) {
     const lastMedicalCheck = user.value.last_med_check;
     if (lastMedicalCheck) {
