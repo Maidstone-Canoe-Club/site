@@ -106,13 +106,32 @@ async function runSearch () {
     users.value = await getUsers({
       params: {
         limit: 10,
-        fields: ["*", "role.name"],
+        fields: [
+          "id",
+          "first_name",
+          "last_name",
+          "role.name"
+        ],
         filter: {
           _and: [
             {
               role: {
                 name: {
                   _neq: "Junior"
+                }
+              }
+            },
+            {
+              role: {
+                name: {
+                  _neq: "Unverified"
+                }
+              }
+            },
+            {
+              role: {
+                name: {
+                  _neq: "Unapproved"
                 }
               }
             },
