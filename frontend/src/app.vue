@@ -128,6 +128,7 @@ html, body, #__nuxt {
 .required:after {
   content: " *";
   color: red;
+  font-weight: normal !important;
 }
 
 .page-enter-active,
