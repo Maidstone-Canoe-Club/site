@@ -40,14 +40,12 @@
 </template>
 <script setup lang="ts">
 import { NuxtLink } from "#components";
-
-export type Variant = "primary" | "secondary" | "outline" | "danger" | "warning" | "success";
-export type ButtonSize = "xs" | "sm" | "md" | "lg";
+import { type ButtonSize, type ButtonVariant } from "~/utils/buttons";
 
 const emits = defineEmits(["click"]);
 
 const props = withDefaults(defineProps<{
-  variant?: Variant,
+  variant?: ButtonVariant,
   size?: ButtonSize,
   disabled?: boolean,
   href?: string,
@@ -85,27 +83,11 @@ watch(() => props.loading, (val) => {
   }
 }, { immediate: true });
 
-const variantsMapping: Record<Variant, string> = {
-  primary: "bg-indigo-600 text-white hover:bg-indigo-500 focus-visible:outline-indigo-600",
-  secondary: "bg-gray-600 text-white hover:bg-gray-500 focus-visible:outline-gray-600",
-  outline: "bg-white text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50",
-  danger: "bg-red-600 text-white hover:bg-red-500 focus-visible:outline-red-600",
-  warning: "bg-yellow-600 text-white hover:bg-yellow-500 focus-visible:outline-yellow-600",
-  success: "bg-green-600 text-white hover:bg-green-500 focus-visible:outline-green-600"
-};
-
-const sizesMapping: Record<ButtonSize, string> = {
-  xs: "px-2 py-1 text-xs rounded",
-  sm: "px-2.5 py-1.5 text-sm rounded",
-  md: "px-3 py-2 text-sm rounded-md",
-  lg: "px-3.5 py-2.5 text-sm rounded-md"
-};
-
 const element = computed(() => props.href || props.to ? NuxtLink : "button");
 
 const buttonClass = computed(() => {
-  const variant = variantsMapping[props.variant];
-  const size = sizesMapping[props.size];
+  const variant = ButtonVariantClasses[props.variant];
+  const size = ButtonSizeClasses[props.size];
   const disabledClasses = [
     internalDisabled.value ? "opacity-50" : "",
     internalLoading.value || internalDisabled.value ? "cursor-not-allowed" : ""

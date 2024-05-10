@@ -4,12 +4,13 @@ import { ExclamationTriangleIcon } from "@heroicons/vue/24/outline";
 import { isEqual, cloneDeep } from "lodash-es";
 import type { MedicalInformation } from "~/components/user/MedicalInformation.vue";
 
-const emits = defineEmits(["continue"]);
+const emits = defineEmits(["continue", "cancel"]);
 
 const props = defineProps<{
   users: DirectusUser[],
   continueLabel?: string,
-  saveLabel?: string
+  saveLabel?: string,
+  showCancel?: boolean
 }>();
 
 const open = defineModel<boolean>("open", { default: false });
@@ -28,8 +29,22 @@ const errorMessage = ref<string>();
 const loading = ref(false);
 const confirmInfo = ref(false);
 
+const consentSelected = computed(() => {
+  let result = false;
+
+  for (const info of medicalInfo.value) {
+    if (info.first_aid_consent === undefined || info.photography_consent === undefined) {
+      result = true;
+      break;
+    }
+  }
+
+  return result;
+});
+
 watch(open, async (val) => {
   if (val) {
+    confirmInfo.value = false;
     errorMessage.value = undefined;
     viewingInfoIndex.value = undefined;
     await loadData();
@@ -57,7 +72,9 @@ function blankMedicalInfo (userId: string) {
     other: false,
     details: "",
     user: userId,
-    hasData: false
+    hasData: false,
+    first_aid_consent: undefined,
+    photography_consent: undefined
   };
 }
 
@@ -88,6 +105,8 @@ async function loadData () {
           "details",
           "diabetes",
           "epilepsy",
+          "first_aid_consent",
+          "photography_consent",
           "other"
         ],
         filter: {
@@ -124,8 +143,10 @@ async function loadData () {
     });
 
     medicalInfo.value.forEach((i) => {
-      i.hasData = false;
+      i.hasData = checkHasData(i);
       i.details = i.details ?? "";
+      i.first_aid_consent = i.first_aid_consent === null ? undefined : i.first_aid_consent;
+      i.photography_consent = i.photography_consent === null ? undefined : i.photography_consent;
     });
     originalMedicalInfo.value = cloneDeep(medicalInfo.value);
   } catch (err) {
@@ -134,6 +155,18 @@ async function loadData () {
   } finally {
     loading.value = false;
   }
+}
+
+function checkHasData (val: MedicalInformation) {
+  const hasDetails = !!val.details && val.details.trim() !== "";
+  return val.allergies ||
+    val.asthma ||
+    val.epilepsy ||
+    val.diabetes ||
+    val.other ||
+    hasDetails ||
+    val.first_aid_consent !== undefined ||
+    val.photography_consent !== undefined;
 }
 
 async function onUpdate () {
@@ -173,7 +206,9 @@ async function onUpdate () {
             diabetes: item.diabetes,
             epilepsy: item.epilepsy,
             other: item.other,
-            details: item.details
+            details: item.details,
+            first_aid_consent: item.first_aid_consent,
+            photography_consent: item.photography_consent
           }
         });
       }
@@ -188,6 +223,10 @@ async function onUpdate () {
 
 function onContinue () {
   emits("continue");
+}
+
+function onCancel () {
+  emits("cancel");
 }
 
 function viewInfo (index: number) {
@@ -215,6 +254,14 @@ const singleSubHeading = computed(() => {
 
 function isJunior (userId: string) {
   return props.users.find(u => u.id === userId)?.role.name.toLowerCase() === "junior";
+}
+
+function isActionNeeded (info: MedicalInformation) {
+  return info.first_aid_consent === undefined || info.photography_consent === undefined;
+}
+
+function isSelf (info: MedicalInformation) {
+  return info.user === user.value!.id;
 }
 
 </script>
@@ -277,15 +324,18 @@ function isJunior (userId: string) {
               </div>
               <template v-else>
                 <div class="space-y-4">
-                  <strong>
-                    {{ users.length === 1 ? "Confirm medical info" : ("Confirm medical info for " + users.length + " users") }}
-                  </strong>
+                  <h3 class="text-base font-semibold">
+                    {{
+                      users.length === 1 ? "Confirm medical info" : ("Confirm medical info for " + users.length + " users")
+                    }}
+                  </h3>
                   <slot />
                   <template v-if="medicalInfo.length > 1">
                     <div
                       v-for="(info,index) in medicalInfo"
                       :key="index"
-                      class="space-y-4 border shadow rounded-lg p-4">
+                      class="space-y-4 border shadow rounded-lg p-4"
+                      :class="[isActionNeeded(info) && viewingInfoIndex !== index ? 'bg-red-50 border border-red-300 shadow-red-200' : '']">
                       <div class="flex justify-between items-center">
                         <span class="flex items-center gap-2">
                           <span
@@ -295,6 +345,12 @@ function isJunior (userId: string) {
                           <span
                             v-if="isJunior(info.user!)"
                             class="inline-flex items-center rounded-md bg-indigo-50 px-2 py-1 text-xs font-medium text-indigo-700 ring-1 ring-inset ring-indigo-700/10">Junior</span>
+                          <span
+                            v-if="isActionNeeded(info)"
+                            class="inline-flex gap-1 items-center rounded-md bg-red-100 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/20">
+                            <ExclamationTriangleIcon class="size-3" />
+                            Action needed!
+                          </span>
                         </span>
                         <a-button
                           variant="primary"
@@ -306,6 +362,7 @@ function isJunior (userId: string) {
                       <medical-information
                         v-if="viewingInfoIndex === index"
                         v-model="medicalInfo[index]"
+                        :is-self="isSelf(info)"
                         hide-heading />
                     </div>
                   </template>
@@ -313,34 +370,51 @@ function isJunior (userId: string) {
                     <medical-information
                       v-model="medicalInfo[0]"
                       :checkboxes-label="singleSubHeading"
+                      is-self
                       hide-heading />
                   </div>
                 </div>
 
-                <input-checkbox
-                  id="confirm-info"
-                  v-model="confirmInfo"
-                  class="mt-5"
-                  label="I confirm the information above is correct"
-                  name="confirm-info" />
+                <alert-box
+                  v-if="medicalInfo.length > 1 && consentSelected && viewingInfoIndex === undefined"
+                  variant="error"
+                  class="mt-5">
+                  Please review the highlighted users above, missing data is required.
+                </alert-box>
 
-                <div class="mt-5 sm:mt-6">
+                <div class="mt-5">
+                  <input-checkbox
+                    id="confirm-info"
+                    v-model="confirmInfo"
+                    label="I confirm the information above is correct"
+                    name="confirm-info" />
+                </div>
+
+                <div class="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
                   <a-button
                     v-if="isDirty"
                     type="button"
                     :action="onUpdate"
-                    :disabled="!confirmInfo"
-                    class="w-full">
+                    :disabled="!confirmInfo || consentSelected"
+                    class="w-full"
+                    :class="[!showCancel ? 'sm:col-span-2' : 'sm:col-start-2']">
                     {{ saveLabel || "Save changes" }}
                   </a-button>
                   <a-button
                     v-else
                     type="button"
-                    variant="outline"
                     class="w-full"
-                    :disabled="!confirmInfo"
+                    :class="[!showCancel ? 'sm:col-span-2' : 'sm:col-start-2']"
+                    :disabled="!confirmInfo || consentSelected"
                     @click="onContinue">
                     {{ continueLabel || "Continue to booking" }}
+                  </a-button>
+                  <a-button
+                    v-if="showCancel"
+                    variant="outline"
+                    class="mt-3 inline-flex w-full sm:col-start-1 sm:mt-0"
+                    @click="onCancel">
+                    Cancel
                   </a-button>
                 </div>
               </template>

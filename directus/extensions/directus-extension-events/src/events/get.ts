@@ -133,8 +133,12 @@ export async function getConsentInfo(req: any, res: any, services: any, database
       mobile: participant.mobile,
       emergencyContact: emergencyContact.full_name,
       emergencyContactNumber: emergencyContact.contact_number,
-      medical_consent: booking.medical_consent,
-      photography_consent: booking.photography_consent,
+      first_aid_consent: booking.medical_consent === undefined || booking.medical_consent === null
+        ? medicalInfo?.first_aid_consent
+        : booking.medical_consent,
+      photography_consent: booking.photography_consent === undefined || booking.photography_consent === null
+        ? medicalInfo?.photography_consent
+        : booking.photography_consent,
       allergies: medicalInfo?.allergies,
       asthma: medicalInfo?.asthma,
       epilepsy: medicalInfo?.epilepsy,

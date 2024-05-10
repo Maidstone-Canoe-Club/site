@@ -108,9 +108,11 @@
 
       <medical-info-modal
         v-model:open="openMedicalInfoModal"
-        save-label="Save changes and continue"
+        save-label="Save and continue"
+        show-cancel
         :users="[user]"
-        @continue="onMedicalInfoConfirmed" />
+        @continue="onMedicalInfoConfirmed"
+        @cancel="onMedicalInfoCancel" />
 
       <event-disclaimer-modal
         v-if="hasPrice"
@@ -182,6 +184,10 @@ const route = useRoute();
 function onTryBookNow () {
   umTrackEvent("check-medical-info", { page: route.fullPath });
   openMedicalInfoModal.value = true;
+}
+
+function onMedicalInfoCancel () {
+  openMedicalInfoModal.value = false;
 }
 
 function onMedicalInfoConfirmed () {

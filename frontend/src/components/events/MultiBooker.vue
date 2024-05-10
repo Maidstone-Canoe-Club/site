@@ -153,14 +153,14 @@
     <medical-info-modal
       v-model:open="openMedicalInfoModal"
       :users="usersToBook"
-      save-label="Save changes and continue"
-      @continue="onMedicalInfoConfirmed" />
+      show-cancel
+      save-label="Save and continue"
+      @continue="onMedicalInfoConfirmed"
+      @cancel="onMedicalInfoCancel" />
 
     <event-disclaimer-modal
       v-if="usePaymentForm"
       v-model:open="openDisclaimerModal"
-      v-model:medical-consent="medicalConsent"
-      v-model:photography-consent="photographyConsent"
       :event="event"
       :confirm-action="onBookNow">
       <form
@@ -194,8 +194,6 @@
     <event-disclaimer-modal
       v-else
       v-model:open="openDisclaimerModal"
-      v-model:medical-consent="medicalConsent"
-      v-model:photography-consent="photographyConsent"
       :event="event"
       :confirm-action="onBookNow" />
   </client-only>
@@ -246,9 +244,6 @@ const openMedicalInfoModal = ref(false);
 const bookingSuccess = ref(true);
 const bookingResults = ref(null);
 
-const medicalConsent = ref(false);
-const photographyConsent = ref(false);
-
 const lastUsersBooked = ref();
 
 const nonJuniorRoles = ["members", "coach", "committee", "non-members"];
@@ -263,6 +258,10 @@ const canBookNonJuniors = computed(() => {
 
   return false;
 });
+
+function onMedicalInfoCancel () {
+  openMedicalInfoModal.value = false;
+}
 
 function onMedicalInfoConfirmed () {
   openMedicalInfoModal.value = false;
@@ -421,7 +420,7 @@ function onTryBookNow () {
 
 async function onBookNow () {
   try {
-    let url = `/events/book?eventId=${props.event.id}&userId=${props.userId}&medcon=${medicalConsent.value}&phocon=${photographyConsent.value}`;
+    let url = `/events/book?eventId=${props.event.id}&userId=${props.userId}`;
 
     if (props.instance) {
       url += `&instance=${props.instance}`;
