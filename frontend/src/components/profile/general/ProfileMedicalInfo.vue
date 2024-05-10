@@ -1,7 +1,6 @@
 ﻿<template>
   <div class="bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl" @submit.prevent>
     <div class="px-4 py-6 sm:p-8">
-      <pre>{{ medicalInfo }}</pre>
       <medical-information
         v-if="medicalInfo"
         v-model="medicalInfo"
