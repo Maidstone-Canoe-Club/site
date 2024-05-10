@@ -129,7 +129,9 @@ const medicalInfo = ref<MedicalInfo>({
   diabetes: false,
   other: false,
   details: "",
-  user: null
+  user: null,
+  first_aid_consent: undefined,
+  photography_consent: undefined
 });
 
 const emergencyContacts = ref<EmergencyContact[]>([]);

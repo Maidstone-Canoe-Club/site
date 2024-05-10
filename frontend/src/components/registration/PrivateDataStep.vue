@@ -4,44 +4,9 @@
       events you sign up for.</strong>
 
     <div class="space-y-8">
-      <div class="space-y-4">
-        <h3 class="font-bold text-xl">
-          Medical information
-        </h3>
-        <div class="flex flex-col gap-1">
-          <span class="block text-sm font-medium leading-6 text-gray-900">Do you have any of the following:</span>
-          <input-checkbox
-            id="allergies"
-            v-model="internalMedicalInfo.allergies"
-            name="allergies"
-            label="Allergies" />
-          <input-checkbox
-            id="asthma"
-            v-model="internalMedicalInfo.asthma"
-            name="asthma"
-            label="Asthma" />
-          <input-checkbox
-            id="epilepsy"
-            v-model="internalMedicalInfo.epilepsy"
-            name="epilepsy"
-            label="Epilepsy" />
-          <input-checkbox
-            id="diabetes"
-            v-model="internalMedicalInfo.diabetes"
-            name="diabetes"
-            label="Diabetes" />
-          <input-checkbox
-            id="other"
-            v-model="internalMedicalInfo.other"
-            name="other"
-            label="Other" />
-        </div>
-
-        <input-text-area
-          id="medical-details"
-          v-model="internalMedicalInfo.details"
-          name="medical-details"
-          label="If you checked any of the above, please give details (e.g. medication required)" />
+      <medical-information v-model="internalMedicalInfo" />
+      <div v-if="showNeedsConsent">
+        <span class="text-sm text-red-600">You must select your consent preferences</span>
       </div>
 
       <div class="space-y-4">
@@ -70,6 +35,8 @@
       Complete registration
     </custom-button>
 
+    <span class="text-sm">By registering you agree to our <nuxt-link to="/privacy-policy" class="underline text-indigo-500">privacy policy.</nuxt-link></span>
+
     <button
       class="flex-grow rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
       type="button"
@@ -95,6 +62,7 @@ const internalNewsPostNotifications = ref(props.newsPostNotifications);
 const internalMedicalInfo = ref(props.medicalInfo);
 const internalEmergencyContacts = ref(props.emergencyContacts);
 const showContactsValidation = ref(false);
+const showNeedsConsent = ref(false);
 
 watch(() => props.newsPostNotifications, (val) => {
   internalNewsPostNotifications.value = val;
@@ -129,6 +97,15 @@ function onBack () {
 }
 
 function onSubmit () {
+  showNeedsConsent.value = false;
+  showContactsValidation.value = false;
+
+  if (internalMedicalInfo.value.first_aid_consent === undefined ||
+    internalMedicalInfo.value.photography_consent === undefined) {
+    showNeedsConsent.value = true;
+    return;
+  }
+
   if (!internalEmergencyContacts.value.length) {
     showContactsValidation.value = true;
     return;

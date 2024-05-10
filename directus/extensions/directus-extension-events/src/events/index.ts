@@ -599,8 +599,6 @@ export default defineEndpoint((router, {services, database}) => {
       const eventId = req.query.eventId;
       const loggedInUserId = req.query.userId;
       const instance = req.query.instance;
-      const medicalConsent = req.query.medcon;
-      const photographyConsent = req.query.phocon;
       const userIds = req.body.userIds;
 
       if (!eventId) {
@@ -626,6 +624,11 @@ export default defineEndpoint((router, {services, database}) => {
       const event = await eventsService.readOne(eventId);
       const filter: any = {
         _and: [
+          {
+            status: {
+              _neq: "cancelled"
+            }
+          },
           {
             event: {
               _eq: eventId
@@ -692,8 +695,6 @@ export default defineEndpoint((router, {services, database}) => {
           event: eventId,
           instance: instance,
           status: "booked",
-          medical_consent: medicalConsent,
-          photography_consent: photographyConsent,
           checkin_code: nanoid()
         });
 
@@ -770,15 +771,26 @@ export default defineEndpoint((router, {services, database}) => {
       });
 
       const bookingsFilter: any = {
-        event: {
-          _eq: eventId
-        }
+        _and: [
+          {
+            status: {
+              _neq: "cancelled"
+            }
+          },
+          {
+            event: {
+              _eq: eventId
+            }
+          }
+        ]
       };
 
       if (instance) {
-        bookingsFilter.instance = {
-          _eq: instance
-        };
+        bookingsFilter._and.push({
+          instance: {
+            _eq: instance
+          }
+        });
       }
 
       const bookings = await eventBookingService.readByQuery({
@@ -856,6 +868,8 @@ export default defineEndpoint((router, {services, database}) => {
         row.push("epilepsy");
         row.push("diabetes");
         row.push("other medical condition");
+        row.push("first_aid_consent");
+        row.push("photography_consent");
         row.push("additional medical info");
       }
 
@@ -917,12 +931,28 @@ export default defineEndpoint((router, {services, database}) => {
             medicalInfo = medicalInfoItems[0];
           }
 
-          bookingRow.push((medicalInfo?.allergies ?? false) ? "Yes" : "No");
-          bookingRow.push((medicalInfo?.asthma ?? false) ? "Yes" : "No");
-          bookingRow.push((medicalInfo?.epilepsy ?? false) ? "Yes" : "No");
-          bookingRow.push((medicalInfo?.diabetes ?? false) ? "Yes" : "No");
-          bookingRow.push((medicalInfo?.other ?? false) ? "Yes" : "No");
-          bookingRow.push(medicalInfo?.details ?? null);
+          const medicalInfoProps = [
+            "allergies",
+            "asthma",
+            "epilepsy",
+            "diabetes",
+            "other",
+            "first_aid_consent",
+            "photography_consent"
+          ];
+
+          for (const prop of medicalInfoProps) {
+            if (medicalInfo === null ||
+                medicalInfo === undefined ||
+                medicalInfo[prop] === null ||
+                medicalInfo[prop] === undefined) {
+              bookingRow.push("Not specified");
+            } else {
+              bookingRow.push(medicalInfo[prop] ? "Yes" : "No");
+            }
+          }
+
+          bookingRow.push(medicalInfo?.details || "Not specified");
         }
 
         if (body.emergencyContacts) {

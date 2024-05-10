@@ -1,6 +1,7 @@
 ﻿<template>
   <div class="bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl" @submit.prevent>
     <div class="px-4 py-6 sm:p-8">
+      <pre>{{ medicalInfo }}</pre>
       <medical-information
         v-if="medicalInfo"
         v-model="medicalInfo"
@@ -46,7 +47,17 @@ async function loadData () {
 }
 
 async function onSave () {
+  status.value = undefined;
+
   try {
+    if (medicalInfo.value.first_aid_consent === undefined ||
+      medicalInfo.value.first_aid_consent === null ||
+      medicalInfo.value.photography_consent === undefined ||
+      medicalInfo.value.photography_consent === null) {
+      status.value = "You must select consent options before saving";
+      return;
+    }
+
     await new Promise<void>((resolve) => {
       setTimeout(() => {
         resolve();
@@ -59,7 +70,9 @@ async function onSave () {
       diabetes: medicalInfo.value.diabetes,
       epilepsy: medicalInfo.value.epilepsy,
       other: medicalInfo.value.other,
-      details: medicalInfo.value.details
+      details: medicalInfo.value.details,
+      first_aid_consent: medicalInfo.value.first_aid_consent,
+      photography_consent: medicalInfo.value.photography_consent
     };
 
     if (medicalInfo.value.id) {

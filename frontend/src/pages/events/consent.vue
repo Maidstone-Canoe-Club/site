@@ -12,8 +12,8 @@ type ConsentInfo = {
   mobile: string
   emergencyContact: string
   emergencyContactNumber: string
-  medical_consent: string
-  photography_consent: string
+  first_aid_consent?: string
+  photography_consent?: string
   allergies: string
   asthma: string
   epilepsy: string
@@ -144,29 +144,85 @@ const dob = computed(() => format(new Date(info.value.dob), "dd/MM/yyyy"));
           <span>{{ info.emergencyContactNumber }}</span>
         </div>
 
-        <div class="">
+        <div>
           <strong>Medical conditions: </strong>
-          <ul class="mx-2">
-            <li>Allergies: {{ info.allergies ? "Yes" : "No" }}</li>
-            <li>Asthma: {{ info.asthma ? "Yes" : "No" }}</li>
-            <li>Epilepsy: {{ info.epilepsy ? "Yes" : "No" }}</li>
-            <li>Diabetes: {{ info.diabetes ? "Yes" : "No" }}</li>
-            <li>Other: {{ info.other ? "Yes" : "No" }}</li>
-            <li>Other details: {{ info.otherDetails ?? "N/A" }}</li>
+          <ul class="mx-2 mt-2 flex justify-between flex-col gap-1">
+            <li class="flex justify-between items-center w-32">
+              Allergies:
+              <span class="border border-gray-400 size-8 inline-flex justify-center items-center">
+                {{
+                  info.allergies === undefined || info.allergies === null
+                    ? ""
+                    : info.allergies ? "Yes" : "No"
+                }}
+              </span>
+            </li>
+            <li class="flex justify-between items-center w-32">
+              Asthma:
+              <span class="border border-gray-400 size-8 inline-flex justify-center items-center">
+                {{
+                  info.asthma === undefined || info.asthma === null
+                    ? ""
+                    : info.asthma ? "Yes" : "No"
+                }}
+              </span>
+            </li>
+            <li class="flex justify-between items-center w-32">
+              Epilepsy:
+              <span class="border border-gray-400 size-8 inline-flex justify-center items-center">
+                {{
+                  info.epilepsy === undefined || info.epilepsy === null
+                    ? ""
+                    : info.epilepsy ? "Yes" : "No"
+                }}
+              </span>
+            </li>
+            <li class="flex justify-between items-center w-32">
+              Diabetes:
+              <span class="border border-gray-400 size-8 inline-flex justify-center items-center">
+                {{
+                  info.diabetes === undefined || info.diabetes === null
+                    ? ""
+                    : info.diabetes ? "Yes" : "No"
+                }}
+              </span>
+            </li>
+            <li class="flex justify-between items-center w-32">
+              Other:
+              <span class="border border-gray-400 size-8 inline-flex justify-center items-center">
+                {{
+                  info.other === undefined || info.other === null
+                    ? ""
+                    : info.other ? "Yes" : "No"
+                }}
+              </span>
+            </li>
+            <li class="flex flex-col gap-2">
+              Other details:
+              <span class="border border-gray-400 p-2 min-h-32 block w-full">
+                {{ info.otherDetails }}
+              </span>
+            </li>
           </ul>
         </div>
       </div>
 
-      <div class="flex gap-5 items-start">
+      <div class="flex gap-5 justify-between">
         <span>I consent to myself / my child receiving appropriate first aid, or, in the event of a medical emergency,
           any treatment deemed necessary by a qualified medical practitioner: </span>
-        <strong>{{ info.medical_consent ? "Yes" : "No" }}</strong>
+        <span class="border border-gray-400 min-w-8 size-8 inline-flex justify-center items-center">
+          <span v-if="info.first_aid_consent === undefined" />
+          <span v-else>{{ info.first_aid_consent ? "Yes" : "No" }}</span>
+        </span>
       </div>
 
-      <div class="flex gap-5 items-start">
+      <div class="flex gap-5 justify-between">
         <span>I consent that photographs or video taken by authorised personnel of myself / my son / my daughter at
           British Canoeing or club events may be used to promote paddlesport and help improve performance. </span>
-        <strong>{{ info.photography_consent ? "Yes" : "No" }}</strong>
+        <span class="border border-gray-400 min-w-8 size-8 inline-flex justify-center items-center">
+          <span v-if="info.photography_consent === undefined" />
+          <span v-else>{{ info.photography_consent ? "Yes" : "No" }}</span>
+        </span>
       </div>
 
       <div class="space-y-3">

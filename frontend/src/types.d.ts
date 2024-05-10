@@ -7,6 +7,8 @@ export type MedicalInfo = {
   diabetes: boolean,
   other: boolean,
   details: string,
+  first_aid_consent?: boolean,
+  photography_consent?: boolean,
   user: string | null
 }
 
