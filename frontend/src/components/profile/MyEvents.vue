@@ -57,33 +57,35 @@ async function loadData () {
     totalCount.value = result.meta?.filter_count;
     events.value = result.data;
 
-    const counts = await getItems<{
-    event: string,
-    count: string
-  }>({
-    collection: "event_bookings",
-    params: {
-      filter: {
-        _and: [
-          {
-            status: {
-              _neq: "cancelled"
-            }
+    if (events.value && events.value.length) {
+      const counts = await getItems<{
+        event: string,
+        count: string
+      }>({
+        collection: "event_bookings",
+        params: {
+          filter: {
+            _and: [
+              {
+                status: {
+                  _neq: "cancelled"
+                }
+              },
+              {
+                event: {
+                  _in: events.value.filter(e => !e.is_recurring).map(e => e.id)
+                }
+              }
+            ]
           },
-          {
-            event: {
-              _in: events.value.filter(e => !e.is_recurring).map(e => e.id)
-            }
-          }
-        ]
-      },
-      "aggregate[count]": "*",
-      groupBy: "event"
-    }
-  });
+          "aggregate[count]": "*",
+          groupBy: "event"
+        }
+      });
 
-    if (counts && counts.length) {
-      bookingCounts.value = Object.fromEntries(counts.map(b => [b.event, b.count]));
+      if (counts && counts.length) {
+        bookingCounts.value = Object.fromEntries(counts.map(b => [b.event, b.count]));
+      }
     }
   } finally {
     loading.value = false;
