@@ -77,7 +77,9 @@ function getEventsForDate (date: Date): CalendarEvent[] {
 
     const eventIsSingleDay = isSameDay(start, end);
     return withinDateRange || (eventIsSingleDay && isSameDay(start, date));
-  }).map(e => eventItemToCalendarEvent(e, date));
+  })
+    .sort((a, b) => new Date(a.start_date).getTime() - new Date(b.start_date).getTime())
+    .map(e => eventItemToCalendarEvent(e, date));
 }
 
 function generateDays (): CalendarDay[] {
