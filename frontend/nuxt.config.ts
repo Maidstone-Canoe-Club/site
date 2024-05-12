@@ -91,7 +91,8 @@ export default defineNuxtConfig({
     "nuxt-time",
     "@nuxt/fonts",
     "@nuxtjs/device",
-    "@nuxt/image"
+    "@nuxt/image",
+    "@nuxt/test-utils/module"
   ],
 
   image: {
@@ -110,11 +111,11 @@ export default defineNuxtConfig({
     autoRefresh: true,
     fetchUserParams: {
       fields: ["*", "role.name"]
-    },
-    onAutoRefreshFailure () : Promise<void> {
-      console.log("AUTO REFRESH FAILURE!");
-      return Promise.resolve();
     }
+    // onAutoRefreshFailure () : Promise<void> {
+    //   console.log("AUTO REFRESH FAILURE!");
+    //   return Promise.resolve();
+    // }
   },
 
   ogImage: {

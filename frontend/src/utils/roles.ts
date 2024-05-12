@@ -25,11 +25,17 @@ function getRoleLevel (role: string) {
 
 export function hasExactRole (user: DirectusUser, role: string) {
   if (!user) {
+    console.error("User object is missing when checking for exact role");
+    return false;
+  }
+
+  if (!role) {
+    console.error("Cannot compare exact to missing role");
     return false;
   }
 
   if (!user.role) {
-    console.error("No role object on user");
+    console.error(`No role object on user with id ${user.id}`);
     return false;
   }
 
@@ -38,18 +44,24 @@ export function hasExactRole (user: DirectusUser, role: string) {
 
 export function hasRole (user: DirectusUser, role: string) {
   if (!user) {
+    console.error("User object is missing when checking for role");
+    return false;
+  }
+
+  if (!role) {
+    console.error("Cannot compare to missing role");
     return false;
   }
 
   if (!user.role) {
-    console.error("No role object on user");
+    console.error(`No role object on user with id ${user.id}`);
     return false;
   }
 
   const userLevel = getRoleLevel(user.role.name);
 
   if (!userLevel) {
-    console.warn(`Unknown user role: '${user.role.name}'`);
+    console.warn(`Unknown user role: '${user.role.name}' for user with id ${user.id}`);
     return false;
   }
 

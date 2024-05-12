@@ -1,4 +1,8 @@
-﻿export function buildQueryParams (params: Record<string, string> | object) {
+﻿export function buildQueryParams (params: Record<string, string> | object | null | undefined) {
+  if (!params) {
+    return "";
+  }
+
   const parts = ["?"];
 
   Object.entries(params)
