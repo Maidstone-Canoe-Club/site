@@ -12,24 +12,24 @@ on:
   workflow_dispatch: {}
   merge_group: {}
 
-  jobs:
-    ci:
-      runs-on: ubuntu-latest
+jobs:
+  ci:
+    runs-on: ubuntu-latest
 
-      steps:
-        - uses: actions/checkout@v4
-        - run: corepack enable
-        - uses: actions/setup-node@v4
-          with:
-            node-version: 20
-            cache: pnpm
+    steps:
+      - uses: actions/checkout@v4
+      - run: corepack enable
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
 
-        - name: 📦 Install dependencies
-          run: pnpm install --frozen-lockfile
+      - name: 📦 Install dependencies
+        run: pnpm install --frozen-lockfile
 
-        - name: 🚧 Set up project
-          run: pnpm nuxi prepare
+      - name: 🚧 Set up project
+        run: pnpm nuxi prepare
 
-        - name: 🧪 Test project
-          run: pnpm test:ci
-          timeout-minutes: 10
+      - name: 🧪 Test project
+        run: pnpm test:ci
+        timeout-minutes: 10
