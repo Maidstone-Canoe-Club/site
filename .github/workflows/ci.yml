@@ -23,13 +23,17 @@ jobs:
         with:
           node-version: 20
           cache: pnpm
+          cache-dependency-path: './frontend/pnpm-lock.yaml'
 
       - name: 📦 Install dependencies
+        working-directory: ./frontend
         run: pnpm install --frozen-lockfile
 
       - name: 🚧 Set up project
+        working-directory: ./frontend
         run: pnpm nuxi prepare
 
       - name: 🧪 Test project
+        working-directory: ./frontend
         run: pnpm test:ci
         timeout-minutes: 10
