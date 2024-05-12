@@ -25,11 +25,17 @@ jobs:
           cache: pnpm
 
       - name: 📦 Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: |
+          cd frontend
+          pnpm install --frozen-lockfile
 
       - name: 🚧 Set up project
-        run: pnpm nuxi prepare
+        run: |
+          cd frontend
+          pnpm nuxi prepare
 
       - name: 🧪 Test project
-        run: pnpm test:ci
+        run: | 
+          cd frontend
+          pnpm test:ci
         timeout-minutes: 10
