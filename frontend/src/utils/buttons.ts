@@ -1,4 +1,4 @@
-﻿export type ButtonVariant = "primary" | "secondary" | "outline" | "danger" | "warning" | "success";
+﻿export type ButtonVariant = "primary" | "secondary" | "outline" | "danger" | "warning" | "success" | "link";
 export type ButtonSize = "xs" | "sm" | "md" | "lg";
 
 export const ButtonVariantClasses: Record<ButtonVariant, string> = {
@@ -7,7 +7,8 @@ export const ButtonVariantClasses: Record<ButtonVariant, string> = {
   outline: "bg-white text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50",
   danger: "bg-red-600 text-white hover:bg-red-500 focus-visible:outline-red-600",
   warning: "bg-yellow-600 text-white hover:bg-yellow-500 focus-visible:outline-yellow-600",
-  success: "bg-green-600 text-white hover:bg-green-500 focus-visible:outline-green-600"
+  success: "bg-green-600 text-white hover:bg-green-500 focus-visible:outline-green-600",
+  link: "bg-transparent text-indigo-500 hover:text-indigo-400 focus-visible:outline-indigo-600 underline shadow-none"
 };
 
 export const ButtonSizeClasses: Record<ButtonSize, string> = {
