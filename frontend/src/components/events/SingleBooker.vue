@@ -37,6 +37,17 @@
         <TicketIcon class="size-5" />
         Book now
       </a-button>
+
+      <div
+        v-if="juniorsAllowed"
+        class="flex mt-3">
+        <nuxt-link
+          to="/profile/juniors"
+          class="rounded flex items-center gap-1 bg-white px-2 py-1 text-xs font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+          Add new junior
+          <PlusIcon class="h-4" />
+        </nuxt-link>
+      </div>
     </template>
     <client-only>
       <TransitionRoot as="template" :show="openResultModal">
@@ -151,7 +162,7 @@
 
 <script setup lang="ts">
 import { InformationCircleIcon } from "@heroicons/vue/20/solid";
-import { CheckIcon, ExclamationTriangleIcon, TicketIcon, CreditCardIcon } from "@heroicons/vue/24/outline";
+import { CheckIcon, ExclamationTriangleIcon, TicketIcon, CreditCardIcon, PlusIcon } from "@heroicons/vue/24/outline";
 // @ts-ignore
 import Dinero from "dinero.js";
 import type { EventItem } from "~/types";
@@ -210,6 +221,8 @@ const meetsMinAge = computed(() => {
 
   return age >= props.event.min_age;
 });
+
+const juniorsAllowed = computed(() => props.event.allowed_roles?.includes("juniors"));
 
 async function onBookNow () {
   try {
