@@ -14,7 +14,7 @@ const show = ref(false);
 const {
   errors,
   clearError
-} = useError();
+} = useErrors();
 
 const currentError = ref<ErrorContent>();
 

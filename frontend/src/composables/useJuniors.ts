@@ -12,7 +12,7 @@ export type JuniorUser = {
 
 export function useJuniors () {
   const directus = useDirectus();
-  const { newError } = useError();
+  const { newError } = useErrors();
 
   async function createJunior (junior: MaybeRef<JuniorUser>) {
     try {
