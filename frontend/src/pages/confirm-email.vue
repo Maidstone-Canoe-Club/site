@@ -35,18 +35,6 @@
 
 <script setup lang="ts">
 import { ShieldCheckIcon, ExclamationTriangleIcon } from "@heroicons/vue/20/solid";
-import { definePageMeta, useDirectusAuth } from "#imports";
-
-definePageMeta({
-  middleware: ["auth"]
-});
-
-const user = useDirectusUser();
-const { fetchUser } = useDirectusAuth();
-
-if (!user.value) {
-  throw createError("Unable to fetch user");
-}
 
 type ConfirmResult = {
   result: boolean,
@@ -57,16 +45,21 @@ type ConfirmResult = {
 const route = useRoute();
 const token = route.query.t;
 
-const config = useRuntimeConfig();
-const baseUrl = config.public.directus.url;
-const url = baseUrl + "/confirm-email";
+const { newError } = useErrors();
+const directus = useDirectus();
 const sentNewRequest = ref(false);
 
-const res = await useFetch<ConfirmResult>(url, {
-  method: "post",
-  query: {
-    t: token
+const res = useAsyncData<ConfirmResult | null>(`confirm-email-${token}`, async () => {
+  const url = `/confirm-email?t=${token}`;
+  try {
+    return await directus<ConfirmResult>(url, {
+      method: "POST"
+    });
+  } catch (err: any) {
+    console.error("Error confirming email", err);
   }
+
+  return null;
 });
 
 const result = computed(() => res.data.value?.result || false);
@@ -74,10 +67,6 @@ const expired = computed(() => res.data.value?.statusCode === 103 || false);
 const alreadyConfirmed = computed(() => res.data.value?.statusCode === 102 || false);
 const unknownToken = computed(() => res.data.value?.statusCode === 101 || false);
 const hasError = computed(() => !!res.error.value);
-
-if (result.value) {
-  await fetchUser();
-}
 
 const message = computed(() => {
   if (result.value) {
@@ -108,18 +97,22 @@ const headingText = computed(() => {
   return "Unable to confirm email";
 });
 
-const directus = useDirectus();
-
 async function sendNew () {
   const sendNewUrl = "/confirm-email/new";
 
-  await directus(sendNewUrl, {
-    method: "post",
-    query: {
-      id: user.value!.id
-    }
-  });
-  sentNewRequest.value = true;
+  try {
+    await directus(sendNewUrl, {
+      method: "post",
+      query: {
+        t: token
+      }
+    });
+    sentNewRequest.value = true;
+  } catch (err: any) {
+    newError({
+      message: "Something went wrong sending a new confirmation link"
+    });
+  }
 }
 
 </script>
