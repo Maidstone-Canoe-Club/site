@@ -120,6 +120,7 @@ const user = ref({
   postcode: ""
 });
 
+const preMedicalCheck = useState<boolean>("pre-med-check", () => false);
 const newsPostNotifications = ref(false);
 
 const medicalInfo = ref<MedicalInfo>({
@@ -187,6 +188,8 @@ async function onCompleteRegistration () {
       }
     });
 
+    preMedicalCheck.value = true;
+
     console.log("submit response", submitResponse);
     console.log("registration complete!");
 
@@ -194,6 +197,7 @@ async function onCompleteRegistration () {
       email: user.value.email,
       password: user.value.password
     });
+
     await navigateTo("/");
   } catch (e) {
     loading.value = true;

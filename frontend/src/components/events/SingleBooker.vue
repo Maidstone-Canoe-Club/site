@@ -8,18 +8,9 @@
       </alert-box>
     </template>
     <template v-if="spacesLeft === 0">
-      <div class="rounded-md bg-blue-50 p-4 border border-blue-400">
-        <div class="flex">
-          <div class="flex-shrink-0">
-            <InformationCircleIcon class="h-5 w-5 text-blue-400" aria-hidden="true" />
-          </div>
-          <div class="ml-3 flex-1 md:flex md:justify-between">
-            <p class="text-sm text-blue-700">
-              This event is now full
-            </p>
-          </div>
-        </div>
-      </div>
+      <alert-box>
+        The event is now full
+      </alert-box>
     </template>
     <template v-else-if="!alreadyBooked">
       <a-button
@@ -38,6 +29,18 @@
         Book now
       </a-button>
     </template>
+    <div
+      v-if="juniorsAllowed"
+      class="flex justify-between items-center mb-4 gap-2 flex-wrap">
+      <span class="text-sm">Want to book a junior?</span>
+      <nuxt-link
+        to="/profile/juniors"
+        class="rounded flex items-center gap-1 bg-white px-2 py-1 text-xs font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+        Create junior
+        <UsersIcon class="h-4" />
+      </nuxt-link>
+    </div>
+
     <client-only>
       <TransitionRoot as="template" :show="openResultModal">
         <Dialog as="div" class="relative z-10" @close="openResultModal = false">
@@ -152,6 +155,7 @@
 <script setup lang="ts">
 import { InformationCircleIcon } from "@heroicons/vue/20/solid";
 import { CheckIcon, ExclamationTriangleIcon, TicketIcon, CreditCardIcon } from "@heroicons/vue/24/outline";
+import { UsersIcon } from "@heroicons/vue/16/solid";
 // @ts-ignore
 import Dinero from "dinero.js";
 import type { EventItem } from "~/types";
@@ -210,6 +214,8 @@ const meetsMinAge = computed(() => {
 
   return age >= props.event.min_age;
 });
+
+const juniorsAllowed = computed(() => props.event.allowed_roles?.includes("juniors"));
 
 async function onBookNow () {
   try {

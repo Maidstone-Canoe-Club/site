@@ -64,22 +64,17 @@ import { required } from "@vuelidate/validators";
 import type { Ref } from "vue";
 import { useVuelidate } from "@vuelidate/core";
 import type { Validation } from "@vuelidate/core";
+import type { JuniorUser } from "~/composables/useJuniors";
 
-export type Junior = {
-  id?: string,
-  first_name: string,
-  last_name: string,
-  parentId: string,
-  bc_number: string,
-  medicalInformation: {}
-}
-
-const directus = useDirectus();
+const {
+  createJunior,
+  updateJunior
+} = useJuniors();
 
 const emits = defineEmits(["update:modelValue", "complete", "back"]);
 
 const props = defineProps<{
-  modelValue: Junior,
+  modelValue: JuniorUser,
   mode: "create" | "edit" | null
 }>();
 
@@ -92,7 +87,7 @@ const rules = {
 const errorMessage = ref<string>();
 const internalValue = ref(props.modelValue);
 
-const v$: Ref<Validation> = useVuelidate(rules, internalValue);
+const v$: Ref<Validation> = useVuelidate<JuniorUser>(rules, internalValue);
 
 watch(() => props.modelValue, (val) => {
   internalValue.value = val;
@@ -107,34 +102,15 @@ async function submit () {
   v$.value.$touch();
 
   if (!v$.value.$invalid) {
-    try {
-      if (props.mode === "create") {
-        await createJunior();
-      } else if (props.mode === "edit") {
-        await updateJunior();
-      }
-
-      v$.value.$reset();
-      emits("complete");
-    } catch (err: any) {
-      console.error("error saving junior");
-      errorMessage.value = `There was an error ${props.mode === "create" ? "creating" : "updating"} the junior`;
+    if (props.mode === "create") {
+      await createJunior(internalValue);
+    } else if (props.mode === "edit") {
+      await updateJunior(internalValue);
     }
+
+    v$.value.$reset();
+    emits("complete");
   }
-}
-
-async function createJunior () {
-  await directus("/juniors/create", {
-    method: "POST",
-    body: { user: internalValue.value }
-  });
-}
-
-async function updateJunior () {
-  await directus("/juniors/update", {
-    method: "POST",
-    body: { user: internalValue.value }
-  });
 }
 
 function onBack () {

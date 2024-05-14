@@ -1,7 +1,9 @@
 <template>
   <nuxt-loading-indicator />
+  <error-notification />
   <nuxt-layout :key="key">
     <nuxt-page />
+    <page-notification />
     <medical-info-modal
       v-model:open="showMedicalInfoModal"
       continue-label="Continue"
@@ -43,6 +45,7 @@ provideUseId(() => useId());
 const user = useDirectusUser();
 const { updateUser } = useDirectusUsers();
 const key = computed(() => user.value?.id || "");
+const preMedicalCheck = useState<boolean>("pre-med-check", () => false);
 
 const showMedicalInfoModal = ref(false);
 const lastCheckDaysAgo = ref<number | null>(null);
@@ -57,6 +60,11 @@ watch(user, () => {
 });
 
 function tryMedicalInfoCheck () {
+  if (preMedicalCheck.value) {
+    console.log("medical form already seen this session");
+    return;
+  }
+
   lastCheckDaysAgo.value = null;
 
   if (user.value) {
