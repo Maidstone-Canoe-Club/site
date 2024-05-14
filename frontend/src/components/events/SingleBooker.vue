@@ -31,8 +31,10 @@
     </template>
     <div
       v-if="juniorsAllowed"
-      class="flex justify-between items-center mb-4 gap-2 flex-wrap">
-      <span class="text-sm">Want to book a junior?</span>
+      class="flex justify-between items-center mt-4 gap-2 flex-wrap border rounded p-2 py-1.5">
+      <span class="text-sm">
+        Want to book a junior?
+      </span>
       <nuxt-link
         to="/profile/juniors"
         class="rounded flex items-center gap-1 bg-white px-2 py-1 text-xs font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">

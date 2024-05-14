@@ -3,7 +3,7 @@
   message: string
 }
 
-export function useError () {
+export function useErrors () {
   const state = useState<ErrorContent[]>("site-errors", () => []);
 
   function newError (error: ErrorContent) {
