@@ -71,7 +71,10 @@ const canGoPrev = computed(() => {
 });
 
 const canGoNext = computed(() => {
-  return props.page < props.totalItems * props.page;
+  if (props.itemsPerPage !== 0) {
+    return props.page < props.totalItems / props.itemsPerPage;
+  }
+  return false;
 });
 
 function onNext () {

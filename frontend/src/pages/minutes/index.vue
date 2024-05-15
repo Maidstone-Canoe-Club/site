@@ -76,6 +76,13 @@
           </div>
         </li>
       </ul>
+
+      <simple-pagination
+        :items-per-page="itemsPerPage"
+        :total-items="totalCount"
+        :page="page"
+        @next="onNext"
+        @prev="onPrev" />
     </div>
     <div v-else>
       No minutes yet!
@@ -87,27 +94,46 @@
 import { format } from "date-fns";
 import { EllipsisVerticalIcon } from "@heroicons/vue/20/solid";
 
+export type MeetingMinutesItem = {
+  id: string,
+  meeting: string,
+  meeting_date: string,
+  file: string,
+}
+
 const { getItems, deleteItems } = useDirectusItems();
 const directus = useDirectus();
 const user = useDirectusUser();
 const config = useRuntimeConfig();
 
-const { data: meetingMinutes } = await useAsyncData("minutes", async () => {
+const page = ref(1);
+const itemsPerPage = 12;
+
+const meetingData = await useAsyncData("minutes", async () => {
   return await loadData();
 });
 
+const meetingMinutes = computed<MeetingMinutesItem[]>(() => meetingData.data.value?.data || []);
+
+const totalCount = computed(() => meetingData.data.value?.meta?.total_count ?? 0);
+
 async function loadData () {
-  const items = await getItems({
+  const items = await getItems<MeetingMinutesItem>({
     collection: "minutes",
     params: {
-      sort: ["-meeting_date"]
+      limit: itemsPerPage,
+      page: page.value,
+      sort: ["-meeting_date"],
+      meta: "total_count"
     }
   });
 
-  return items?.map(x => ({
+  items.data = items?.data.map(x => ({
     ...x,
     href: `${config.public.directus.url}/assets/${x.file}?download`
   })) ?? [];
+
+  return items;
 }
 
 const canModifyMinutes = computed(() => {
@@ -144,12 +170,24 @@ async function onDelete (minutes: any) {
       items: [minutes.id]
     });
 
-    meetingMinutes.value = await loadData();
+    page.value = 1;
   } catch (e) {
     console.error("error deleting minutes", e);
   } finally {
     minutes.loading = false;
   }
+}
+
+watch(page, async () => {
+  await meetingData.refresh();
+});
+
+function onNext () {
+  page.value = page.value + 1;
+}
+
+function onPrev () {
+  page.value = page.value - 1;
 }
 
 </script>
