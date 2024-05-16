@@ -3,7 +3,8 @@
     <label
       v-if="label"
       :for="id"
-      class="block text-sm font-medium leading-6 text-gray-900">{{ label }}</label>
+      class="block text-sm font-medium leading-6 text-gray-900"
+      :class="{'required': required}">{{ label }}</label>
     <input
       id="file_input"
       class="p-2 bg-white block w-full text-sm text-gray-900 border border-gray-300 rounded-md cursor-pointer focus:outline-none"
@@ -30,6 +31,7 @@ const props = defineProps<{
   id: string,
   label?: string,
   fileTypes?: string,
+  required?: boolean,
   v?: Validation | null
 }>();
 

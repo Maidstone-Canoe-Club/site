@@ -7,7 +7,9 @@ export function useErrors () {
   const state = useState<ErrorContent[]>("site-errors", () => []);
 
   function newError (error: ErrorContent) {
-    state.value.push(error);
+    if (import.meta.client) {
+      state.value.push(error);
+    }
   }
 
   function clearError () {

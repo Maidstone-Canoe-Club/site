@@ -3,7 +3,8 @@
     <label
       v-if="label"
       :for="id"
-      class="block text-sm font-medium leading-6 text-gray-900">
+      class="block text-sm font-medium leading-6 text-gray-900"
+      :class="{'required': required}">
       {{ label }}
     </label>
     <div
