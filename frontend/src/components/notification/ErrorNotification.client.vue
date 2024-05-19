@@ -1,6 +1,6 @@
 ﻿<script setup lang="ts">
 import { ExclamationTriangleIcon } from "@heroicons/vue/24/outline";
-import type { ErrorContent } from "~/composables/useError";
+import type { ErrorContent } from "~/composables/useErrors";
 
 const props = withDefaults(defineProps<{
   delay?: number

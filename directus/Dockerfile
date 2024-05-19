@@ -8,7 +8,7 @@ COPY extensions/ extensions/
 RUN npm i
 RUN npm run build
 
-FROM directus/directus:10.5
+FROM directus/directus:10.9
 
 USER node
 WORKDIR /directus
