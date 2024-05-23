@@ -26,19 +26,14 @@ export default defineEndpoint((router, {services, database}) => {
     ItemsService
   } = services;
 
-  const adminAccountability = {
-    admin: true
-  };
-
-  router.get("/", async (req, res) => {
+  router.get("/", async (req: any, res: any) => {
 
     try {
       const navigationService = new ItemsService("navigation", {
         knex: database,
         schema: req.schema,
-        accountability: adminAccountability
+        accountability: req.accountability
       });
-
 
       const navigation = await navigationService.readSingleton({
         fields: [
