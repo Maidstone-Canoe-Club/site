@@ -7,11 +7,13 @@ type ConsentInfo = {
   fullName: string
   emailAddress: string
   dob: string
-  parentName: string
+  parentName?: string
+  parentEmail?: string
+  parentNumber?: string
   address: string
   mobile: string
-  emergencyContact: string
-  emergencyContactNumber: string
+  emergencyContact?: string
+  emergencyContactNumber?: string
   first_aid_consent?: string
   photography_consent?: string
   allergies: string
@@ -43,7 +45,7 @@ const infoData = await useAsyncData(`consent-form-${bookingId}`, async () => {
   return await directus<ConsentInfo>(`/events/consent-info?bookingId=${bookingId}`);
 });
 
-if (!infoData) {
+if (!infoData.data.value) {
   throw showError({
     statusCode: 404,
     statusMessage: "Consent form not found"
@@ -51,6 +53,8 @@ if (!infoData) {
 }
 
 const info = computed(() => infoData.data!.value!);
+
+useHead({ title: `Consent form - ${info.value.fullName}` });
 
 function onPrintClick () {
   window.print();
@@ -119,11 +123,6 @@ const dob = computed(() => format(new Date(info.value.dob), "dd/MM/yyyy"));
           <span>{{ dob }}</span>
         </div>
 
-        <div v-if="info.parentName">
-          <strong>Parent name: </strong>
-          <span>{{ info.parentName }}</span>
-        </div>
-
         <div v-if="info.address">
           <strong>Address: </strong>
           <span>{{ info.address }}</span>
@@ -134,12 +133,27 @@ const dob = computed(() => format(new Date(info.value.dob), "dd/MM/yyyy"));
           <span>{{ info.mobile }}</span>
         </div>
 
-        <div>
+        <div v-if="info.parentName">
+          <strong>Parent name: </strong>
+          <span>{{ info.parentName }}</span>
+        </div>
+
+        <div v-if="info.parentEmail">
+          <strong>Parent email: </strong>
+          <span>{{ info.parentEmail }}</span>
+        </div>
+
+        <div v-if="info.parentNumber">
+          <strong>Parent number: </strong>
+          <span>{{ info.parentNumber }}</span>
+        </div>
+
+        <div v-if="info.emergencyContact">
           <strong>Emergency contact: </strong>
           <span>{{ info.emergencyContact }}</span>
         </div>
 
-        <div>
+        <div v-if="info.emergencyContactNumber">
           <strong>Emergency contact number: </strong>
           <span>{{ info.emergencyContactNumber }}</span>
         </div>
