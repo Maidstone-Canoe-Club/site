@@ -54,8 +54,6 @@ export async function getConsentInfo(req: any, res: any, services: any, database
       return res.status(400).send("Unknown booking");
     }
 
-    console.log("got booking", booking);
-
     const event = await eventsService.readOne(booking.event);
 
     if (!event) {
@@ -63,25 +61,19 @@ export async function getConsentInfo(req: any, res: any, services: any, database
       return res.status(400).send("Unknown event on booking");
     }
 
-    console.log("got event", event);
-
     const userIsLeader = await isUserLeader(req, services, database, event.id, userId);
     if (!userIsLeader) {
       console.error(`Non-leader tried to load consent form for booking: ${bookingId}`);
       return res.status(401).send("Not allowed");
     }
 
-    console.log("user is leader");
-
     const participant = await userService.readOne(booking.user, {
       fields: ["*", "role.name"]
     });
 
-    console.log("got participant", participant);
-
     let parent = null;
 
-    if (participant.role.name === "junior") {
+    if (participant.role.name === "Junior") {
       parent = await userService.readOne(participant.parent);
     }
 
@@ -109,11 +101,7 @@ export async function getConsentInfo(req: any, res: any, services: any, database
       }
     });
 
-    console.log("got medical infos", medicalInfos);
-
     const medicalInfo = medicalInfos?.length ? medicalInfos[0] : null;
-
-    console.log("got medical info", medicalInfo);
 
     const address = [
       participant.street_address,
@@ -129,10 +117,12 @@ export async function getConsentInfo(req: any, res: any, services: any, database
       emailAddress: participant.email,
       dob: participant.dob,
       parentName: parent ? `${parent.first_name} ${parent.last_name}` : null,
+      parentEmail: parent ? parent.email : null,
+      parentNumber: parent ? parent.mobile || parent.home_tel : null,
       address,
       mobile: participant.mobile,
-      emergencyContact: emergencyContact.full_name,
-      emergencyContactNumber: emergencyContact.contact_number,
+      emergencyContact: emergencyContact?.full_name,
+      emergencyContactNumber: emergencyContact?.contact_number,
       first_aid_consent: booking.medical_consent === undefined || booking.medical_consent === null
         ? medicalInfo?.first_aid_consent
         : booking.medical_consent,

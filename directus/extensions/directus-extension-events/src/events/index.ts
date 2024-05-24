@@ -793,7 +793,7 @@ export default defineEndpoint((router, {services, database}) => {
 
       for (const booking of bookings) {
         let email = booking.user.email;
-        if (booking.user.role.name === "junior") {
+        if (booking.user.role.name.toLowerCase() === "junior") {
           email = booking.user.parent.email;
         }
 
