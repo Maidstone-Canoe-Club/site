@@ -22,18 +22,22 @@
         class="z-[9]" />
 
       <div class="layout-content relative">
-        <div class="absolute z-0 h-[75vh] w-full object-cover overflow-hidden">
-          <div class="bg-gradient-to-t from-gray-50 to-30% to-black/[.35] inset-0 absolute" />
-          <img
-            :src="heroImageUrl"
-            :srcset="heroImageSrcSet"
+        <div class="absolute z-0 h-[60vh] w-full object-cover overflow-hidden">
+          <div class="bg-gradient-to-t from-gray-50 to-30% to-black/[.20] inset-0 absolute" />
+          <nuxt-img
+            :src="home.hero_image"
             alt="Hero background image"
-            height="1100"
+            format="webp"
+            qual
+            quality="75"
+            provider="directus"
+            placeholder
+            height="1000"
             :width="width"
-            class="h-full object-cover w-full z-5">
+            class="h-full object-cover w-full z-5" />
         </div>
 
-        <div class="w-full absolute h-[460px] sm:h-[460px] top-16 flex justify-center items-center">
+        <div class="w-full absolute h-[300px] sm:h-[460px] top-16 flex justify-center items-center">
           <div class="mx-auto w-full max-w-7xl flex flex-grow px-4 sm:px-6 lg-px-8 flex-col sm:flex-row gap-4 sm:gap-8 justify-center">
             <img
               src="/images/logo-white.svg"
@@ -63,7 +67,6 @@
 
 <script setup lang="ts">
 import type { Home } from "~/types";
-import { useDirectusUrl } from "#imports";
 
 useHead({
   titleTemplate: title => title ? `${title} | MCC` : "Maidstone Canoe Club"
@@ -81,38 +84,8 @@ const { data: home } = await useAsyncData("home", async () => {
 });
 
 const width = import.meta.client ? window.innerWidth : 1920;
-const height = 1100;
 
 const holdingPage = computed(() => home.value?.holding_page_content);
-
-const heroImageUrl = computed(() => {
-  if (home.value?.hero_image) {
-    return generateHeroImageUrl(home.value.hero_image, width);
-  }
-
-  return null;
-});
-
-const heroImageSrcSet = computed(() => {
-  if (home.value?.hero_image) {
-    const id = home.value.hero_image;
-    const result = [
-      generateHeroImageUrl(id, 400) + " 400w",
-      generateHeroImageUrl(id, 500) + " 640w",
-      generateHeroImageUrl(id, 1030) + " 1030w",
-      generateHeroImageUrl(id, 1920) + " 1920w"
-    ];
-
-    return result.join(",\n");
-  }
-
-  return null;
-});
-
-function generateHeroImageUrl (id: string, width: number) {
-  const directusUrl = useDirectusUrl();
-  return `${directusUrl}/assets/${id}?width=${width}&height=1100&format=webp&quality=75`;
-}
 
 </script>
 

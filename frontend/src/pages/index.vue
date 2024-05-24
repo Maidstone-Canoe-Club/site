@@ -1,5 +1,5 @@
 ﻿<template>
-  <main class="mt-[77vh]">
+  <main class="mt-[62vh]">
     <div class="mx-auto w-full max-w-7xl flex-grow px-4 sm:px-6 lg-px-8 mt-16">
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-y-10">
         <div class="flex flex-col gap-3">
