@@ -12,7 +12,9 @@ import {
   getMonth,
   isToday,
   isWithinInterval,
-  isSameDay
+  isSameDay,
+  startOfDay,
+  endOfDay
 } from "date-fns";
 import type { EventException, EventItem } from "~/types";
 import { useCalendarStore } from "~/store/calendarStore";
@@ -67,8 +69,8 @@ function eventItemToCalendarEvent (eventItem: EventItem, date: Date): CalendarEv
 
 function getEventsForDate (date: Date): CalendarEvent[] {
   return props.events.filter((e) => {
-    const start = new Date(e.start_date);
-    const end = new Date(e.end_date!);
+    const start = startOfDay(new Date(e.start_date));
+    const end = endOfDay(new Date(e.end_date!));
 
     const withinDateRange = isWithinInterval(date, {
       start,
