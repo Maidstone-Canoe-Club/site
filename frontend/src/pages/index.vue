@@ -122,6 +122,7 @@ definePageMeta({
 });
 
 const { getItems, getSingletonItem } = useDirectusItems();
+const { getItem, setItem } = useLocalStorage();
 
 const { data: home } = await useAsyncData("home", async () => {
   return await getSingletonItem<Home>({
@@ -207,11 +208,11 @@ function formatDate (date: string) {
 const showWelcome = ref(false);
 
 onMounted(() => {
-  showWelcome.value = window.localStorage.getItem("hide-welcome-message") !== "true";
+  showWelcome.value = getItem("hide-welcome-message") !== "true";
 });
 
 function closeWelcome () {
-  window.localStorage.setItem("hide-welcome-message", "true");
+  setItem("hide-welcome-message", "true");
   showWelcome.value = false;
 }
 

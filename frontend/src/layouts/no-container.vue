@@ -80,7 +80,7 @@ const { data: home } = await useAsyncData("home", async () => {
   });
 });
 
-const width = process.client ? window.innerWidth : 1920;
+const width = import.meta.client ? window.innerWidth : 1920;
 const height = 1100;
 
 const holdingPage = computed(() => home.value?.holding_page_content);
