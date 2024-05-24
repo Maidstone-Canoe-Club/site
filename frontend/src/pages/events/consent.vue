@@ -84,7 +84,7 @@ const dob = computed(() => format(new Date(info.value.dob), "dd/MM/yyyy"));
         Print
       </a-button>
     </div>
-    <div class="w-full h-full mb-5 space-y-6">
+    <div v-if="info" class="w-full h-full mb-5 space-y-6">
       <div class="flex justify-between items-center">
         <div>
           <h1 class="text-xl font-bold">
@@ -289,6 +289,9 @@ const dob = computed(() => format(new Date(info.value.dob), "dd/MM/yyyy"));
           </div>
         </div>
       </div>
+    </div>
+    <div v-else class="w-full h-full mb-5 space-y-6">
+      Could not load form
     </div>
     <div class="print:hidden flex justify-end my-6">
       <a-button
