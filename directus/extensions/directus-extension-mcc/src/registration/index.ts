@@ -107,6 +107,8 @@ export default defineEndpoint((router, {services, database, logger}) => {
         user.role = unverifiedRole.id;
       }
 
+      user.last_med_check = new Date();
+
       const usersService = new UsersService({
         knex: database,
         schema: req.schema,

@@ -59,12 +59,19 @@
                 </span>
               </td>
               <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
-                <button
+                <a-button
                   v-if="canCancelBooking(booking)"
-                  class="rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-                  @click="onCancelBooking(booking)">
+                  size="xs"
+                  variant="outline"
+                  :action="() => onCancelBooking(booking)">
                   Cancel booking
-                </button>
+                </a-button>
+                <!--                <button-->
+                <!--                  v-if="canCancelBooking(booking)"-->
+                <!--                  class="rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"-->
+                <!--                  @click="onCancelBooking(booking)">-->
+                <!--                  Cancel booking-->
+                <!--                </button>-->
               </td>
             </tr>
           </tbody>

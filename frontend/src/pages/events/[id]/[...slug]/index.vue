@@ -287,11 +287,11 @@
               </div>
             </div>
           </div>
-          <div
+          <alert-box
             v-if="spacesLeftLabel && canBook"
-            class="flex items-center justify-center">
+            variant="info">
             {{ spacesLeftLabel }}
-          </div>
+          </alert-box>
 
           <event-attendees
             :bookings="bookings"

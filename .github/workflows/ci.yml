@@ -1,0 +1,39 @@
+﻿name: ci
+
+permissions: {}
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch: {}
+  merge_group: {}
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - run: corepack enable
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+          cache-dependency-path: './frontend/pnpm-lock.yaml'
+
+      - name: 📦 Install dependencies
+        working-directory: ./frontend
+        run: pnpm install --frozen-lockfile
+
+      - name: 🚧 Set up project
+        working-directory: ./frontend
+        run: pnpm nuxi prepare
+
+      - name: 🧪 Test project
+        working-directory: ./frontend
+        run: pnpm test:ci
+        timeout-minutes: 10

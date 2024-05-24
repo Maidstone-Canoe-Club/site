@@ -45,7 +45,7 @@
     </ul>
 
     <div
-      class="flex flex-wrap gap-2  justify-between mb-6">
+      class="flex flex-wrap gap-2 justify-between mb-6">
       <nuxt-link
         to="/profile/juniors"
         class="rounded flex items-center gap-1 bg-white px-2 py-1 text-xs font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">

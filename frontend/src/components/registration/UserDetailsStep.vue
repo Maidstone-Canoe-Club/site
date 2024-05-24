@@ -4,7 +4,7 @@
       v-if="discoveredNewMember"
       class="mb-5 flex justify-center gap-5">
       <HandRaisedIcon class="w-12 h-12 text-gray-600" />
-      Hi there! It appears that you're already a club member, and some of your details have already been pre-filled.
+      Hi there! It appears that you're already a club member, some of your details have already been pre-filled.
     </p>
     <div class="space-y-6">
       <div class="rounded-md bg-blue-50 p-4 border-blue-400 border">

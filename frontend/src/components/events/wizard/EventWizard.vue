@@ -70,6 +70,7 @@ const props = defineProps<{
 const editMode = computed<boolean>(() => !!props.events && props.events.length > 0);
 
 const directus = useDirectus();
+const user = useDirectusUser();
 
 const newEvent = ref<EventWizardItem>(initialEventItem());
 const editRecurringType = ref<EditRecurringType | undefined>();
@@ -199,7 +200,10 @@ function initialEventItem () {
     return existingEventToWizardEvent(props.events[0]);
   }
 
-  return { ...BlankEventTemplate };
+  return {
+    ...BlankEventTemplate,
+    leaders: [user.value!]
+  };
 }
 
 function initialEventDates (): EventMultiDate[] {
