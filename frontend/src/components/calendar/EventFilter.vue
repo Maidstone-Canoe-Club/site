@@ -68,19 +68,18 @@ function getCount (type: string) {
 }
 
 function sortFilterOptions (options: FilterOption[]) {
-  return options.toSorted((a, b) => {
+  return [...options].sort((a, b) => {
     const countA = getCount(a.value);
     const countB = getCount(b.value);
 
-    if (countA > 0) {
-      return -1;
+    // Prioritize options with a count greater than 0
+    if ((countA > 0) !== (countB > 0)) {
+      return countA > 0 ? -1 : 1;
     }
 
-    if (countB > 0) {
-      return 1;
-    }
-
-    return 0;
+    // When both counts are greater than 0 or both are not,
+    // sort alphabetically
+    return a.label.localeCompare(b.label);
   });
 }
 
