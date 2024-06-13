@@ -370,7 +370,7 @@ function isSelf (info: MedicalInformation) {
                     <medical-information
                       v-model="medicalInfo[0]"
                       :checkboxes-label="singleSubHeading"
-                      is-self
+                      :is-self="isSelf(medicalInfo[0])"
                       hide-heading />
                   </div>
                 </div>
