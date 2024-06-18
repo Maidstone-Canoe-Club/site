@@ -109,6 +109,6 @@ ARG OPENAI_API_KEY
 ENV OPENAI_API_KEY ${OPENAI_API_KEY}
 
 ENV NODE_ENV production
-ENV HOST [::]
+ENV HOST 0.0.0.0
 
 CMD ["node", ".output/server/index.mjs"]
