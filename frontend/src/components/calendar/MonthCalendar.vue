@@ -28,6 +28,7 @@ type CalendarEvent = {
   href: string,
   bookings?: number,
   maxSpaces?: number,
+  spansMultiDays: boolean
 }
 
 type CalendarDay = {
@@ -63,7 +64,8 @@ function eventItemToCalendarEvent (eventItem: EventItem, date: Date): CalendarEv
     time: formatShortTime(eventItem.start_date),
     href: getEventUrl(eventItem, date),
     bookings: eventItem.bookings,
-    maxSpaces: eventItem.max_spaces
+    maxSpaces: eventItem.max_spaces,
+    spansMultiDays: spansMultiDays(eventItem)
   };
 }
 
@@ -224,6 +226,17 @@ function spacesLeftLabel (event: CalendarEvent) {
   return null;
 }
 
+function spansMultiDays (event: EventItem) {
+  const start = new Date(event.start_date);
+  const end = new Date(event.end_date);
+
+  // Reset time part for precise day comparison
+  start.setHours(0, 0, 0, 0);
+  end.setHours(0, 0, 0, 0);
+
+  // The event spans multiple days if the start date and end date are not the same
+  return start.getTime() !== end.getTime();
+}
 </script>
 
 <template>
@@ -289,7 +302,7 @@ function spacesLeftLabel (event: CalendarEvent) {
                       {{ event.title }}
                     </p>
                     <time
-                      v-if="event.time"
+                      v-if="event.time && !event.spansMultiDays"
                       :datetime="event.dateTime"
                       class="ml-3 hidden flex-none text-gray-500 group-hover:text-indigo-600 xl:block">
                       {{ event.time }}
@@ -345,8 +358,8 @@ function spacesLeftLabel (event: CalendarEvent) {
           <li
             v-for="event in selectedDay.events"
             :key="event.id"
-            class="flex p-4 pr-6 group focus-within:bg-gray-50 hover:bg-gray-50">
-            <div class="flex-auto">
+            class="flex items-center p-4 pr-6 group focus-within:bg-gray-50 hover:bg-gray-50">
+            <div class="flex flex-col gap-2 w-full">
               <div class="flex flex-row gap-2 items-center">
                 <p
                   class="font-semibold text-gray-900 border-l-4 pl-2"
@@ -354,9 +367,11 @@ function spacesLeftLabel (event: CalendarEvent) {
                   {{ event.title }}
                 </p>
               </div>
-              <div class="flex gap-2 items-center mt-2">
+              <div
+                v-if="(event.time && !event.spansMultiDays) || spacesLeftLabel(event)"
+                class="flex gap-2 items-center">
                 <time
-                  v-if="event.time"
+                  v-if="event.time && !event.spansMultiDays"
                   :datetime="event.dateTime"
                   class="flex items-center text-gray-700">
                   {{ event.time }}
@@ -436,7 +451,7 @@ function spacesLeftLabel (event: CalendarEvent) {
                               {{ event.title }}
                             </p>
                             <time
-                              v-if="event.time"
+                              v-if="event.time && !event.spansMultiDays"
                               :datetime="event.dateTime"
                               class="mt-2 flex items-center text-gray-700">
                               {{ event.time }}

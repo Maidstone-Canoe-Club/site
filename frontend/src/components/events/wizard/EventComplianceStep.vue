@@ -135,7 +135,7 @@ watch(() => event.value.paddleType, (val) => {
       id="event-type"
       v-model="eventType"
       :options="eventTypes"
-      label="Event type"
+      label="Event category"
       required
       :v="validator.type" />
 
