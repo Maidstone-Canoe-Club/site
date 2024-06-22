@@ -110,11 +110,11 @@ devDependencies:
     specifier: ^0.6.3
     version: 0.6.3
   '@sentry/node':
-    specifier: ^7.72.0
-    version: 7.117.0
+    specifier: ^7.118.0
+    version: 7.118.0
   '@sentry/profiling-node':
     specifier: ^1.2.1
-    version: 1.3.5(@sentry/node@7.117.0)
+    version: 1.3.5(@sentry/node@7.118.0)
   '@sentry/vite-plugin':
     specifier: ^2.7.0
     version: 2.18.0
@@ -2933,6 +2933,15 @@ packages:
       '@sentry/utils': 7.117.0
     dev: true
 
+  /@sentry-internal/tracing@7.118.0:
+    resolution: {integrity: sha512-dERAshKlQLrBscHSarhHyUeGsu652bDTUN1FK0m4e3X48M3I5/s+0N880Qjpe5MprNLcINlaIgdQ9jkisvxjfw==}
+    engines: {node: '>=8'}
+    dependencies:
+      '@sentry/core': 7.118.0
+      '@sentry/types': 7.118.0
+      '@sentry/utils': 7.118.0
+    dev: true
+
   /@sentry/babel-plugin-component-annotate@2.18.0:
     resolution: {integrity: sha512-9L4RbhS3WNtc/SokIhc0dwgcvs78YSQPakZejsrIgnzLzCi8mS6PeT+BY0+QCtsXxjd1egM8hqcJeB0lukBkXA==}
     engines: {node: '>= 14'}
@@ -3063,6 +3072,14 @@ packages:
       '@sentry/utils': 7.117.0
     dev: true
 
+  /@sentry/core@7.118.0:
+    resolution: {integrity: sha512-ol0xBdp3/K11IMAYSQE0FMxBOOH9hMsb/rjxXWe0hfM5c72CqYWL3ol7voPci0GELJ5CZG+9ImEU1V9r6gK64g==}
+    engines: {node: '>=8'}
+    dependencies:
+      '@sentry/types': 7.118.0
+      '@sentry/utils': 7.118.0
+    dev: true
+
   /@sentry/integrations@7.117.0:
     resolution: {integrity: sha512-U3suSZysmU9EiQqg0ga5CxveAyNbi9IVdsapMDq5EQGNcVDvheXtULs+BOc11WYP3Kw2yWB38VDqLepfc/Fg2g==}
     engines: {node: '>=8'}
@@ -3073,18 +3090,28 @@ packages:
       localforage: 1.10.0
     dev: true
 
-  /@sentry/node@7.117.0:
-    resolution: {integrity: sha512-0MWXdT8dv1MtQGF0aeB8LQTBTJS1L1Vz24+wvdXroR3/52mPYrPWlzuc7+Ew/Dlqdlb5LKVIlkuDSRWj8UKpTQ==}
+  /@sentry/integrations@7.118.0:
+    resolution: {integrity: sha512-C2rR4NvIMjokF8jP5qzSf1o2zxDx7IeYnr8u15Kb2+HdZtX559owALR0hfgwnfeElqMhGlJBaKUWZ48lXJMzCQ==}
     engines: {node: '>=8'}
     dependencies:
-      '@sentry-internal/tracing': 7.117.0
-      '@sentry/core': 7.117.0
-      '@sentry/integrations': 7.117.0
-      '@sentry/types': 7.117.0
-      '@sentry/utils': 7.117.0
+      '@sentry/core': 7.118.0
+      '@sentry/types': 7.118.0
+      '@sentry/utils': 7.118.0
+      localforage: 1.10.0
     dev: true
 
-  /@sentry/profiling-node@1.3.5(@sentry/node@7.117.0):
+  /@sentry/node@7.118.0:
+    resolution: {integrity: sha512-79N63DvYKkNPqzmc0cjO+vMZ/nU7+CbE3K3COQNiV7gk58+666G9mRZQJuZVOVebatq5wM5UR0G4LPkwD+J84g==}
+    engines: {node: '>=8'}
+    dependencies:
+      '@sentry-internal/tracing': 7.118.0
+      '@sentry/core': 7.118.0
+      '@sentry/integrations': 7.118.0
+      '@sentry/types': 7.118.0
+      '@sentry/utils': 7.118.0
+    dev: true
+
+  /@sentry/profiling-node@1.3.5(@sentry/node@7.118.0):
     resolution: {integrity: sha512-n2bfEbtLW3WuIMQGyxKJKzBNZOb1JYfMeJQ2WQn/42F++69m+u7T0S3EDGRN0Y//fbt5+r0any+4r3kChRXZkQ==}
     engines: {node: '>=8.0.0'}
     hasBin: true
@@ -3092,7 +3119,7 @@ packages:
     peerDependencies:
       '@sentry/node': ^7.44.1
     dependencies:
-      '@sentry/node': 7.117.0
+      '@sentry/node': 7.118.0
       detect-libc: 2.0.3
       node-abi: 3.65.0
     dev: true
@@ -3112,11 +3139,23 @@ packages:
     engines: {node: '>=8'}
     dev: true
 
+  /@sentry/types@7.118.0:
+    resolution: {integrity: sha512-2drqrD2+6kgeg+W/ycmiti3G4lJrV3hGjY9PpJ3bJeXrh6T2+LxKPzlgSEnKFaeQWkXdZ4eaUbtTXVebMjb5JA==}
+    engines: {node: '>=8'}
+    dev: true
+
   /@sentry/utils@7.117.0:
     resolution: {integrity: sha512-KkcLY8643SGBiDyPvMQOubBkwVX5IPknMHInc7jYC8pDVncGp7C65Wi506bCNPpKCWspUd/0VDNWOOen51/qKA==}
     engines: {node: '>=8'}
     dependencies:
       '@sentry/types': 7.117.0
+    dev: true
+
+  /@sentry/utils@7.118.0:
+    resolution: {integrity: sha512-43qItc/ydxZV1Zb3Kn2M54RwL9XXFa3IAYBO8S82Qvq5YUYmU2AmJ1jgg7DabXlVSWgMA1HntwqnOV3JLaEnTQ==}
+    engines: {node: '>=8'}
+    dependencies:
+      '@sentry/types': 7.118.0
     dev: true
 
   /@sentry/vite-plugin@2.18.0:
