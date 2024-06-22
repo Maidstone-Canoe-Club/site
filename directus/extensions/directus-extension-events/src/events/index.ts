@@ -206,7 +206,7 @@ export default defineEndpoint((router, {services, database}) => {
     }
   });
 
-  router.post("/booking/cancel", async (req, res) => {
+  router.post("/booking/cancel", async (req: any, res: any) => {
     try {
       const eventId = req.query.eventId;
       const userId = req.query.userId;
@@ -287,6 +287,7 @@ export default defineEndpoint((router, {services, database}) => {
         }
 
         await eventBookingService.updateOne(eventBooking.id, {
+          date_cancelled: new Date(),
           status: "cancelled"
         });
 

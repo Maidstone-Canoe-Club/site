@@ -1,6 +1,6 @@
 ﻿import {AdminAccountability} from "./utils";
 
-export async function getInfo(req: any, res: any, services: any, database: any){
+export async function getInfo(req: any, res: any, services: any, database: any) {
   const {
     ItemsService,
     UsersService
@@ -119,6 +119,33 @@ export async function getInfo(req: any, res: any, services: any, database: any){
       }
     });
 
+    const userIsLeader = leaders.find((x: any) => x.directus_users_id.id === userId);
+    const userIsCoach = user && user.role.name.toLowerCase() === "coach";
+
+    const eventBookingsFilter: any = {
+      _and: [
+        {
+          event: {
+            _eq: eventId
+          }
+        },
+        {
+          instance: {
+            _eq: eventInstance
+          }
+        }
+      ]
+    };
+
+    // Ensure leaders and coaches can see cancelled attendees
+    if (!userIsLeader && !userIsCoach) {
+      eventBookingsFilter._and.push({
+        status: {
+          _neq: "cancelled"
+        }
+      });
+    }
+
     const eventBookings = await eventBookingService
       .readByQuery({
         fields: [
@@ -126,25 +153,7 @@ export async function getInfo(req: any, res: any, services: any, database: any){
           "user.*",
           "user.role.name"
         ],
-        filter: {
-          _and: [
-            {
-              event: {
-                _eq: eventId
-              }
-            },
-            {
-              instance: {
-                _eq: eventInstance
-              }
-            },
-            {
-              status: {
-                _neq: "cancelled"
-              }
-            }
-          ]
-        }
+        filter: eventBookingsFilter
       });
 
     let spacesLeft = null;
@@ -165,9 +174,8 @@ export async function getInfo(req: any, res: any, services: any, database: any){
     const allowedRoles = ["committee", "administrator"];
     let bookings = [];
 
-    const userIsLeader = leaders.find((x: any) => x.directus_users_id.id === userId);
-    const isCoachAndBooked = user && user.role.name.toLowerCase() === "coach"
-            && eventBookings.some((x: any) => x.user.id === user.id);
+    const isCoachAndBooked = userIsCoach
+            && user && eventBookings.some((x: any) => x.user.id === user.id);
 
     let userCanApprove = false;
     let reviewedBy = undefined;
@@ -286,7 +294,7 @@ export async function getInfo(req: any, res: any, services: any, database: any){
       spacesLeft,
       alreadyBooked,
       bookings,
-      bookingsCount: eventBookings.length,
+      bookingsCount: eventBookings.filter((b: any) => b.status !== "cancelled").length,
       leaders,
       otherBookingRequired,
       hasRequiredBooking,
