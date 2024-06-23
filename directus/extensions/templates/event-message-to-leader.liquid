@@ -1,0 +1,14 @@
+﻿<div>
+    {% if isJunior %}
+        You have been sent a message from
+        <strong>{{ attendeeName }}</strong>, who is a parent/guardian of a junior who is booked onto the following event:
+        <strong>{{ eventLabel }}</strong>.
+    {% else %}
+        You have been sent a message from <strong>{{ attendeeName }}</strong>, who is booked onto the following event:
+        <strong>{{ eventLabel }}</strong>.
+    {% endif %}
+</div>
+<br/>
+<div>
+    {{ message }}
+</div>

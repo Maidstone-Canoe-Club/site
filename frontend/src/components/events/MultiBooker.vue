@@ -407,8 +407,8 @@ const payNowLabel = computed(() => {
   return "Pay now";
 });
 
-function userAlreadyBooked (id) {
-  return !!props.currentBookings.find(x => x.user.id === id);
+function userAlreadyBooked (id: string) {
+  return !!props.currentBookings.find((x: any) => x.user.id === id && x.status !== "cancelled");
 }
 
 const route = useRoute();

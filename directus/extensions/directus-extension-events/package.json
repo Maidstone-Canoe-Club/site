@@ -34,6 +34,7 @@
 		"@directus/extensions-sdk": "10.1.9",
 		"@types/node": "^20.6.0",
 		"date-fns": "^2.30.0",
+		"date-fns-tz": "^2.0.0",
 		"eslint": "^8.48.0",
 		"rrule": "^2.8.1",
 		"typescript": "^5.2.2"

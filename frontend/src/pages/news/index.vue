@@ -58,10 +58,11 @@ const { getItems } = useDirectusItems();
 const route = useRoute();
 const router = useRouter();
 
-const routePageAsNumber = 0;
-
 const itemsPerPage = 8;
-const page = ref(route.query.page && !isNaN(route.query.page) ? parseInt(route.query.page, 10) : 1);
+const page = ref(route.query.page && typeof route.query.page === "string" &&
+!isNaN(parseInt(route.query.page))
+  ? parseInt(route.query.page, 10)
+  : 1);
 
 const { data: items } = await useAsyncData("news-items-", async () => {
   return await loadData();
