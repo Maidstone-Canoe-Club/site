@@ -47,6 +47,7 @@
             :payment-url="paymentUrl"
             :already-booked="alreadyBooked"
             :spaces-left="spacesLeft"
+            :paid-user-ids="paidUserIds"
             @refresh="onRefresh" />
         </div>
       </template>
@@ -55,20 +56,20 @@
       </div>
     </template>
 
-    <template v-if="alreadyBooked">
-      <beta-wrapper>
-        <a-button
-          class="w-full"
-          size="lg"
-          @click="onShowCheckin">
-          <QrCodeIcon class="size-5" />
-          Check-in
-        </a-button>
-        <checkin-viewer
-          v-model:open="openCheckinModal"
-          :checkin-code="checkinCode" />
-      </beta-wrapper>
-    </template>
+    <!--    <template v-if="alreadyBooked">-->
+    <!--      <beta-wrapper>-->
+    <!--        <a-button-->
+    <!--          class="w-full"-->
+    <!--          size="lg"-->
+    <!--          @click="onShowCheckin">-->
+    <!--          <QrCodeIcon class="size-5" />-->
+    <!--          Check-in-->
+    <!--        </a-button>-->
+    <!--        <checkin-viewer-->
+    <!--          v-model:open="openCheckinModal"-->
+    <!--          :checkin-code="checkinCode" />-->
+    <!--      </beta-wrapper>-->
+    <!--    </template>-->
   </div>
 </template>
 

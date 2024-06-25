@@ -187,9 +187,7 @@
           </div>
 
           <div v-if="leaders && leaders.length">
-            <strong>{{
-              event.paddle_type === 'peer_paddle' || event.paddle_type === 'other' ? "Organisers" : "Leaders"
-            }}</strong>
+            <strong>{{ leadersLabel(true) }}</strong>
             <ul
               class="mt-2 flex flex-col gap-2">
               <li
@@ -208,8 +206,20 @@
           </div>
 
           <div
+            v-if="leaders && leaders.length && userHasBooking"
+            class="flex flex-col gap-2">
+            <a-button
+              variant="outline"
+              @click="onMessageLeaders">
+              <EnvelopeIcon class="size-5" />
+              Message {{ leadersLabel(true).toLowerCase() }}
+            </a-button>
+          </div>
+
+          <div
             v-if="bookings.length && userIsLeader"
             class="flex flex-col gap-2">
+            <span>{{ leadersLabel(false) }} options</span>
             <a-button
               variant="outline"
               @click="onMarkAttendance">
@@ -231,15 +241,15 @@
               Download attendee details
             </a-button>
 
-            <beta-wrapper>
-              <a-button
-                variant="outline"
-                class="w-full"
-                @click="onCheckinOther">
-                <QrCodeIcon class="size-5" />
-                Check-in attendee
-              </a-button>
-            </beta-wrapper>
+            <!--            <beta-wrapper>-->
+            <!--              <a-button-->
+            <!--                variant="outline"-->
+            <!--                class="w-full"-->
+            <!--                @click="onCheckinOther">-->
+            <!--                <QrCodeIcon class="size-5" />-->
+            <!--                Check-in attendee-->
+            <!--              </a-button>-->
+            <!--            </beta-wrapper>-->
           </div>
 
           <div class="mb-5">
@@ -319,6 +329,13 @@
       :instance="instance"
       @dismiss="messageAttendeesModalOpen = false" />
 
+    <lazy-message-leaders-modal
+      v-model:open="messageLeadersModalOpen"
+      :leaders="leaders"
+      :leader-label="leadersLabel(false).toLowerCase()"
+      :event-id="event.id"
+      :instance="instance" />
+
     <lazy-attendee-download-modal
       :open="attendeeDownloadModalOpen"
       :event-title="event.title"
@@ -373,6 +390,7 @@ const childEvents = ref();
 
 const markAttendanceModalOpen = ref(false);
 const messageAttendeesModalOpen = ref(false);
+const messageLeadersModalOpen = ref(false);
 const attendeeDownloadModalOpen = ref(false);
 const checkinOtherModalOpen = ref(false);
 const closeModalOpen = ref(false);
@@ -635,6 +653,24 @@ const canBook = computed(() => {
   return false;
 });
 
+const userHasBooking = computed(() => {
+  if (!user.value || !bookings.value || bookings.value.length === 0) {
+    return false;
+  }
+
+  for (const booking of bookings.value) {
+    if (booking.status === "cancelled") {
+      continue;
+    }
+
+    if (booking.user.id === user.value.id || (booking.user.parent && booking.user.parent.id === user.value.id)) {
+      return true;
+    }
+  }
+
+  return false;
+});
+
 function formatPrice (amount?: number) {
   if (!amount) {
     return null;
@@ -728,9 +764,21 @@ const spacesLeftLabel = computed(() => {
   return result;
 });
 
+function leadersLabel (pluralize: boolean) {
+  let result = event.value.paddle_type === "peer_paddle" || event.value.paddle_type === "other" ? "Organiser" : "Leader";
+  if (pluralize) {
+    result += "s";
+  }
+  return result;
+}
+
 const canCancelEvent = computed(() => {
   return !eventInfo.value.isCancelled;
 });
+
+function onMessageLeaders () {
+  messageLeadersModalOpen.value = true;
+}
 
 function onMessageAttendees () {
   messageAttendeesModalOpen.value = true;

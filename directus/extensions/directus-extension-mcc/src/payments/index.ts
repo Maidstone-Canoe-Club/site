@@ -6,7 +6,7 @@ export default defineEndpoint((router, {services}) => {
     admin: true
   };
 
-  router.post("/orders/cancel", async (req, res) => {
+  router.post("/orders/cancel", async (req: any, res: any) => {
     try{
       const orderIds: string[] = req.body.orderIds;
       const userId = req.accountability.user;
@@ -63,7 +63,7 @@ export default defineEndpoint((router, {services}) => {
     return res.send("ok");
   });
 
-  router.post("/orders", async (req, res) => {
+  router.post("/orders", async (req: any, res: any) => {
     try{
       const orders = req.body.orders;
 
@@ -81,7 +81,7 @@ export default defineEndpoint((router, {services}) => {
     }
   });
 
-  router.post("/handle/event", async (req, res) => {
+  router.post("/handle/event", async (req: any, res: any) => {
     try {
       const sessionWithLineItems = req.body.sessionWithLineItems;
       const metadata = sessionWithLineItems.metadata;
@@ -123,7 +123,7 @@ export default defineEndpoint((router, {services}) => {
 
       const orderIds = metadata.order_ids.split(",");
       const orders = orderIds
-        .map(id => ({
+        .map((id: string) => ({
           id,
           status: "paid",
           payment_intent: sessionWithLineItems.payment_intent,

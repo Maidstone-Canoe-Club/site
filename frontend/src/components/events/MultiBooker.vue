@@ -184,6 +184,7 @@
         <a-button
           type="submit"
           :disabled="buttonDisabled"
+          :disable-timeout-ms="1000"
           class="w-full font-semibold px-2.5 py-3"
           :class="payNowButtonClass">
           <CreditCardIcon class="size-5" />
@@ -407,8 +408,8 @@ const payNowLabel = computed(() => {
   return "Pay now";
 });
 
-function userAlreadyBooked (id) {
-  return !!props.currentBookings.find(x => x.user.id === id);
+function userAlreadyBooked (id: string) {
+  return !!props.currentBookings.find((x: any) => x.user.id === id && x.status !== "cancelled");
 }
 
 const route = useRoute();
@@ -420,7 +421,7 @@ function onTryBookNow () {
 
 async function onBookNow () {
   try {
-    let url = `/events/book?eventId=${props.event.id}&userId=${props.userId}`;
+    let url = `/events/book?eventId=${props.event.id}&userId=${user.value!.id}`;
 
     if (props.instance) {
       url += `&instance=${props.instance}`;

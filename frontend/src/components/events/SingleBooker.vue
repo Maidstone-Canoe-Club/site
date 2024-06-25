@@ -14,7 +14,7 @@
     </template>
     <template v-else-if="!alreadyBooked">
       <a-button
-        v-if="hasPrice"
+        v-if="hasPrice && !alreadyPaid"
         :action="onTryBookNow"
         class="w-full font-semibold px-2.5 py-3"
         hide-loader>
@@ -120,7 +120,7 @@
         @cancel="onMedicalInfoCancel" />
 
       <event-disclaimer-modal
-        v-if="hasPrice"
+        v-if="hasPrice && !alreadyPaid"
         v-model:open="openDisclaimerModal"
         v-model:medical-consent="medicalConsent"
         v-model:photography-consent="photographyConsent"
@@ -137,6 +137,7 @@
             name="userIds">
           <a-button
             type="submit"
+            :disable-timeout-ms="1000"
             class="w-full">
             <CreditCardIcon class="size-5" />
             {{ payNowLabel }}
@@ -170,7 +171,8 @@ const props = defineProps<{
   price?: number,
   paymentUrl?: string,
   alreadyBooked: boolean,
-  spacesLeft?: number
+  spacesLeft?: number,
+  paidUserIds?: string[]
 }>();
 
 const user = useDirectusUser();
@@ -217,17 +219,19 @@ const meetsMinAge = computed(() => {
   return age >= props.event.min_age;
 });
 
+const alreadyPaid = computed(() => user.value && props.paidUserIds?.includes(user.value.id));
+
 const juniorsAllowed = computed(() => props.event.allowed_roles?.includes("juniors"));
 
 async function onBookNow () {
   try {
-    let url = `/events/book?eventId=${props.event.id}&userId=${user.value.id}&medcon=${medicalConsent.value}&phocon=${photographyConsent.value}`;
+    let url = `/events/book?eventId=${props.event.id}&userId=${user.value!.id}&medcon=${medicalConsent.value}&phocon=${photographyConsent.value}`;
 
     if (props.instance) {
       url += `&instance=${props.instance}`;
     }
 
-    const userIds = [user.value.id];
+    const userIds = [user.value!.id];
 
     const bookingResult = await directus(url, {
       method: "POST",

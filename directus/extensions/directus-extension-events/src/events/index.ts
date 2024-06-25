@@ -5,6 +5,8 @@ import {review} from "./review";
 import {update} from "./update";
 import {getInfo} from "./info";
 import {nanoid} from "nanoid";
+import {messageAttendees, messageLeader} from "./message";
+import {AdminAccountability} from "./utils";
 
 export default defineEndpoint((router, {services, database}) => {
   const {
@@ -334,11 +336,6 @@ export default defineEndpoint((router, {services, database}) => {
       const filter: any = {
         _and: [
           {
-            status: {
-              _neq: "cancelled"
-            }
-          },
-          {
             event: {
               _eq: eventId
             }
@@ -358,7 +355,7 @@ export default defineEndpoint((router, {services, database}) => {
         filter
       });
 
-      const currentBookings = existingBookings.length;
+      const currentBookings = existingBookings.filter((b: any) => b.status !== "cancelled").length;
       const maxBookings = event.max_spaces;
       const usersToBook = userIds.length;
 
@@ -373,7 +370,7 @@ export default defineEndpoint((router, {services, database}) => {
       const bookingResults = [];
 
       for (const userId of userIds) {
-        const alreadyBooked = existingBookings?.filter(x => x.user === userId && x.status !== "cancelled");
+        const alreadyBooked = existingBookings?.filter((x: any) => x.user === userId && x.status !== "cancelled");
         if (alreadyBooked?.length) {
           bookingResults.push({
             result: false,
@@ -383,11 +380,54 @@ export default defineEndpoint((router, {services, database}) => {
           continue;
         }
 
-        const alreadyCancelledBookings = existingBookings?.filter(x => x.user === userId && x.status === "cancelled");
+        const alreadyCancelledBookings = existingBookings?.filter((x: any) => x.user === userId && x.status === "cancelled");
         if (alreadyCancelledBookings?.length) {
           const cancelledBooking = alreadyCancelledBookings[0];
+
+          let status = "booked";
+
+          const ordersService = new ItemsService("orders", {
+            knex: database,
+            schema: req.schema,
+            accountability: AdminAccountability
+          });
+
+          const orders = await ordersService.readByQuery({
+            filter: {
+              user: {
+                _eq: loggedInUserId
+              }
+            }
+          });
+
+          if (orders && orders.length) {
+            const eventOrder = orders.filter((o: any) => {
+              const metadata = JSON.parse(o.metadata);
+              let result = metadata.event_id === eventId
+                                    && o.status === "paid"
+                                    && metadata.booked_user === userId;
+
+              if (instance) {
+                result = result && metadata.instance === instance;
+              }
+
+              return result;
+            });
+
+            if (eventOrder.length) {
+              console.log("Found an existing payment for this user!");
+              status = "paid";
+            // } else {
+            //   console.log("User has not paid for this event yet");
+            }
+          } else {
+            console.warn("No orders found for customer when re-booking event attendee");
+            // Not sure what case this would be, possibly when a payment doesn't complete,
+            // so we have a customer but no orders yet
+          }
+
           await eventBookingService.updateOne(cancelledBooking.id, {
-            status: "booked"
+            status
           });
 
           bookingResults.push({
@@ -652,9 +692,9 @@ export default defineEndpoint((router, {services, database}) => {
 
           for (const prop of medicalInfoProps) {
             if (medicalInfo === null ||
-                medicalInfo === undefined ||
-                medicalInfo[prop] === null ||
-                medicalInfo[prop] === undefined) {
+                            medicalInfo === undefined ||
+                            medicalInfo[prop] === null ||
+                            medicalInfo[prop] === undefined) {
               bookingRow.push("Not specified");
             } else {
               bookingRow.push(medicalInfo[prop] ? "Yes" : "No");
@@ -705,119 +745,11 @@ export default defineEndpoint((router, {services, database}) => {
     }
   });
 
-  router.post("/message-attendees", async (req: any, res: any) => {
-    try {
-      const eventId = req.query.eventId;
-      const instance = req.query.instance;
-      const loggedInUserId = req.accountability.user;
+  router.post("/message/attendees", async (req: any, res: any) => {
+    return await messageAttendees(req, res, services, database);
+  });
 
-      const subject = req.body.subject;
-      const message = req.body.message;
-
-      if (!subject) {
-        return res.status(400).send("missing subject");
-      }
-
-      if (!message) {
-        return res.status(400).send("missing message content");
-      }
-
-      if (!eventId) {
-        return res.status(400).send("missing event id");
-      }
-
-      const eventsService = new ItemsService("events", {
-        knex: database,
-        schema: req.schema,
-        accountability: adminAccountability
-      });
-
-      const eventLeadersService = new ItemsService("events_directus_users", {
-        knex: database,
-        schema: req.schema,
-        accountability: adminAccountability
-      });
-
-      const event = await eventsService.readOne(eventId);
-
-      if (!event.leaders || event.leaders.length === 0) {
-        return res.status(400).send("event doesn't have any leaders");
-      }
-
-      const leaders = await eventLeadersService.readByQuery({
-        fields: ["*"],
-        filter: {
-          id: {
-            _in: event.leaders
-          }
-        }
-      });
-
-      if (leaders.filter(x => x.directus_users_id === loggedInUserId).length === 0) {
-        return res.status(401).send("you are not a leader of that event");
-      }
-
-      const eventBookingService = new ItemsService("event_bookings", {
-        knex: database,
-        schema: req.schema,
-        accountability: adminAccountability
-      });
-
-      const bookingsFilter: any = {
-        event: {
-          _eq: eventId
-        }
-      };
-
-      if (instance) {
-        bookingsFilter.instance = {
-          _eq: instance
-        };
-      }
-
-      const bookings = await eventBookingService.readByQuery({
-        fields: ["*", "user.email", "user.role.name", "user.parent.email"],
-        filter: bookingsFilter
-      });
-
-      if (!bookings || bookings.length === 0) {
-        return res.status(400).send("no bookings found");
-      }
-
-      const mailService = new MailService({schema: req.schema, knex: database});
-
-      const eventTitle = event.title;
-      let eventUrl = `${process.env.PUBLIC_URL}/events/${event.id}`;
-      if (instance) {
-        eventUrl += `?instance=${instance}`;
-      }
-
-      for (const booking of bookings) {
-        let email = booking.user.email;
-        if (booking.user.role.name.toLowerCase() === "junior") {
-          email = booking.user.parent.email;
-        }
-
-        await mailService.send({
-          to: email,
-          from: `events@${process.env.EMAIL_DOMAIN}`,
-          subject,
-          template: {
-            name: "event-message",
-            data: {
-              message,
-              eventTitle,
-              eventUrl
-            }
-          }
-        });
-      }
-
-      console.log(`user ${loggedInUserId} send event message to ${bookings.length} attendee(s)`);
-      return res.status(200).send("ok");
-    } catch (e: any) {
-      console.error("error sending message to event attendees", e);
-      return res.status(500).send("error sending message to event attendees");
-    }
+  router.post("/message/leader", async (req: any, res: any) => {
+    return await messageLeader(req, res, services, database);
   });
 });

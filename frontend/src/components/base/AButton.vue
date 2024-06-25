@@ -102,6 +102,10 @@ const buttonClass = computed(() => {
 });
 
 async function onClick () {
+  if (internalDisabled.value || internalLoading.value) {
+    return;
+  }
+
   emits("click");
 
   if (!props.action) {

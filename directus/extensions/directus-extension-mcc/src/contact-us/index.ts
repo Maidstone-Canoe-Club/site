@@ -1,6 +1,6 @@
 import {defineEndpoint} from "@directus/extensions-sdk";
 import {InboundEmail} from "../types";
-import {extractForwardTarget, handleMailForward, sendEmail} from "../mail-forwards";
+import {extractForwardTarget, handleMailForward} from "../mail-forwards";
 
 export default defineEndpoint((router, {services, database}) => {
   const {
@@ -151,7 +151,6 @@ export default defineEndpoint((router, {services, database}) => {
           schema: req.schema,
           accountability: adminAccountability
         });
-
 
         const inboundEmail: InboundEmail = {
           From: data.fromEmail,

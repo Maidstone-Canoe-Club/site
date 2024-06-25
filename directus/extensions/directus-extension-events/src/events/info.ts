@@ -12,6 +12,7 @@ export async function getInfo(req: any, res: any, services: any, database: any) 
     const userId = req.accountability.user;
 
     let user;
+    let juniors = [];
 
     if (userId) {
       const userService = new UsersService({
@@ -166,9 +167,8 @@ export async function getInfo(req: any, res: any, services: any, database: any) 
 
     let alreadyBooked = false;
     if (eventBookings && eventBookings.length) {
-
-      // TODO: This can break if the user has been deleted
-      alreadyBooked = eventBookings.filter((x: any) => x.user.id === userId).length > 0;
+      // TODO: This could break if the user has been deleted
+      alreadyBooked = eventBookings.filter((x: any) => x.user.id === userId && x.status !== "cancelled").length > 0;
     }
 
     const allowedRoles = ["committee", "administrator"];
@@ -180,9 +180,21 @@ export async function getInfo(req: any, res: any, services: any, database: any) 
     let userCanApprove = false;
     let reviewedBy = undefined;
     let reviewNotes = undefined;
-    let paidUserIds = [];
+    let paidUserIds: string[] = [];
 
     if (user) {
+      juniors = await userService.readByQuery({
+        filter: {
+          parent: {
+            _eq: userId
+          }
+        }
+      });
+
+      if (!juniors) {
+        juniors = [];
+      }
+
       if (allowedRoles.includes(user.role.name.toLowerCase()) || userIsLeader || isCoachAndBooked) {
         bookings = eventBookings;
       } else if (event.visible_attendees) {
@@ -224,37 +236,53 @@ export async function getInfo(req: any, res: any, services: any, database: any) 
         reviewNotes = event.review_notes;
       }
 
-      if (event.one_time_payment && event.payment_reference) {
-        const ordersService = new ItemsService("orders", {
-          knex: database,
-          schema: req.schema,
-          accountability: AdminAccountability
-        });
+      const ordersService = new ItemsService("orders", {
+        knex: database,
+        schema: req.schema,
+        accountability: AdminAccountability
+      });
 
-        const orders = await ordersService.readByQuery({
-          filter: {
-            _and: [
-              {
-                user: {
-                  _eq: userId
-                }
-              },
-              {
-                payment_reference: {
-                  _eq: event.payment_reference
-                }
-              },
-              {
-                status: {
-                  _eq: "paid"
-                }
+      const orders = await ordersService.readByQuery({
+        filter: {
+          _and: [
+            {
+              user: {
+                _eq: userId
               }
-            ]
-          }
-        });
+            },
+            {
+              status: {
+                _eq: "paid"
+              }
+            }
+          ]
+        }
+      });
 
-        paidUserIds = orders.map((o: any) => JSON.parse(o.metadata).booked_user);
+      if (event.one_time_payment && event.payment_reference) {
+        paidUserIds = orders
+          .filter((o: any) => o.payment_reference === event.payment_reference)
+          .map((o: any) => JSON.parse(o.metadata).booked_user);
       }
+
+      // Find orders this user has made, specifically orders for this event
+      const paidForOrders = orders.filter((o: any) => {
+        const metadata = JSON.parse(o.metadata);
+        let result = metadata.event_id === eventId
+                    && o.status === "paid"
+                    && (metadata.booked_user === userId || juniors.filter((j: any) => j.id === metadata.booked_user).length);
+
+        if (eventInstance) {
+          result = result && metadata.instance === eventInstance;
+        }
+
+        return result;
+      });
+
+      paidUserIds = [...new Set([
+        ...paidUserIds,
+        ...paidForOrders.map((o: any) => JSON.parse(o.metadata).booked_user)
+      ])];
     }
 
     let isCancelled = event.status === "cancelled";

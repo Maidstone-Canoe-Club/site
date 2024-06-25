@@ -4,6 +4,7 @@
     <label
       v-if="label"
       :for="id"
+      :class="{'required': required}"
       class="block text-sm font-medium leading-6 text-gray-900 mb-2">{{ label }}</label>
     <client-only>
       <quill-editor
@@ -41,7 +42,8 @@ const props = defineProps<{
   modelValue?: string,
   id: string,
   label?: string
-  v?: Validation | null
+  v?: Validation | null,
+  required?: boolean
 }>();
 
 const toolbar = computed(() => [

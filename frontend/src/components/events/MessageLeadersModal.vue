@@ -1,15 +1,12 @@
 ﻿<script setup lang="ts">
-import { useVuelidate } from "@vuelidate/core";
-import type { Validation } from "@vuelidate/core";
+import { CheckIcon } from "@heroicons/vue/24/outline";
 import { required } from "@vuelidate/validators";
 import type { Ref } from "vue";
-import { CheckIcon, ExclamationTriangleIcon } from "@heroicons/vue/24/outline";
-
-const emits = defineEmits(["update:open", "dismiss"]);
+import { useVuelidate, type Validation } from "@vuelidate/core";
 
 const props = defineProps<{
-  open: boolean,
-  attendeeCount: number,
+  leaders: any[],
+  leaderLabel: string,
   eventId: string,
   instance?: string
 }>();
@@ -17,29 +14,21 @@ const props = defineProps<{
 const directus = useDirectus();
 const { newError } = useErrors();
 
-const internalIsOpen = ref(props.open);
+const open = defineModel<boolean>("open", { required: true });
+const messageSent = ref(false);
+
+const leaderOptions = computed(() => {
+  return props.leaders?.map(l => ({
+    id: l.directus_users_id.id,
+    name: `${l.directus_users_id.first_name} ${l.directus_users_id.last_name}`
+  }));
+});
+
+const selectedLeader = ref(leaderOptions.value[0]);
 
 const data = reactive({
   subject: "",
   message: ""
-});
-
-const messageSent = ref(false);
-
-watch(() => props.open, (val) => {
-  internalIsOpen.value = val;
-});
-
-watch(internalIsOpen, (val) => {
-  emits("update:open");
-  if (!val) {
-    emits("dismiss");
-  } else {
-    data.subject = "";
-    data.message = "";
-
-    messageSent.value = false;
-  }
 });
 
 const rules = {
@@ -49,11 +38,19 @@ const rules = {
 
 const v$: Ref<Validation> = useVuelidate(rules, data);
 
+watch(open, (val) => {
+  if (val) {
+    v$.value.$reset();
+    data.subject = "";
+    data.message = "";
+    messageSent.value = false;
+  }
+});
+
 async function onSend () {
   v$.value.$touch();
-
   if (!v$.value.$invalid) {
-    let url = "/events/message/attendees?eventId=" + props.eventId;
+    let url = "/events/message/leader?eventId=" + props.eventId;
 
     if (props.instance) {
       url += "&instance=" + props.instance;
@@ -62,11 +59,15 @@ async function onSend () {
     try {
       await directus(url, {
         method: "POST",
-        body: data
+        body: {
+          ...data,
+          leaderId: selectedLeader.value.id
+        }
       });
+
       messageSent.value = true;
-    } catch (e: any) {
-      console.error(`Error sending event attendee message: ${e.message}`);
+    } catch (err: any) {
+      console.error(`Error sending event leader message: ${e.message}`);
       newError({
         message: "Something went wrong trying to send message, please try again later."
       });
@@ -77,7 +78,7 @@ async function onSend () {
 </script>
 
 <template>
-  <TransitionRoot as="template" :show="internalIsOpen">
+  <TransitionRoot as="template" :show="open">
     <Dialog as="div" class="relative z-10">
       <TransitionChild
         as="template"
@@ -112,7 +113,7 @@ async function onSend () {
                   </DialogTitle>
                   <div class="mt-2">
                     <p class="text-sm text-gray-500">
-                      Message has been sent to {{ attendeeCount }} attendee{{ attendeeCount === 1 ? "" : "s" }}
+                      Message has been sent to an event {{ leaderLabel }}
                     </p>
                   </div>
                 </div>
@@ -121,19 +122,27 @@ async function onSend () {
                     ref="cancelButtonRef"
                     type="button"
                     class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0"
-                    @click="internalIsOpen = false">
+                    @click="open = false">
                     Continue
                   </button>
                 </div>
               </div>
               <template v-else>
                 <div>
-                  <strong class="">Send an email to {{
-                    attendeeCount + " attendee" + (attendeeCount === 1 ? "" : "s")
-                  }}</strong>
-                  <p class="mb-4">
-                    Currently, attendees will not be able to reply to this email
-                  </p>
+                  <div class="space-y-4 mb-4">
+                    <strong class="">Send message to event {{ leaderLabel }}</strong>
+
+                    <p>
+                      Use this form to send a message or question to an event {{ leaderLabel }}.
+                    </p>
+
+                    <template v-if="leaders && leaders.length > 1">
+                      <input-dropdown
+                        v-model="selectedLeader"
+                        :label="('Select an event ' + leaderLabel + ' to message')"
+                        :options="leaderOptions" />
+                    </template>
+                  </div>
 
                   <div class="space-y-6 w-full">
                     <input-field
@@ -164,7 +173,7 @@ async function onSend () {
                     ref="cancelButtonRef"
                     type="button"
                     class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:col-start-1 sm:mt-0"
-                    @click="internalIsOpen = false">
+                    @click="open = false">
                     Cancel
                   </button>
                 </div>
