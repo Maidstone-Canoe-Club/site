@@ -1,8 +1,8 @@
 ﻿import {AdminAccountability} from "./utils";
 import {InboundEmail} from "directus-extension-mcc/src/types";
-import {handleMailForward} from "../mail-forwards";
 import {formatInTimeZone} from "date-fns-tz";
 import {RRule} from "rrule";
+import {handleMailForward} from "../mail-forwards";
 
 export async function messageAttendees(req: any, res: any, services: any, database: any) {
   const {
@@ -316,7 +316,7 @@ export async function messageLeader(req: any, res: any, services: any, database:
       const {start} = getDatesOfInstance(event, instance);
       console.log("got start date of instance", start, instance);
       const timeZone = "Europe/London";
-      const eventDate = formatInTimeZone(new Date(date), timeZone, "do MMMM yyyy @ h:mmaaa");
+      const eventDate = formatInTimeZone(start, timeZone, "do MMMM yyyy @ h:mmaaa");
       eventLabel += " - " + eventDate;
     } else {
       let date = event.start_date;
