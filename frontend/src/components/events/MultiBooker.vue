@@ -184,6 +184,7 @@
         <a-button
           type="submit"
           :disabled="buttonDisabled"
+          :disable-timeout-ms="1000"
           class="w-full font-semibold px-2.5 py-3"
           :class="payNowButtonClass">
           <CreditCardIcon class="size-5" />
@@ -420,7 +421,7 @@ function onTryBookNow () {
 
 async function onBookNow () {
   try {
-    let url = `/events/book?eventId=${props.event.id}&userId=${props.userId}`;
+    let url = `/events/book?eventId=${props.event.id}&userId=${user.value!.id}`;
 
     if (props.instance) {
       url += `&instance=${props.instance}`;

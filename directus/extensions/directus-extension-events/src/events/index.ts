@@ -6,6 +6,7 @@ import {update} from "./update";
 import {getInfo} from "./info";
 import {nanoid} from "nanoid";
 import {messageAttendees, messageLeader} from "./message";
+import {AdminAccountability} from "./utils";
 
 export default defineEndpoint((router, {services, database}) => {
   const {
@@ -335,11 +336,6 @@ export default defineEndpoint((router, {services, database}) => {
       const filter: any = {
         _and: [
           {
-            status: {
-              _neq: "cancelled"
-            }
-          },
-          {
             event: {
               _eq: eventId
             }
@@ -359,7 +355,7 @@ export default defineEndpoint((router, {services, database}) => {
         filter
       });
 
-      const currentBookings = existingBookings.length;
+      const currentBookings = existingBookings.filter((b: any) => b.status !== "cancelled").length;
       const maxBookings = event.max_spaces;
       const usersToBook = userIds.length;
 
@@ -374,7 +370,7 @@ export default defineEndpoint((router, {services, database}) => {
       const bookingResults = [];
 
       for (const userId of userIds) {
-        const alreadyBooked = existingBookings?.filter(x => x.user === userId && x.status !== "cancelled");
+        const alreadyBooked = existingBookings?.filter((x: any) => x.user === userId && x.status !== "cancelled");
         if (alreadyBooked?.length) {
           bookingResults.push({
             result: false,
@@ -384,11 +380,54 @@ export default defineEndpoint((router, {services, database}) => {
           continue;
         }
 
-        const alreadyCancelledBookings = existingBookings?.filter(x => x.user === userId && x.status === "cancelled");
+        const alreadyCancelledBookings = existingBookings?.filter((x: any) => x.user === userId && x.status === "cancelled");
         if (alreadyCancelledBookings?.length) {
           const cancelledBooking = alreadyCancelledBookings[0];
+
+          let status = "booked";
+
+          const ordersService = new ItemsService("orders", {
+            knex: database,
+            schema: req.schema,
+            accountability: AdminAccountability
+          });
+
+          const orders = await ordersService.readByQuery({
+            filter: {
+              user: {
+                _eq: loggedInUserId
+              }
+            }
+          });
+
+          if (orders && orders.length) {
+            const eventOrder = orders.filter((o: any) => {
+              const metadata = JSON.parse(o.metadata);
+              let result = metadata.event_id === eventId
+                                    && o.status === "paid"
+                                    && metadata.booked_user === userId;
+
+              if (instance) {
+                result = result && metadata.instance === instance;
+              }
+
+              return result;
+            });
+
+            if (eventOrder.length) {
+              console.log("Found an existing payment for this user!");
+              status = "paid";
+            // } else {
+            //   console.log("User has not paid for this event yet");
+            }
+          } else {
+            console.warn("No orders found for customer when re-booking event attendee");
+            // Not sure what case this would be, possibly when a payment doesn't complete,
+            // so we have a customer but no orders yet
+          }
+
           await eventBookingService.updateOne(cancelledBooking.id, {
-            status: "booked"
+            status
           });
 
           bookingResults.push({
@@ -653,9 +692,9 @@ export default defineEndpoint((router, {services, database}) => {
 
           for (const prop of medicalInfoProps) {
             if (medicalInfo === null ||
-                medicalInfo === undefined ||
-                medicalInfo[prop] === null ||
-                medicalInfo[prop] === undefined) {
+                            medicalInfo === undefined ||
+                            medicalInfo[prop] === null ||
+                            medicalInfo[prop] === undefined) {
               bookingRow.push("Not specified");
             } else {
               bookingRow.push(medicalInfo[prop] ? "Yes" : "No");

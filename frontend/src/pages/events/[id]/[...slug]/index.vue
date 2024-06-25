@@ -241,15 +241,15 @@
               Download attendee details
             </a-button>
 
-            <beta-wrapper>
-              <a-button
-                variant="outline"
-                class="w-full"
-                @click="onCheckinOther">
-                <QrCodeIcon class="size-5" />
-                Check-in attendee
-              </a-button>
-            </beta-wrapper>
+            <!--            <beta-wrapper>-->
+            <!--              <a-button-->
+            <!--                variant="outline"-->
+            <!--                class="w-full"-->
+            <!--                @click="onCheckinOther">-->
+            <!--                <QrCodeIcon class="size-5" />-->
+            <!--                Check-in attendee-->
+            <!--              </a-button>-->
+            <!--            </beta-wrapper>-->
           </div>
 
           <div class="mb-5">
@@ -385,8 +385,6 @@ const route = useRoute();
 const user: Ref<DirectusUser> = useDirectusUser();
 
 const instance = route.query.instance ? parseInt(route.query.instance as string, 10) : null;
-
-const foo: User;
 
 const childEvents = ref();
 
