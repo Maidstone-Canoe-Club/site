@@ -14,13 +14,13 @@ export async function getInfo(req: any, res: any, services: any, database: any) 
     let user;
     let juniors = [];
 
-    if (userId) {
-      const userService = new UsersService({
-        knex: database,
-        schema: req.schema,
-        accountability: AdminAccountability
-      });
+    const userService = new UsersService({
+      knex: database,
+      schema: req.schema,
+      accountability: AdminAccountability
+    });
 
+    if (userId) {
       user = await userService.readOne(userId, {
         fields: ["*", "role.name"]
       });
