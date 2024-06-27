@@ -24,7 +24,9 @@
           </div>
 
           <div class="flex flex-col justify-between gap-1">
-            <span class="text-sm text-gray-700">
+            <span
+              v-if="booking.date_created"
+              class="text-sm text-gray-700">
               Booked {{ formatDateShort(booking.date_created) }}
             </span>
             <div class="flex justify-end">
@@ -83,8 +85,10 @@
           </div>
 
           <div class="flex flex-col justify-between gap-1">
-            <span class="text-sm text-gray-700">
-              Booked {{ formatDateShort(booking.date_cancelled) }}
+            <span
+              v-if="booking.date_cancelled"
+              class="text-sm text-gray-700">
+              Cancelled {{ formatDateShort(booking.date_cancelled) }}
             </span>
             <div class="flex justify-end">
               <button
@@ -193,7 +197,7 @@
                               </dd>
                             </div>
 
-                            <div>
+                            <div v-if="viewingUserBooking.date_created">
                               <dt class="text-sm font-medium text-gray-500 sm:w-40 sm:flex-shrink-0">
                                 Booking date
                               </dt>
@@ -202,7 +206,7 @@
                               </dd>
                             </div>
 
-                            <div v-if="viewingUserBooking.status === 'cancelled'">
+                            <div v-if="viewingUserBooking.status === 'cancelled' && viewingUserBooking.date_cancelled">
                               <dt class="text-sm font-medium text-gray-500 sm:w-40 sm:flex-shrink-0">
                                 Cancelled date
                               </dt>
