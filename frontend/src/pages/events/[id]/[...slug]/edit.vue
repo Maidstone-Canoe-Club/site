@@ -81,7 +81,7 @@ if (!events.value || events.value.length === 0) {
 
 const { data: eventInfo } = await useAsyncData(`event-info-edit-${route.params.id}`, async () => {
   let url = `/events/info?eventId=${route.params.id}`;
-  if (instance.value) {
+  if (instance.value !== null && instance.value !== undefined) {
     url += "&instance=" + instance.value;
   }
   return await directus(url, {
