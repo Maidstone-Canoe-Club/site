@@ -272,7 +272,7 @@ export async function getInfo(req: any, res: any, services: any, database: any) 
                     && o.status === "paid"
                     && (metadata.booked_user === userId || juniors.filter((j: any) => j.id === metadata.booked_user).length);
 
-        if (eventInstance) {
+        if (eventInstance !== null && eventInstance !== undefined) {
           result = result && metadata.instance === eventInstance;
         }
 
