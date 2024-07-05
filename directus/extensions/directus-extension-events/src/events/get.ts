@@ -1,6 +1,6 @@
 ﻿import {AdminAccountability, isUserLeader} from "./utils";
 import {RRule} from "rrule";
-import {setHours, setMinutes, setSeconds} from "date-fns";
+import {setHours, setMinutes, setSeconds, startOfDay} from "date-fns";
 
 export async function getConsentInfo(req: any, res: any, services: any, database: any) {
   const {
@@ -244,8 +244,10 @@ export async function get(req: any, res: any, services: any, database: any) {
 
       const rule = RRule.fromString(event.rrule);
       const occurrences = rule.between(start, end, true);
+      const eventStartDay = startOfDay(new Date(event.start_date));
+
       for (const occurrence of occurrences) {
-        const instances = rule.between(new Date(event.start_date), occurrence, true);
+        const instances = rule.between(eventStartDay, occurrence, true);
         const endDate = new Date(event.end_date);
         const combinedEndDate = setHours(setMinutes(setSeconds(occurrence, endDate.getSeconds()), endDate.getMinutes()), endDate.getHours());
 
