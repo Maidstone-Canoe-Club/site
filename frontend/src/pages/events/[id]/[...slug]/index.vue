@@ -517,7 +517,7 @@ const userIsLeader = computed(() => {
 
 async function loadInfo () {
   let url = `/events/info?eventId=${event.value!.id}`;
-  if (instance) {
+  if (instance !== null && instance !== undefined) {
     url += "&instance=" + instance;
   }
   return await directus(url, {
