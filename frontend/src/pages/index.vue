@@ -114,7 +114,6 @@
 import { HandRaisedIcon } from "@heroicons/vue/24/outline";
 import { ChevronRightIcon } from "@heroicons/vue/24/solid";
 import { format, addDays, startOfDay, endOfDay, setHours, setMinutes, setSeconds } from "date-fns";
-import { useDirectusItems } from "#imports";
 import type { EventItem, Home, NewsItem } from "~/types";
 
 definePageMeta({

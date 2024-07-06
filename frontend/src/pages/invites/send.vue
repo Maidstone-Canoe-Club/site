@@ -114,7 +114,6 @@ import { required } from "@vuelidate/validators";
 import { useVuelidate } from "@vuelidate/core";
 import type { Validation } from "@vuelidate/core";
 import type { Ref } from "vue";
-import { definePageMeta, useDirectusItems } from "#imports";
 
 definePageMeta({
   middleware: ["auth", "admin"]

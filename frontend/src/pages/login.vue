@@ -72,7 +72,6 @@ import { useVuelidate } from "@vuelidate/core";
 import type { Validation } from "@vuelidate/core";
 import { minLength, required, email as emailValidator } from "@vuelidate/validators";
 import type { Ref } from "vue";
-import { useDirectusAuth, navigateTo, definePageMeta } from "#imports";
 
 definePageMeta({
   middleware: ["public-only"]

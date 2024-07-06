@@ -155,7 +155,6 @@
 
 <script setup lang="ts">
 import { formatDistanceToNow } from "date-fns";
-import { useDirectusItems } from "#imports";
 
 const user = useDirectusUser();
 const { getItems, deleteItems, createItems } = useDirectusItems();

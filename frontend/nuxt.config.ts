@@ -160,7 +160,8 @@ export default defineNuxtConfig({
         "@zxcvbn-ts/language-common",
         "vue-qrcode-reader",
         "@vueuse/core",
-        "qrcode.vue"
+        "qrcode.vue",
+        "date-fns-tz"
       ]
     },
     build: {

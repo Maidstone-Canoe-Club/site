@@ -40,7 +40,6 @@ import type { Ref } from "vue";
 import { useVuelidate } from "@vuelidate/core";
 import type { Validation } from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
-import { useDirectusItems, navigateTo } from "#imports";
 
 const directus = useDirectus();
 const { createItems } = useDirectusItems();

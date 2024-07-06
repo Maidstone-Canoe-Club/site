@@ -41,7 +41,6 @@
 </template>
 
 <script setup lang="ts">
-import { definePageMeta, useDirectusItems } from "#imports";
 
 definePageMeta({
   middleware: ["auth", "admin"]
