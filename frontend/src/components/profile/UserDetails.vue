@@ -42,7 +42,6 @@
 
 <script setup lang="ts">
 import type { DirectusUser } from "nuxt-directus/dist/runtime/types";
-import { useDirectusUser, useDirectusUsers } from "#imports";
 import { useFileUploader } from "~/composables/useFileUploader";
 
 const { uploadFile } = useFileUploader();

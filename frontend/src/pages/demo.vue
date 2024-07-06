@@ -1,6 +1,5 @@
 ﻿<script setup lang="ts">
 import type { Home } from "~/types";
-import { useDirectusItems } from "#imports";
 
 definePageMeta({
   layout: "demo"

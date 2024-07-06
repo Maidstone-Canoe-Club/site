@@ -1,6 +1,5 @@
 ﻿import type { DirectusUser } from "nuxt-directus/dist/runtime/types";
 import { subYears } from "date-fns";
-import { useDirectusUrl } from "#imports";
 
 export function getAvatarUrl (user: DirectusUser | undefined, size = 40) {
   if (user) {

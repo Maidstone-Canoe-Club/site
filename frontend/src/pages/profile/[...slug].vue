@@ -65,7 +65,6 @@ import {
   Cog6ToothIcon,
   TicketIcon
 } from "@heroicons/vue/24/outline";
-import { useDirectusUser, definePageMeta } from "#imports";
 import { NuxtLink } from "#components";
 
 definePageMeta({
