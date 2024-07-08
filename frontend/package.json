@@ -43,7 +43,7 @@
     "vue-tsc": "^1.8.27"
   },
   "dependencies": {
-    "@directus/sdk": "^10.3.3",
+    "@directus/sdk": "^16.1.1",
     "@heroicons/vue": "^2.1.1",
     "@pinia/nuxt": "^0.5.1",
     "@vuelidate/core": "^2.0.2",
