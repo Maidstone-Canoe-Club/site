@@ -36,7 +36,7 @@ async function onCancel () {
   try {
     let url = "/events/cancel?eventId=" + props.event.id;
 
-    if (props.instance) {
+    if (props.instance !== null && props.instance !== undefined) {
       url += `&instance=${props.instance}`;
     }
 
@@ -153,7 +153,7 @@ async function onCancel () {
                     <div
                       class="text-sm text-red-700 bg-red-50 p-4 mt-6 space-y-3 flex flex-col border border-red-200 rounded">
                       <strong class="text-center">Danger zone!</strong>
-                      <template v-if="instance">
+                      <template v-if="instance !== null && instance !== undefined">
                         <p>This is a recurring event, so you can either:</p>
                         <a-button
                           variant="danger"

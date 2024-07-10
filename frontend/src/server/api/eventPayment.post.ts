@@ -76,7 +76,7 @@ export default defineEventHandler(async (event) => {
     });
 
     let redirectUrl = `/events/${eventItem.id}`;
-    if (instance) {
+    if (instance !== null && instance !== undefined) {
       redirectUrl += `?instance=${instance}`;
     }
     redirectUrl = encodeURIComponent(btoa(redirectUrl));

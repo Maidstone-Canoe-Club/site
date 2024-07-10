@@ -342,7 +342,7 @@ async function onSubmit () {
 
     let returnUrl = `/events/${eventId}/${slugify(newEvent.value.name!)}`;
 
-    if (props.instance) {
+    if (props.instance !== null && props.instance !== undefined) {
       returnUrl += `?instance=${props.instance}`;
     }
 
