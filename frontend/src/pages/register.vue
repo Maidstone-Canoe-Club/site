@@ -101,6 +101,7 @@ const route = useRoute();
 const inviteId = ref(route.query.inviteId as string);
 const directus = useDirectus();
 const { login } = useDirectusAuth();
+const { newError } = useErrors();
 
 const loading = ref(false);
 
@@ -200,7 +201,10 @@ async function onCompleteRegistration () {
 
     await navigateTo("/");
   } catch (e) {
-    loading.value = true;
+    newError({
+      message: "Something went wrong during registration, please try again."
+    });
+    loading.value = false;
     console.log("something went wrong", e);
   }
 }

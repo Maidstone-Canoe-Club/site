@@ -55,7 +55,7 @@ async function onSend () {
   if (!v$.value.$invalid) {
     let url = "/events/message/attendees?eventId=" + props.eventId;
 
-    if (props.instance) {
+    if (props.instance !== null && props.instance !== undefined) {
       url += "&instance=" + props.instance;
     }
 

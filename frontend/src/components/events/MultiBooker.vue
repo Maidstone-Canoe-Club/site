@@ -219,7 +219,7 @@ const emits = defineEmits(["refresh"]);
 
 const props = defineProps<{
   event: EventItem,
-  instance?: string,
+  instance?: number,
   price?: number,
   juniorPrice?: number,
   nonMemberJuniorPrice?: number,
@@ -423,7 +423,7 @@ async function onBookNow () {
   try {
     let url = `/events/book?eventId=${props.event.id}&userId=${user.value!.id}`;
 
-    if (props.instance) {
+    if (props.instance !== null && props.instance !== undefined) {
       url += `&instance=${props.instance}`;
     }
 

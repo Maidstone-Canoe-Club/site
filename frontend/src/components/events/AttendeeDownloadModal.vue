@@ -71,7 +71,7 @@ async function onDownload () {
   try {
     let url = "/events/download-attendees?eventId=" + props.eventId;
 
-    if (props.instance) {
+    if (props.instance !== null && props.instance !== undefined) {
       url += "&instance=" + props.instance;
     }
 

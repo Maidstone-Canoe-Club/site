@@ -52,7 +52,7 @@ async function onSend () {
   if (!v$.value.$invalid) {
     let url = "/events/message/leader?eventId=" + props.eventId;
 
-    if (props.instance) {
+    if (props.instance !== null && props.instance !== undefined) {
       url += "&instance=" + props.instance;
     }
 

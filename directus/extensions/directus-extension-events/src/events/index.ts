@@ -343,7 +343,7 @@ export default defineEndpoint((router, {services, database}) => {
         ]
       };
 
-      if (instance) {
+      if (instance !== null && instance !== undefined) {
         filter._and.push({
           instance: {
             _eq: instance
@@ -407,7 +407,7 @@ export default defineEndpoint((router, {services, database}) => {
                                     && o.status === "paid"
                                     && metadata.booked_user === userId;
 
-              if (instance) {
+              if (instance !== null && instance !== undefined) {
                 result = result && metadata.instance === instance;
               }
 

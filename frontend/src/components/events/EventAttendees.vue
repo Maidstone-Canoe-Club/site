@@ -546,7 +546,7 @@ async function onCancelBooking () {
   try {
     let url = `/events/booking/cancel?eventId=${props.eventId}&userId=${cancelBookingForUser.value.id}`;
 
-    if (props.instance) {
+    if (props.instance !== null && props.instance !== undefined) {
       url += `&instance=${props.instance}`;
     }
 
