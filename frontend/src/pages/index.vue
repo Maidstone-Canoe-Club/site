@@ -88,7 +88,7 @@
                       <div class="mt-2">
                         <rich-text
                           class="text-sm"
-                          :content="home.welcome_message" />
+                          :content="home!.welcome_message" />
                       </div>
                     </div>
                   </div>
@@ -207,7 +207,10 @@ function formatDate (date: string) {
 const showWelcome = ref(false);
 
 onMounted(() => {
-  showWelcome.value = getItem("hide-welcome-message") !== "true";
+  const hasSeenMessage = getItem("hide-welcome-message") === "true";
+  if (!hasSeenMessage) {
+    showWelcome.value = home.value!.show_welcome_message;
+  }
 });
 
 function closeWelcome () {
