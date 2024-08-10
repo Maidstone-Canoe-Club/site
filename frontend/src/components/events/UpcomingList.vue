@@ -160,12 +160,16 @@ function getEventBorderColor (event: CourseEventItem) {
 }
 
 const showMoreLabel = computed(() => {
-  if (props.displayCount && events.value && events.value.length) {
-    const count = events.value.length - props.displayCount;
-    return `Show ${count} more`;
+  if (!events.value || !props.displayCount) {
+    return null;
   }
 
-  return null;
+  if (events.value.length <= props.displayCount) {
+    return null;
+  }
+
+  const count = events.value.length - props.displayCount;
+  return `Show ${count} more`;
 });
 
 function onShowMore () {
