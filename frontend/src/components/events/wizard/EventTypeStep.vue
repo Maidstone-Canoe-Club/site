@@ -21,6 +21,8 @@ type EventTemplateType = {
 const event = defineModel<EventWizardItem>({ required: true });
 const templateSelected = ref(false);
 
+const user = useDirectusUser();
+
 const eventTypes: EventType[] = [
   {
     id: "single",
@@ -63,6 +65,7 @@ const selectedTemplate = ref<EventTemplateType | undefined>();
 
 watch(selected, (val) => {
   event.value.occurrenceType = val?.id;
+  event.value.leaders = [user.value!];
 }, { deep: true });
 
 watch(selectedTemplate, (val) => {
