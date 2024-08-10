@@ -128,6 +128,10 @@ export interface NewsItem {
 export interface Home {
   title?: string
   tagline?: string,
+  show_welcome_message: boolean,
+  welcome_message: string | null,
+  holding_page_content: string | null,
+  show_holding_page: boolean,
   hero_images: {
     directus_files_id: string
   }[]
