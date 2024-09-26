@@ -22,17 +22,17 @@
       :reviewed-by="eventInfo.reviewedBy"
       :review-notes="eventInfo.reviewNotes"
       class="mb-4"
-      @refresh="onRefresh" />
+      @refresh="onRefresh"/>
 
     <div class="lg:flex lg:items-center lg:justify-between">
       <div class="min-w-0 flex-1">
         <event-type-badge
           :event="event"
-          class="mb-2" />
+          class="mb-2"/>
         <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
           {{ event!.title }}
         </h2>
-        <div class="mt-1 flex flex-col sm:mt-0 sm:flex-row sm:flex-wrap sm:space-x-6" />
+        <div class="mt-1 flex flex-col sm:mt-0 sm:flex-row sm:flex-wrap sm:space-x-6"/>
       </div>
       <div
         v-if="canEdit"
@@ -67,7 +67,7 @@
           <div class="space-y-6">
             <rich-text
               v-if="event.description"
-              :content="event.description" />
+              :content="event.description"/>
 
             <alert-box
               v-if="event.type !== 'beginners_course' && event.type !== 'coaching'"
@@ -112,19 +112,19 @@
               <template v-if="event.paddle_type === 'peer_paddle'">
                 <UserGroupIcon
                   class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400"
-                  aria-hidden="true" />
+                  aria-hidden="true"/>
                 Peer paddle
               </template>
               <template v-else-if="event.paddle_type === 'led_paddle'">
                 <FlagIcon
                   class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400"
-                  aria-hidden="true" />
+                  aria-hidden="true"/>
                 Led paddle
               </template>
               <template v-else-if="event.paddle_type === 'coached_paddle'">
                 <LifebuoyIcon
                   class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400"
-                  aria-hidden="true" />
+                  aria-hidden="true"/>
                 Coached paddle
               </template>
             </div>
@@ -132,14 +132,14 @@
             <div
               v-if="event.location"
               class="mt-2 flex items-center text-sm text-gray-500">
-              <MapPinIcon class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
+              <MapPinIcon class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true"/>
               {{ event.location }}
             </div>
 
             <div
               v-if="event.max_spaces"
               class="mt-2 flex items-center text-sm text-gray-500">
-              <UsersIcon class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
+              <UsersIcon class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true"/>
               {{ event.max_spaces }} max spaces
             </div>
 
@@ -147,7 +147,7 @@
               v-for="(date, index) in sessionDates"
               :key="index">
               <div class="mt-2 flex items-center text-sm text-gray-500">
-                <CalendarIcon class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
+                <CalendarIcon class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true"/>
                 {{ renderSessionDate(date) }}
               </div>
             </div>
@@ -155,7 +155,7 @@
             <div
               v-if="eventPrices && eventPrices.length"
               class="mt-2 flex text-sm text-gray-500">
-              <CurrencyPoundIcon class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
+              <CurrencyPoundIcon class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true"/>
               <div class="flex items-center">
                 <ul>
                   <li
@@ -170,7 +170,7 @@
             <div
               v-if="formattedAllowedRoles"
               class="mt-2 flex items-center text-sm text-gray-500">
-              <IdentificationIcon class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
+              <IdentificationIcon class="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true"/>
               <span>
                 {{ formattedAllowedRoles }}
               </span>
@@ -179,7 +179,7 @@
             <div
               v-if="event.last_booking_date"
               class="mt-5 flex items-center text-sm text-gray-700">
-              <ExclamationTriangleIcon class="mr-1.5 h-5 w-5 flex-shrink-0 text-orange-400" aria-hidden="true" />
+              <ExclamationTriangleIcon class="mr-1.5 h-5 w-5 flex-shrink-0 text-orange-400" aria-hidden="true"/>
               <span>
                 <strong>Bookings cut-off: {{ formatDate(event.last_booking_date) }}</strong>
               </span>
@@ -196,7 +196,7 @@
                 <div class="flex items-center gap-2">
                   <user-avatar
                     :user="leader.directus_users_id"
-                    size-class="w-12 h-12" />
+                    size-class="w-12 h-12"/>
                   <span class="truncate">
                     {{ leader.directus_users_id.first_name }} {{ leader.directus_users_id.last_name }}
                   </span>
@@ -211,7 +211,7 @@
             <a-button
               variant="outline"
               @click="onMessageLeaders">
-              <EnvelopeIcon class="size-5" />
+              <EnvelopeIcon class="size-5"/>
               Message {{ leadersLabel(true).toLowerCase() }}
             </a-button>
           </div>
@@ -223,21 +223,21 @@
             <a-button
               variant="outline"
               @click="onMarkAttendance">
-              <ClipboardDocumentCheckIcon class="size-5" />
+              <ClipboardDocumentCheckIcon class="size-5"/>
               Attendance
             </a-button>
 
             <a-button
               variant="outline"
               @click="onMessageAttendees">
-              <EnvelopeIcon class="size-5" />
+              <EnvelopeIcon class="size-5"/>
               Message attendees
             </a-button>
 
             <a-button
               variant="outline"
               @click="onDownloadAttendeeDetails">
-              <ArrowDownOnSquareStackIcon class="size-5" />
+              <ArrowDownOnSquareStackIcon class="size-5"/>
               Download attendee details
             </a-button>
 
@@ -273,25 +273,18 @@
                 :bookings="bookings"
                 :spaces-left="eventInfo.spacesLeft"
                 :paid-user-ids="eventInfo.paidUserIds"
-                @refresh="onRefresh" />
+                @refresh="onRefresh"/>
             </div>
             <div
               v-else
               class="rounded-md bg-blue-50 p-4">
               <div class="flex">
                 <div class="flex-shrink-0">
-                  <InformationCircleIcon class="h-5 w-5 text-blue-400" aria-hidden="true" />
+                  <InformationCircleIcon class="h-5 w-5 text-blue-400" aria-hidden="true"/>
                 </div>
                 <div class="ml-3 flex-1 md:flex md:justify-between">
                   <p class="text-sm text-blue-700">
-                    <template v-if="event.paddle_type === 'peer_paddle'">
-                      <strong>Peer paddle bookings are temporarily disabled</strong>. Please contact the event organiser
-                      to arrange
-                      bookings.
-                    </template>
-                    <template v-else>
-                      Bookings are now closed for this event
-                    </template>
+                    Bookings are now closed for this event
                   </p>
                 </div>
               </div>
@@ -309,7 +302,7 @@
             :instance="instance"
             :user-is-leader="userIsLeader"
             :attendees-count="eventInfo.bookingsCount"
-            @refresh="onRefresh" />
+            @refresh="onRefresh"/>
         </div>
       </div>
     </div>
@@ -319,7 +312,7 @@
       :open="markAttendanceModalOpen"
       :bookings="bookings"
       @refresh="onRefresh"
-      @dismiss="markAttendanceModalOpen = false" />
+      @dismiss="markAttendanceModalOpen = false"/>
 
     <lazy-message-attendees-modal
       v-if="userIsLeader"
@@ -327,28 +320,28 @@
       :attendee-count="bookings.length"
       :event-id="event.id"
       :instance="instance"
-      @dismiss="messageAttendeesModalOpen = false" />
+      @dismiss="messageAttendeesModalOpen = false"/>
 
     <lazy-message-leaders-modal
       v-model:open="messageLeadersModalOpen"
       :leaders="leaders"
       :leader-label="leadersLabel(false).toLowerCase()"
       :event-id="event.id"
-      :instance="instance" />
+      :instance="instance"/>
 
     <lazy-attendee-download-modal
       :open="attendeeDownloadModalOpen"
       :event-title="event.title"
       :event-id="event.id"
       :instance="instance"
-      @dismiss="attendeeDownloadModalOpen = false" />
+      @dismiss="attendeeDownloadModalOpen = false"/>
 
-    <lazy-checkin-other v-model:open="checkinOtherModalOpen" />
+    <lazy-checkin-other v-model:open="checkinOtherModalOpen"/>
 
     <lazy-event-cancel-modal
       v-model="closeModalOpen"
       :event="event"
-      :instance="instance" />
+      :instance="instance"/>
   </article>
 </template>
 
@@ -373,13 +366,13 @@ import {
 } from "@heroicons/vue/24/outline";
 // @ts-ignore
 import Dinero from "dinero.js";
-import { format, isSameDay } from "date-fns";
-import type { DirectusUser } from "nuxt-directus/dist/runtime/types";
-import type { Ref } from "vue";
-import type { EventItem } from "~/types";
-import { getDatesOfInstance } from "~/utils/events";
+import {format, isSameDay} from "date-fns";
+import type {DirectusUser} from "nuxt-directus/dist/runtime/types";
+import type {Ref} from "vue";
+import type {EventItem} from "~/types";
+import {getDatesOfInstance} from "~/utils/events";
 
-const { getItemById, getItems } = useDirectusItems();
+const {getItemById, getItems} = useDirectusItems();
 const directus = useDirectus();
 const route = useRoute();
 const user: Ref<DirectusUser> = useDirectusUser();
@@ -395,7 +388,7 @@ const attendeeDownloadModalOpen = ref(false);
 const checkinOtherModalOpen = ref(false);
 const closeModalOpen = ref(false);
 
-const { data: eventResponse } = await useAsyncData<EventItem>(`event-item-${route.params.id}`, async () => {
+const {data: eventResponse} = await useAsyncData<EventItem>(`event-item-${route.params.id}`, async () => {
   return await getItemById<EventItem>({
     collection: "events",
     id: route.params.id as string
@@ -487,9 +480,9 @@ if (!route.params.slug && slug) {
   });
 }
 
-useHead({ title: event.value.title });
+useHead({title: event.value.title});
 
-const { data: eventInfoResponse } = await useAsyncData(`event-info-${event.value.id}`, async () => {
+const {data: eventInfoResponse} = await useAsyncData(`event-info-${event.value.id}`, async () => {
   return await loadInfo();
 });
 
@@ -515,7 +508,7 @@ const userIsLeader = computed(() => {
   return false;
 });
 
-async function loadInfo () {
+async function loadInfo() {
   let url = `/events/info?eventId=${event.value!.id}`;
   if (instance !== null && instance !== undefined) {
     url += "&instance=" + instance;
@@ -528,7 +521,7 @@ async function loadInfo () {
 }
 
 if (event.value.has_multiple) {
-  const { data: events } = await useAsyncData(`event-item-${event.value.id}-children`, async () => {
+  const {data: events} = await useAsyncData(`event-item-${event.value.id}-children`, async () => {
     return await getItems({
       collection: "events",
       params: {
@@ -612,7 +605,7 @@ const sessionDates = computed(() => {
   if (event.value.is_recurring && instance !== null) {
     result = [];
 
-    const { start, end } = getDatesOfInstance(event.value, instance);
+    const {start, end} = getDatesOfInstance(event.value, instance);
 
     result.push({
       start,
@@ -631,10 +624,6 @@ const sessionDates = computed(() => {
 
 const canBook = computed(() => {
   if (eventInfo.value.isCancelled) {
-    return false;
-  }
-
-  if (event.value.paddle_type === "peer_paddle") {
     return false;
   }
 
@@ -671,11 +660,11 @@ const userHasBooking = computed(() => {
   return false;
 });
 
-function formatPrice (amount?: number) {
+function formatPrice(amount?: number) {
   if (!amount) {
     return null;
   }
-  return `£${Dinero({ amount, currency: "GBP" }).toFormat(amount % 100 === 0 ? "0" : "0.00")}`;
+  return `£${Dinero({amount, currency: "GBP"}).toFormat(amount % 100 === 0 ? "0" : "0.00")}`;
 }
 
 const directusUrl = useDirectusUrl();
@@ -727,7 +716,7 @@ const eventImage = computed(() => {
   return null;
 });
 
-function renderSessionDate (date: any) {
+function renderSessionDate(date: any) {
   // For some reason when navigating to the edit page,
   // this method is called and the start and end dates are undefined
   if (date.start === undefined || date.end === undefined) {
@@ -740,11 +729,11 @@ function renderSessionDate (date: any) {
   return formatDate(date.start) + " - " + formatDate(date.end);
 }
 
-function formatDate (date: string) {
+function formatDate(date: string) {
   return format(new Date(date), "do MMM, h:mmaa");
 }
 
-async function onRefresh () {
+async function onRefresh() {
   eventInfo.value = await loadInfo();
 }
 
@@ -764,7 +753,7 @@ const spacesLeftLabel = computed(() => {
   return result;
 });
 
-function leadersLabel (pluralize: boolean) {
+function leadersLabel(pluralize: boolean) {
   let result = event.value.paddle_type === "peer_paddle" || event.value.paddle_type === "other" ? "Organiser" : "Leader";
   if (pluralize) {
     result += "s";
@@ -776,23 +765,23 @@ const canCancelEvent = computed(() => {
   return !eventInfo.value.isCancelled;
 });
 
-function onMessageLeaders () {
+function onMessageLeaders() {
   messageLeadersModalOpen.value = true;
 }
 
-function onMessageAttendees () {
+function onMessageAttendees() {
   messageAttendeesModalOpen.value = true;
 }
 
-function onDownloadAttendeeDetails () {
+function onDownloadAttendeeDetails() {
   attendeeDownloadModalOpen.value = true;
 }
 
-function onMarkAttendance () {
+function onMarkAttendance() {
   markAttendanceModalOpen.value = true;
 }
 
-function onCheckinOther () {
+function onCheckinOther() {
   checkinOtherModalOpen.value = true;
 }
 
