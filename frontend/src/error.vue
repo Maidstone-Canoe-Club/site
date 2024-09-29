@@ -31,10 +31,11 @@ const { error } = defineProps<{
 }>();
 
 const errorCodes: Record<number, string> = {
+  401: "Not allowed",
   404: "Page not found"
 };
 
-if (process.dev) {
+if (import.meta.dev) {
   console.error(error);
 }
 
@@ -56,34 +57,6 @@ async function reload () {
     state.value = "error";
   }
 }
-
-// const statusCode = computed(() => {
-//   return props.error.statusCode;
-// });
-//
-// const is404 = computed(() => {
-//   return statusCode.value === 404;
-// });
-//
-// const title = computed(() => {
-//   if (is404.value) {
-//     return "Page not found";
-//   }
-//
-//   return "An error occured";
-// });
-//
-// const description = computed(() => {
-//   if (is404.value) {
-//     return "We couldn't find that page";
-//   }
-//
-//   if (props.error.statusMessage) {
-//     return props.error.statusMessage;
-//   }
-//
-//   return "There was a problem rendering that page";
-// });
 
 </script>
 
