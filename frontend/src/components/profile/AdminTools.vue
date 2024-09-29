@@ -1,6 +1,6 @@
 ﻿<template>
   <div>
-    <strong class="mb-5">Admin tools</strong>
+    <strong class="mb-5 block">Admin tools</strong>
     <div class="divide-y divide-gray-200 overflow-hidden rounded-lg bg-gray-200 shadow sm:grid sm:grid-cols-2 sm:gap-px sm:divide-y-0">
       <div v-for="(action, actionIdx) in actions" :key="action.title" :class="[actionIdx === 0 ? 'rounded-tl-lg rounded-tr-lg sm:rounded-tr-none' : '', actionIdx === 1 ? 'sm:rounded-tr-lg' : '', actionIdx === actions.length - 2 ? 'sm:rounded-bl-lg' : '', actionIdx === actions.length - 1 ? 'rounded-bl-lg rounded-br-lg sm:rounded-bl-none' : '', 'group relative bg-white p-6 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-500']">
         <div>
@@ -42,7 +42,7 @@
 import {
   NewspaperIcon,
   EnvelopeIcon,
-  QuestionMarkCircleIcon,
+  UserGroupIcon,
   ChartBarSquareIcon
 } from "@heroicons/vue/24/outline";
 import { NuxtLink } from "#components";
@@ -78,10 +78,10 @@ const actions = [
     iconBackground: "bg-sky-50"
   },
   {
-    title: "More coming soon",
-    href: null,
-    description: null,
-    icon: QuestionMarkCircleIcon,
+    title: "User admin",
+    href: "/admin/users",
+    description: "Manage users",
+    icon: UserGroupIcon,
     iconForeground: "text-rose-700",
     iconBackground: "bg-rose-50"
   }

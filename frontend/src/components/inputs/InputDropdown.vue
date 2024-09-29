@@ -3,7 +3,8 @@
     <Listbox
       v-model="internalValue"
       as="div"
-      by="id"
+      :by="by"
+      :disabled="disabled"
       :multiple="multiple">
       <ListboxLabel
         class="block text-sm font-medium leading-6 text-gray-900"
@@ -12,7 +13,8 @@
       </ListboxLabel>
       <div class="relative mt-2">
         <ListboxButton
-          class="relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6">
+          class="relative w-full cursor-default rounded-md py-1.5 pl-3 pr-10 text-left shadow-sm ring-1 ring-inset focus:outline-none focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6"
+         :class="[disabled ? 'text-gray-600 bg-gray-50 ring-gray-200' :'text-gray-900 bg-white ring-gray-300']">
           <span class="block truncate">
             {{ currentLabel }}
           </span>
@@ -33,9 +35,13 @@
               :key="option.id"
               v-slot="{ active, selected }"
               as="template"
+              :disabled="option.disabled"
               :value="option">
               <li
-                :class="[active ? 'bg-indigo-600 text-white' : 'text-gray-900', 'relative cursor-default select-none py-2 pl-3 pr-9']">
+                :class="[
+                  option.disabled ? '!text-gray-300 cursor-not-allowed' : '',
+                  active ? 'bg-indigo-600 text-white' : 'text-gray-900',
+                   'relative cursor-default select-none py-2 pl-3 pr-9']">
                 <span :class="[selected ? 'font-semibold' : 'font-normal', 'block truncate']">{{ option.name }}</span>
 
                 <span
@@ -71,6 +77,7 @@ interface Props {
   label?: string | null,
   required?: boolean,
   disabled?: boolean,
+  by?: string,
   options: DropdownOption[],
   multiple?: boolean
   v?: Validation | null
@@ -82,6 +89,7 @@ const props = withDefaults(defineProps<Props>(), {
   label: null,
   required: false,
   disabled: false,
+  by: "id",
   multiple: false,
   v: null
 });
