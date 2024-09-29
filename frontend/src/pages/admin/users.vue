@@ -1,6 +1,7 @@
 <script setup lang="ts">
 const {getUsers} = useDirectusUsers();
 
+const searchLoading = ref(false);
 const searchQuery = ref<string | null>(null);
 const itemsPerPage = ref(12);
 const page = ref(1);
@@ -40,7 +41,8 @@ async function fetchUsers() {
         ],
         page: page.value,
         limit: itemsPerPage.value,
-        search: searchQuery.value || undefined
+        search: searchQuery.value || undefined,
+        sort: "last_name"
       },
 
     });
@@ -60,7 +62,18 @@ async function fetchUsers() {
 }
 
 async function onSearch() {
-  await refresh();
+  page.value = 1;
+  searchLoading.value = true;
+  try {
+    await refresh();
+  }catch(err: any){
+    console.error("Error performing user search", err);
+    newError({
+      message: "Error performing user search",
+    })
+  }finally {
+    searchLoading.value = false;
+  }
 }
 
 watch(page, async () => {
@@ -73,6 +86,7 @@ watch(page, async () => {
   <users-table :users="users"
                v-model:search-query="searchQuery"
                v-model:page="page"
+               :search-loading="searchLoading"
                :total-items="totalItems"
                :items-per-page="itemsPerPage"
                @search="onSearch"/>
