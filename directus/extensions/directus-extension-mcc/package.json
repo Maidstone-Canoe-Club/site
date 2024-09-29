@@ -92,6 +92,11 @@
 				"type": "hook",
 				"name": "redirect-hook",
 				"source": "src/redirect-hook/index.ts"
+			},
+			{
+				"type": "endpoint",
+				"name": "user-admin",
+				"source": "src/user-admin/index.ts"
 			}
 		]
 	},

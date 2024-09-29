@@ -2,7 +2,7 @@
 import type {DirectusUser} from "nuxt-directus/dist/runtime/types";
 import {UserIcon} from '@heroicons/vue/24/outline'
 
-const emits = defineEmits(["close"]);
+const emits = defineEmits(["close", "save"]);
 
 const props = defineProps<{
   user?: DirectusUser,
@@ -22,13 +22,13 @@ function close() {
 }
 
 const directus = useDirectus();
-const {updateUser} = useDirectusUsers();
+const user = useDirectusUser();
 const {newError} = useErrors();
 
 const {data: roles} = await useAsyncData("directus-roles", async () => await fetchRoles());
 
 const canEditUser = computed(() => {
-  return editingUser.value.role.name !== "Administrator";
+  return editingUser.value.role.name !== "Administrator" && editingUser.value.id !== user.value.id;
 });
 
 async function fetchRoles() {
@@ -54,14 +54,16 @@ const rolesOptions = computed(() => {
 
 async function save() {
   try {
-    await updateUser({
-      id: editingUser.value.id,
-      user: {
+    await directus("/user-admin/update-user", {
+      method: "POST",
+      body: {
+        id: editingUser.value.id,
         role: editingUser.value.role.id,
         bc_number: editingUser.value.bc_number,
         club_number: editingUser.value.club_number
       }
-    });
+    })
+    emits("save");
     close();
   } catch (err: any) {
     console.error("Error updating user:", err);
