@@ -15,7 +15,11 @@ const {newError} = useErrors();
 
 const users = computed(() => userData.value.data.map(u => ({
   fullName: `${u.first_name} ${u.last_name}`,
-  ...u
+  ...u,
+  role: {
+    ...u.role,
+    name: u.role.name === "Unapproved" ? "Non-member" : u.role.name,
+  }
 })));
 
 const totalItems = computed(() => userData.value.meta.filter_count);
@@ -76,6 +80,10 @@ async function onSearch() {
   }
 }
 
+async function onSave(){
+  await refresh();
+}
+
 watch(page, async () => {
   await refresh();
 });
@@ -89,6 +97,7 @@ watch(page, async () => {
                :search-loading="searchLoading"
                :total-items="totalItems"
                :items-per-page="itemsPerPage"
+               @save="onSave"
                @search="onSearch"/>
 </template>
 

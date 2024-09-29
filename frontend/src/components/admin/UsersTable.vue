@@ -9,7 +9,7 @@ defineProps<{
   searchLoading: boolean
 }>();
 
-const emits = defineEmits(["search"])
+const emits = defineEmits(["search", "save"])
 
 const page = defineModel("page", {required: true});
 const searchQuery = defineModel("searchQuery", {required: true});
@@ -38,8 +38,20 @@ function onSearch() {
   emits("search");
 }
 
-function timeSinceLastLogin(user: DirectusUser){
-  return formatDistanceToNow(new Date(user.last_access), { addSuffix: true});
+function timeSinceLastLogin(user: DirectusUser) {
+  if(user.role.name === "Junior"){
+    return null;
+  }
+
+  if (!user.last_access) {
+    return "Never"
+  }
+// todo clear search button
+  return formatDistanceToNow(new Date(user.last_access), {addSuffix: true});
+}
+
+function onUserSave() {
+  emits("save");
 }
 
 </script>
@@ -64,8 +76,12 @@ function timeSinceLastLogin(user: DirectusUser){
           <thead>
           <tr>
             <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">Name</th>
-            <th scope="col" class="hidden px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:table-cell">Email</th>
-            <th scope="col" class="hidden px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:table-cell">Last access</th>
+            <th scope="col" class="hidden px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:table-cell">
+              Email
+            </th>
+            <th scope="col" class="hidden px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:table-cell">Last
+              access
+            </th>
             <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Role</th>
             <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-0">
               <span class="sr-only">Edit</span>
@@ -108,7 +124,9 @@ function timeSinceLastLogin(user: DirectusUser){
                        :page="page"
                        @prev="onPrevPage"
                        @next="onNextPage"/>
-    <UserEditModal :user="editingUser" :open="editingUserModalOpen"
+    <UserEditModal :user="editingUser"
+                   :open="editingUserModalOpen"
+                   @save="onUserSave"
                    @close="onModalClose"/>
   </div>
 </template>
