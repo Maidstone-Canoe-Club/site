@@ -61,14 +61,10 @@ watch([page, filteredRoles], async () => {
 }, {deep: true});
 
 function timeSinceLastLogin(user: DirectusUser) {
-  if (user.role.name === "Junior") {
-    return null;
-  }
-
   if (!user.last_access) {
     return "Never"
   }
-// todo clear search button
+
   return formatDistanceToNow(new Date(user.last_access), {addSuffix: true});
 }
 
