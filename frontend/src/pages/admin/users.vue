@@ -9,7 +9,7 @@ definePageMeta({
 </script>
 
 <template>
-  <users-table-new/>
+  <users-table/>
 </template>
 
 <style scoped lang="scss">
