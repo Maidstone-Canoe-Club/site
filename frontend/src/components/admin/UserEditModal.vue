@@ -100,14 +100,20 @@ async function save() {
                   <div class="mt-2 space-y-4">
                     <div class="grid grid-cols-2 gap-3">
                       <input-field label="First name"
+                                   id="first-name"
+                                   name="first-name"
                                    disabled
                                    v-model="editingUser.first_name"/>
                       <input-field label="Last name"
+                                   id="last-name"
+                                   name="last-name"
                                    disabled
                                    v-model="editingUser.last_name"/>
                     </div>
                     <input-field label="Email address"
                                  disabled
+                                 id="email-address"
+                                 name="email-address"
                                  type="email"
                                  v-model="editingUser.email"/>
 
@@ -119,9 +125,13 @@ async function save() {
 
                     <div class="grid grid-cols-2 gap-3">
                       <input-field label="BC Number"
+                                   id="bc-number"
+                                   name="bc-number"
                                    :disabled="!canEditUser"
                                    v-model="editingUser.bc_number"/>
                       <input-field label="Club number"
+                                   id="club-number"
+                                   name="club-number"
                                    :disabled="!canEditUser"
                                    v-model="editingUser.club_number"/>
                     </div>

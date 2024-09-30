@@ -23,13 +23,6 @@ export default defineNuxtConfig({
     }
   },
 
-  appConfig: {
-    umami: {
-      ignoreLocalhost: true,
-      version: 2
-    }
-  },
-
   sourcemap: {
     server: true,
     client: true
@@ -82,7 +75,6 @@ export default defineNuxtConfig({
 
   modules: [
     "nuxt-directus",
-    "@nuxtjs/tailwindcss",
     "nuxt-headlessui",
     "@pinia/nuxt",
     "@nuxtjs/turnstile",
@@ -92,7 +84,8 @@ export default defineNuxtConfig({
     "@nuxt/fonts",
     "@nuxtjs/device",
     "@nuxt/image",
-    "@nuxt/test-utils/module"
+    "@nuxt/test-utils/module",
+    "@nuxt/ui"
   ],
 
   image: {
@@ -104,6 +97,10 @@ export default defineNuxtConfig({
 
   headlessui: {
     prefix: ""
+  },
+
+  colorMode: {
+    preference: 'light'
   },
 
   directus: {
