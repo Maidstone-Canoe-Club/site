@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type {DirectusUser} from "nuxt-directus/dist/runtime/types";
-import {UserIcon} from '@heroicons/vue/24/outline'
 
 const emits = defineEmits(["close", "save"]);
 
@@ -98,9 +97,11 @@ async function save() {
             <DialogPanel
               class="relative transform rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
               <div>
-                <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
-                  <UserIcon class="h-6 w-6 text-green-600" aria-hidden="true"/>
+                <div class="mx-auto flex h-12 w-12 items-center justify-center">
+                  <UserAvatar :user="editingUser" size-class="w-12 h-12"/>
                 </div>
+
+
                 <div class="mt-3 sm:mt-5">
                   <div class="mt-2 space-y-4">
                     <div class="grid grid-cols-2 gap-3">
