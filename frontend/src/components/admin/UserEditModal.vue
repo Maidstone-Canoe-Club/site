@@ -27,8 +27,13 @@ const {newError} = useErrors();
 
 const {data: roles} = await useAsyncData("directus-roles", async () => await fetchRoles());
 
+const canEditUserRole = computed(() => {
+  return editingUser.value.role.name !== "Junior" && editingUser.value.role.name !== "Administrator";
+});
+
 const canEditUser = computed(() => {
-  return editingUser.value.role.name !== "Administrator" && editingUser.value.id !== user.value.id;
+  return editingUser.value.role.name !== "Administrator" &&
+    editingUser.value.id !== user.value.id;
 });
 
 async function fetchRoles() {
@@ -119,7 +124,7 @@ async function save() {
 
                     <input-dropdown :options="rolesOptions"
                                     v-model="editingUser.role"
-                                    :disabled="!canEditUser"
+                                    :disabled="!canEditUser || !canEditUserRole"
                                     by="id"
                                     label="Role"/>
 
@@ -139,7 +144,7 @@ async function save() {
                 </div>
               </div>
               <div class="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:gap-3"
-              :class="[canEditUser ? 'sm-grid-cols-2' : '']">
+                   :class="[canEditUser ? 'sm-grid-cols-2' : '']">
                 <a-button type="button"
                           v-if="canEditUser"
                           :disabled="!isDirty"

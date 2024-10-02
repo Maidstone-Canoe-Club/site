@@ -14,12 +14,13 @@
       <div class="relative mt-2">
         <ListboxButton
           class="relative w-full cursor-default rounded-md py-1.5 pl-3 pr-10 text-left shadow-sm ring-1 ring-inset focus:outline-none focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6"
-         :class="[disabled ? 'text-gray-600 bg-gray-50 ring-gray-200' :'text-gray-900 bg-white ring-gray-300']">
+          :class="[disabled ? 'text-gray-600 bg-gray-50 ring-gray-200' :'text-gray-900 bg-white ring-gray-300',
+                   !hasValue ? '!text-gray-400' : '']">
           <span class="block truncate">
             {{ currentLabel }}
           </span>
           <span class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-            <ChevronUpDownIcon class="h-5 w-5 text-gray-400" aria-hidden="true" />
+            <ChevronUpDownIcon class="h-5 w-5 text-gray-400" aria-hidden="true"/>
           </span>
         </ListboxButton>
 
@@ -42,12 +43,14 @@
                   option.disabled ? '!text-gray-300 cursor-not-allowed' : '',
                   active ? 'bg-indigo-600 text-white' : 'text-gray-900',
                    'relative cursor-default select-none py-2 pl-3 pr-9']">
-                <span :class="[selected ? 'font-semibold' : 'font-normal', 'block truncate']">{{ option.name }}</span>
+                <span :class="[selected ? 'font-semibold' : 'font-normal', 'block truncate whitespace-nowrap']">{{
+                    option.name
+                  }}</span>
 
                 <span
                   v-if="selected"
                   :class="[active ? 'text-white' : 'text-indigo-600', 'absolute inset-y-0 right-0 flex items-center pr-4']">
-                  <CheckIcon class="h-5 w-5" aria-hidden="true" />
+                  <CheckIcon class="h-5 w-5" aria-hidden="true"/>
                 </span>
               </li>
             </ListboxOption>
@@ -64,8 +67,8 @@
 </template>
 
 <script setup lang="ts">
-import type { Validation } from "@vuelidate/core";
-import { CheckIcon, ChevronUpDownIcon } from "@heroicons/vue/20/solid";
+import type {Validation} from "@vuelidate/core";
+import {CheckIcon, ChevronUpDownIcon} from "@heroicons/vue/20/solid";
 
 export type DropdownOption = {
   id: number | string,
@@ -80,7 +83,9 @@ interface Props {
   by?: string,
   options: DropdownOption[],
   multiple?: boolean
-  v?: Validation | null
+  v?: Validation | null,
+  placeholder?: string,
+  hideSelected?: boolean
 }
 
 const emits = defineEmits(["update:modelValue"]);
@@ -95,10 +100,10 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const internalValue = computed<DropdownOption[] | DropdownOption>({
-  get () {
+  get() {
     return props.modelValue;
   },
-  set (val: DropdownOption[] | DropdownOption) {
+  set(val: DropdownOption[] | DropdownOption) {
     emits("update:modelValue", val);
   }
 });
@@ -117,17 +122,29 @@ const isValid = computed(() => {
   return true;
 });
 
+const hasValue = computed(() => {
+  if (Array.isArray(internalValue.value)) {
+    return internalValue.value.length;
+  } else {
+    return internalValue.value;
+  }
+})
+
 const currentLabel = computed(() => {
   if (Array.isArray(internalValue.value)) {
     if (internalValue.value.length) {
-      return internalValue.value.map(x => x.name).join(", ");
+      if (props.hideSelected) {
+        return `${internalValue.value.length} selected`;
+      } else {
+        return internalValue.value.map(x => x.name).join(", ");
+      }
     } else {
-      return "Select multiple options";
+      return props.placeholder ?? "Select multiple options";
     }
   } else if (internalValue.value && internalValue.value.name) {
     return internalValue.value.name;
   } else {
-    return "Select an option";
+    return props.placeholder ?? "Select an option";
   }
 });
 
