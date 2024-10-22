@@ -1,9 +1,9 @@
 import * as Sentry from "@sentry/nuxt";
 
-Sentry.init({
-  dsn: "https://examplePublicKey@o0.ingest.sentry.io/0",
-
-  // We recommend adjusting this value in production, or using tracesSampler
-  // for finer control
-  tracesSampleRate: 1.0,
-});
+if(process.env.SENTRY_DSN) {
+  Sentry.init({
+    dsn: process.env.SENTRY_DSN,
+    environment: process.env.SENTRY_ENVIRONMENT,
+    tracesSampleRate: 1.0,
+  });
+}
