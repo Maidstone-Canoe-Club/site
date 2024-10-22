@@ -27,6 +27,10 @@ const heroImage = computed(() => {
   return home.value!.hero_image;
 });
 
+function throwError() {
+  throw new Error("An example error");
+}
+
 </script>
 
 <template>
@@ -52,6 +56,7 @@ const heroImage = computed(() => {
                   touring, white water, sea touring, or a leisurely paddle.
                 </p>
                 <div class="mt-10 flex items-center gap-x-6">
+                  <button @click="throwError">Throw error</button>
                   <a
                     href="#"
                     class="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">

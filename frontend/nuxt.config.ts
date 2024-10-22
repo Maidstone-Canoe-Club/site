@@ -73,6 +73,14 @@ export default defineNuxtConfig({
     "nuxt-umami"
   ],
 
+  routeRules: {
+    "/**": {
+      headers: {
+        "Document-Policy": "js-profiling"
+      }
+    }
+  },
+
   modules: [
     "nuxt-directus",
     "nuxt-headlessui",
@@ -85,7 +93,8 @@ export default defineNuxtConfig({
     "@nuxtjs/device",
     "@nuxt/image",
     "@nuxt/test-utils/module",
-    "@nuxt/ui"
+    "@nuxt/ui",
+    "@sentry/nuxt/module"
   ],
 
   image: {
@@ -164,19 +173,19 @@ export default defineNuxtConfig({
     build: {
       sourcemap: true
     },
-    plugins: [
-      sentryVitePlugin({
-        authToken: process.env.SENTRY_AUTH_TOKEN,
-        org: process.env.SENTRY_ORG,
-        project: process.env.SENTRY_PROJECT,
-        telemetry: false,
-        disable: process.env.NODE_ENV !== "production",
-        release: {
-          name: process.env.SENTRY_RELEASE
-        },
-        debug: true
-      })
-    ],
+    // plugins: [
+      // sentryVitePlugin({
+      //   authToken: process.env.SENTRY_AUTH_TOKEN,
+      //   org: process.env.SENTRY_ORG,
+      //   project: process.env.SENTRY_PROJECT,
+      //   telemetry: false,
+      //   disable: process.env.NODE_ENV !== "production",
+      //   release: {
+      //     name: process.env.SENTRY_RELEASE
+      //   },
+      //   debug: true
+      // })
+    // ],
     server: {
       watch: {
         usePolling: true,
