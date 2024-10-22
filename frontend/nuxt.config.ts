@@ -177,7 +177,8 @@ export default defineNuxtConfig({
       ]
     },
     build: {
-      sourcemap: true
+      sourcemap: true,
+      transpile: [ "import-in-the-middle"]
     },
     // plugins: [
       // sentryVitePlugin({
