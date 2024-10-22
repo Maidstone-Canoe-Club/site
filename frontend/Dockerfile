@@ -72,6 +72,8 @@ COPY ./src ./src
 COPY ./nuxt.config.ts ./
 COPY ./tailwind.config.ts ./
 COPY ./tsconfig.json ./
+COPY ./sentry.client.config.ts ./
+COPY ./sentry.server.config.ts ./
 
 RUN pnpm build
 
