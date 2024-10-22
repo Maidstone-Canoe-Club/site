@@ -69,8 +69,12 @@ const isValid = computed(() => !props.v?.$invalid || true);
 const internalValue = computed(() => formatPrice(props.modelValue));
 
 function onBlur(e) {
-  const amount = toPrice(e.target.value);
-  emits("update:modelValue", amount);
+  if(e.target.value) {
+    const amount = toPrice(e.target.value);
+    emits("update:modelValue", amount);
+  }else{
+    emits("update:modelValue", undefined);
+  }
 }
 
 function formatPrice(amount) {
