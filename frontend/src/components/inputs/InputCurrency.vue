@@ -4,8 +4,11 @@
       v-if="label"
       :for="id"
       class="block text-sm font-medium leading-6 text-gray-900">{{ label }}</label>
-    <div class="relative">
-      <span class="absolute h-full flex justify-center items-center aspect-square text-gray-500">{{ currencySymbol }}</span>
+    <div class="relative"
+         :class="{'mt-2': !!label}">
+      <span class="absolute h-full flex justify-center items-center aspect-square text-gray-500 pl-3">{{
+          currencySymbol
+        }}</span>
       <input
         :id="id"
         :value="internalValue"
@@ -29,9 +32,10 @@
 </template>
 
 <script setup lang="ts">
-import type { Validation } from "@vuelidate/core";
+import type {Validation} from "@vuelidate/core";
 // @ts-ignore
 import Dinero from "dinero.js";
+
 interface Props {
   modelValue: number | null | undefined,
   id: string,
@@ -64,19 +68,23 @@ const isValid = computed(() => !props.v?.$invalid || true);
 
 const internalValue = computed(() => formatPrice(props.modelValue));
 
-function onBlur (e) {
-  const amount = toPrice(e.target.value);
-  emits("update:modelValue", amount);
+function onBlur(e) {
+  if(e.target.value) {
+    const amount = toPrice(e.target.value);
+    emits("update:modelValue", amount);
+  }else{
+    emits("update:modelValue", undefined);
+  }
 }
 
-function formatPrice (amount) {
+function formatPrice(amount) {
   if (!amount) {
     return null;
   }
-  return Dinero({ amount, currency: "GBP" }).toFormat("0.00");
+  return Dinero({amount, currency: "GBP"}).toFormat("0.00");
 }
 
-function toPrice (amount) {
+function toPrice(amount) {
   return Math.round(amount * Math.pow(10, 2));
 }
 

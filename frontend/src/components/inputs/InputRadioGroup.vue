@@ -45,10 +45,11 @@ const isValid = computed(() => {
       v-model="selected"
       :by="by">
       <RadioGroupLabel
+        v-if="label"
         :class="[
           hideLabel ? 'sr-only' : 'block text-sm font-medium leading-6 text-gray-900 mb-2',
           required ? 'required' : '']">
-        Paddle type
+        {{label}}
       </RadioGroupLabel>
       <div
         class="-space-y-px rounded-md bg-white"
