@@ -136,6 +136,12 @@ export default defineNuxtConfig({
   },
 
   nitro: {
+    rollupConfig: {
+      output: {
+        sourcemap: "hidden"
+      }
+    },
+
     publicAssets: process.env.NODE_ENV === "production"
       ? [
         {
