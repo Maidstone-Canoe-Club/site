@@ -1,6 +1,6 @@
 ﻿FROM node:20-bullseye-slim AS prebase
 
-RUN apt-get update && apt-get install -y --no-install-recommends netcat wget \
+RUN apt-get update && apt-get install -y --no-install-recommends netcat wget ca-certificates \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
