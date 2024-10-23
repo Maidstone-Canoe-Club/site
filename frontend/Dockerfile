@@ -1,6 +1,6 @@
 ﻿FROM node:20-bullseye-slim AS prebase
 
-RUN apt-get update && apt-get install -y --no-install-recommends netcat wget ca-certificates \
+RUN apt-get update && apt-get install -y --no-install-recommends netcat wget \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -72,8 +72,6 @@ COPY ./src ./src
 COPY ./nuxt.config.ts ./
 COPY ./tailwind.config.ts ./
 COPY ./tsconfig.json ./
-COPY ./sentry.client.config.ts ./
-COPY ./sentry.server.config.ts ./
 
 RUN pnpm build
 
