@@ -113,8 +113,8 @@ devDependencies:
     specifier: ^7.119.0
     version: 7.119.2
   '@sentry/profiling-node':
-    specifier: ^1.3.5
-    version: 1.3.5(@sentry/node@7.119.2)
+    specifier: ^7.119.0
+    version: 7.119.2
   '@sentry/vite-plugin':
     specifier: ^2.22.4
     version: 2.22.6
@@ -2773,15 +2773,12 @@ packages:
       '@sentry/utils': 7.119.2
     dev: true
 
-  /@sentry/profiling-node@1.3.5(@sentry/node@7.119.2):
-    resolution: {integrity: sha512-n2bfEbtLW3WuIMQGyxKJKzBNZOb1JYfMeJQ2WQn/42F++69m+u7T0S3EDGRN0Y//fbt5+r0any+4r3kChRXZkQ==}
+  /@sentry/profiling-node@7.119.2:
+    resolution: {integrity: sha512-c2eR//qqydnLacxBy3ufRba0GFkfa3VS7ZG7b6pChkEzNmP6ObBVRdNCQ5FhyeJ6dPyi7x+wy8rI0d5aWhU23Q==}
     engines: {node: '>=8.0.0'}
     hasBin: true
     requiresBuild: true
-    peerDependencies:
-      '@sentry/node': ^7.44.1
     dependencies:
-      '@sentry/node': 7.119.2
       detect-libc: 2.0.3
       node-abi: 3.68.0
     dev: true
