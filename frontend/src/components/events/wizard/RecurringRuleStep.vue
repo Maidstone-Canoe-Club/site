@@ -33,16 +33,6 @@ function useExample (example: string) {
 
 const previewDates = ref<string[]>([]);
 
-function toDatetime (date: Date | string) {
-  const newDate = new Date(date);
-  return datetime(newDate.getUTCFullYear(),
-    newDate.getUTCMonth() + 1,
-    newDate.getUTCDate(),
-    newDate.getUTCHours(),
-    newDate.getUTCMinutes(),
-    newDate.getUTCSeconds());
-}
-
 watch(() => event.value.rrule, (val) => {
   console.log("CHANGE", val);
   if (!val) {
@@ -118,24 +108,22 @@ const exampleEvents = computed(() => [{
 
     <div>
       <ul class="flex flex-wrap gap-3">
-        <ul class="flex flex-wrap gap-3">
-          <li
-            v-for="(example, index) in examples"
-            :key="index">
-            <button
-              class="rounded bg-indigo-50 px-2 py-1 text-sm font-semibold text-indigo-600 shadow-sm hover:bg-indigo-100 border border-indigo-300"
-              @click="() => useExample(example)">
-              {{ example }}
-            </button>
-          </li>
-        </ul>
+        <li
+          v-for="(example, index) in examples"
+          :key="index">
+          <button
+            class="rounded bg-indigo-50 px-2 py-1 text-sm font-semibold text-indigo-600 shadow-sm hover:bg-indigo-100 border border-indigo-300"
+            @click="() => useExample(example)">
+            {{ example }}
+          </button>
+        </li>
       </ul>
     </div>
 
     <hr>
 
     <div class="space-y-5">
-      <span>Preview the dates here; days with a circle indicate when this event will occur.</span>
+      <span>Preview the dates here; circled dates indicate when this event will occur.</span>
       <small-calendar
         :events="exampleEvents" />
     </div>

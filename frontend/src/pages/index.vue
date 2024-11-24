@@ -113,8 +113,9 @@
 <script setup lang="ts">
 import { HandRaisedIcon } from "@heroicons/vue/24/outline";
 import { ChevronRightIcon } from "@heroicons/vue/24/solid";
-import { format, addDays, startOfDay, endOfDay, setHours, setMinutes, setSeconds } from "date-fns";
+import { addDays, endOfDay } from "date-fns";
 import type { EventItem, Home, NewsItem } from "~/types";
+import {utcToZonedTime, format} from "date-fns-tz";
 
 definePageMeta({
   layout: "no-container"
@@ -129,18 +130,18 @@ const { data: home } = await useAsyncData("home", async () => {
   });
 });
 
-const eventsStart = new Date();
-const eventsEnd = endOfDay(addDays(eventsStart, 7));
-
 function eventDateFormatter (event: EventItem) {
-  const startDate = new Date(event.start_date);
-  const endDate = new Date(event.end_date);
+  const timeZone = "Europe/London";
 
-  const startDay = format(startDate, "iiii do");
-  const startTime = formatShortTime(startDate);
+  const localStartDate = utcToZonedTime(new Date(event.start_date), timeZone);
+  const localEndDate = utcToZonedTime(new Date(event.end_date), timeZone);
+  console.log("local", event.start_date, localStartDate)
 
-  const endDay = format(endDate, "iiii do");
-  const endTime = formatShortTime(endDate);
+  const startDay = format(localStartDate, "iiii do", {timeZone});
+  const startTime = formatShortTime(localStartDate);
+
+  const endDay = format(localEndDate, "iiii do", {timeZone});
+  const endTime = formatShortTime(localEndDate);
 
   if (startDay !== endDay) {
     return `${startDay} @ ${startTime} to ${endDay} @ ${endTime}`;
@@ -148,6 +149,9 @@ function eventDateFormatter (event: EventItem) {
 
   return `${startDay} @ ${startTime} - ${endTime}`;
 }
+
+const eventsStart = new Date();
+const eventsEnd = endOfDay(addDays(eventsStart, 7));
 
 const dateRangeLabel = computed(() => {
   const startMonth = format(eventsStart, "MMM");

@@ -143,6 +143,7 @@ watch(() => event.value.paddleType, (val) => {
       class="space-y-2">
       <input-radio-group
         v-model="selectedPaddleType"
+        label="Paddle type"
         :disabled="!eventType || eventType.id === 'meetings'"
         :required="eventType && eventType.id !== 'meetings'"
         by="id"

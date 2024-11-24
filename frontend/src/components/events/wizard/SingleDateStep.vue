@@ -41,7 +41,7 @@ watch(() => event.value.startDate, (val) => {
   }
 
   if (!event.value.endDate || event.value.endDate < val) {
-    event.value.endDate = formatISO(addHours(new Date(val), 1));
+    event.value.endDate = addHours(new Date(val), 1);
   }
 });
 
