@@ -1,14 +1,13 @@
 ﻿<template>
   <vue-date-picker
     v-model="internalValue"
-    :format="formatDate"
+    :is24="false"
     :placeholder="placeholder"
     auto-apply
     :close-on-auto-apply="false"
     :enable-time-picker="enableTimePicker ?? false"
     :min-date="minDate"
     :max-date="maxDate"
-    utc
     locale="en-GB">
     <template #calendar-icon>
       <span class="dp__clock-icon">

@@ -1,6 +1,9 @@
 ﻿import {AdminAccountability, isUserLeader} from "./utils";
 import {RRule} from "rrule";
-import {setHours, setMinutes, setSeconds, startOfDay} from "date-fns";
+import { startOfDay } from "date-fns";
+import { utcToZonedTime } from 'date-fns-tz';
+
+const timeZone = "Europe/London";
 
 export async function getConsentInfo(req: any, res: any, services: any, database: any) {
   const {
@@ -146,7 +149,6 @@ export async function getConsentInfo(req: any, res: any, services: any, database
   }
 }
 
-
 export async function get(req: any, res: any, services: any, database: any) {
   const {
     ItemsService
@@ -242,14 +244,34 @@ export async function get(req: any, res: any, services: any, database: any) {
         continue;
       }
 
-      const rule = RRule.fromString(event.rrule);
-      const occurrences = rule.between(start, end, true);
-      const eventStartDay = startOfDay(new Date(event.start_date));
+      // Parse event start and end dates in 'Europe/London' time zone
+      const eventStartDate = utcToZonedTime(event.start_date, timeZone);
+      const eventEndDate = utcToZonedTime(event.end_date, timeZone);
+
+      // Parse RRULE with time zone information
+      const ruleOptions = RRule.parseString(event.rrule);
+      ruleOptions.dtstart = eventStartDate;
+      ruleOptions.tzid = timeZone;
+
+      const rule = new RRule(ruleOptions);
+
+      // Ensure 'start' and 'end' are in 'Europe/London' time zone
+      const startLondon = utcToZonedTime(start, timeZone);
+      const endLondon = utcToZonedTime(end, timeZone);
+
+      // Get occurrences in the specified time range
+      const occurrences = rule.between(startLondon, endLondon, true);
+
+      const eventStartDay = startOfDay(eventStartDate);
 
       for (const occurrence of occurrences) {
+        // occurrence is in 'Europe/London' time zone
+        // Adjust end date based on duration
+        const duration = eventEndDate.getTime() - eventStartDate.getTime();
+        const combinedEndDate = new Date(occurrence.getTime() + duration);
+
+        // Calculate instance number
         const instances = rule.between(eventStartDay, occurrence, true);
-        const endDate = new Date(event.end_date);
-        const combinedEndDate = setHours(setMinutes(setSeconds(occurrence, endDate.getSeconds()), endDate.getMinutes()), endDate.getHours());
 
         events.push({
           ...event,
