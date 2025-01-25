@@ -60,10 +60,10 @@ const actions = [
     iconBackground: "bg-purple-50"
   },
   {
-    title: "Newsletters",
-    href: "/newsletters",
+    title: "Emails",
+    href: "/admin/emails",
     target: null,
-    description: "Send newsletters to subscribers",
+    description: "Send an email to club members",
     icon: EnvelopeIcon,
     iconForeground: "text-teal-700",
     iconBackground: "bg-teal-50"

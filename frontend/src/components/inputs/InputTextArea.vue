@@ -3,7 +3,8 @@
     <label
       v-if="label"
       for="about"
-      class="block text-sm font-medium leading-6 text-gray-900">{{ label }}</label>
+      class="block text-sm font-medium leading-6 text-gray-900"
+      :class="{'required': required}">{{ label }}</label>
     <div :class="{'mt-2': !!label}">
       <textarea
         :id="id"
@@ -34,6 +35,7 @@ const props = withDefaults(defineProps<{
   name: string,
   label: string,
   rows?: number,
+  required?: boolean,
   v?: Validation | null
 }>(), {
   rows: 3,

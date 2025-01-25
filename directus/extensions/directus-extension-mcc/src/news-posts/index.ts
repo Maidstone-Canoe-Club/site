@@ -94,7 +94,7 @@ export default defineEndpoint((router, {services, database, logger}) => {
 
       if (previous?.length) {
         logger.warn("User has already subscribed to news posts");
-        return res.send(200).send(false);
+        return res.status(200).send(false);
       }
 
       const newId = await subscribersService.createOne({
