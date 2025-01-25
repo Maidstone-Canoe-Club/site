@@ -15,7 +15,10 @@ const rules = {
   content: { required }
 };
 
-const sendResult = ref<{ sentToCount: string, unableToSendCount: string }>({});
+const sendResult = ref<{ sentToCount: string, unableToSendCount: string }>({
+  sentToCount: "0",
+  unableToSendCount: "0"
+});
 const data = reactive({
   subject: "",
   content: ""
@@ -43,8 +46,6 @@ function onTrySubmit () {
 }
 
 async function onSubmit () {
-  console.log("On submit");
-
   try {
     sendResult.value = await directus<{ sentToCount: string, unableToSendCount: string }>("/emails/send", {
       method: "POST",
@@ -85,13 +86,6 @@ async function onSubmit () {
         label="Subject"
         type="text"
         :v="v$.subject" />
-      <!--      <input-text-area-->
-      <!--        id="content"-->
-      <!--        v-model="data.content"-->
-      <!--        name="content"-->
-      <!--        required-->
-      <!--        label="Content"-->
-      <!--        :v="v$.content" />-->
       <input-wysiwyg
         id="content"
         v-model="data.content"
@@ -119,7 +113,7 @@ async function onSubmit () {
       cancel-button="Continue"
       title="Emails sent">
       <span>Your email was sent to <strong>{{ sendResult.sentToCount }}</strong> users.</span>
-      <span v-if="sendResult.unableToSendCount > 0">
+      <span v-if="sendResult.unableToSendCount && Number(sendResult.unableToSendCount) > 0">
         The email could not be sent to {{ sendResult.unableToSendCount }} users.
       </span>
     </dismiss-modal>
