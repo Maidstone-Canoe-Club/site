@@ -97,6 +97,11 @@
 				"type": "endpoint",
 				"name": "user-admin",
 				"source": "src/user-admin/index.ts"
+			},
+			{
+				"type": "endpoint",
+				"name": "emails",
+				"source": "src/emails/index.ts"
 			}
 		]
 	},
