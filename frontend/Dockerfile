@@ -6,7 +6,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends netcat wget ca-
 
 WORKDIR /mcc
 
-RUN corepack enable
+RUN npm i -g --force corepack && corepack enable
 
 COPY package.json pnpm-lock.yaml .npmrc ./
 
