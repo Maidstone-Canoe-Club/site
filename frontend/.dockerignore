@@ -2,7 +2,9 @@
 *.log
 dist
 .output
+.directus
 .nuxt
+.data
 .idea/
 
 *~

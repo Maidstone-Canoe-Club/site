@@ -8,9 +8,7 @@ WORKDIR /mcc
 
 RUN corepack enable
 
-COPY package.json ./
-COPY .npmrc ./
-COPY pnpm-lock.yaml ./
+COPY package.json pnpm-lock.yaml .npmrc ./
 
 FROM prebase AS base
 
