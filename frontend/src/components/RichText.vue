@@ -31,7 +31,7 @@ async function tryInterceptClick (event: any) {
       };
     }
 
-    await navigateTo(url.pathname, options);
+    await navigateTo(url.pathname + url.search, options);
   }
 }
 
