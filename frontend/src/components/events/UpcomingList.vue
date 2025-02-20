@@ -202,7 +202,7 @@ function onViewClick (event: CourseEventItem) {
       <loading-spinner color="#6366F1" />
     </div>
 
-    <template v-else-if="filteredEvents.length && false">
+    <template v-else-if="filteredEvents.length">
       <ol class="text-sm divide-y divide-gray-100">
         <li
           v-for="event in filteredEvents"
