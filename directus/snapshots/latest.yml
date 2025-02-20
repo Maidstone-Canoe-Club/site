@@ -90,6 +90,30 @@ collections:
       translations: null
       unarchive_value: null
       versioning: false
+  - collection: beginners_courses
+    meta:
+      accountability: all
+      archive_app_filter: true
+      archive_field: null
+      archive_value: null
+      collapse: open
+      collection: beginners_courses
+      color: '#A2B5CD'
+      display_template: null
+      group: null
+      hidden: false
+      icon: list_alt
+      item_duplication_fields: null
+      note: null
+      preview_url: null
+      singleton: true
+      sort: null
+      sort_field: null
+      translations: null
+      unarchive_value: null
+      versioning: false
+    schema:
+      name: beginners_courses
   - collection: block_faq
     meta:
       accountability: all
@@ -1048,6 +1072,30 @@ collections:
       versioning: false
     schema:
       name: orders
+  - collection: recurring_event_patterns
+    meta:
+      accountability: all
+      archive_app_filter: true
+      archive_field: null
+      archive_value: null
+      collapse: open
+      collection: recurring_event_patterns
+      color: '#2ECDA7'
+      display_template: null
+      group: Events
+      hidden: false
+      icon: event_repeat
+      item_duplication_fields: null
+      note: null
+      preview_url: null
+      singleton: false
+      sort: 2
+      sort_field: null
+      translations: null
+      unarchive_value: null
+      versioning: false
+    schema:
+      name: recurring_event_patterns
   - collection: redirects
     meta:
       accountability: all
@@ -1121,6 +1169,82 @@ collections:
     schema:
       name: stripe_customers
 fields:
+  - collection: beginners_courses
+    field: id
+    type: integer
+    meta:
+      collection: beginners_courses
+      conditions: null
+      display: null
+      display_options: null
+      field: id
+      group: null
+      hidden: true
+      interface: input
+      note: null
+      options: null
+      readonly: true
+      required: false
+      sort: 1
+      special: null
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: id
+      table: beginners_courses
+      data_type: integer
+      default_value: nextval('beginners_courses_id_seq'::regclass)
+      max_length: null
+      numeric_precision: 32
+      numeric_scale: 0
+      is_nullable: false
+      is_unique: true
+      is_primary_key: true
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: true
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: beginners_courses
+    field: content
+    type: text
+    meta:
+      collection: beginners_courses
+      conditions: null
+      display: null
+      display_options: null
+      field: content
+      group: null
+      hidden: false
+      interface: input-rich-text-html
+      note: null
+      options: null
+      readonly: false
+      required: false
+      sort: 2
+      special: null
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: content
+      table: beginners_courses
+      data_type: text
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
   - collection: block_faq
     field: answer
     type: text
@@ -1237,85 +1361,6 @@ fields:
       foreign_key_table: null
       foreign_key_column: null
   - collection: block_image
-    field: id
-    type: uuid
-    meta:
-      collection: block_image
-      conditions: null
-      display: null
-      display_options: null
-      field: id
-      group: null
-      hidden: true
-      interface: input
-      note: null
-      options: null
-      readonly: true
-      required: false
-      sort: 1
-      special:
-        - uuid
-      translations: null
-      validation: null
-      validation_message: null
-      width: full
-    schema:
-      name: id
-      table: block_image
-      data_type: uuid
-      default_value: null
-      max_length: null
-      numeric_precision: null
-      numeric_scale: null
-      is_nullable: false
-      is_unique: true
-      is_primary_key: true
-      is_generated: false
-      generation_expression: null
-      has_auto_increment: false
-      foreign_key_table: null
-      foreign_key_column: null
-  - collection: block_image
-    field: user_created
-    type: uuid
-    meta:
-      collection: block_image
-      conditions: null
-      display: user
-      display_options: null
-      field: user_created
-      group: null
-      hidden: true
-      interface: select-dropdown-m2o
-      note: null
-      options:
-        template: '{{avatar.$thumbnail}} {{first_name}} {{last_name}}'
-      readonly: true
-      required: false
-      sort: 2
-      special:
-        - user-created
-      translations: null
-      validation: null
-      validation_message: null
-      width: half
-    schema:
-      name: user_created
-      table: block_image
-      data_type: uuid
-      default_value: null
-      max_length: null
-      numeric_precision: null
-      numeric_scale: null
-      is_nullable: true
-      is_unique: false
-      is_primary_key: false
-      is_generated: false
-      generation_expression: null
-      has_auto_increment: false
-      foreign_key_table: directus_users
-      foreign_key_column: id
-  - collection: block_image
     field: date_created
     type: timestamp
     meta:
@@ -1356,46 +1401,6 @@ fields:
       foreign_key_table: null
       foreign_key_column: null
   - collection: block_image
-    field: user_updated
-    type: uuid
-    meta:
-      collection: block_image
-      conditions: null
-      display: user
-      display_options: null
-      field: user_updated
-      group: null
-      hidden: true
-      interface: select-dropdown-m2o
-      note: null
-      options:
-        template: '{{avatar.$thumbnail}} {{first_name}} {{last_name}}'
-      readonly: true
-      required: false
-      sort: 4
-      special:
-        - user-updated
-      translations: null
-      validation: null
-      validation_message: null
-      width: half
-    schema:
-      name: user_updated
-      table: block_image
-      data_type: uuid
-      default_value: null
-      max_length: null
-      numeric_precision: null
-      numeric_scale: null
-      is_nullable: true
-      is_unique: false
-      is_primary_key: false
-      is_generated: false
-      generation_expression: null
-      has_auto_increment: false
-      foreign_key_table: directus_users
-      foreign_key_column: id
-  - collection: block_image
     field: date_updated
     type: timestamp
     meta:
@@ -1430,6 +1435,45 @@ fields:
       is_nullable: true
       is_unique: false
       is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: block_image
+    field: id
+    type: uuid
+    meta:
+      collection: block_image
+      conditions: null
+      display: null
+      display_options: null
+      field: id
+      group: null
+      hidden: true
+      interface: input
+      note: null
+      options: null
+      readonly: true
+      required: false
+      sort: 1
+      special:
+        - uuid
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: id
+      table: block_image
+      data_type: uuid
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: false
+      is_unique: true
+      is_primary_key: true
       is_generated: false
       generation_expression: null
       has_auto_increment: false
@@ -1497,44 +1541,86 @@ fields:
       validation: null
       validation_message: null
       width: full
-  - collection: block_image_files
-    field: id
-    type: integer
+  - collection: block_image
+    field: user_created
+    type: uuid
     meta:
-      collection: block_image_files
+      collection: block_image
       conditions: null
-      display: null
+      display: user
       display_options: null
-      field: id
+      field: user_created
       group: null
       hidden: true
-      interface: null
+      interface: select-dropdown-m2o
       note: null
-      options: null
-      readonly: false
+      options:
+        template: '{{avatar.$thumbnail}} {{first_name}} {{last_name}}'
+      readonly: true
       required: false
-      sort: 1
-      special: null
+      sort: 2
+      special:
+        - user-created
       translations: null
       validation: null
       validation_message: null
-      width: full
+      width: half
     schema:
-      name: id
-      table: block_image_files
-      data_type: integer
-      default_value: nextval('block_image_files_id_seq'::regclass)
+      name: user_created
+      table: block_image
+      data_type: uuid
+      default_value: null
       max_length: null
-      numeric_precision: 32
-      numeric_scale: 0
-      is_nullable: false
-      is_unique: true
-      is_primary_key: true
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
       is_generated: false
       generation_expression: null
-      has_auto_increment: true
-      foreign_key_table: null
-      foreign_key_column: null
+      has_auto_increment: false
+      foreign_key_table: directus_users
+      foreign_key_column: id
+  - collection: block_image
+    field: user_updated
+    type: uuid
+    meta:
+      collection: block_image
+      conditions: null
+      display: user
+      display_options: null
+      field: user_updated
+      group: null
+      hidden: true
+      interface: select-dropdown-m2o
+      note: null
+      options:
+        template: '{{avatar.$thumbnail}} {{first_name}} {{last_name}}'
+      readonly: true
+      required: false
+      sort: 4
+      special:
+        - user-updated
+      translations: null
+      validation: null
+      validation_message: null
+      width: half
+    schema:
+      name: user_updated
+      table: block_image
+      data_type: uuid
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: directus_users
+      foreign_key_column: id
   - collection: block_image_files
     field: block_image_id
     type: uuid
@@ -1611,11 +1697,11 @@ fields:
       has_auto_increment: false
       foreign_key_table: null
       foreign_key_column: null
-  - collection: block_image_files_1
+  - collection: block_image_files
     field: id
     type: integer
     meta:
-      collection: block_image_files_1
+      collection: block_image_files
       conditions: null
       display: null
       display_options: null
@@ -1635,9 +1721,9 @@ fields:
       width: full
     schema:
       name: id
-      table: block_image_files_1
+      table: block_image_files
       data_type: integer
-      default_value: nextval('block_image_files_1_id_seq'::regclass)
+      default_value: nextval('block_image_files_id_seq'::regclass)
       max_length: null
       numeric_precision: 32
       numeric_scale: 0
@@ -1725,6 +1811,217 @@ fields:
       has_auto_increment: false
       foreign_key_table: directus_files
       foreign_key_column: id
+  - collection: block_image_files_1
+    field: id
+    type: integer
+    meta:
+      collection: block_image_files_1
+      conditions: null
+      display: null
+      display_options: null
+      field: id
+      group: null
+      hidden: true
+      interface: null
+      note: null
+      options: null
+      readonly: false
+      required: false
+      sort: 1
+      special: null
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: id
+      table: block_image_files_1
+      data_type: integer
+      default_value: nextval('block_image_files_1_id_seq'::regclass)
+      max_length: null
+      numeric_precision: 32
+      numeric_scale: 0
+      is_nullable: false
+      is_unique: true
+      is_primary_key: true
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: true
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: block_richtext
+    field: content
+    type: text
+    meta:
+      collection: block_richtext
+      conditions: null
+      display: null
+      display_options: null
+      field: content
+      group: null
+      hidden: false
+      interface: input-rich-text-html
+      note: null
+      options:
+        toolbar:
+          - blockquote
+          - bold
+          - bullist
+          - code
+          - customLink
+          - customMedia
+          - fullscreen
+          - h2
+          - h3
+          - h4
+          - hr
+          - italic
+          - numlist
+          - removeformat
+          - strikethrough
+          - underline
+      readonly: false
+      required: false
+      sort: 7
+      special: null
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: content
+      table: block_richtext
+      data_type: text
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: block_richtext
+    field: date_created
+    type: timestamp
+    meta:
+      collection: block_richtext
+      conditions: null
+      display: datetime
+      display_options:
+        relative: true
+      field: date_created
+      group: null
+      hidden: true
+      interface: datetime
+      note: null
+      options: null
+      readonly: true
+      required: false
+      sort: 3
+      special:
+        - date-created
+      translations: null
+      validation: null
+      validation_message: null
+      width: half
+    schema:
+      name: date_created
+      table: block_richtext
+      data_type: timestamp with time zone
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: block_richtext
+    field: date_updated
+    type: timestamp
+    meta:
+      collection: block_richtext
+      conditions: null
+      display: datetime
+      display_options:
+        relative: true
+      field: date_updated
+      group: null
+      hidden: true
+      interface: datetime
+      note: null
+      options: null
+      readonly: true
+      required: false
+      sort: 5
+      special:
+        - date-updated
+      translations: null
+      validation: null
+      validation_message: null
+      width: half
+    schema:
+      name: date_updated
+      table: block_richtext
+      data_type: timestamp with time zone
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: block_richtext
+    field: headline
+    type: string
+    meta:
+      collection: block_richtext
+      conditions: null
+      display: null
+      display_options: null
+      field: headline
+      group: null
+      hidden: false
+      interface: input
+      note: null
+      options: null
+      readonly: false
+      required: false
+      sort: 6
+      special: null
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: headline
+      table: block_richtext
+      data_type: character varying
+      default_value: null
+      max_length: 255
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
   - collection: block_richtext
     field: id
     type: uuid
@@ -1805,46 +2102,6 @@ fields:
       foreign_key_table: directus_users
       foreign_key_column: id
   - collection: block_richtext
-    field: date_created
-    type: timestamp
-    meta:
-      collection: block_richtext
-      conditions: null
-      display: datetime
-      display_options:
-        relative: true
-      field: date_created
-      group: null
-      hidden: true
-      interface: datetime
-      note: null
-      options: null
-      readonly: true
-      required: false
-      sort: 3
-      special:
-        - date-created
-      translations: null
-      validation: null
-      validation_message: null
-      width: half
-    schema:
-      name: date_created
-      table: block_richtext
-      data_type: timestamp with time zone
-      default_value: null
-      max_length: null
-      numeric_precision: null
-      numeric_scale: null
-      is_nullable: true
-      is_unique: false
-      is_primary_key: false
-      is_generated: false
-      generation_expression: null
-      has_auto_increment: false
-      foreign_key_table: null
-      foreign_key_column: null
-  - collection: block_richtext
     field: user_updated
     type: uuid
     meta:
@@ -1884,139 +2141,6 @@ fields:
       has_auto_increment: false
       foreign_key_table: directus_users
       foreign_key_column: id
-  - collection: block_richtext
-    field: date_updated
-    type: timestamp
-    meta:
-      collection: block_richtext
-      conditions: null
-      display: datetime
-      display_options:
-        relative: true
-      field: date_updated
-      group: null
-      hidden: true
-      interface: datetime
-      note: null
-      options: null
-      readonly: true
-      required: false
-      sort: 5
-      special:
-        - date-updated
-      translations: null
-      validation: null
-      validation_message: null
-      width: half
-    schema:
-      name: date_updated
-      table: block_richtext
-      data_type: timestamp with time zone
-      default_value: null
-      max_length: null
-      numeric_precision: null
-      numeric_scale: null
-      is_nullable: true
-      is_unique: false
-      is_primary_key: false
-      is_generated: false
-      generation_expression: null
-      has_auto_increment: false
-      foreign_key_table: null
-      foreign_key_column: null
-  - collection: block_richtext
-    field: headline
-    type: string
-    meta:
-      collection: block_richtext
-      conditions: null
-      display: null
-      display_options: null
-      field: headline
-      group: null
-      hidden: false
-      interface: input
-      note: null
-      options: null
-      readonly: false
-      required: false
-      sort: 6
-      special: null
-      translations: null
-      validation: null
-      validation_message: null
-      width: full
-    schema:
-      name: headline
-      table: block_richtext
-      data_type: character varying
-      default_value: null
-      max_length: 255
-      numeric_precision: null
-      numeric_scale: null
-      is_nullable: true
-      is_unique: false
-      is_primary_key: false
-      is_generated: false
-      generation_expression: null
-      has_auto_increment: false
-      foreign_key_table: null
-      foreign_key_column: null
-  - collection: block_richtext
-    field: content
-    type: text
-    meta:
-      collection: block_richtext
-      conditions: null
-      display: null
-      display_options: null
-      field: content
-      group: null
-      hidden: false
-      interface: input-rich-text-html
-      note: null
-      options:
-        toolbar:
-          - blockquote
-          - bold
-          - bullist
-          - code
-          - customLink
-          - customMedia
-          - fullscreen
-          - h2
-          - h3
-          - h4
-          - hr
-          - italic
-          - numlist
-          - removeformat
-          - strikethrough
-          - underline
-      readonly: false
-      required: false
-      sort: 7
-      special: null
-      translations: null
-      validation: null
-      validation_message: null
-      width: full
-    schema:
-      name: content
-      table: block_richtext
-      data_type: text
-      default_value: null
-      max_length: null
-      numeric_precision: null
-      numeric_scale: null
-      is_nullable: true
-      is_unique: false
-      is_primary_key: false
-      is_generated: false
-      generation_expression: null
-      has_auto_increment: false
-      foreign_key_table: null
-      foreign_key_column: null
   - collection: coaches
     field: id
     type: uuid
@@ -2097,6 +2221,44 @@ fields:
       foreign_key_table: directus_users
       foreign_key_column: id
   - collection: committee
+    field: first_name
+    type: string
+    meta:
+      collection: committee
+      conditions: null
+      display: null
+      display_options: null
+      field: first_name
+      group: null
+      hidden: false
+      interface: input
+      note: null
+      options: null
+      readonly: false
+      required: false
+      sort: 4
+      special: null
+      translations: null
+      validation: null
+      validation_message: null
+      width: half
+    schema:
+      name: first_name
+      table: committee
+      data_type: character varying
+      default_value: null
+      max_length: 255
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: committee
     field: id
     type: uuid
     meta:
@@ -2130,6 +2292,82 @@ fields:
       is_nullable: false
       is_unique: true
       is_primary_key: true
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: committee
+    field: last_name
+    type: string
+    meta:
+      collection: committee
+      conditions: null
+      display: null
+      display_options: null
+      field: last_name
+      group: null
+      hidden: false
+      interface: input
+      note: null
+      options: null
+      readonly: false
+      required: false
+      sort: 5
+      special: null
+      translations: null
+      validation: null
+      validation_message: null
+      width: half
+    schema:
+      name: last_name
+      table: committee
+      data_type: character varying
+      default_value: null
+      max_length: 255
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: committee
+    field: role
+    type: string
+    meta:
+      collection: committee
+      conditions: null
+      display: null
+      display_options: null
+      field: role
+      group: null
+      hidden: false
+      interface: input
+      note: null
+      options: null
+      readonly: false
+      required: false
+      sort: 3
+      special: null
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: role
+      table: committee
+      data_type: character varying
+      default_value: null
+      max_length: 255
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
       is_generated: false
       generation_expression: null
       has_auto_increment: false
@@ -2175,120 +2413,6 @@ fields:
       has_auto_increment: false
       foreign_key_table: directus_users
       foreign_key_column: id
-  - collection: committee
-    field: role
-    type: string
-    meta:
-      collection: committee
-      conditions: null
-      display: null
-      display_options: null
-      field: role
-      group: null
-      hidden: false
-      interface: input
-      note: null
-      options: null
-      readonly: false
-      required: false
-      sort: 3
-      special: null
-      translations: null
-      validation: null
-      validation_message: null
-      width: full
-    schema:
-      name: role
-      table: committee
-      data_type: character varying
-      default_value: null
-      max_length: 255
-      numeric_precision: null
-      numeric_scale: null
-      is_nullable: true
-      is_unique: false
-      is_primary_key: false
-      is_generated: false
-      generation_expression: null
-      has_auto_increment: false
-      foreign_key_table: null
-      foreign_key_column: null
-  - collection: committee
-    field: first_name
-    type: string
-    meta:
-      collection: committee
-      conditions: null
-      display: null
-      display_options: null
-      field: first_name
-      group: null
-      hidden: false
-      interface: input
-      note: null
-      options: null
-      readonly: false
-      required: false
-      sort: 4
-      special: null
-      translations: null
-      validation: null
-      validation_message: null
-      width: half
-    schema:
-      name: first_name
-      table: committee
-      data_type: character varying
-      default_value: null
-      max_length: 255
-      numeric_precision: null
-      numeric_scale: null
-      is_nullable: true
-      is_unique: false
-      is_primary_key: false
-      is_generated: false
-      generation_expression: null
-      has_auto_increment: false
-      foreign_key_table: null
-      foreign_key_column: null
-  - collection: committee
-    field: last_name
-    type: string
-    meta:
-      collection: committee
-      conditions: null
-      display: null
-      display_options: null
-      field: last_name
-      group: null
-      hidden: false
-      interface: input
-      note: null
-      options: null
-      readonly: false
-      required: false
-      sort: 5
-      special: null
-      translations: null
-      validation: null
-      validation_message: null
-      width: half
-    schema:
-      name: last_name
-      table: committee
-      data_type: character varying
-      default_value: null
-      max_length: 255
-      numeric_precision: null
-      numeric_scale: null
-      is_nullable: true
-      is_unique: false
-      is_primary_key: false
-      is_generated: false
-      generation_expression: null
-      has_auto_increment: false
-      foreign_key_table: null
-      foreign_key_column: null
   - collection: contact_us_message
     field: date_created
     type: timestamp
@@ -4987,6 +5111,44 @@ fields:
       foreign_key_table: null
       foreign_key_column: null
   - collection: event_bookings
+    field: attendance_notes
+    type: text
+    meta:
+      collection: event_bookings
+      conditions: null
+      display: null
+      display_options: null
+      field: attendance_notes
+      group: null
+      hidden: false
+      interface: input-multiline
+      note: null
+      options: null
+      readonly: false
+      required: false
+      sort: 13
+      special: null
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: attendance_notes
+      table: event_bookings
+      data_type: text
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: event_bookings
     field: attended
     type: boolean
     meta:
@@ -5052,44 +5214,6 @@ fields:
       name: completed
       table: event_bookings
       data_type: boolean
-      default_value: null
-      max_length: null
-      numeric_precision: null
-      numeric_scale: null
-      is_nullable: true
-      is_unique: false
-      is_primary_key: false
-      is_generated: false
-      generation_expression: null
-      has_auto_increment: false
-      foreign_key_table: null
-      foreign_key_column: null
-  - collection: event_bookings
-    field: attendance_notes
-    type: text
-    meta:
-      collection: event_bookings
-      conditions: null
-      display: null
-      display_options: null
-      field: attendance_notes
-      group: null
-      hidden: false
-      interface: input-multiline
-      note: null
-      options: null
-      readonly: false
-      required: false
-      sort: 13
-      special: null
-      translations: null
-      validation: null
-      validation_message: null
-      width: full
-    schema:
-      name: attendance_notes
-      table: event_bookings
-      data_type: text
       default_value: null
       max_length: null
       numeric_precision: null
@@ -6912,6 +7036,83 @@ fields:
       foreign_key_table: null
       foreign_key_column: null
   - collection: events
+    field: disclaimer
+    type: text
+    meta:
+      collection: events
+      conditions: null
+      display: null
+      display_options: null
+      field: disclaimer
+      group: null
+      hidden: false
+      interface: input-rich-text-html
+      note: null
+      options: null
+      readonly: false
+      required: false
+      sort: 38
+      special: null
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: disclaimer
+      table: events
+      data_type: text
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: events
+    field: is_peer_paddle
+    type: boolean
+    meta:
+      collection: events
+      conditions: null
+      display: null
+      display_options: null
+      field: is_peer_paddle
+      group: null
+      hidden: false
+      interface: boolean
+      note: null
+      options: null
+      readonly: false
+      required: false
+      sort: 37
+      special:
+        - cast-boolean
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: is_peer_paddle
+      table: events
+      data_type: boolean
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: events
     field: recurs_until
     type: dateTime
     meta:
@@ -6973,83 +7174,6 @@ fields:
       width: full
     schema:
       name: required_paddler_ability
-      table: events
-      data_type: text
-      default_value: null
-      max_length: null
-      numeric_precision: null
-      numeric_scale: null
-      is_nullable: true
-      is_unique: false
-      is_primary_key: false
-      is_generated: false
-      generation_expression: null
-      has_auto_increment: false
-      foreign_key_table: null
-      foreign_key_column: null
-  - collection: events
-    field: is_peer_paddle
-    type: boolean
-    meta:
-      collection: events
-      conditions: null
-      display: null
-      display_options: null
-      field: is_peer_paddle
-      group: null
-      hidden: false
-      interface: boolean
-      note: null
-      options: null
-      readonly: false
-      required: false
-      sort: 37
-      special:
-        - cast-boolean
-      translations: null
-      validation: null
-      validation_message: null
-      width: full
-    schema:
-      name: is_peer_paddle
-      table: events
-      data_type: boolean
-      default_value: null
-      max_length: null
-      numeric_precision: null
-      numeric_scale: null
-      is_nullable: true
-      is_unique: false
-      is_primary_key: false
-      is_generated: false
-      generation_expression: null
-      has_auto_increment: false
-      foreign_key_table: null
-      foreign_key_column: null
-  - collection: events
-    field: disclaimer
-    type: text
-    meta:
-      collection: events
-      conditions: null
-      display: null
-      display_options: null
-      field: disclaimer
-      group: null
-      hidden: false
-      interface: input-rich-text-html
-      note: null
-      options: null
-      readonly: false
-      required: false
-      sort: 38
-      special: null
-      translations: null
-      validation: null
-      validation_message: null
-      width: full
-    schema:
-      name: disclaimer
       table: events
       data_type: text
       default_value: null
@@ -7180,6 +7304,44 @@ fields:
       foreign_key_table: null
       foreign_key_column: null
   - collection: events
+    field: review_notes
+    type: text
+    meta:
+      collection: events
+      conditions: null
+      display: null
+      display_options: null
+      field: review_notes
+      group: null
+      hidden: false
+      interface: input-multiline
+      note: null
+      options: null
+      readonly: false
+      required: false
+      sort: 42
+      special: null
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: review_notes
+      table: events
+      data_type: text
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: events
     field: reviewed_by
     type: uuid
     meta:
@@ -7220,44 +7382,6 @@ fields:
       foreign_key_table: directus_users
       foreign_key_column: id
   - collection: events
-    field: review_notes
-    type: text
-    meta:
-      collection: events
-      conditions: null
-      display: null
-      display_options: null
-      field: review_notes
-      group: null
-      hidden: false
-      interface: input-multiline
-      note: null
-      options: null
-      readonly: false
-      required: false
-      sort: 42
-      special: null
-      translations: null
-      validation: null
-      validation_message: null
-      width: full
-    schema:
-      name: review_notes
-      table: events
-      data_type: text
-      default_value: null
-      max_length: null
-      numeric_precision: null
-      numeric_scale: null
-      is_nullable: true
-      is_unique: false
-      is_primary_key: false
-      is_generated: false
-      generation_expression: null
-      has_auto_increment: false
-      foreign_key_table: null
-      foreign_key_column: null
-  - collection: events
     field: paddle_type
     type: string
     meta:
@@ -7293,44 +7417,6 @@ fields:
       table: events
       data_type: character varying
       default_value: other
-      max_length: 255
-      numeric_precision: null
-      numeric_scale: null
-      is_nullable: true
-      is_unique: false
-      is_primary_key: false
-      is_generated: false
-      generation_expression: null
-      has_auto_increment: false
-      foreign_key_table: null
-      foreign_key_column: null
-  - collection: events
-    field: payment_reference
-    type: string
-    meta:
-      collection: events
-      conditions: null
-      display: null
-      display_options: null
-      field: payment_reference
-      group: null
-      hidden: false
-      interface: input
-      note: null
-      options: null
-      readonly: false
-      required: false
-      sort: 44
-      special: null
-      translations: null
-      validation: null
-      validation_message: null
-      width: half
-    schema:
-      name: payment_reference
-      table: events
-      data_type: character varying
-      default_value: null
       max_length: 255
       numeric_precision: null
       numeric_scale: null
@@ -7409,6 +7495,44 @@ fields:
       data_type: boolean
       default_value: null
       max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: events
+    field: payment_reference
+    type: string
+    meta:
+      collection: events
+      conditions: null
+      display: null
+      display_options: null
+      field: payment_reference
+      group: null
+      hidden: false
+      interface: input
+      note: null
+      options: null
+      readonly: false
+      required: false
+      sort: 44
+      special: null
+      translations: null
+      validation: null
+      validation_message: null
+      width: half
+    schema:
+      name: payment_reference
+      table: events
+      data_type: character varying
+      default_value: null
+      max_length: 255
       numeric_precision: null
       numeric_scale: null
       is_nullable: true
@@ -8622,14 +8746,14 @@ fields:
       foreign_key_table: null
       foreign_key_column: null
   - collection: home_hero_images
-    field: id
-    type: integer
+    field: directus_files_id
+    type: uuid
     meta:
       collection: home_hero_images
       conditions: null
       display: null
       display_options: null
-      field: id
+      field: directus_files_id
       group: null
       hidden: true
       interface: null
@@ -8637,28 +8761,28 @@ fields:
       options: null
       readonly: false
       required: false
-      sort: 1
+      sort: 3
       special: null
       translations: null
       validation: null
       validation_message: null
       width: full
     schema:
-      name: id
+      name: directus_files_id
       table: home_hero_images
-      data_type: integer
-      default_value: nextval('home_hero_images_id_seq'::regclass)
+      data_type: uuid
+      default_value: null
       max_length: null
-      numeric_precision: 32
-      numeric_scale: 0
-      is_nullable: false
-      is_unique: true
-      is_primary_key: true
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
       is_generated: false
       generation_expression: null
-      has_auto_increment: true
-      foreign_key_table: null
-      foreign_key_column: null
+      has_auto_increment: false
+      foreign_key_table: directus_files
+      foreign_key_column: id
   - collection: home_hero_images
     field: home_id
     type: integer
@@ -8698,14 +8822,14 @@ fields:
       foreign_key_table: home
       foreign_key_column: id
   - collection: home_hero_images
-    field: directus_files_id
-    type: uuid
+    field: id
+    type: integer
     meta:
       collection: home_hero_images
       conditions: null
       display: null
       display_options: null
-      field: directus_files_id
+      field: id
       group: null
       hidden: true
       interface: null
@@ -8713,28 +8837,28 @@ fields:
       options: null
       readonly: false
       required: false
-      sort: 3
+      sort: 1
       special: null
       translations: null
       validation: null
       validation_message: null
       width: full
     schema:
-      name: directus_files_id
+      name: id
       table: home_hero_images
-      data_type: uuid
-      default_value: null
+      data_type: integer
+      default_value: nextval('home_hero_images_id_seq'::regclass)
       max_length: null
-      numeric_precision: null
-      numeric_scale: null
-      is_nullable: true
-      is_unique: false
-      is_primary_key: false
+      numeric_precision: 32
+      numeric_scale: 0
+      is_nullable: false
+      is_unique: true
+      is_primary_key: true
       is_generated: false
       generation_expression: null
-      has_auto_increment: false
-      foreign_key_table: directus_files
-      foreign_key_column: id
+      has_auto_increment: true
+      foreign_key_table: null
+      foreign_key_column: null
   - collection: mail_forwards
     field: date_created
     type: timestamp
@@ -12280,85 +12404,6 @@ fields:
       foreign_key_table: null
       foreign_key_column: null
   - collection: news_subscribers
-    field: id
-    type: uuid
-    meta:
-      collection: news_subscribers
-      conditions: null
-      display: null
-      display_options: null
-      field: id
-      group: null
-      hidden: true
-      interface: input
-      note: null
-      options: null
-      readonly: true
-      required: false
-      sort: 1
-      special:
-        - uuid
-      translations: null
-      validation: null
-      validation_message: null
-      width: full
-    schema:
-      name: id
-      table: news_subscribers
-      data_type: uuid
-      default_value: null
-      max_length: null
-      numeric_precision: null
-      numeric_scale: null
-      is_nullable: false
-      is_unique: true
-      is_primary_key: true
-      is_generated: false
-      generation_expression: null
-      has_auto_increment: false
-      foreign_key_table: null
-      foreign_key_column: null
-  - collection: news_subscribers
-    field: user_created
-    type: uuid
-    meta:
-      collection: news_subscribers
-      conditions: null
-      display: user
-      display_options: null
-      field: user_created
-      group: null
-      hidden: true
-      interface: select-dropdown-m2o
-      note: null
-      options:
-        template: '{{avatar.$thumbnail}} {{first_name}} {{last_name}}'
-      readonly: true
-      required: false
-      sort: 2
-      special:
-        - user-created
-      translations: null
-      validation: null
-      validation_message: null
-      width: half
-    schema:
-      name: user_created
-      table: news_subscribers
-      data_type: uuid
-      default_value: null
-      max_length: null
-      numeric_precision: null
-      numeric_scale: null
-      is_nullable: true
-      is_unique: false
-      is_primary_key: false
-      is_generated: false
-      generation_expression: null
-      has_auto_increment: false
-      foreign_key_table: directus_users
-      foreign_key_column: id
-  - collection: news_subscribers
     field: date_created
     type: timestamp
     meta:
@@ -12399,46 +12444,6 @@ fields:
       foreign_key_table: null
       foreign_key_column: null
   - collection: news_subscribers
-    field: user_updated
-    type: uuid
-    meta:
-      collection: news_subscribers
-      conditions: null
-      display: user
-      display_options: null
-      field: user_updated
-      group: null
-      hidden: true
-      interface: select-dropdown-m2o
-      note: null
-      options:
-        template: '{{avatar.$thumbnail}} {{first_name}} {{last_name}}'
-      readonly: true
-      required: false
-      sort: 4
-      special:
-        - user-updated
-      translations: null
-      validation: null
-      validation_message: null
-      width: half
-    schema:
-      name: user_updated
-      table: news_subscribers
-      data_type: uuid
-      default_value: null
-      max_length: null
-      numeric_precision: null
-      numeric_scale: null
-      is_nullable: true
-      is_unique: false
-      is_primary_key: false
-      is_generated: false
-      generation_expression: null
-      has_auto_increment: false
-      foreign_key_table: directus_users
-      foreign_key_column: id
-  - collection: news_subscribers
     field: date_updated
     type: timestamp
     meta:
@@ -12468,6 +12473,83 @@ fields:
       data_type: timestamp with time zone
       default_value: null
       max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: news_subscribers
+    field: id
+    type: uuid
+    meta:
+      collection: news_subscribers
+      conditions: null
+      display: null
+      display_options: null
+      field: id
+      group: null
+      hidden: true
+      interface: input
+      note: null
+      options: null
+      readonly: true
+      required: false
+      sort: 1
+      special:
+        - uuid
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: id
+      table: news_subscribers
+      data_type: uuid
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: false
+      is_unique: true
+      is_primary_key: true
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: news_subscribers
+    field: unsubscribe_token
+    type: string
+    meta:
+      collection: news_subscribers
+      conditions: null
+      display: null
+      display_options: null
+      field: unsubscribe_token
+      group: null
+      hidden: false
+      interface: input
+      note: null
+      options: null
+      readonly: false
+      required: true
+      sort: 7
+      special: null
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: unsubscribe_token
+      table: news_subscribers
+      data_type: character varying
+      default_value: null
+      max_length: 255
       numeric_precision: null
       numeric_scale: null
       is_nullable: true
@@ -12520,87 +12602,10 @@ fields:
       foreign_key_table: directus_users
       foreign_key_column: id
   - collection: news_subscribers
-    field: unsubscribe_token
-    type: string
-    meta:
-      collection: news_subscribers
-      conditions: null
-      display: null
-      display_options: null
-      field: unsubscribe_token
-      group: null
-      hidden: false
-      interface: input
-      note: null
-      options: null
-      readonly: false
-      required: true
-      sort: 7
-      special: null
-      translations: null
-      validation: null
-      validation_message: null
-      width: full
-    schema:
-      name: unsubscribe_token
-      table: news_subscribers
-      data_type: character varying
-      default_value: null
-      max_length: 255
-      numeric_precision: null
-      numeric_scale: null
-      is_nullable: true
-      is_unique: false
-      is_primary_key: false
-      is_generated: false
-      generation_expression: null
-      has_auto_increment: false
-      foreign_key_table: null
-      foreign_key_column: null
-  - collection: newsletter_items
-    field: id
-    type: uuid
-    meta:
-      collection: newsletter_items
-      conditions: null
-      display: null
-      display_options: null
-      field: id
-      group: null
-      hidden: true
-      interface: input
-      note: null
-      options: null
-      readonly: true
-      required: false
-      sort: 1
-      special:
-        - uuid
-      translations: null
-      validation: null
-      validation_message: null
-      width: full
-    schema:
-      name: id
-      table: newsletter_items
-      data_type: uuid
-      default_value: null
-      max_length: null
-      numeric_precision: null
-      numeric_scale: null
-      is_nullable: false
-      is_unique: true
-      is_primary_key: true
-      is_generated: false
-      generation_expression: null
-      has_auto_increment: false
-      foreign_key_table: null
-      foreign_key_column: null
-  - collection: newsletter_items
     field: user_created
     type: uuid
     meta:
-      collection: newsletter_items
+      collection: news_subscribers
       conditions: null
       display: user
       display_options: null
@@ -12622,7 +12627,47 @@ fields:
       width: half
     schema:
       name: user_created
-      table: newsletter_items
+      table: news_subscribers
+      data_type: uuid
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: directus_users
+      foreign_key_column: id
+  - collection: news_subscribers
+    field: user_updated
+    type: uuid
+    meta:
+      collection: news_subscribers
+      conditions: null
+      display: user
+      display_options: null
+      field: user_updated
+      group: null
+      hidden: true
+      interface: select-dropdown-m2o
+      note: null
+      options:
+        template: '{{avatar.$thumbnail}} {{first_name}} {{last_name}}'
+      readonly: true
+      required: false
+      sort: 4
+      special:
+        - user-updated
+      translations: null
+      validation: null
+      validation_message: null
+      width: half
+    schema:
+      name: user_updated
+      table: news_subscribers
       data_type: uuid
       default_value: null
       max_length: null
@@ -12676,46 +12721,6 @@ fields:
       has_auto_increment: false
       foreign_key_table: null
       foreign_key_column: null
-  - collection: newsletter_items
-    field: user_updated
-    type: uuid
-    meta:
-      collection: newsletter_items
-      conditions: null
-      display: user
-      display_options: null
-      field: user_updated
-      group: null
-      hidden: true
-      interface: select-dropdown-m2o
-      note: null
-      options:
-        template: '{{avatar.$thumbnail}} {{first_name}} {{last_name}}'
-      readonly: true
-      required: false
-      sort: 4
-      special:
-        - user-updated
-      translations: null
-      validation: null
-      validation_message: null
-      width: half
-    schema:
-      name: user_updated
-      table: newsletter_items
-      data_type: uuid
-      default_value: null
-      max_length: null
-      numeric_precision: null
-      numeric_scale: null
-      is_nullable: true
-      is_unique: false
-      is_primary_key: false
-      is_generated: false
-      generation_expression: null
-      has_auto_increment: false
-      foreign_key_table: directus_users
-      foreign_key_column: id
   - collection: newsletter_items
     field: date_updated
     type: timestamp
@@ -12796,6 +12801,45 @@ fields:
       foreign_key_table: directus_files
       foreign_key_column: id
   - collection: newsletter_items
+    field: id
+    type: uuid
+    meta:
+      collection: newsletter_items
+      conditions: null
+      display: null
+      display_options: null
+      field: id
+      group: null
+      hidden: true
+      interface: input
+      note: null
+      options: null
+      readonly: true
+      required: false
+      sort: 1
+      special:
+        - uuid
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: id
+      table: newsletter_items
+      data_type: uuid
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: false
+      is_unique: true
+      is_primary_key: true
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: newsletter_items
     field: publish_date
     type: date
     meta:
@@ -12833,6 +12877,86 @@ fields:
       has_auto_increment: false
       foreign_key_table: null
       foreign_key_column: null
+  - collection: newsletter_items
+    field: user_created
+    type: uuid
+    meta:
+      collection: newsletter_items
+      conditions: null
+      display: user
+      display_options: null
+      field: user_created
+      group: null
+      hidden: true
+      interface: select-dropdown-m2o
+      note: null
+      options:
+        template: '{{avatar.$thumbnail}} {{first_name}} {{last_name}}'
+      readonly: true
+      required: false
+      sort: 2
+      special:
+        - user-created
+      translations: null
+      validation: null
+      validation_message: null
+      width: half
+    schema:
+      name: user_created
+      table: newsletter_items
+      data_type: uuid
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: directus_users
+      foreign_key_column: id
+  - collection: newsletter_items
+    field: user_updated
+    type: uuid
+    meta:
+      collection: newsletter_items
+      conditions: null
+      display: user
+      display_options: null
+      field: user_updated
+      group: null
+      hidden: true
+      interface: select-dropdown-m2o
+      note: null
+      options:
+        template: '{{avatar.$thumbnail}} {{first_name}} {{last_name}}'
+      readonly: true
+      required: false
+      sort: 4
+      special:
+        - user-updated
+      translations: null
+      validation: null
+      validation_message: null
+      width: half
+    schema:
+      name: user_updated
+      table: newsletter_items
+      data_type: uuid
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: directus_users
+      foreign_key_column: id
   - collection: newsletter_subscriber
     field: date_created
     type: timestamp
@@ -13657,11 +13781,207 @@ fields:
       has_auto_increment: false
       foreign_key_table: null
       foreign_key_column: null
-  - collection: redirects
+  - collection: recurring_event_patterns
+    field: date_created
+    type: timestamp
+    meta:
+      collection: recurring_event_patterns
+      conditions: null
+      display: datetime
+      display_options:
+        relative: true
+      field: date_created
+      group: null
+      hidden: true
+      interface: datetime
+      note: null
+      options: null
+      readonly: true
+      required: false
+      sort: 3
+      special:
+        - date-created
+      translations: null
+      validation: null
+      validation_message: null
+      width: half
+    schema:
+      name: date_created
+      table: recurring_event_patterns
+      data_type: timestamp with time zone
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: recurring_event_patterns
+    field: date_updated
+    type: timestamp
+    meta:
+      collection: recurring_event_patterns
+      conditions: null
+      display: datetime
+      display_options:
+        relative: true
+      field: date_updated
+      group: null
+      hidden: true
+      interface: datetime
+      note: null
+      options: null
+      readonly: true
+      required: false
+      sort: 5
+      special:
+        - date-updated
+      translations: null
+      validation: null
+      validation_message: null
+      width: half
+    schema:
+      name: date_updated
+      table: recurring_event_patterns
+      data_type: timestamp with time zone
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: recurring_event_patterns
+    field: day_of_month
+    type: integer
+    meta:
+      collection: recurring_event_patterns
+      conditions: null
+      display: null
+      display_options: null
+      field: day_of_month
+      group: null
+      hidden: false
+      interface: input
+      note: null
+      options: null
+      readonly: false
+      required: false
+      sort: 6
+      special: null
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: day_of_month
+      table: recurring_event_patterns
+      data_type: integer
+      default_value: null
+      max_length: null
+      numeric_precision: 32
+      numeric_scale: 0
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: recurring_event_patterns
+    field: day_of_week
+    type: integer
+    meta:
+      collection: recurring_event_patterns
+      conditions: null
+      display: null
+      display_options: null
+      field: day_of_week
+      group: null
+      hidden: false
+      interface: input
+      note: null
+      options: null
+      readonly: false
+      required: false
+      sort: 7
+      special: null
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: day_of_week
+      table: recurring_event_patterns
+      data_type: integer
+      default_value: null
+      max_length: null
+      numeric_precision: 32
+      numeric_scale: 0
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: recurring_event_patterns
+    field: event
+    type: uuid
+    meta:
+      collection: recurring_event_patterns
+      conditions: null
+      display: null
+      display_options: null
+      field: event
+      group: null
+      hidden: false
+      interface: select-dropdown-m2o
+      note: null
+      options:
+        enableCreate: false
+      readonly: false
+      required: false
+      sort: 13
+      special:
+        - m2o
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: event
+      table: recurring_event_patterns
+      data_type: uuid
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: events
+      foreign_key_column: id
+  - collection: recurring_event_patterns
     field: id
     type: uuid
     meta:
-      collection: redirects
+      collection: recurring_event_patterns
       conditions: null
       display: null
       display_options: null
@@ -13682,7 +14002,7 @@ fields:
       width: full
     schema:
       name: id
-      table: redirects
+      table: recurring_event_patterns
       data_type: uuid
       default_value: null
       max_length: null
@@ -13691,6 +14011,285 @@ fields:
       is_nullable: false
       is_unique: true
       is_primary_key: true
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: recurring_event_patterns
+    field: max_occurences
+    type: integer
+    meta:
+      collection: recurring_event_patterns
+      conditions: null
+      display: null
+      display_options: null
+      field: max_occurences
+      group: null
+      hidden: false
+      interface: input
+      note: null
+      options: null
+      readonly: false
+      required: false
+      sort: 11
+      special: null
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: max_occurences
+      table: recurring_event_patterns
+      data_type: integer
+      default_value: null
+      max_length: null
+      numeric_precision: 32
+      numeric_scale: 0
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: recurring_event_patterns
+    field: month_of_year
+    type: integer
+    meta:
+      collection: recurring_event_patterns
+      conditions: null
+      display: null
+      display_options: null
+      field: month_of_year
+      group: null
+      hidden: false
+      interface: input
+      note: null
+      options: null
+      readonly: false
+      required: false
+      sort: 9
+      special: null
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: month_of_year
+      table: recurring_event_patterns
+      data_type: integer
+      default_value: null
+      max_length: null
+      numeric_precision: 32
+      numeric_scale: 0
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: recurring_event_patterns
+    field: separation_count
+    type: integer
+    meta:
+      collection: recurring_event_patterns
+      conditions: null
+      display: null
+      display_options: null
+      field: separation_count
+      group: null
+      hidden: false
+      interface: input
+      note: null
+      options: null
+      readonly: false
+      required: false
+      sort: 10
+      special: null
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: separation_count
+      table: recurring_event_patterns
+      data_type: integer
+      default_value: null
+      max_length: null
+      numeric_precision: 32
+      numeric_scale: 0
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: recurring_event_patterns
+    field: type
+    type: string
+    meta:
+      collection: recurring_event_patterns
+      conditions: null
+      display: null
+      display_options: null
+      field: type
+      group: null
+      hidden: false
+      interface: select-dropdown
+      note: null
+      options:
+        choices:
+          - text: Daily
+            value: '0'
+          - text: Weekly
+            value: '1'
+          - text: Monthly
+            value: '2'
+          - text: Yearly
+            value: '3'
+      readonly: false
+      required: true
+      sort: 12
+      special: null
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: type
+      table: recurring_event_patterns
+      data_type: character varying
+      default_value: null
+      max_length: 255
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: recurring_event_patterns
+    field: user_created
+    type: uuid
+    meta:
+      collection: recurring_event_patterns
+      conditions: null
+      display: user
+      display_options: null
+      field: user_created
+      group: null
+      hidden: true
+      interface: select-dropdown-m2o
+      note: null
+      options:
+        template: '{{avatar.$thumbnail}} {{first_name}} {{last_name}}'
+      readonly: true
+      required: false
+      sort: 2
+      special:
+        - user-created
+      translations: null
+      validation: null
+      validation_message: null
+      width: half
+    schema:
+      name: user_created
+      table: recurring_event_patterns
+      data_type: uuid
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: directus_users
+      foreign_key_column: id
+  - collection: recurring_event_patterns
+    field: user_updated
+    type: uuid
+    meta:
+      collection: recurring_event_patterns
+      conditions: null
+      display: user
+      display_options: null
+      field: user_updated
+      group: null
+      hidden: true
+      interface: select-dropdown-m2o
+      note: null
+      options:
+        template: '{{avatar.$thumbnail}} {{first_name}} {{last_name}}'
+      readonly: true
+      required: false
+      sort: 4
+      special:
+        - user-updated
+      translations: null
+      validation: null
+      validation_message: null
+      width: half
+    schema:
+      name: user_updated
+      table: recurring_event_patterns
+      data_type: uuid
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: directus_users
+      foreign_key_column: id
+  - collection: recurring_event_patterns
+    field: week_of_month
+    type: string
+    meta:
+      collection: recurring_event_patterns
+      conditions: null
+      display: null
+      display_options: null
+      field: week_of_month
+      group: null
+      hidden: false
+      interface: input
+      note: null
+      options: null
+      readonly: false
+      required: false
+      sort: 8
+      special: null
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: week_of_month
+      table: recurring_event_patterns
+      data_type: character varying
+      default_value: null
+      max_length: 255
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
       is_generated: false
       generation_expression: null
       has_auto_increment: false
@@ -13737,38 +14336,39 @@ fields:
       foreign_key_table: null
       foreign_key_column: null
   - collection: redirects
-    field: url_old
-    type: string
+    field: id
+    type: uuid
     meta:
       collection: redirects
       conditions: null
       display: null
       display_options: null
-      field: url_old
+      field: id
       group: null
-      hidden: false
+      hidden: true
       interface: input
       note: null
       options: null
-      readonly: false
-      required: true
-      sort: 3
-      special: null
+      readonly: true
+      required: false
+      sort: 1
+      special:
+        - uuid
       translations: null
       validation: null
       validation_message: null
       width: full
     schema:
-      name: url_old
+      name: id
       table: redirects
-      data_type: character varying
+      data_type: uuid
       default_value: null
-      max_length: 255
+      max_length: null
       numeric_precision: null
       numeric_scale: null
-      is_nullable: true
-      is_unique: false
-      is_primary_key: false
+      is_nullable: false
+      is_unique: true
+      is_primary_key: true
       is_generated: false
       generation_expression: null
       has_auto_increment: false
@@ -13855,75 +14455,34 @@ fields:
       has_auto_increment: false
       foreign_key_table: null
       foreign_key_column: null
-  - collection: reviewers
-    field: id
-    type: uuid
+  - collection: redirects
+    field: url_old
+    type: string
     meta:
-      collection: reviewers
+      collection: redirects
       conditions: null
       display: null
       display_options: null
-      field: id
+      field: url_old
       group: null
-      hidden: true
+      hidden: false
       interface: input
       note: null
       options: null
-      readonly: true
-      required: false
-      sort: 1
-      special:
-        - uuid
+      readonly: false
+      required: true
+      sort: 3
+      special: null
       translations: null
       validation: null
       validation_message: null
       width: full
     schema:
-      name: id
-      table: reviewers
-      data_type: uuid
+      name: url_old
+      table: redirects
+      data_type: character varying
       default_value: null
-      max_length: null
-      numeric_precision: null
-      numeric_scale: null
-      is_nullable: false
-      is_unique: true
-      is_primary_key: true
-      is_generated: false
-      generation_expression: null
-      has_auto_increment: false
-      foreign_key_table: null
-      foreign_key_column: null
-  - collection: reviewers
-    field: user_created
-    type: uuid
-    meta:
-      collection: reviewers
-      conditions: null
-      display: user
-      display_options: null
-      field: user_created
-      group: null
-      hidden: true
-      interface: select-dropdown-m2o
-      note: null
-      options:
-        template: '{{avatar.$thumbnail}} {{first_name}} {{last_name}}'
-      readonly: true
-      required: false
-      sort: 2
-      special:
-        - user-created
-      translations: null
-      validation: null
-      validation_message: null
-      width: half
-    schema:
-      name: user_created
-      table: reviewers
-      data_type: uuid
-      default_value: null
-      max_length: null
+      max_length: 255
       numeric_precision: null
       numeric_scale: null
       is_nullable: true
@@ -13932,8 +14491,51 @@ fields:
       is_generated: false
       generation_expression: null
       has_auto_increment: false
-      foreign_key_table: directus_users
-      foreign_key_column: id
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: reviewers
+    field: area
+    type: string
+    meta:
+      collection: reviewers
+      conditions: null
+      display: labels
+      display_options: null
+      field: area
+      group: null
+      hidden: false
+      interface: select-dropdown
+      note: null
+      options:
+        choices:
+          - text: Events
+            value: events
+          - text: News
+            value: news
+      readonly: false
+      required: true
+      sort: 7
+      special: null
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: area
+      table: reviewers
+      data_type: character varying
+      default_value: null
+      max_length: 255
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
   - collection: reviewers
     field: date_created
     type: timestamp
@@ -13975,46 +14577,6 @@ fields:
       foreign_key_table: null
       foreign_key_column: null
   - collection: reviewers
-    field: user_updated
-    type: uuid
-    meta:
-      collection: reviewers
-      conditions: null
-      display: user
-      display_options: null
-      field: user_updated
-      group: null
-      hidden: true
-      interface: select-dropdown-m2o
-      note: null
-      options:
-        template: '{{avatar.$thumbnail}} {{first_name}} {{last_name}}'
-      readonly: true
-      required: false
-      sort: 4
-      special:
-        - user-updated
-      translations: null
-      validation: null
-      validation_message: null
-      width: half
-    schema:
-      name: user_updated
-      table: reviewers
-      data_type: uuid
-      default_value: null
-      max_length: null
-      numeric_precision: null
-      numeric_scale: null
-      is_nullable: true
-      is_unique: false
-      is_primary_key: false
-      is_generated: false
-      generation_expression: null
-      has_auto_increment: false
-      foreign_key_table: directus_users
-      foreign_key_column: id
-  - collection: reviewers
     field: date_updated
     type: timestamp
     meta:
@@ -14049,6 +14611,45 @@ fields:
       is_nullable: true
       is_unique: false
       is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: reviewers
+    field: id
+    type: uuid
+    meta:
+      collection: reviewers
+      conditions: null
+      display: null
+      display_options: null
+      field: id
+      group: null
+      hidden: true
+      interface: input
+      note: null
+      options: null
+      readonly: true
+      required: false
+      sort: 1
+      special:
+        - uuid
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: id
+      table: reviewers
+      data_type: uuid
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: false
+      is_unique: true
+      is_primary_key: true
       is_generated: false
       generation_expression: null
       has_auto_increment: false
@@ -14095,38 +14696,35 @@ fields:
       foreign_key_table: directus_users
       foreign_key_column: id
   - collection: reviewers
-    field: area
-    type: string
+    field: user_created
+    type: uuid
     meta:
       collection: reviewers
       conditions: null
-      display: labels
+      display: user
       display_options: null
-      field: area
+      field: user_created
       group: null
-      hidden: false
-      interface: select-dropdown
+      hidden: true
+      interface: select-dropdown-m2o
       note: null
       options:
-        choices:
-          - text: Events
-            value: events
-          - text: News
-            value: news
-      readonly: false
-      required: true
-      sort: 7
-      special: null
+        template: '{{avatar.$thumbnail}} {{first_name}} {{last_name}}'
+      readonly: true
+      required: false
+      sort: 2
+      special:
+        - user-created
       translations: null
       validation: null
       validation_message: null
-      width: full
+      width: half
     schema:
-      name: area
+      name: user_created
       table: reviewers
-      data_type: character varying
+      data_type: uuid
       default_value: null
-      max_length: 255
+      max_length: null
       numeric_precision: null
       numeric_scale: null
       is_nullable: true
@@ -14135,8 +14733,48 @@ fields:
       is_generated: false
       generation_expression: null
       has_auto_increment: false
-      foreign_key_table: null
-      foreign_key_column: null
+      foreign_key_table: directus_users
+      foreign_key_column: id
+  - collection: reviewers
+    field: user_updated
+    type: uuid
+    meta:
+      collection: reviewers
+      conditions: null
+      display: user
+      display_options: null
+      field: user_updated
+      group: null
+      hidden: true
+      interface: select-dropdown-m2o
+      note: null
+      options:
+        template: '{{avatar.$thumbnail}} {{first_name}} {{last_name}}'
+      readonly: true
+      required: false
+      sort: 4
+      special:
+        - user-updated
+      translations: null
+      validation: null
+      validation_message: null
+      width: half
+    schema:
+      name: user_updated
+      table: reviewers
+      data_type: uuid
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: directus_users
+      foreign_key_column: id
   - collection: stripe_customers
     field: customer_id
     type: string
@@ -14256,6 +14894,27 @@ fields:
       foreign_key_column: id
 relations:
   - collection: block_image
+    field: image
+    related_collection: directus_files
+    meta:
+      junction_field: block_image_id
+      many_collection: block_image
+      many_field: image
+      one_allowed_collections: null
+      one_collection: directus_files
+      one_collection_field: null
+      one_deselect_action: nullify
+      one_field: null
+      sort_field: null
+    schema:
+      table: block_image
+      column: image
+      foreign_key_table: directus_files
+      foreign_key_column: id
+      constraint_name: block_image_image_foreign
+      on_update: NO ACTION
+      on_delete: SET NULL
+  - collection: block_image
     field: user_created
     related_collection: directus_users
     meta:
@@ -14297,25 +14956,25 @@ relations:
       constraint_name: block_image_user_updated_foreign
       on_update: NO ACTION
       on_delete: NO ACTION
-  - collection: block_image
-    field: image
-    related_collection: directus_files
+  - collection: block_image_files_1
+    field: block_image_id
+    related_collection: block_image
     meta:
-      junction_field: block_image_id
-      many_collection: block_image
-      many_field: image
+      junction_field: directus_files_id
+      many_collection: block_image_files_1
+      many_field: block_image_id
       one_allowed_collections: null
-      one_collection: directus_files
+      one_collection: block_image
       one_collection_field: null
       one_deselect_action: nullify
-      one_field: null
+      one_field: images
       sort_field: null
     schema:
-      table: block_image
-      column: image
-      foreign_key_table: directus_files
+      table: block_image_files_1
+      column: block_image_id
+      foreign_key_table: block_image
       foreign_key_column: id
-      constraint_name: block_image_image_foreign
+      constraint_name: block_image_files_1_block_image_id_foreign
       on_update: NO ACTION
       on_delete: SET NULL
   - collection: block_image_files_1
@@ -14337,27 +14996,6 @@ relations:
       foreign_key_table: directus_files
       foreign_key_column: id
       constraint_name: block_image_files_1_directus_files_id_foreign
-      on_update: NO ACTION
-      on_delete: SET NULL
-  - collection: block_image_files_1
-    field: block_image_id
-    related_collection: block_image
-    meta:
-      junction_field: directus_files_id
-      many_collection: block_image_files_1
-      many_field: block_image_id
-      one_allowed_collections: null
-      one_collection: block_image
-      one_collection_field: null
-      one_deselect_action: nullify
-      one_field: images
-      sort_field: null
-    schema:
-      table: block_image_files_1
-      column: block_image_id
-      foreign_key_table: block_image
-      foreign_key_column: id
-      constraint_name: block_image_files_1_block_image_id_foreign
       on_update: NO ACTION
       on_delete: SET NULL
   - collection: block_richtext
@@ -15782,6 +16420,27 @@ relations:
       on_update: NO ACTION
       on_delete: NO ACTION
   - collection: news_subscribers
+    field: user
+    related_collection: directus_users
+    meta:
+      junction_field: null
+      many_collection: news_subscribers
+      many_field: user
+      one_allowed_collections: null
+      one_collection: directus_users
+      one_collection_field: null
+      one_deselect_action: nullify
+      one_field: null
+      sort_field: null
+    schema:
+      table: news_subscribers
+      column: user
+      foreign_key_table: directus_users
+      foreign_key_column: id
+      constraint_name: news_subscribers_user_foreign
+      on_update: NO ACTION
+      on_delete: SET NULL
+  - collection: news_subscribers
     field: user_created
     related_collection: directus_users
     meta:
@@ -15823,25 +16482,25 @@ relations:
       constraint_name: news_subscribers_user_updated_foreign
       on_update: NO ACTION
       on_delete: NO ACTION
-  - collection: news_subscribers
-    field: user
-    related_collection: directus_users
+  - collection: newsletter_items
+    field: file
+    related_collection: directus_files
     meta:
       junction_field: null
-      many_collection: news_subscribers
-      many_field: user
+      many_collection: newsletter_items
+      many_field: file
       one_allowed_collections: null
-      one_collection: directus_users
+      one_collection: directus_files
       one_collection_field: null
       one_deselect_action: nullify
       one_field: null
       sort_field: null
     schema:
-      table: news_subscribers
-      column: user
-      foreign_key_table: directus_users
+      table: newsletter_items
+      column: file
+      foreign_key_table: directus_files
       foreign_key_column: id
-      constraint_name: news_subscribers_user_foreign
+      constraint_name: newsletter_items_file_foreign
       on_update: NO ACTION
       on_delete: SET NULL
   - collection: newsletter_items
@@ -15886,27 +16545,6 @@ relations:
       constraint_name: newsletter_items_user_updated_foreign
       on_update: NO ACTION
       on_delete: NO ACTION
-  - collection: newsletter_items
-    field: file
-    related_collection: directus_files
-    meta:
-      junction_field: null
-      many_collection: newsletter_items
-      many_field: file
-      one_allowed_collections: null
-      one_collection: directus_files
-      one_collection_field: null
-      one_deselect_action: nullify
-      one_field: null
-      sort_field: null
-    schema:
-      table: newsletter_items
-      column: file
-      foreign_key_table: directus_files
-      foreign_key_column: id
-      constraint_name: newsletter_items_file_foreign
-      on_update: NO ACTION
-      on_delete: SET NULL
   - collection: newsletter_subscriber
     field: newsletter
     related_collection: newsletters
@@ -16012,33 +16650,33 @@ relations:
       constraint_name: orders_user_foreign
       on_update: NO ACTION
       on_delete: SET NULL
-  - collection: reviewers
-    field: user_updated
-    related_collection: directus_users
+  - collection: recurring_event_patterns
+    field: event
+    related_collection: events
     meta:
       junction_field: null
-      many_collection: reviewers
-      many_field: user_updated
+      many_collection: recurring_event_patterns
+      many_field: event
       one_allowed_collections: null
-      one_collection: directus_users
+      one_collection: events
       one_collection_field: null
       one_deselect_action: nullify
       one_field: null
       sort_field: null
     schema:
-      table: reviewers
-      column: user_updated
-      foreign_key_table: directus_users
+      table: recurring_event_patterns
+      column: event
+      foreign_key_table: events
       foreign_key_column: id
-      constraint_name: reviewers_user_updated_foreign
+      constraint_name: recurring_event_patterns_event_foreign
       on_update: NO ACTION
-      on_delete: NO ACTION
-  - collection: reviewers
+      on_delete: SET NULL
+  - collection: recurring_event_patterns
     field: user_created
     related_collection: directus_users
     meta:
       junction_field: null
-      many_collection: reviewers
+      many_collection: recurring_event_patterns
       many_field: user_created
       one_allowed_collections: null
       one_collection: directus_users
@@ -16047,11 +16685,32 @@ relations:
       one_field: null
       sort_field: null
     schema:
-      table: reviewers
+      table: recurring_event_patterns
       column: user_created
       foreign_key_table: directus_users
       foreign_key_column: id
-      constraint_name: reviewers_user_created_foreign
+      constraint_name: recurring_event_patterns_user_created_foreign
+      on_update: NO ACTION
+      on_delete: NO ACTION
+  - collection: recurring_event_patterns
+    field: user_updated
+    related_collection: directus_users
+    meta:
+      junction_field: null
+      many_collection: recurring_event_patterns
+      many_field: user_updated
+      one_allowed_collections: null
+      one_collection: directus_users
+      one_collection_field: null
+      one_deselect_action: nullify
+      one_field: null
+      sort_field: null
+    schema:
+      table: recurring_event_patterns
+      column: user_updated
+      foreign_key_table: directus_users
+      foreign_key_column: id
+      constraint_name: recurring_event_patterns_user_updated_foreign
       on_update: NO ACTION
       on_delete: NO ACTION
   - collection: reviewers
@@ -16075,6 +16734,48 @@ relations:
       constraint_name: reviewers_user_foreign
       on_update: NO ACTION
       on_delete: SET NULL
+  - collection: reviewers
+    field: user_created
+    related_collection: directus_users
+    meta:
+      junction_field: null
+      many_collection: reviewers
+      many_field: user_created
+      one_allowed_collections: null
+      one_collection: directus_users
+      one_collection_field: null
+      one_deselect_action: nullify
+      one_field: null
+      sort_field: null
+    schema:
+      table: reviewers
+      column: user_created
+      foreign_key_table: directus_users
+      foreign_key_column: id
+      constraint_name: reviewers_user_created_foreign
+      on_update: NO ACTION
+      on_delete: NO ACTION
+  - collection: reviewers
+    field: user_updated
+    related_collection: directus_users
+    meta:
+      junction_field: null
+      many_collection: reviewers
+      many_field: user_updated
+      one_allowed_collections: null
+      one_collection: directus_users
+      one_collection_field: null
+      one_deselect_action: nullify
+      one_field: null
+      sort_field: null
+    schema:
+      table: reviewers
+      column: user_updated
+      foreign_key_table: directus_users
+      foreign_key_column: id
+      constraint_name: reviewers_user_updated_foreign
+      on_update: NO ACTION
+      on_delete: NO ACTION
   - collection: stripe_customers
     field: user
     related_collection: directus_users
