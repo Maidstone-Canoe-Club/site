@@ -1,6 +1,6 @@
 ﻿<script setup lang="ts">
 import { addYears } from "date-fns";
-import {utcToZonedTime, format} from "date-fns-tz";
+import { utcToZonedTime, format } from "date-fns-tz";
 import { ExclamationTriangleIcon } from "@heroicons/vue/16/solid";
 import type { EventItem } from "~/types";
 
@@ -202,7 +202,7 @@ function onViewClick (event: CourseEventItem) {
       <loading-spinner color="#6366F1" />
     </div>
 
-    <template v-else-if="filteredEvents.length">
+    <template v-else-if="filteredEvents.length && false">
       <ol class="text-sm divide-y divide-gray-100">
         <li
           v-for="event in filteredEvents"
@@ -285,86 +285,10 @@ function onViewClick (event: CourseEventItem) {
       </div>
     </template>
 
-    <!--    <ul-->
-    <!--      v-else-if="filteredEvents.length"-->
-    <!--      role="list"-->
-    <!--      class="divide-y divide-gray-200">-->
-    <!--      <li v-for="event in filteredEvents" :key="event.id" class="flex items-start justify-between gap-x-6 py-5">-->
-    <!--        <div class="min-w-0 space-y-1">-->
-    <!--          <nuxt-link-->
-    <!--            v-if="eventTitleLinks"-->
-    <!--            :to="getEventUrl(event, event.start_date)"-->
-    <!--            class="text-indigo-600 font-semibold hover:text-indigo-900 flex gap-1">-->
-    <!--            <LinkIcon class="w-4 h-4 mt-1" />-->
-    <!--            <span class="truncate">-->
-    <!--              {{ event.title }}-->
-    <!--            </span>-->
-    <!--          </nuxt-link>-->
-    <!--          <strong v-else>{{ event.title }}</strong>-->
-    <!--          <div-->
-    <!--            v-if="!hideBadges"-->
-    <!--            class="mt-1 flex items-center gap-2 flex-wrap text-sm leading-5 text-gray-500">-->
-    <!--            <template v-if="getSessionCountLabel(event)">-->
-    <!--              <span-->
-    <!--                class="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">-->
-    <!--                {{ getSessionCountLabel(event) }}-->
-    <!--              </span>-->
-    <!--              <svg viewBox="0 0 2 2" class="h-0.5 w-0.5 fill-current">-->
-    <!--                <circle cx="1" cy="1" r="1" />-->
-    <!--              </svg>-->
-    <!--            </template>-->
-    <!--            <span-->
-    <!--              class="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">-->
-    <!--              {{ getAgeLabel(event) }}-->
-    <!--            </span>-->
-    <!--            <template v-if="event.spacesLeft">-->
-    <!--              <svg viewBox="0 0 2 2" class="h-0.5 w-0.5 fill-current">-->
-    <!--                <circle cx="1" cy="1" r="1" />-->
-    <!--              </svg>-->
-    <!--              <span-->
-    <!--                :class="[-->
-    <!--                  event.spacesLeft === 0 ? 'bg-red-50 text-red-700 ring-red-700/10' : '',-->
-    <!--                  event.spacesLeft >= 1 && event.spacesLeft < 3 ? 'bg-yellow-50 text-yellow-700 ring-yellow-700/10' : '',-->
-    <!--                  event.spacesLeft >= 3 ? 'bg-blue-50 text-blue-700 ring-blue-700/10' : ''-->
-    <!--                ]"-->
-    <!--                class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset">-->
-    <!--                <template v-if="event.spacesLeft === 0">-->
-    <!--                  Course full-->
-    <!--                </template>-->
-    <!--                <template v-else>-->
-    <!--                  {{ event.spacesLeft }} {{ event.spacesLeft === 1 ? "space" : "spaces" }} left-->
-    <!--                </template>-->
-    <!--              </span>-->
-    <!--            </template>-->
-    <!--          </div>-->
-
-    <!--          <div class="flex flex-col items-start">-->
-    <!--            <p-->
-    <!--              v-if="!hideTitles"-->
-    <!--              class="text-lg font-semibold">-->
-    <!--              {{ event.title }}-->
-    <!--            </p>-->
-    <!--            <p-->
-    <!--              v-for="(session, index) in getEventSessions(event)"-->
-    <!--              :key="index"-->
-    <!--              class="leading-6 text-gray-900">-->
-    <!--              {{ formatDate(session) }}-->
-    <!--            </p>-->
-    <!--          </div>-->
-    <!--        </div>-->
-    <!--        <div v-if="!eventTitleLinks" class="flex flex-none items-center gap-x-4">-->
-    <!--          <a-button-->
-    <!--            variant="primary"-->
-    <!--            :to="getEventUrl(event)">-->
-    <!--            View course-->
-    <!--          </a-button>-->
-    <!--        </div>-->
-    <!--      </li>-->
-    <!--    </ul>-->
     <alert-box
       v-else
       variant="info"
-      class="mt-6 mx-4">
+      class="my-6 mx-4">
       <p>
         {{ noItemsFoundMessage ?? "There are no beginners courses available yet." }}
       </p>
