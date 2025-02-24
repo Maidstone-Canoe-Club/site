@@ -701,7 +701,7 @@ export default defineEndpoint((router, {services, database}) => {
             }
           }
 
-          bookingRow.push(medicalInfo?.details || "Not specified");
+          bookingRow.push(`"${medicalInfo?.details || "Not specified"}"`);
         }
 
         if (body.emergencyContacts) {
