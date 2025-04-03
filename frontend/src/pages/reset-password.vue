@@ -65,6 +65,10 @@ import type { Validation } from "@vuelidate/core";
 import { sameAs, minLength, helpers, required } from "@vuelidate/validators";
 import { ExclamationTriangleIcon } from "@heroicons/vue/20/solid";
 
+useHead({
+  title: "Reset password"
+});
+
 enum Status {
   Waiting,
   Success,

@@ -4,6 +4,10 @@ import { required } from "@vuelidate/validators";
 import { useVuelidate, type Validation } from "@vuelidate/core";
 import { navigateTo } from "#imports";
 
+useHead({
+  title: "Upload newsletter"
+});
+
 const directus = useDirectus();
 const { getFolderId } = useFolders();
 const { createItems } = useDirectusItems();

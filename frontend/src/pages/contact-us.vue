@@ -78,6 +78,10 @@ import { maxLength, required, email as emailValidator } from "@vuelidate/validat
 import { ofetch } from "ofetch";
 import { CheckCircleIcon } from "@heroicons/vue/24/outline";
 
+useHead({
+  title: "Contact us"
+});
+
 const { getItems } = useDirectusItems();
 
 const { data: options } = await useAsyncData("contact-us-options", async () => {
@@ -134,7 +138,7 @@ const rules = {
 
 const v$: Ref<Validation> = useVuelidate(rules, formData);
 
-const {newError } = useErrors();
+const { newError } = useErrors();
 const success = ref(false);
 
 watch(() => formData.value.to, (val) => {
@@ -158,7 +162,7 @@ async function onSubmit () {
       newError({
         title: "Message was not sent",
         message: "Something went wrong sending the contact us message."
-      })
+      });
     }
   }
 }

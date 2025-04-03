@@ -73,6 +73,10 @@ import type { Validation } from "@vuelidate/core";
 import { email as emailValidator, minLength, required } from "@vuelidate/validators";
 import { ExclamationTriangleIcon } from "@heroicons/vue/20/solid";
 
+useHead({
+  title: "Forgot password"
+});
+
 enum Status {
   Waiting,
   Success,

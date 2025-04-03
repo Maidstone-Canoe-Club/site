@@ -1,5 +1,9 @@
 ﻿<script setup lang="ts">
 
+useHead({
+  title: "Our committee"
+});
+
 type CommitteeUser = {
   first_name: string,
   last_name: string,

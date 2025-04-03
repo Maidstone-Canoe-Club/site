@@ -94,6 +94,10 @@
 import { format } from "date-fns";
 import { EllipsisVerticalIcon } from "@heroicons/vue/20/solid";
 
+useHead({
+  title: "Meeting minutes"
+});
+
 export type MeetingMinutesItem = {
   id: string,
   meeting: string,

@@ -31,6 +31,10 @@
 <script setup lang="ts">
 import { PlusIcon, MinusIcon } from "@heroicons/vue/24/outline";
 
+useHead({
+  title: "Frequently asked questions"
+});
+
 const { getSingletonItem } = useDirectusItems();
 
 const { data: faqs } = await useAsyncData("faqs", async () => {

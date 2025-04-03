@@ -93,6 +93,14 @@ if (!route.params.slug && item.value.slug) {
   });
 }
 
+useSeoMeta({
+  title: item.value.title,
+  ogTitle: item.value.title,
+  ogType: "article",
+  articleAuthor: `${item.value.user_created.first_name} ${item.value.user_created.last_name}`,
+  articlePublishedTime: item.value.date_created
+});
+
 defineOgImageComponent("CustomImage", {
   headline: "News post",
   title: item.value.title

@@ -97,6 +97,10 @@ definePageMeta({
   middleware: ["public-only"]
 });
 
+useHead({
+  title: "Register"
+});
+
 const route = useRoute();
 const inviteId = ref(route.query.inviteId as string);
 const directus = useDirectus();
