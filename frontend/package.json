@@ -32,7 +32,7 @@
     "eslint": "^8.57.1",
     "eslint-plugin-vue": "^9.28.0",
     "happy-dom": "^14.12.3",
-    "nuxt": "^3.15.4",
+    "nuxt": "^3.16.2",
     "nuxt-headlessui": "^1.2.0",
     "nuxt-og-image": "^3.0.2",
     "playwright-core": "^1.50.1",
