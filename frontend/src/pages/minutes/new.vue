@@ -41,6 +41,10 @@ import { useVuelidate } from "@vuelidate/core";
 import type { Validation } from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
 
+useHead({
+  title: "Add meeting minutes"
+});
+
 const directus = useDirectus();
 const { createItems } = useDirectusItems();
 

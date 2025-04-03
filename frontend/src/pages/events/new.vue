@@ -8,4 +8,9 @@
 definePageMeta({
   middleware: ["auth"]
 });
+
+useHead({
+  title: "New event"
+});
+
 </script>

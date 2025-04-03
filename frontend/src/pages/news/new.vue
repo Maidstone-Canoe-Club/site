@@ -5,6 +5,10 @@ import { helpers, required, requiredIf } from "@vuelidate/validators";
 import type { Ref } from "vue";
 import type { NewsItem } from "~/types";
 
+useHead({
+  title: "New news post"
+});
+
 definePageMeta({
   middleware: ["auth"]
 });

@@ -1,6 +1,10 @@
 ﻿<script setup lang="ts">
 const { getItems } = useDirectusItems();
 
+useHead({
+  title: "Our coaches"
+});
+
 type CoachUser = {
   first_name: string,
   last_name: string,

@@ -2,6 +2,10 @@
 import { format } from "date-fns";
 import { EllipsisVerticalIcon } from "@heroicons/vue/20/solid";
 
+useHead({
+  title: "Newsletters"
+});
+
 export type NewsletterItem = {
   id: string,
   publish_date: string,

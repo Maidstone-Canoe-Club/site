@@ -53,6 +53,10 @@
 import { format } from "date-fns";
 import { ChevronRightIcon } from "@heroicons/vue/24/solid";
 
+useHead({
+  title: "News"
+});
+
 const user = useDirectusUser();
 const { getItems } = useDirectusItems();
 const route = useRoute();

@@ -17,6 +17,10 @@
 import { useCalendarStore } from "~/store/calendarStore";
 import type { EventException, EventItem } from "~/types";
 
+useHead({
+  title: "Calendar"
+});
+
 const calendarStore = useCalendarStore();
 
 const selectedFilters = ref<Record<string, boolean>>({});

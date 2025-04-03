@@ -39,7 +39,10 @@ const { data: item } = await useAsyncData(`content-${slug}`, async () => {
   return await loadContent();
 });
 
-useHead({ title: item.value?.title });
+useSeoMeta({
+  title: item.value?.title,
+  ogTitle: item.value?.title
+});
 
 async function loadContent () {
   try {

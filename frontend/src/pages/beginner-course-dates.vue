@@ -1,5 +1,9 @@
 ﻿<script setup lang="ts">
 
+useHead({
+  title: "Beginners course dates"
+});
+
 const { getSingletonItem } = useDirectusItems();
 
 type BeginnersCourseContent = {
