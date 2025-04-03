@@ -2,6 +2,8 @@
 import tailwindForms from "@tailwindcss/forms";
 import headlessui from "@headlessui/tailwindcss";
 export default <Partial<Config>>{
+  content: ["./src/pages/**/*.{vue,js,ts}", "./src/components/**/*.{vue,js,ts}"],
+
   theme: {
     extend: {
       colors: {
