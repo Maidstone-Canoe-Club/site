@@ -406,10 +406,11 @@ const event = computed(() => eventResponse.value!);
 
 const slug = slugify(event.value.title);
 
-defineOgImageComponent("EventImage", {
-  headline: "Event",
-  event: event.value
-});
+// TODO: Look into issue with og images
+// defineOgImageComponent("EventImage", {
+//   headline: "Event",
+//   event: event.value
+// });
 
 const formattedAllowedRoles = computed(() => {
   if (!event.value) {

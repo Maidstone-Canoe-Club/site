@@ -101,10 +101,11 @@ useSeoMeta({
   articlePublishedTime: item.value.date_created
 });
 
-defineOgImageComponent("CustomImage", {
-  headline: "News post",
-  title: item.value.title
-});
+// TODO: Look into issue with og images
+// defineOgImageComponent("CustomImage", {
+//   headline: "News post",
+//   title: item.value.title
+// });
 
 const user = useDirectusUser();
 const isPublished = computed(() => item.value?.status === "published");
