@@ -79,7 +79,6 @@ export default defineNuxtConfig({
     "@pinia/nuxt",
     "@nuxtjs/turnstile",
     "floating-vue/nuxt",
-    "nuxt-og-image",
     "nuxt-time",
     "@nuxt/fonts",
     "@nuxtjs/device",
