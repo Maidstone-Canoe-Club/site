@@ -33,7 +33,7 @@
               <a-button
                 v-if="canViewBooking()"
                 size="xs"
-                variant="secondary"
+                variant="primary"
                 @click="viewUser(booking.user)">
                 View details
               </a-button>
