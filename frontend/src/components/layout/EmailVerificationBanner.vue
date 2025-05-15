@@ -128,7 +128,7 @@ async function sendNew () {
     await directus(sendNewUrl, {
       method: "post",
       query: {
-        id: user.value!.id
+        t: user.value!.confirm_token
       }
     });
     sentNewRequest.value = true;
