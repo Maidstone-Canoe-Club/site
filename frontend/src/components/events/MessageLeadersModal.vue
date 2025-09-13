@@ -8,7 +8,7 @@ const props = defineProps<{
   leaders: any[],
   leaderLabel: string,
   eventId: string,
-  instance?: string
+  instance?: string | number
 }>();
 
 const directus = useDirectus();

@@ -98,7 +98,7 @@ const navigation = computed(() => {
     { name: "Junior accounts", href: "/profile/juniors", icon: UsersIcon, current: hash.value === "juniors" }
   ];
 
-  if (hasRole(user.value, "committee")) {
+  if (user.value && hasRole(user.value, "committee")) {
     items.push({ name: "Admin tools", href: "/profile/admin", icon: Cog6ToothIcon, current: hash.value === "admin" });
   }
 

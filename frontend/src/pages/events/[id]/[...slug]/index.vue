@@ -482,8 +482,8 @@ if (!route.params.slug && slug) {
 }
 
 useSeoMeta({
-  title: event.value.title,
-  ogTitle: event.value.title
+  title: event.value?.title,
+  ogTitle: event.value?.title
 });
 
 const { data: eventInfoResponse } = await useAsyncData(`event-info-${event.value.id}`, async () => {
@@ -687,6 +687,10 @@ const canEdit = computed(() => {
   // if (event.value!.is_recurring) {
   //   return false;
   // }
+
+  if (!user.value) {
+    return false;
+  }
 
   const userCreatedEvent = user.value && event.value!.user_created === user.value.id;
   if (userCreatedEvent) {
