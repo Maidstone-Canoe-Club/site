@@ -4,7 +4,7 @@ import type { EventItem } from "~/types";
 
 const props = defineProps<{
   event: EventItem,
-  instance?: string
+  instance?: string | number
 }>();
 
 const directus = useDirectus();

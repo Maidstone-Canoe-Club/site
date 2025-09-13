@@ -8,7 +8,7 @@ const props = defineProps< {
   open: boolean,
   eventTitle: string,
   eventId: string,
-  instance?: string
+  instance?: string | number
 }>();
 
 const internalIsOpen = ref(props.open);

@@ -118,7 +118,7 @@ async function onSubmit () {
     try {
       await login({ email: email.value, password: password.value });
       await navigateTo(redirectUrl.value);
-    } catch (e) {
+    } catch (e: any) {
       error.value = e.data;
     }
   }

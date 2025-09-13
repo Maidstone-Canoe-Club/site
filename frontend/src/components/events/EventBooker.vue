@@ -130,7 +130,7 @@ async function loadJuniors () {
     });
   }
 
-  return null;
+  return [];
 }
 
 const paymentUrl = computed(() => {

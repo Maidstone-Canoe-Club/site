@@ -1,24 +1,37 @@
-﻿export default defineNuxtPlugin(async () => {
+﻿export default defineNuxtPlugin(() => {
   const { expires, refreshTokens, refreshToken } = useDirectusToken();
   const user = useDirectusUser();
 
   watch(user, async (val, oldVal) => {
     if (!oldVal && val) {
       // User has logged in, begin auto refresh
+      if (windowTimeout) {
+        console.log("[auth] Already has timeout, clearing timeout");
+        window.clearTimeout(windowTimeout);
+        windowTimeout = null;
+      }
       await checkRefresh();
+    }
+
+    if (oldVal && !val) {
+      if (windowTimeout) {
+        console.log("[auth] User logged out, clearing timeout");
+        window.clearTimeout(windowTimeout);
+        windowTimeout = null;
+      }
     }
   });
 
   let windowTimeout: number | null = null;
 
   async function checkRefresh () {
-    console.log("starting refresh check");
+    console.log("[auth] Starting refresh check");
     if (isNaN(expires.value)) {
       return;
     }
 
     if (!refreshToken.value) {
-      console.log("no refresh token found");
+      console.log("[auth] No refresh token found");
       return;
     }
 
@@ -26,7 +39,7 @@
     // Add a small buffer window to the expire time when refreshing tokens
     const expiresBufferMs = 10_000; // 10 seconds
 
-    console.log("expires in", expiresInMs, "ms");
+    console.log("[auth] Expires in", expiresInMs, "ms");
 
     if (isNaN(expiresInMs)) {
       return;
@@ -38,31 +51,37 @@
 
       if (timeout > 1) {
         if (windowTimeout) {
-          console.log("clearing old timeout");
+          console.log("[auth] Clearing old timeout");
           window.clearTimeout(windowTimeout);
         }
-        console.log("creating timeout");
+        console.log("[auth] Creating timeout");
         windowTimeout = window.setTimeout(async () => {
           if (!user.value) {
-            console.log("user timed out");
+            console.log("[auth] User timed out");
             // The user has logged out so we won't perform the auto refresh or queue another timeout
             return;
           }
 
-          console.log("refreshing");
-          await refreshTokens();
-          await checkRefresh();
+          console.log("[auth] Refreshing...");
+          try {
+            await refreshTokens();
+            await checkRefresh();
+          } catch (e) {
+            console.error("[auth] Error refreshing token", e);
+          }
         }, timeout);
       } else {
-        throw new Error(`Expires timeout was less than 1: '${timeout}'`);
+        console.log("[auth] Timeout less than 1, instantly refreshing");
+        await refreshTokens();
+        await checkRefresh();
       }
     } else {
-      console.log("instantly refreshing");
+      console.log("[auth] Instantly refreshing");
       // The token has already expired, or we are in the buffer window
       await refreshTokens();
       await checkRefresh();
     }
   }
 
-  await checkRefresh();
+  checkRefresh().catch(e => console.error("[auth] Error on initial check refresh", e));
 });

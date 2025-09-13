@@ -432,7 +432,7 @@ const emits = defineEmits(["refresh"]);
 const props = defineProps<{
   bookings: any,
   eventId: string,
-  instance?: string,
+  instance?: string | number,
   userIsLeader: boolean,
   attendeesCount: number
 }>();
@@ -536,9 +536,14 @@ function cancelBooking (viewingUser: any) {
 }
 
 function canCancelBooking (viewingUser: any) {
+  if (!user.value) {
+    return false;
+  }
+
   const isAllowed = hasRole(user.value, "committee") || props.userIsLeader;
   const isSelfOrParent = viewingUser.id === user.value.id || viewingUser.parent === user.value.id;
   const bookingNotCancelled = viewingUserBooking.value?.status !== "cancelled" ?? false;
+  // TODO: Apparently the left side of the ?? will always be returned
   return (isAllowed || isSelfOrParent) && bookingNotCancelled;
 }
 
@@ -562,6 +567,10 @@ async function onCancelBooking () {
 }
 
 function canViewBooking () {
+  if (!user.value) {
+    return false;
+  }
+
   const isBookedCoach = hasRole(user.value, "coach") && props.bookings.some(x => x.user.id === user.value.id);
   return isBookedCoach || props.userIsLeader;
 }
