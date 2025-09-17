@@ -1,16 +1,6 @@
-// https://nuxt.com/docs/api/configuration/nuxt-config
-
-import { sentryVitePlugin } from "@sentry/vite-plugin";
-
 export default defineNuxtConfig({
   devtools: { enabled: true },
   srcDir: "src/",
-
-  site: {
-    name: "Maidstone Canoe Club",
-    url: process.env.BASE_URL,
-    description: "Kayak, Canoe and SUP Club in Maidstone, Kent, UK"
-  },
 
   runtimeConfig: {
     public: {
@@ -29,6 +19,7 @@ export default defineNuxtConfig({
   },
 
   app: {
+    baseURL: process.env.BASE_URL,
     head: {
       charset: "utf-8",
       htmlAttrs: {
@@ -69,10 +60,6 @@ export default defineNuxtConfig({
     }
   ],
 
-  extends: [
-    "nuxt-umami"
-  ],
-
   modules: [
     "nuxt-directus",
     "nuxt-headlessui",
@@ -84,7 +71,9 @@ export default defineNuxtConfig({
     "@nuxtjs/device",
     "@nuxt/image",
     "@nuxt/test-utils/module",
-    "@nuxt/ui"
+    "@nuxt/ui",
+    "@sentry/nuxt/module",
+    "nuxt-umami"
   ],
 
   image: {
@@ -92,6 +81,10 @@ export default defineNuxtConfig({
       // This URL needs to include the final `assets/` directory
       baseURL: `${process.env.NUXT_PUBLIC_DIRECTUS_URL}/assets/`
     }
+  },
+
+  umami: {
+    ignoreLocalhost: true
   },
 
   headlessui: {
@@ -137,6 +130,12 @@ export default defineNuxtConfig({
       : []
   },
 
+  sentry: {
+    org: process.env.SENTRY_ORG,
+    project: process.env.SENTRY_PROJECT,
+    authToken: process.env.SENTRY_AUTH_TOKEN
+  },
+
   vite: {
     optimizeDeps: {
       include: [
@@ -163,19 +162,6 @@ export default defineNuxtConfig({
     build: {
       sourcemap: true
     },
-    plugins: [
-      sentryVitePlugin({
-        authToken: process.env.SENTRY_AUTH_TOKEN,
-        org: process.env.SENTRY_ORG,
-        project: process.env.SENTRY_PROJECT,
-        telemetry: false,
-        disable: process.env.NODE_ENV !== "production",
-        release: {
-          name: process.env.SENTRY_RELEASE
-        },
-        debug: true
-      })
-    ],
     server: {
       watch: {
         usePolling: true,

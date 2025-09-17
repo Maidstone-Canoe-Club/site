@@ -117,7 +117,11 @@ async function onSubmit () {
   if (!v$.value.$invalid) {
     try {
       await login({ email: email.value, password: password.value });
-      await navigateTo(redirectUrl.value);
+      await nextTick(async () => {
+        await navigateTo(redirectUrl.value, {
+          replace: true
+        });
+      });
     } catch (e: any) {
       error.value = e.data;
     }

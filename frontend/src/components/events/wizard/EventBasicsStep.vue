@@ -34,7 +34,7 @@ watch(() => event.value.allowedRoles, (val, oldVal) => {
 const user = useDirectusUser();
 
 const canChangeLeaders = computed(() => {
-  return hasRole(user.value, "committee");
+  return user.value && hasRole(user.value, "committee");
 });
 
 const minAge = computed(() => {
