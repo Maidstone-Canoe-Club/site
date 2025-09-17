@@ -1,3 +1,5 @@
+import { sentryVitePlugin } from "@sentry/vite-plugin";
+
 export default defineNuxtConfig({
   devtools: { enabled: true },
   srcDir: "src/",
@@ -72,7 +74,6 @@ export default defineNuxtConfig({
     "@nuxt/image",
     "@nuxt/test-utils/module",
     "@nuxt/ui",
-    "@sentry/nuxt/module",
     "nuxt-umami"
   ],
 
@@ -162,6 +163,19 @@ export default defineNuxtConfig({
     build: {
       sourcemap: true
     },
+    plugins: [
+      sentryVitePlugin({
+        authToken: process.env.SENTRY_AUTH_TOKEN,
+        org: process.env.SENTRY_ORG,
+        project: process.env.SENTRY_PROJECT,
+        telemetry: false,
+        disable: process.env.NODE_ENV !== "production",
+        release: {
+          name: process.env.SENTRY_RELEASE
+        },
+        debug: true
+      })
+    ],
     server: {
       watch: {
         usePolling: true,
