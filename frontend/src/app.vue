@@ -1,8 +1,11 @@
 <template>
-  <nuxt-loading-indicator />
-  <error-notification />
-  <nuxt-layout :key="key">
-    <nuxt-page />
+  <div>
+    <nuxt-loading-indicator />
+    <error-notification />
+    <nuxt-layout>
+      <nuxt-page />
+    </nuxt-layout>
+
     <page-notification />
     <medical-info-modal
       v-model:open="showMedicalInfoModal"
@@ -33,12 +36,24 @@
         </p>
       </template>
     </medical-info-modal>
-  </nuxt-layout>
+
+    <div v-if="isDev" class="pointer-events-none fixed inset-x-0 bottom-0 sm:px-6 sm:pb-5 lg:px-8">
+      <div class="pointer-events-auto flex items-center justify-between gap-x-6 bg-red-500 px-6 py-2.5 sm:rounded-xl sm:py-3 sm:pl-4 sm:pr-3.5">
+        <p class="text-sm leading-6 text-white">
+          <a href="#">
+            <strong class="font-semibold mr-1">Warning!</strong>Site is running in development mode
+          </a>
+        </p>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { provideUseId } from "@headlessui/vue";
 import { differenceInDays } from "date-fns";
+
+const isDev = computed(() => process.env.NODE_ENV === "development");
 
 provideUseId(() => useId());
 
