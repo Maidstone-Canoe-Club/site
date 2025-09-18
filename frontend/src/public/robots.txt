@@ -2,3 +2,6 @@
 Allow: /
 
 Disallow: /coaching/*
+
+User-agent: SemrushBot
+Disallow: /
