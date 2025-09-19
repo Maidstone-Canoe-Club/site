@@ -1,8 +1,9 @@
 import { sentryVitePlugin } from "@sentry/vite-plugin";
 
 export default defineNuxtConfig({
+
+  compatibilityDate: "2025-07-15",
   devtools: { enabled: true },
-  srcDir: "src/",
 
   runtimeConfig: {
     public: {
@@ -20,12 +21,17 @@ export default defineNuxtConfig({
     client: true
   },
 
+  components: [
+    {
+      path: "~/components",
+      pathPrefix: false
+    }
+  ],
+
   app: {
     head: {
       charset: "utf-8",
-      htmlAttrs: {
-        lang: "en"
-      },
+      htmlAttrs: { lang: "en" },
       meta: [
         { name: "og:title", content: "Maidstone Canoe Club" },
         { name: "og:description", content: "Kayak, Canoe and SUP Club in Maidstone, Kent, UK" },
@@ -54,20 +60,12 @@ export default defineNuxtConfig({
     }
   },
 
-  components: [
-    {
-      path: "~/components",
-      pathPrefix: false
-    }
-  ],
-
   modules: [
     "nuxt-directus",
     "nuxt-headlessui",
     "@pinia/nuxt",
     "@nuxtjs/turnstile",
     "floating-vue/nuxt",
-    "nuxt-time",
     "@nuxt/fonts",
     "@nuxtjs/device",
     "@nuxt/image",
@@ -107,18 +105,24 @@ export default defineNuxtConfig({
     // }
   },
 
-  ogImage: {
-    fonts: [
-      "Karla:700", "Space+Grotesk:700"
-    ],
-    compatibility: {
-      prerender: {
-        chromium: false
-      }
-    }
-  },
+  // ogImage: {
+  //   fonts: [
+  //     "Karla:700", "Space+Grotesk:700"
+  //   ],
+  //   compatibility: {
+  //     prerender: {
+  //       chromium: false
+  //     }
+  //   }
+  // },
 
   nitro: {
+    experimental: {
+      tasks: true
+    },
+    scheduledTasks: {
+      "*/15 * * * *": ["email-queue"]
+    },
     publicAssets: process.env.NODE_ENV === "production"
       ? [
         {
@@ -130,33 +134,37 @@ export default defineNuxtConfig({
       : []
   },
 
-  sentry: {
-    org: process.env.SENTRY_ORG,
-    project: process.env.SENTRY_PROJECT,
-    authToken: process.env.SENTRY_AUTH_TOKEN
-  },
-
   vite: {
     optimizeDeps: {
       include: [
-        "lodash-es",
         // workaround for optimized dependencies changes messages
         // see https://github.com/nuxt/nuxt/issues/26783
-        "@unhead/vue",
-        "dinero.js",
-        "@vuelidate/validators",
-        "@vuelidate/core",
-        "rrule",
-        "nanoid",
-        "@vuepic/vue-datepicker",
+        "@headlessui/vue",
         "@heroicons/vue/16/solid",
+        "@heroicons/vue/20/solid",
+        "@heroicons/vue/24/outline",
+        "@heroicons/vue/24/solid",
+        "@sentry/vue",
+        "@unhead/vue",
+        "@vue/devtools-core",
+        "@vue/devtools-kit",
+        "@vuelidate/core",
+        "@vuelidate/validators",
+        "@vuepic/vue-datepicker",
         "@vueup/vue-quill",
+        "@vueuse/core",
         "@zxcvbn-ts/core",
         "@zxcvbn-ts/language-common",
-        "vue-qrcode-reader",
-        "@vueuse/core",
+        "date-fns",
+        "date-fns-tz",
+        "dinero.js",
+        "floating-vue",
+        "lodash-es",
+        "nanoid",
+        "pinia",
         "qrcode.vue",
-        "date-fns-tz"
+        "rrule",
+        "vue-qrcode-reader"
       ]
     },
     build: {

@@ -134,7 +134,7 @@ async function loadJuniors () {
 }
 
 const paymentUrl = computed(() => {
-  let result = `/api/eventPayment?eventId=${props.event.id}&userId=${user.value!.id}`;
+  let result = `/api/payments/create?eventId=${props.event.id}&userId=${user.value!.id}`;
 
   if (props.instance !== null && props.instance !== undefined) {
     result += `&instance=${props.instance}`;

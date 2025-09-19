@@ -66,7 +66,9 @@ FROM base AS build
 WORKDIR /mcc
 COPY --from=base --chown=node:node /mcc .
 
-COPY ./src ./src
+COPY ./app ./app
+COPY ./public ./public
+COPY ./server ./server
 COPY ./nuxt.config.ts ./
 COPY ./tailwind.config.ts ./
 COPY ./tsconfig.json ./
