@@ -2,24 +2,20 @@ import { sentryVitePlugin } from "@sentry/vite-plugin";
 
 export default defineNuxtConfig({
 
-  compatibilityDate: "2025-07-15",
-  devtools: { enabled: true },
-
-  runtimeConfig: {
-    public: {
-      BASE_URL: process.env.BASE_URL,
-      ENV: process.env.NODE_ENV ?? "production",
-      sentry: {
-        dsn: process.env.SENTRY_DSN,
-        environment: process.env.SENTRY_ENVIRONMENT
-      }
-    }
-  },
-
-  sourcemap: {
-    server: true,
-    client: true
-  },
+  modules: [
+    "nuxt-directus",
+    "nuxt-headlessui",
+    "@pinia/nuxt",
+    "@nuxtjs/turnstile",
+    "floating-vue/nuxt",
+    "@nuxt/fonts",
+    "@nuxtjs/device",
+    "@nuxt/image",
+    "@nuxt/test-utils/module",
+    "@nuxt/ui",
+    "nuxt-umami",
+    "@nuxt/eslint"
+  ],
 
   components: [
     {
@@ -27,6 +23,7 @@ export default defineNuxtConfig({
       pathPrefix: false
     }
   ],
+  devtools: { enabled: true },
 
   app: {
     head: {
@@ -60,50 +57,26 @@ export default defineNuxtConfig({
     }
   },
 
-  modules: [
-    "nuxt-directus",
-    "nuxt-headlessui",
-    "@pinia/nuxt",
-    "@nuxtjs/turnstile",
-    "floating-vue/nuxt",
-    "@nuxt/fonts",
-    "@nuxtjs/device",
-    "@nuxt/image",
-    "@nuxt/test-utils/module",
-    "@nuxt/ui",
-    "nuxt-umami"
-  ],
-
-  image: {
-    directus: {
-      // This URL needs to include the final `assets/` directory
-      baseURL: `${process.env.NUXT_PUBLIC_DIRECTUS_URL}/assets/`
-    }
-  },
-
-  umami: {
-    ignoreLocalhost: true
-  },
-
-  headlessui: {
-    prefix: ""
-  },
-
   colorMode: {
     preference: "light"
   },
 
-  directus: {
-    url: "http://host.docker.internal:8055",
-    autoRefresh: true,
-    fetchUserParams: {
-      fields: ["*", "role.name"]
+  runtimeConfig: {
+    public: {
+      BASE_URL: process.env.BASE_URL,
+      ENV: process.env.NODE_ENV ?? "production",
+      sentry: {
+        dsn: process.env.SENTRY_DSN,
+        environment: process.env.SENTRY_ENVIRONMENT
+      }
     }
-    // onAutoRefreshFailure () : Promise<void> {
-    //   console.log("AUTO REFRESH FAILURE!");
-    //   return Promise.resolve();
-    // }
   },
+
+  sourcemap: {
+    server: true,
+    client: true
+  },
+  compatibilityDate: "2025-09-19",
 
   // ogImage: {
   //   fonts: [
@@ -125,12 +98,12 @@ export default defineNuxtConfig({
     },
     publicAssets: process.env.NODE_ENV === "production"
       ? [
-        {
-          baseURL: "images",
-          dir: "public/images",
-          maxAge: 31622400
-        }
-      ]
+          {
+            baseURL: "images",
+            dir: "public/images",
+            maxAge: 31622400
+          }
+        ]
       : []
   },
 
@@ -189,5 +162,42 @@ export default defineNuxtConfig({
         interval: 1000
       }
     }
+  },
+
+  directus: {
+    url: "http://host.docker.internal:8055",
+    autoRefresh: true,
+    fetchUserParams: {
+      fields: ["*", "role.name"]
+    }
+    // onAutoRefreshFailure () : Promise<void> {
+    //   console.log("AUTO REFRESH FAILURE!");
+    //   return Promise.resolve();
+    // }
+  },
+
+  eslint: {
+    config: {
+      stylistic: {
+        semi: true,
+        quotes: "double",
+        commaDangle: "never"
+      }
+    }
+  },
+
+  headlessui: {
+    prefix: ""
+  },
+
+  image: {
+    directus: {
+      // This URL needs to include the final `assets/` directory
+      baseURL: `${process.env.NUXT_PUBLIC_DIRECTUS_URL}/assets/`
+    }
+  },
+
+  umami: {
+    ignoreLocalhost: true
   }
 });

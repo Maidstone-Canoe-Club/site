@@ -2,9 +2,11 @@
   <div class="mx-auto max-w-3xl mt-8 px-3 sm:px-0">
     <div
       v-if="success"
-      class="flex items-center justify-center py-6 sm:py-12 flex-col gap-2 mt-12">
+      class="flex items-center justify-center py-6 sm:py-12 flex-col gap-2 mt-12"
+    >
       <CheckCircleIcon
-        class="w-24 h-24 mb-4 text-lime-600" />
+        class="w-24 h-24 mb-4 text-lime-600"
+      />
       <h2 class="font-bold text-4xl">
         Message sent!
       </h2>
@@ -17,51 +19,60 @@
       <form
         method="post"
         class="space-y-4"
-        @submit.prevent>
+        @submit.prevent
+      >
         <nuxt-turnstile
           v-model="formData.token"
-          :options="turnstileOptions" />
+          :options="turnstileOptions"
+        />
         <input-field
           id="from-name"
           v-model="formData.fromName"
           name="fromName"
           label="From name"
-          :v="v$.fromName" />
+          :v="v$.fromName"
+        />
         <input-field
           id="from-email"
           v-model="formData.fromEmail"
           type="email"
           name="fromEmail"
           label="From email"
-          :v="v$.fromEmail" />
+          :v="v$.fromEmail"
+        />
 
         <div class="pt-6 space-y-4">
           <input-dropdown
             v-model="formData.to"
             :options="options"
             label="To"
-            :v="v$.to" />
+            :v="v$.to"
+          />
           <input-field
             id="subject"
             v-model="formData.subject"
             name="subject"
             label="Subject"
-            :v="v$.subject" />
+            :v="v$.subject"
+          />
           <div>
             <input-text-area
               id="message"
               v-model="formData.message"
               name="mame"
               label="Message"
-              :v="v$.message" />
+              :v="v$.message"
+            />
             <span
               class="text-sm"
-              :class="[charactersLeft < 0 ? 'text-red-500' : 'text-gray-500']">{{ charactersLeftLabel }}</span>
+              :class="[charactersLeft < 0 ? 'text-red-500' : 'text-gray-500']"
+            >{{ charactersLeftLabel }}</span>
           </div>
         </div>
         <a-button
           type="submit"
-          :action="onSubmit">
+          :action="onSubmit"
+        >
           Send
         </a-button>
       </form>
@@ -108,7 +119,7 @@ const toOptions = [
   "mailing-list"
 ];
 
-function getOptionFromQuery () {
+function getOptionFromQuery() {
   if (to) {
     const index = toOptions.findIndex(val => val === to.toLowerCase().trim());
     if (index >= 0) {
@@ -147,7 +158,7 @@ watch(() => formData.value.to, (val) => {
   }
 }, { deep: true });
 
-async function onSubmit () {
+async function onSubmit() {
   v$.value.$touch();
 
   if (!v$.value.$invalid) {
@@ -157,7 +168,8 @@ async function onSubmit () {
         body: formData.value
       });
       success.value = true;
-    } catch (e) {
+    }
+    catch (e) {
       console.error("something went wrong sending contact us message", e);
       newError({
         title: "Message was not sent",
@@ -173,11 +185,11 @@ const charactersLeftLabel = computed(() => {
   const left = charactersLeft.value;
   if (left < 0) {
     return `${-left} ${-left === 1 ? "character" : "characters"} over the limit`;
-  } else {
+  }
+  else {
     return `${left} ${left === 1 ? "character" : "characters"} left`;
   }
 });
-
 </script>
 
 <style scoped lang="scss">

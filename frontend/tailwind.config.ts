@@ -1,8 +1,9 @@
 ﻿import type { Config } from "tailwindcss";
 import tailwindForms from "@tailwindcss/forms";
 import headlessui from "@headlessui/tailwindcss";
+
 export default <Partial<Config>>{
-  content: ["./src/pages/**/*.{vue,js,ts}", "./src/components/**/*.{vue,js,ts}"],
+  content: ["./app/pages/**/*.{vue,js,ts}", "./app/components/**/*.{vue,js,ts}"],
 
   theme: {
     extend: {
