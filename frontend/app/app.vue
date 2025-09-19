@@ -1,7 +1,7 @@
 <template>
   <div>
     <nuxt-loading-indicator />
-    <error-notification />
+    <ErrorNotification />
     <nuxt-layout>
       <nuxt-page />
     </nuxt-layout>
