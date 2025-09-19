@@ -11,7 +11,8 @@
       v-model:open="showMedicalInfoModal"
       continue-label="Continue"
       :users="[user]"
-      @continue="onMedicalInfoConfirmed">
+      @continue="onMedicalInfoConfirmed"
+    >
       <div v-if="lastCheckDaysAgo">
         We last checked your medical information was correct {{ lastCheckDaysAgo }} days ago. Please ensure the
         following is correct and up to date.
@@ -30,7 +31,8 @@
           You can always update your medical information on your
           <nuxt-link
             to="/profile"
-            class="underline">
+            class="underline"
+          >
             profile.
           </nuxt-link>
         </p>
@@ -74,7 +76,7 @@ watch(user, () => {
   tryMedicalInfoCheck();
 });
 
-function tryMedicalInfoCheck () {
+function tryMedicalInfoCheck() {
   if (preMedicalCheck.value) {
     console.log("medical form already seen this session");
     return;
@@ -92,18 +94,19 @@ function tryMedicalInfoCheck () {
       if (lastCheckDaysAgo.value >= daysBetweenChecks) {
         showMedCheck();
       }
-    } else {
+    }
+    else {
       showMedCheck();
     }
   }
 }
 
-async function onMedicalInfoConfirmed () {
+async function onMedicalInfoConfirmed() {
   showMedicalInfoModal.value = false;
   await updateLastMedCheck();
 }
 
-function showMedCheck () {
+function showMedCheck() {
   if (!user.value) {
     return;
   }
@@ -113,7 +116,7 @@ function showMedCheck () {
   user.value.last_med_check = new Date();
 }
 
-async function updateLastMedCheck () {
+async function updateLastMedCheck() {
   if (!user.value) {
     return;
   }
@@ -126,7 +129,6 @@ async function updateLastMedCheck () {
     }
   });
 }
-
 </script>
 
 <style lang="postcss">
@@ -184,5 +186,4 @@ html, body, #__nuxt {
     pointer-events: none;
   }
 }
-
 </style>
