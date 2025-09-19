@@ -4,4 +4,5 @@ Allow: /
 Disallow: /coaching/*
 
 User-agent: SemrushBot
+User-agent: barkrowler
 Disallow: /
