@@ -114,8 +114,8 @@
 import { HandRaisedIcon } from "@heroicons/vue/24/outline";
 import { ChevronRightIcon } from "@heroicons/vue/24/solid";
 import { addDays, endOfDay } from "date-fns";
+import { utcToZonedTime, format } from "date-fns-tz";
 import type { EventItem, Home, NewsItem } from "~/types";
-import {utcToZonedTime, format} from "date-fns-tz";
 
 definePageMeta({
   layout: "no-container"
@@ -135,12 +135,11 @@ function eventDateFormatter (event: EventItem) {
 
   const localStartDate = utcToZonedTime(new Date(event.start_date), timeZone);
   const localEndDate = utcToZonedTime(new Date(event.end_date), timeZone);
-  console.log("local", event.start_date, localStartDate)
 
-  const startDay = format(localStartDate, "iiii do", {timeZone});
+  const startDay = format(localStartDate, "iiii do", { timeZone });
   const startTime = formatShortTime(localStartDate);
 
-  const endDay = format(localEndDate, "iiii do", {timeZone});
+  const endDay = format(localEndDate, "iiii do", { timeZone });
   const endTime = formatShortTime(localEndDate);
 
   if (startDay !== endDay) {
