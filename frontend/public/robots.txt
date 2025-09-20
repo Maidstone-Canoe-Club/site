@@ -3,6 +3,7 @@ Allow: /
 
 Disallow: /coaching/*
 
+User-Agent: MJ12bot
 User-agent: SemrushBot
 User-agent: barkrowler
 Disallow: /
