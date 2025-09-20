@@ -61,7 +61,6 @@ provideUseId(() => useId());
 
 const user = useDirectusUser();
 const { updateUser } = useDirectusUsers();
-const key = computed(() => user.value?.id || "");
 const preMedicalCheck = useState<boolean>("pre-med-check", () => false);
 
 const showMedicalInfoModal = ref(false);

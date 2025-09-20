@@ -1,25 +1,30 @@
 ﻿<template>
   <div class="no-container">
     <div
-      v-if="home.show_holding_page"
-      class="mx-auto max-w-3xl mt-8 px-3 sm:px-0">
+      v-if="home && home.show_holding_page"
+      class="mx-auto max-w-3xl mt-8 px-3 sm:px-0"
+    >
       <div class="flex justify-center items-center mb-12 mt-12">
         <img
           src="/images/logo.svg"
           alt="MCC logo"
           width="200"
-          height="200">
+          height="200"
+        >
       </div>
       <rich-text :content="holdingPage" />
     </div>
     <div
       v-else
-      class="flex min-h-full flex-col bg-gray-50 relative">
+      class="flex min-h-full flex-col bg-gray-50 relative"
+    >
       <page-header
-        class="z-10" />
+        class="z-10"
+      />
       <email-verification-banner
         v-if="showVerificationBanner"
-        class="z-[9]" />
+        class="z-[9]"
+      />
 
       <div class="layout-content relative">
         <div class="absolute z-0 h-[60vh] w-full object-cover overflow-hidden">
@@ -28,13 +33,14 @@
             :src="home.hero_image"
             alt="Hero background image"
             format="webp"
-            qual
             quality="75"
             provider="directus"
             placeholder
             height="1000"
-            :width="width"
-            class="h-full object-cover w-full z-5" />
+            sizes="100vw sm:600px md:1024px lg:1920px"
+            densities="1x 2x"
+            class="h-full object-cover w-full z-5"
+          />
         </div>
 
         <div class="w-full absolute h-[300px] sm:h-[460px] top-16 flex justify-center items-center">
@@ -42,14 +48,16 @@
             <img
               src="/images/logo-white.svg"
               alt="MCC logo"
-              class="w-[150px] sm:w-[200px] h-[150px] sm:h-[200px] drop-shadow-[0_2px_2px_black]">
+              class="w-[150px] sm:w-[200px] h-[150px] sm:h-[200px] drop-shadow-[0_2px_2px_black]"
+            >
             <div class="flex flex-col flex-shrink justify-center max-w-[666px]">
               <h1 class="text-4xl font-bold text-white drop-shadow-[0_1px_1px_black]">
                 {{ home?.title }}
               </h1>
               <p
                 v-if="home?.tagline"
-                class="sm:w-full mt-3 text-white drop-shadow-[0_1px_2px_black]">
+                class="sm:w-full mt-3 text-white drop-shadow-[0_1px_2px_black]"
+              >
                 {{ home?.tagline }}
               </p>
             </div>
@@ -83,10 +91,7 @@ const { data: home } = await useAsyncData("home", async () => {
   });
 });
 
-const width = import.meta.client ? window.innerWidth : 1920;
-
 const holdingPage = computed(() => home.value?.holding_page_content);
-
 </script>
 
 <style scoped lang="postcss">
