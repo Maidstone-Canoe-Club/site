@@ -107,16 +107,12 @@ watch(email, () => {
   v$.value.$reset();
 });
 
-const config = useRuntimeConfig();
-
 async function onSubmit() {
   v$.value.$touch();
 
   if (!v$.value.$invalid) {
-    console.log("trying to reset password with url", config.public.BASE_URL);
     try {
-      const url = config.public.BASE_URL + "/password-reset/request";
-      await directus(url, {
+      await directus("/password-reset/request", {
         method: "POST",
         body: {
           email: email.value
