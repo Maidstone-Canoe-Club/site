@@ -1,4 +1,5 @@
 ﻿import {AdminAccountability} from "./utils";
+import {sendEmail} from "../mail-forwards";
 
 export async function review(req: any, res: any, services: any, database: any) {
   const {
@@ -78,35 +79,32 @@ export async function review(req: any, res: any, services: any, database: any) {
       console.log(`event ${event.title} (${event.id}) approved by ${userId}`);
       status = "published";
 
-      await mailService.send({
-        to: createdBy.email,
-        from: `events@${process.env.EMAIL_DOMAIN}`,
-        subject: `Event approved: ${event.title}`,
-        template: {
-          name: "event-approved",
-          data: {
-            eventTitle: event.title,
-            eventUrl
-          }
-        }
+      const htmlBody = await mailService.renderTemplate("event-approved", {
+        eventTitle: event.title,
+        eventUrl
       });
 
+      await sendEmail({
+        To: createdBy.email,
+        From: `events@${process.env.EMAIL_DOMAIN}`,
+        Subject: `Event approved: ${event.title}`,
+        HtmlBody: htmlBody
+      });
     } else if (result === "reject") {
       console.log(`event ${event.title} (${event.id}) rejected by ${userId}`);
       status = "draft";
 
-      await mailService.send({
-        to: createdBy.email,
-        from: `events@${process.env.EMAIL_DOMAIN}`,
-        subject: `Event not approved: ${event.title}`,
-        template: {
-          name: "event-rejected",
-          data: {
-            eventTitle: event.title,
-            eventUrl,
-            notes
-          }
-        }
+      const htmlBody = await mailService.renderTemplate("event-rejected", {
+        eventTitle: event.title,
+        eventUrl,
+        notes
+      });
+
+      await sendEmail({
+        To: createdBy.email,
+        From: `events@${process.env.EMAIL_DOMAIN}`,
+        Subject: `Event not approved: ${event.title}`,
+        HtmlBody: htmlBody
       });
     } else {
       console.error(`Unknown review result specified: ${result}`);

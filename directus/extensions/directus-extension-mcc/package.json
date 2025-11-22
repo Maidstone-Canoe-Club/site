@@ -102,6 +102,11 @@
 				"type": "endpoint",
 				"name": "emails",
 				"source": "src/emails/index.ts"
+			},
+			{
+				"type": "endpoint",
+				"name": "password-reset",
+				"source": "src/password-reset/index.ts"
 			}
 		]
 	},

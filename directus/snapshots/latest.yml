@@ -1072,6 +1072,30 @@ collections:
       versioning: false
     schema:
       name: orders
+  - collection: password_reset_tokens
+    meta:
+      accountability: all
+      archive_app_filter: true
+      archive_field: null
+      archive_value: null
+      collapse: open
+      collection: password_reset_tokens
+      color: null
+      display_template: null
+      group: null
+      hidden: false
+      icon: null
+      item_duplication_fields: null
+      note: null
+      preview_url: null
+      singleton: false
+      sort: null
+      sort_field: null
+      translations: null
+      unarchive_value: null
+      versioning: false
+    schema:
+      name: password_reset_tokens
   - collection: recurring_event_patterns
     meta:
       accountability: all
@@ -13781,6 +13805,199 @@ fields:
       has_auto_increment: false
       foreign_key_table: null
       foreign_key_column: null
+  - collection: password_reset_tokens
+    field: id
+    type: uuid
+    meta:
+      collection: password_reset_tokens
+      conditions: null
+      display: null
+      display_options: null
+      field: id
+      group: null
+      hidden: true
+      interface: input
+      note: null
+      options: null
+      readonly: true
+      required: false
+      sort: 1
+      special:
+        - uuid
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: id
+      table: password_reset_tokens
+      data_type: uuid
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: false
+      is_unique: true
+      is_primary_key: true
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: password_reset_tokens
+    field: user
+    type: uuid
+    meta:
+      collection: password_reset_tokens
+      conditions: null
+      display: null
+      display_options: null
+      field: user
+      group: null
+      hidden: false
+      interface: select-dropdown-m2o
+      note: null
+      options: null
+      readonly: false
+      required: true
+      sort: 2
+      special:
+        - m2o
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: user
+      table: password_reset_tokens
+      data_type: uuid
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: directus_users
+      foreign_key_column: id
+  - collection: password_reset_tokens
+    field: token
+    type: string
+    meta:
+      collection: password_reset_tokens
+      conditions: null
+      display: null
+      display_options: null
+      field: token
+      group: null
+      hidden: false
+      interface: input
+      note: null
+      options: null
+      readonly: false
+      required: true
+      sort: 3
+      special: null
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: token
+      table: password_reset_tokens
+      data_type: character varying
+      default_value: null
+      max_length: 255
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: password_reset_tokens
+    field: expires_at
+    type: dateTime
+    meta:
+      collection: password_reset_tokens
+      conditions: null
+      display: null
+      display_options: null
+      field: expires_at
+      group: null
+      hidden: false
+      interface: datetime
+      note: null
+      options: null
+      readonly: false
+      required: true
+      sort: 4
+      special: null
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: expires_at
+      table: password_reset_tokens
+      data_type: timestamp without time zone
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: password_reset_tokens
+    field: used
+    type: boolean
+    meta:
+      collection: password_reset_tokens
+      conditions: null
+      display: null
+      display_options: null
+      field: used
+      group: null
+      hidden: false
+      interface: boolean
+      note: null
+      options: null
+      readonly: false
+      required: false
+      sort: 5
+      special:
+        - cast-boolean
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: used
+      table: password_reset_tokens
+      data_type: boolean
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
   - collection: recurring_event_patterns
     field: date_created
     type: timestamp
@@ -16648,6 +16865,27 @@ relations:
       foreign_key_table: directus_users
       foreign_key_column: id
       constraint_name: orders_user_foreign
+      on_update: NO ACTION
+      on_delete: SET NULL
+  - collection: password_reset_tokens
+    field: user
+    related_collection: directus_users
+    meta:
+      junction_field: null
+      many_collection: password_reset_tokens
+      many_field: user
+      one_allowed_collections: null
+      one_collection: directus_users
+      one_collection_field: null
+      one_deselect_action: nullify
+      one_field: null
+      sort_field: null
+    schema:
+      table: password_reset_tokens
+      column: user
+      foreign_key_table: directus_users
+      foreign_key_column: id
+      constraint_name: password_reset_tokens_user_foreign
       on_update: NO ACTION
       on_delete: SET NULL
   - collection: recurring_event_patterns

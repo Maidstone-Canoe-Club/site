@@ -3,6 +3,7 @@ import {InboundEmail} from "directus-extension-mcc/src/types";
 import {formatInTimeZone} from "date-fns-tz";
 import {RRule} from "rrule";
 import {handleMailForward} from "../mail-forwards";
+import {sendEmail} from "../mail-forwards";
 
 export async function messageAttendees(req: any, res: any, services: any, database: any) {
   const {
@@ -102,18 +103,17 @@ export async function messageAttendees(req: any, res: any, services: any, databa
         email = booking.user.parent.email;
       }
 
-      await mailService.send({
-        to: email,
-        from: `events@${process.env.EMAIL_DOMAIN}`,
-        subject,
-        template: {
-          name: "event-message",
-          data: {
-            message,
-            eventTitle,
-            eventUrl
-          }
-        }
+      const htmlBody = await mailService.renderTemplate("event-message", {
+        message,
+        eventTitle,
+        eventUrl
+      });
+
+      await sendEmail({
+        To: email,
+        From: `events@${process.env.EMAIL_DOMAIN}`,
+        Subject: subject,
+        HtmlBody: htmlBody
       });
     }
 

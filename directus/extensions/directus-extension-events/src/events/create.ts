@@ -1,5 +1,6 @@
 ﻿import {format} from "date-fns";
 import {AdminAccountability} from "./utils";
+import {sendEmail} from "../mail-forwards";
 
 export async function create(req: any, res: any, services: any, database: any) {
   const {
@@ -112,18 +113,17 @@ export async function create(req: any, res: any, services: any, database: any) {
 
       for (const reviewer of reviewers) {
         console.log("sending review mail to " + reviewer.user.email);
-        await mailService.send({
-          to: reviewer.user.email,
-          from: `events@${process.env.EMAIL_DOMAIN}`,
-          subject,
-          template: {
-            name: "event-approve",
-            data: {
-              eventTitle: eventItem.title,
-              eventDate,
-              eventUrl
-            }
-          }
+        const htmlBody = await mailService.RenderTemplate("event-approve", {
+          eventTitle: eventItem.title,
+          eventDate,
+          eventUrl
+        });
+
+        await sendEmail({
+          To: reviewer.user.email,
+          From: `events@${process.env.EMAIL_DOMAIN}`,
+          Subject: subject,
+          HtmlBody: htmlBody
         });
       }
     }
@@ -133,18 +133,17 @@ export async function create(req: any, res: any, services: any, database: any) {
 
       for (const reviewer of reviewers) {
         console.log("sending notification mail to " + reviewer.user.email);
-        await mailService.send({
-          to: reviewer.user.email,
-          from: `events@${process.env.EMAIL_DOMAIN}`,
-          subject,
-          template: {
-            name: "event-created",
-            data: {
-              eventTitle: eventItem.title,
-              eventDate,
-              eventUrl
-            }
-          }
+        const htmlBody = await mailService.RenderTemplate("event-created", {
+          eventTitle: eventItem.title,
+          eventDate,
+          eventUrl
+        });
+
+        await sendEmail({
+          To: reviewer.user.email,
+          From: `events@${process.env.EMAIL_DOMAIN}`,
+          Subject: subject,
+          HtmlBody: htmlBody
         });
       }
     }

@@ -1,4 +1,5 @@
 import {defineHook} from "@directus/extensions-sdk";
+import {sendEmail} from "../mail-forwards";
 
 async function handleHook(context: any, schema: any, services: any, database: any, logger: any) {
   const {payload} = context;
@@ -42,18 +43,17 @@ async function handleHook(context: any, schema: any, services: any, database: an
           const unsubscribeLink = `${publicUrl}/news/unsubscribe?i=${encodedId}&t=${encodedToken}`;
 
           logger.info(subscriber.user.email, "Sending news post notification to user");
-          await mailService.send({
-            to: subscriber.user.email,
-            from: `notifications@${process.env.EMAIL_DOMAIN}`,
-            subject: "New Post: " + newsItem.title,
-            template: {
-              name: "new-news-post",
-              data: {
-                newsPostUrl,
-                newsTitle: newsItem.title,
-                unsubscribeLink
-              }
-            }
+          const htmlBody = await mailService.renderTemplate("new-news-post", {
+            newsPostUrl,
+            newsTitle: newsItem.title,
+            unsubscribeLink
+          });
+
+          await sendEmail({
+            To: subscriber.user.email,
+            From: `notifications@${process.env.EMAIL_DOMAIN}`,
+            Subject: `New Post: ${newsItem.title}`,
+            HtmlBody: htmlBody
           });
         }
       }

@@ -11,13 +11,15 @@
           v-model="password"
           show-strength
           label="New password"
-          :v="v$.password" />
+          :v="v$.password"
+        />
         <input-field
           id="confirm-password"
           v-model="confirmedPassword"
           type="password"
           label="Confirm password"
-          :v="v$.confirmedPassword" />
+          :v="v$.confirmedPassword"
+        />
         <custom-button class="w-full" :action="onSubmit">
           Submit
         </custom-button>
@@ -25,7 +27,8 @@
     </template>
     <div
       v-else-if="status === Status.Error"
-      class="mt-5 sm:mx-auto sm:w-full sm:max-w-sm space-y-6">
+      class="mt-5 sm:mx-auto sm:w-full sm:max-w-sm space-y-6"
+    >
       <div class="rounded-md bg-yellow-50 p-4">
         <div class="flex">
           <div class="flex-shrink-0">
@@ -50,7 +53,8 @@
         <p>Your password has been changed</p>
         <nuxt-link
           to="/login"
-          class="flex justify-center items-center rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+          class="flex justify-center items-center rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+        >
           Login
         </nuxt-link>
       </div>
@@ -78,7 +82,7 @@ enum Status {
 const password = ref();
 const confirmedPassword = ref();
 
-const { resetPassword } = useDirectusAuth();
+const directus = useDirectus();
 const route = useRoute();
 const token = route.query.token as string;
 
@@ -100,17 +104,21 @@ watch([password, confirmedPassword], () => {
   v$.value.$reset();
 });
 
-async function onSubmit () {
+async function onSubmit() {
   v$.value.$touch();
 
   if (!v$.value.$invalid) {
     try {
-      await resetPassword({
-        token,
-        password: password.value
+      await directus("/password-reset/confirm", {
+        method: "POST",
+        body: {
+          token,
+          newPassword: password.value
+        }
       });
       status.value = Status.Success;
-    } catch {
+    }
+    catch {
       status.value = Status.Error;
     }
   }
