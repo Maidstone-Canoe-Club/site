@@ -58,7 +58,9 @@ export default defineNuxtConfig({
   },
 
   colorMode: {
-    preference: "light"
+    preference: "light",
+    fallback: "light",
+    classPrefix: "foo"
   },
 
   runtimeConfig: {
@@ -90,12 +92,6 @@ export default defineNuxtConfig({
   // },
 
   nitro: {
-    experimental: {
-      tasks: true
-    },
-    scheduledTasks: {
-      "*/15 * * * *": ["email-queue"]
-    },
     publicAssets: process.env.NODE_ENV === "production"
       ? [
           {

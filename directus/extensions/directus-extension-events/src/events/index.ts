@@ -7,6 +7,7 @@ import {getInfo} from "./info";
 import {nanoid} from "nanoid";
 import {messageAttendees, messageLeader} from "./message";
 import {AdminAccountability} from "./utils";
+import {sendEmail} from "../mail-forwards";
 
 export default defineEndpoint((router, {services, database}) => {
   const {
@@ -123,18 +124,17 @@ export default defineEndpoint((router, {services, database}) => {
             console.log("booking cancelled for", booking, booking.user.email);
             if (booking.user.email) {
               try {
-                await mailService.send({
-                  to: booking.user.email,
-                  from: `events@${process.env.EMAIL_DOMAIN}`,
-                  subject: event.title + " - Cancellation Notification",
-                  template: {
-                    name: "event-cancelled",
-                    data: {
-                      eventTitle: event.title,
-                      eventDate: new Date(event.start_date).toLocaleString(),
-                      reason
-                    }
-                  }
+                const htmlBody = await mailService.renderTemplate("event-cancelled", {
+                  eventTitle: event.title,
+                  eventDate: new Date(event.start_date).toLocaleString(),
+                  reason
+                });
+
+                await sendEmail({
+                  To: booking.user.email,
+                  From: `events@${process.env.EMAIL_DOMAIN}`,
+                  Subject: `${event.title} - Cancellation Notification`,
+                  HtmlBody: htmlBody
                 });
               } catch (e) {
                 console.log("unable to send event cancelled email", e);
@@ -509,7 +509,7 @@ export default defineEndpoint((router, {services, database}) => {
         }
       });
 
-      if (leaders.filter(x => x.directus_users_id === loggedInUserId).length === 0) {
+      if (leaders.filter((x: any) => x.directus_users_id === loggedInUserId).length === 0) {
         return res.status(401).send("you are not a leader of that event");
       }
 
