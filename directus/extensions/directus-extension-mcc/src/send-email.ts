@@ -7,7 +7,6 @@ const MailSendError = createError("VERIFY_MAIL_SEND_ERROR", "Unable to send veri
 const postmarkUrl = "https://api.postmarkapp.com";
 
 export async function sendConfirmAccountEmail (services: any, input: any, schema: any, database: any) {
-
   if (input.email_confirmed) {
     return input;
   }
@@ -33,7 +32,7 @@ export async function sendConfirmAccountEmail (services: any, input: any, schema
 
   try {
     await sendEmail({
-      To: input.mail,
+      To: input.email,
       From: `confirm@${process.env.EMAIL_DOMAIN}`,
       Subject: "Confirm email",
       HtmlBody: htmlBody
