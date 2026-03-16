@@ -30,7 +30,7 @@ export async function update(req: any, res: any, services: any, database: any) {
       return res.status(400).send("Cannot update user that does not exist");
     }
 
-    const canUpdateUser = !(await userHasRole(req, services, database, userToUpdate.id, ["Administrator", "Unverified", "Junior"]));
+    const canUpdateUser = !(await userHasRole(req, services, database, userToUpdate.id, ["Administrator", "Junior"]));
 
     if (!canUpdateUser) {
       return res.status(401).send("This user cannot be updated");
