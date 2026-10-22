@@ -1,4 +1,4 @@
-﻿FROM node:18-alpine AS builder
+﻿FROM node:22-alpine AS builder
 
 WORKDIR /builder
 
@@ -13,7 +13,6 @@ FROM directus/directus:10.9
 USER node
 WORKDIR /directus
 
-# COPY . .
 COPY snapshots/ ./snapshots
 COPY extensions/templates/ ./extensions/templates
 COPY extensions/migrations/ ./extensions/migrations
@@ -21,69 +20,16 @@ COPY --from=builder /builder/extensions/directus-extension-slugify ./extensions/
 COPY --from=builder /builder/extensions/directus-extension-mcc ./extensions/directus-extension-mcc
 COPY --from=builder /builder/extensions/directus-extension-events ./extensions/directus-extension-events
 
-ARG DB_CLIENT
-ARG DB_HOST
-ARG DB_PORT
-ARG DB_DATABASE
-ARG DB_USER
-ARG DB_PASSWORD
-ARG ADMIN_EMAIL
-ARG ADMIN_PASSWORD
-ARG KEY
-ARG SECRET
-ARG PUBLIC_URL
-ARG CACHE_ENABLED
-ARG CACHE_AUTO_PURGE
-ARG CORS_ALLOWED_HEADERS
-ARG CORS_ORIGIN
-ARG EMAIL_SMTP_HOST
-ARG EMAIL_SMTP_PORT
-ARG EMAIL_SMTP_USER
-ARG EMAIL_SMTP_PASSWORD
-ARG EMAIL_DOMAIN
-ARG SENTRY_DSN
-ARG IGNORE_MAIL
-ARG STRIPE_KEY
-ARG STRIPE_WEBHOOK_SECRET
-ARG ACCESS_TOKEN_TTL
-ARG REFRESH_TOKEN_TTL
-ARG PASSWORD_RESET_URL_ALLOW_LIST
+# All configuration (database, KEY/SECRET, email, Stripe, ...) is read from runtime environment
+# variables. Nothing is baked into the image, so secrets don't end up in its layers.
 
-ENV DB_CLIENT ${DB_CLIENT}
-ENV DB_HOST ${DB_HOST}
-ENV DB_PORT ${DB_PORT}
-ENV DB_DATABASE ${DB_DATABASE}
-ENV DB_USER ${DB_USER}
-ENV DB_PASSWORD ${DB_PASSWORD}
-ENV ADMIN_EMAIL ${ADMIN_EMAIL}
-ENV ADMIN_PASSWORD ${ADMIN_PASSWORD}
-ENV KEY ${KEY}
-ENV SECRET ${SECRET}
-ENV PUBLIC_URL ${PUBLIC_URL}
-ENV CACHE_ENABLED ${CACHE_ENABLED}
-ENV CACHE_AUTO_PURGE ${CACHE_AUTO_PURGE}
-ENV CORS_ORIGIN ${CORS_ORIGIN}
-ENV CORS_ALLOWED_HEADERS ${CORS_ALLOWED_HEADERS}
-ENV EMAIL_SMTP_HOST ${EMAIL_SMTP_HOST}
-ENV EMAIL_SMTP_PORT ${EMAIL_SMTP_PORT}
-ENV EMAIL_SMTP_USER ${EMAIL_SMTP_USER}
-ENV EMAIL_SMTP_PASSWORD ${EMAIL_SMTP_PASSWORD}
-ENV EMAIL_DOMAIN ${EMAIL_DOMAIN}
-ENV SENTRY_DSN ${SENTRY_DSN}
-ENV IGNORE_MAIL ${IGNORE_MAIL}
-ENV STRIPE_KEY ${STRIPE_KEY}
-ENV STRIPE_WEBHOOK_SECRET ${STRIPE_WEBHOOK_SECRET}
-ENV ACCESS_TOKEN_TTL ${ACCESS_TOKEN_TTL}
-ENV REFRESH_TOKEN_TTL ${REFRESH_TOKEN_TTL}
-ENV PASSWORD_RESET_URL_ALLOW_LIST ${PASSWORD_RESET_URL_ALLOW_LIST}
-
-ARG PORT
-ENV PORT ${PORT}
-EXPOSE ${PORT}
+EXPOSE 8055
 
 HEALTHCHECK --interval=10s --timeout=5s --start-period=60s --retries=3 \
   CMD wget -q --spider http://127.0.0.1:8055/server/ping || exit 1
 
+# The schema snapshot is only applied when APPLY_SCHEMA_ON_START=true, so a stale snapshot
+# can't silently drop columns on a routine restart. Turn it on for deploys that change the schema.
 CMD npx directus bootstrap && \
-    npx directus schema apply snapshots/latest.yml --yes && \
+    if [ "$APPLY_SCHEMA_ON_START" = "true" ]; then npx directus schema apply snapshots/latest.yml --yes; else echo "Skipping schema apply (APPLY_SCHEMA_ON_START is not true)"; fi && \
     npx directus start
