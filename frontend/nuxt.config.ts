@@ -12,7 +12,7 @@ export default defineNuxtConfig({
     "@nuxtjs/device",
     "@nuxt/image",
     "@nuxt/test-utils/module",
-    "@nuxt/ui",
+    "@nuxtjs/tailwindcss",
     "nuxt-umami",
     "@nuxt/eslint"
   ],
@@ -55,12 +55,6 @@ export default defineNuxtConfig({
       name: "layout",
       mode: "out-in"
     }
-  },
-
-  colorMode: {
-    preference: "light",
-    fallback: "light",
-    classPrefix: "foo"
   },
 
   runtimeConfig: {
@@ -152,6 +146,15 @@ export default defineNuxtConfig({
         debug: true
       })
     ]
+  },
+
+  postcss: {
+    plugins: {
+      // Tailwind 3 exposes nesting as a folder, which Nuxt's ES module loader can't import,
+      // so turn off the module's entry and load the plugin file directly (before tailwindcss)
+      "tailwindcss/nesting": false,
+      "tailwindcss/nesting/index.js": {}
+    }
   },
 
   directus: {

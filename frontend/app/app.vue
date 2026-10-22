@@ -137,6 +137,15 @@ html {
   font-family: 'Karla', Arial, sans-serif;
 }
 
+/* Previously added by Nuxt UI's global styles */
+a:focus-visible {
+  @apply outline-mcc-brand-500;
+}
+
+::selection {
+  @apply bg-mcc-brand-500/40;
+}
+
 h1,
 h2,
 h3,
