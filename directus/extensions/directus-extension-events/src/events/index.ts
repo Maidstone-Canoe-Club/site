@@ -351,8 +351,10 @@ export default defineEndpoint((router, {services, database}) => {
         });
       }
 
+      // Without a limit Directus stops at 100 rows, which would undercount a busy event
       const existingBookings = await eventBookingService.readByQuery({
-        filter
+        filter,
+        limit: -1
       });
 
       const currentBookings = existingBookings.filter((b: any) => b.status !== "cancelled").length;
@@ -559,7 +561,8 @@ export default defineEndpoint((router, {services, database}) => {
           "user.parent.home_tel",
           "user.parent.mobile"
         ],
-        filter: bookingsFilter
+        filter: bookingsFilter,
+        limit: -1
       });
 
       const userService = new UsersService({

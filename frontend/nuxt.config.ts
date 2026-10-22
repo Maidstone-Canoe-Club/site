@@ -151,13 +151,7 @@ export default defineNuxtConfig({
         },
         debug: true
       })
-    ],
-    server: {
-      watch: {
-        usePolling: true,
-        interval: 1000
-      }
-    }
+    ]
   },
 
   directus: {
