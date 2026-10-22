@@ -1,9 +1,5 @@
 ﻿import {AdminAccountability, isUserLeader} from "./utils";
-import {RRule} from "rrule";
-import { startOfDay } from "date-fns";
-import { utcToZonedTime } from 'date-fns-tz';
-
-const timeZone = "Europe/London";
+import {getOccurrences} from "./occurrences";
 
 export async function getConsentInfo(req: any, res: any, services: any, database: any) {
   const {
@@ -239,10 +235,6 @@ export async function get(req: any, res: any, services: any, database: any) {
       limit: -1
     });
 
-    // Ensure 'start' and 'end' are in 'Europe/London' time zone
-    const startLondon = utcToZonedTime(start, timeZone);
-    const endLondon = utcToZonedTime(end, timeZone);
-
     let events: any[] = [];
 
     for (const event of eventResults) {
@@ -260,38 +252,12 @@ export async function get(req: any, res: any, services: any, database: any) {
         continue;
       }
 
-      // Parse event start and end dates in 'Europe/London' time zone
-      const eventStartDate = utcToZonedTime(event.start_date, timeZone);
-      const eventEndDate = utcToZonedTime(event.end_date, timeZone);
-      const duration = eventEndDate.getTime() - eventStartDate.getTime();
-
-      // Parse RRULE with time zone information
-      const ruleOptions = RRule.parseString(event.rrule);
-      ruleOptions.dtstart = eventStartDate;
-      ruleOptions.tzid = timeZone;
-
-      const rule = new RRule(ruleOptions);
-
-      // Get occurrences in the specified time range
-      const occurrences = rule.between(startLondon, endLondon, true);
-
-      if (!occurrences.length) {
-        continue;
-      }
-
-      // Occurrences in the range are consecutive, so only the first one's instance number
-      // needs counting from the start of the series, the rest follow on from it
-      const firstInstance = rule.between(startOfDay(eventStartDate), occurrences[0]!, true).length - 1;
-
-      occurrences.forEach((occurrence, index) => {
-        // occurrence is in 'Europe/London' time zone
+      for (const occurrence of getOccurrences(event, start, end)) {
         events.push({
           ...event,
-          start_date: occurrence,
-          end_date: new Date(occurrence.getTime() + duration),
-          instance: firstInstance + index
+          ...occurrence
         });
-      });
+      }
     }
 
     if (events.length) {
