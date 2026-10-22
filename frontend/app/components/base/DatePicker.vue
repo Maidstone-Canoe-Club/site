@@ -1,14 +1,14 @@
 ﻿<template>
   <vue-date-picker
     v-model="internalValue"
-    :is24="false"
     :placeholder="placeholder"
     auto-apply
-    :close-on-auto-apply="false"
-    :enable-time-picker="enableTimePicker ?? false"
+    :config="{ closeOnAutoApply: false }"
+    :time-config="{ is24: false, enableTimePicker: enableTimePicker ?? false }"
+    :formats="{ input: formatDate, preview: formatDate }"
     :min-date="minDate"
     :max-date="maxDate"
-    locale="en-GB">
+    :locale="enGB">
     <template #calendar-icon>
       <span class="dp__clock-icon">
         <CalendarDaysIcon />
@@ -25,9 +25,10 @@
 </template>
 
 <script setup lang="ts">
-import VueDatePicker from "@vuepic/vue-datepicker";
+import { VueDatePicker } from "@vuepic/vue-datepicker";
 import "@vuepic/vue-datepicker/dist/main.css";
 import { format } from "date-fns";
+import { enGB } from "date-fns/locale";
 import { CalendarDaysIcon, ClockIcon } from "@heroicons/vue/24/outline";
 
 const emits = defineEmits(["update:modelValue"]);
@@ -68,21 +69,19 @@ const formatDate = (date: Date | number) => {
   gap: .5rem;
 }
 
-::v-deep(.dp__active_date) {
-  background-color: #4646e5;
+/* The menu can be teleported outside this component, so theme it with the picker's own variables.
+   :root raises the specificity above the picker's defaults whatever order the stylesheets load in. */
+:global(:root .dp--theme-light) {
+  --dp-primary-color: #4646e5;
+  --dp-font-family: 'Karla', Arial, sans-serif;
 }
 
-::v-deep(.dp__button_bottom){
+:global(.dp--button-bottom) {
   color: white;
   background-color: #4646e5;
 
   &:hover {
     background-color: #6366f1;
   }
-}
-
-::v-deep(.dp__menu),
-::v-deep(.dp__input){
-  font-family: 'Karla', Arial, sans-serif;
 }
 </style>

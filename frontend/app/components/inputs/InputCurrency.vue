@@ -34,7 +34,6 @@
 <script setup lang="ts">
 import type {Validation} from "@vuelidate/core";
 // @ts-ignore
-import Dinero from "dinero.js";
 
 interface Props {
   modelValue: number | null | undefined,
@@ -81,7 +80,7 @@ function formatPrice(amount) {
   if (!amount) {
     return null;
   }
-  return Dinero({amount, currency: "GBP"}).toFormat("0.00");
+  return formatPence(amount);
 }
 
 function toPrice(amount) {
