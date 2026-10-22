@@ -14,7 +14,7 @@
 </template>
 
 <script setup lang="ts">
-import { zonedTimeToUtc } from "date-fns-tz";
+import { fromZonedTime } from "date-fns-tz";
 import { useCalendarStore } from "~/store/calendarStore";
 import type { EventException, EventItem } from "~/types";
 
@@ -32,8 +32,8 @@ const directus = useDirectus();
 
 // The first fetch happens during SSR, so pin the month boundaries to UK time rather than the server's time zone
 const timeZone = "Europe/London";
-const start = computed(() => zonedTimeToUtc(new Date(calendarStore.year, calendarStore.month, 1), timeZone));
-const end = computed(() => zonedTimeToUtc(new Date(calendarStore.year, calendarStore.month + 1, 0, 23, 59, 59), timeZone));
+const start = computed(() => fromZonedTime(new Date(calendarStore.year, calendarStore.month, 1), timeZone));
+const end = computed(() => fromZonedTime(new Date(calendarStore.year, calendarStore.month + 1, 0, 23, 59, 59), timeZone));
 
 // useAsyncData hands the server-rendered result to the client instead of fetching it again on hydration
 const { data, status, error } = await useAsyncData("calendar-events", () => directus<EventItem[]>("/events", {
