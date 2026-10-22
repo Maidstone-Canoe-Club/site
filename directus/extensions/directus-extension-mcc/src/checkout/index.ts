@@ -13,17 +13,53 @@ export default defineEndpoint((router, {services, database}) => {
     admin: true
   };
 
+  // A logged in user can book themselves and their juniors
+  async function canBookFor(req: any, userIds: string[]) {
+    const loggedIn = req.accountability.user;
+    const others = userIds.filter(id => id !== loggedIn);
+
+    if (!others.length) {
+      return true;
+    }
+
+    const usersService = new UsersService({knex: database, schema: req.schema, accountability: adminAccountability});
+    const juniors = await usersService.readByQuery({
+      fields: ["id"],
+      filter: {
+        _and: [
+          {
+            id: {
+              _in: others
+            }
+          },
+          {
+            parent: {
+              _eq: loggedIn
+            }
+          }
+        ]
+      },
+      limit: -1
+    });
+
+    return juniors.length === new Set(others).size;
+  }
+
   router.get("/customer", async (req, res) => {
     try {
-      const loggedIn = req.accountability.user;
+      const loggedIn = req.accountability?.user;
       const userId = req.query.userId;
 
       if (!loggedIn) {
-        return res.status(401);
+        return res.status(401).send("not logged in");
       }
 
       if(!userId){
         return res.status(400).send("missing user id");
+      }
+
+      if (userId !== loggedIn) {
+        return res.status(403).send("not allowed");
       }
 
       const customersService = new ItemsService("stripe_customers", {knex: database, schema: req.schema, accountability: adminAccountability});
@@ -70,14 +106,22 @@ export default defineEndpoint((router, {services, database}) => {
 
     try {
       const eventId = req.query.eventId;
-      const userIds = req.body.userIds;
+      const userIds: string[] = [req.body.userIds ?? []].flat();
+
+      if (!req.accountability?.user) {
+        return res.status(401).send("not logged in");
+      }
 
       if (!eventId) {
         return res.status(400).send("missing event id");
       }
 
-      if (!userIds || !userIds.length) {
+      if (!userIds.length) {
         return res.status(400).send("missing user ids");
+      }
+
+      if (!(await canBookFor(req, userIds))) {
+        return res.status(403).send("not allowed to book for those users");
       }
 
       const eventsService = new ItemsService("events", {knex: database, schema: req.schema, accountability: adminAccountability});
@@ -89,8 +133,9 @@ export default defineEndpoint((router, {services, database}) => {
         return res.status(404).send("could not load event");
       }
 
+      // Just what pricing needs
       const users = await usersService.readByQuery({
-        fields: ["*", "role.name"],
+        fields: ["id", "role.name", "bc_number", "is_coach"],
         filter: {
           id: {
             _in: userIds

@@ -47,6 +47,19 @@ export default defineEventHandler(async (event) => {
   const userIds = body.userIds;
   const paymentReference = query.ref;
 
+  // Directus checks the logged in user can book for everyone in userIds
+  const authToken = getCookie(event, "directus_token");
+  if (!authToken) {
+    throw createError({
+      statusCode: 401,
+      statusMessage: "You need to be logged in to pay"
+    });
+  }
+
+  const authHeaders = {
+    Authorization: `Bearer ${authToken}`
+  };
+
   try {
     const checkoutData = await $fetch<{
       event: EventItem,
@@ -54,6 +67,7 @@ export default defineEventHandler(async (event) => {
     }>(`/checkout/data?eventId=${eventId}`, {
       method: "POST",
       baseURL: process.env.NUXT_PUBLIC_DIRECTUS_URL,
+      headers: authHeaders,
       body: {
         userIds
       }
@@ -66,13 +80,10 @@ export default defineEventHandler(async (event) => {
     const eventDate = format(date, "do MMMM yyyy");
     const productName = `${eventItem.title}: ${eventDate}`;
 
-    const authToken = getCookie(event, "directus_token");
     const customerId = await $fetch<string>(`/checkout/customer?userId=${userId}`, {
       method: "GET",
       baseURL: process.env.NUXT_PUBLIC_DIRECTUS_URL,
-      headers: {
-        Authorization: `Bearer ${authToken}`
-      }
+      headers: authHeaders
     });
 
     let redirectUrl = `/events/${eventItem.id}`;
@@ -165,6 +176,7 @@ export default defineEventHandler(async (event) => {
     const orderIds = await $fetch<string[]>("/payments/orders", {
       method: "POST",
       baseURL: process.env.NUXT_PUBLIC_DIRECTUS_URL,
+      headers: authHeaders,
       body: {
         orders
       }
