@@ -1,6 +1,6 @@
 ﻿<script setup lang="ts">
 import { addYears } from "date-fns";
-import { utcToZonedTime, format } from "date-fns-tz";
+import { toZonedTime, format } from "date-fns-tz";
 import { ExclamationTriangleIcon } from "@heroicons/vue/16/solid";
 import type { EventItem } from "~/types";
 
@@ -79,8 +79,8 @@ function formatDate (event: EventItem) {
     const timeZone = "Europe/London";
     const dateStart = new Date(event.start_date);
     const dateEnd = new Date(event.end_date);
-    const localStartTime = utcToZonedTime(dateStart, timeZone);
-    const localEndTime = utcToZonedTime(dateEnd, timeZone);
+    const localStartTime = toZonedTime(dateStart, timeZone);
+    const localEndTime = toZonedTime(dateEnd, timeZone);
     let result = format(localStartTime, "do MMMM yyyy, ", { timeZone });
     result += `${formatShortTime(localStartTime)} - ${formatShortTime(localEndTime)}`;
     return result;

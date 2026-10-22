@@ -241,7 +241,6 @@ import {
   TicketIcon
 } from "@heroicons/vue/24/outline";
 // @ts-ignore
-import Dinero from "dinero.js";
 import type { DirectusUser } from "nuxt-directus/dist/runtime/types";
 import { InformationCircleIcon } from "@heroicons/vue/20/solid";
 import type { EventItem } from "~/types";
@@ -491,7 +490,7 @@ function renderPrice(amount: number | null) {
   if (!amount) {
     return null;
   }
-  return `£${Dinero({ amount, currency: "GBP" }).toFormat(amount % 100 === 0 ? "0" : "0.00")}`;
+  return `£${formatPence(amount, true)}`;
 }
 
 const payNowButtonClass = computed(() => {

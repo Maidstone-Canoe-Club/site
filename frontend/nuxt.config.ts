@@ -1,8 +1,7 @@
-import { sentryVitePlugin } from "@sentry/vite-plugin";
-
 export default defineNuxtConfig({
 
   modules: [
+    "@sentry/nuxt/module",
     "nuxt-directus",
     "nuxt-headlessui",
     "@pinia/nuxt",
@@ -12,7 +11,7 @@ export default defineNuxtConfig({
     "@nuxtjs/device",
     "@nuxt/image",
     "@nuxt/test-utils/module",
-    "@nuxt/ui",
+    "@nuxtjs/tailwindcss",
     "nuxt-umami",
     "@nuxt/eslint"
   ],
@@ -57,12 +56,6 @@ export default defineNuxtConfig({
     }
   },
 
-  colorMode: {
-    preference: "light",
-    fallback: "light",
-    classPrefix: "foo"
-  },
-
   runtimeConfig: {
     public: {
       BASE_URL: process.env.BASE_URL,
@@ -76,7 +69,8 @@ export default defineNuxtConfig({
 
   sourcemap: {
     server: true,
-    client: true
+    // Generated for Sentry, but not referenced from the bundles that browsers download
+    client: "hidden"
   },
   compatibilityDate: "2025-09-19",
 
@@ -113,7 +107,6 @@ export default defineNuxtConfig({
         "@heroicons/vue/20/solid",
         "@heroicons/vue/24/outline",
         "@heroicons/vue/24/solid",
-        "@sentry/vue",
         "@unhead/vue",
         "@vue/devtools-core",
         "@vue/devtools-kit",
@@ -135,23 +128,16 @@ export default defineNuxtConfig({
         "rrule",
         "vue-qrcode-reader"
       ]
-    },
-    build: {
-      sourcemap: true
-    },
-    plugins: [
-      sentryVitePlugin({
-        authToken: process.env.SENTRY_AUTH_TOKEN,
-        org: process.env.SENTRY_ORG,
-        project: process.env.SENTRY_PROJECT,
-        telemetry: false,
-        disable: process.env.NODE_ENV !== "production",
-        release: {
-          name: process.env.SENTRY_RELEASE
-        },
-        debug: true
-      })
-    ]
+    }
+  },
+
+  postcss: {
+    plugins: {
+      // Tailwind 3 exposes nesting as a folder, which Nuxt's ES module loader can't import,
+      // so turn off the module's entry and load the plugin file directly (before tailwindcss)
+      "tailwindcss/nesting": false,
+      "tailwindcss/nesting/index.js": {}
+    }
   },
 
   directus: {
@@ -184,6 +170,24 @@ export default defineNuxtConfig({
     directus: {
       // This URL needs to include the final `assets/` directory
       baseURL: `${process.env.NUXT_PUBLIC_DIRECTUS_URL}/assets/`
+    }
+  },
+
+  sentry: {
+    // The server config is bundled into the Nitro build, so the Docker CMD doesn't need node --import
+    configDir: "~/sentry",
+    authToken: process.env.SENTRY_AUTH_TOKEN,
+    org: process.env.SENTRY_ORG,
+    project: process.env.SENTRY_PROJECT,
+    telemetry: false,
+    release: {
+      name: process.env.SENTRY_RELEASE
+    },
+    sourcemaps: {
+      // Without a token there is nothing to upload to (e.g. local builds)
+      disable: process.env.SENTRY_AUTH_TOKEN ? false : "disable-upload",
+      // Upload client maps to Sentry, then remove them so they aren't publicly served
+      filesToDeleteAfterUpload: [".output/public/**/*.map"]
     }
   },
 

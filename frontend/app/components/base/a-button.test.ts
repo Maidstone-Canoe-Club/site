@@ -88,12 +88,12 @@ describe("AButton Component", () => {
     });
 
     // @ts-ignore
-    expect(wrapper.vm.isDisabled.value).toBe(true);
+    expect(wrapper.vm.isDisabled).toBe(true);
 
     vi.advanceTimersByTime(500);
     await wrapper.vm.$nextTick();
 
     // @ts-ignore
-    expect(wrapper.vm.isDisabled.value).toBe(false);
+    expect(wrapper.vm.isDisabled).toBe(false);
   });
 });

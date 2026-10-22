@@ -365,7 +365,6 @@ import {
   QrCodeIcon
 } from "@heroicons/vue/24/outline";
 // @ts-ignore
-import Dinero from "dinero.js";
 import { format, isSameDay } from "date-fns";
 import type { DirectusUser } from "nuxt-directus/dist/runtime/types";
 import type { Ref } from "vue";
@@ -668,7 +667,7 @@ function formatPrice (amount?: number) {
   if (!amount) {
     return null;
   }
-  return `£${Dinero({ amount, currency: "GBP" }).toFormat(amount % 100 === 0 ? "0" : "0.00")}`;
+  return `£${formatPence(amount, true)}`;
 }
 
 const directusUrl = useDirectusUrl();

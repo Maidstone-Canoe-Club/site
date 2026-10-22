@@ -71,7 +71,6 @@
 
 <script setup lang="ts">
 // @ts-ignore
-import Dinero from "dinero.js";
 import { format } from "date-fns";
 
 const user = useDirectusUser();
@@ -139,7 +138,7 @@ function formatPrice (amount?: number) {
     return null;
   }
 
-  const result = `£${Dinero({ amount, currency: "GBP" }).toFormat("0.00")}`;
+  const result = `£${formatPence(amount)}`;
   return result.endsWith(".00") ? result.substring(0, result.length - 3) : result;
 }
 

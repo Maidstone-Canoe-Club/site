@@ -1,6 +1,5 @@
 ﻿<script setup lang="ts">
 // @ts-ignore
-import Dinero from "dinero.js";
 import type { EventWizardItem } from "~/components/events/wizard/EventWizard.vue";
 
 const event = defineModel<EventWizardItem>({ required: true });
@@ -18,7 +17,7 @@ function formatPrice (amount: number | undefined) {
   if (!amount) {
     return null;
   }
-  return Dinero({ amount, currency: "GBP" }).toFormat("0.00");
+  return formatPence(amount);
 }
 
 watch(() => event.value.advancedPricing, () => {

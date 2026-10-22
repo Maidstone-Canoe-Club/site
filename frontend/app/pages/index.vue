@@ -114,7 +114,7 @@
 import { HandRaisedIcon } from "@heroicons/vue/24/outline";
 import { ChevronRightIcon } from "@heroicons/vue/24/solid";
 import { addDays, endOfDay } from "date-fns";
-import { utcToZonedTime, format } from "date-fns-tz";
+import { toZonedTime, format } from "date-fns-tz";
 import type { EventItem, Home, NewsItem } from "~/types";
 
 definePageMeta({
@@ -133,8 +133,8 @@ const { data: home } = await useAsyncData("home", async () => {
 function eventDateFormatter (event: EventItem) {
   const timeZone = "Europe/London";
 
-  const localStartDate = utcToZonedTime(new Date(event.start_date), timeZone);
-  const localEndDate = utcToZonedTime(new Date(event.end_date), timeZone);
+  const localStartDate = toZonedTime(new Date(event.start_date), timeZone);
+  const localEndDate = toZonedTime(new Date(event.end_date), timeZone);
 
   const startDay = format(localStartDate, "iiii do", { timeZone });
   const startTime = formatShortTime(localStartDate);

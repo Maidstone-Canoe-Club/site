@@ -160,7 +160,6 @@ import { InformationCircleIcon } from "@heroicons/vue/20/solid";
 import { CheckIcon, ExclamationTriangleIcon, TicketIcon, CreditCardIcon } from "@heroicons/vue/24/outline";
 import { UsersIcon } from "@heroicons/vue/16/solid";
 // @ts-ignore
-import Dinero from "dinero.js";
 import type { EventItem } from "~/types";
 
 const emits = defineEmits(["refresh"]);
@@ -266,7 +265,7 @@ function renderPrice (amount: number) {
   if (!amount) {
     return null;
   }
-  return `£${Dinero({ amount, currency: "GBP" }).toFormat(amount % 100 === 0 ? "0" : "0.00")}`;
+  return `£${formatPence(amount, true)}`;
 }
 
 </script>
