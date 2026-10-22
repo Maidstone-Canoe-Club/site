@@ -16,6 +16,7 @@ WORKDIR /directus
 # COPY . .
 COPY snapshots/ ./snapshots
 COPY extensions/templates/ ./extensions/templates
+COPY extensions/migrations/ ./extensions/migrations
 COPY --from=builder /builder/extensions/directus-extension-slugify ./extensions/directus-extension-slugify
 COPY --from=builder /builder/extensions/directus-extension-mcc ./extensions/directus-extension-mcc
 COPY --from=builder /builder/extensions/directus-extension-events ./extensions/directus-extension-events

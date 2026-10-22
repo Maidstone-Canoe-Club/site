@@ -157,16 +157,26 @@ export async function get(req: any, res: any, services: any, database: any) {
   try {
     const start = new Date(decodeURIComponent(req.query.start));
     const end = new Date(decodeURIComponent(req.query.end));
-    const types = req.query.types as string[] | undefined;
-    const count = req.query.count as number | undefined;
-    const bookings = req.query as boolean | undefined;
+
+    if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+      return res.status(400).send("Invalid start or end date");
+    }
+
+    // Query params always arrive as strings (or arrays of strings for repeated keys)
+    const types: string[] = req.query.types === undefined
+      ? []
+      : [req.query.types].flat().filter((t: unknown) => typeof t === "string" && t !== "");
+    const parsedCount = parseInt(req.query.count, 10);
+    const count = Number.isFinite(parsedCount) && parsedCount > 0 ? parsedCount : undefined;
+    // Booking counts are returned unless explicitly turned off, the upcoming lists rely on them
+    const includeBookings = req.query.bookings !== "false";
 
     const fields = [
       "id",
       "title",
       "start_date",
       "end_date",
-      "last_occurrence",
+      "last_occurence",
       "is_recurring",
       "status",
       "type",
@@ -213,7 +223,7 @@ export async function get(req: any, res: any, services: any, database: any) {
       ]
     };
 
-    if (types?.length) {
+    if (types.length) {
       filter._and.push({
         type: {
           _in: types
@@ -221,13 +231,19 @@ export async function get(req: any, res: any, services: any, database: any) {
       });
     }
 
+    // Without an explicit limit Directus silently caps results at 100 rows
     const eventResults = await eventsService.readByQuery({
       fields,
       filter,
-      limit: count
+      sort: ["start_date"],
+      limit: -1
     });
 
-    let events = [];
+    // Ensure 'start' and 'end' are in 'Europe/London' time zone
+    const startLondon = utcToZonedTime(start, timeZone);
+    const endLondon = utcToZonedTime(end, timeZone);
+
+    let events: any[] = [];
 
     for (const event of eventResults) {
       if (event.parent_event && event.parent_event.status === "cancelled") {
@@ -247,6 +263,7 @@ export async function get(req: any, res: any, services: any, database: any) {
       // Parse event start and end dates in 'Europe/London' time zone
       const eventStartDate = utcToZonedTime(event.start_date, timeZone);
       const eventEndDate = utcToZonedTime(event.end_date, timeZone);
+      const duration = eventEndDate.getTime() - eventStartDate.getTime();
 
       // Parse RRULE with time zone information
       const ruleOptions = RRule.parseString(event.rrule);
@@ -255,35 +272,26 @@ export async function get(req: any, res: any, services: any, database: any) {
 
       const rule = new RRule(ruleOptions);
 
-      // Ensure 'start' and 'end' are in 'Europe/London' time zone
-      const startLondon = utcToZonedTime(start, timeZone);
-      const endLondon = utcToZonedTime(end, timeZone);
-
       // Get occurrences in the specified time range
       const occurrences = rule.between(startLondon, endLondon, true);
 
-      const eventStartDay = startOfDay(eventStartDate);
+      if (!occurrences.length) {
+        continue;
+      }
 
-      for (const occurrence of occurrences) {
+      // Occurrences in the range are consecutive, so only the first one's instance number
+      // needs counting from the start of the series, the rest follow on from it
+      const firstInstance = rule.between(startOfDay(eventStartDate), occurrences[0]!, true).length - 1;
+
+      occurrences.forEach((occurrence, index) => {
         // occurrence is in 'Europe/London' time zone
-        // Adjust end date based on duration
-        const duration = eventEndDate.getTime() - eventStartDate.getTime();
-        const combinedEndDate = new Date(occurrence.getTime() + duration);
-
-        // Calculate instance number
-        const instances = rule.between(eventStartDay, occurrence, true);
-
         events.push({
           ...event,
           start_date: occurrence,
-          end_date: combinedEndDate,
-          instance: instances.length - 1,
+          end_date: new Date(occurrence.getTime() + duration),
+          instance: firstInstance + index
         });
-      }
-    }
-
-    if (count && events.length > count) {
-      events = events.slice(0, count);
+      });
     }
 
     if (events.length) {
@@ -296,74 +304,84 @@ export async function get(req: any, res: any, services: any, database: any) {
       const eventIds = [...new Set(events.map(e => e.id))];
 
       const exceptions = await eventExceptionService.readByQuery({
+        fields: ["event", "instance"],
         filter: {
-          event: {
-            _in: eventIds
-          }
-        }
+          _and: [
+            {
+              event: {
+                _in: eventIds
+              }
+            },
+            {
+              is_cancelled: {
+                _eq: true
+              }
+            }
+          ]
+        },
+        limit: -1
       });
 
-      const isInstanceCancelled = (event: any, instance: string) => {
-        return exceptions?.find((e: any) => e.event === event.id && e.instance === instance)?.is_cancelled ?? false;
-      };
+      // instance is an integer column, compare as strings so the types always line up
+      const cancelledInstances = new Set(exceptions.map((e: any) => `${e.event}:${e.instance}`));
 
-      if (exceptions && exceptions.length) {
-        events = events.filter(e => {
-          if (e.instance !== undefined) {
-            if (isInstanceCancelled(e, `${e.instance}`)) {
-              return false;
-            }
-          }
+      events = events.filter(e => e.instance === undefined || !cancelledInstances.has(`${e.id}:${e.instance}`));
+    }
 
-          return true;
-        });
-      }
+    events.sort((a, b) => new Date(a.start_date).getTime() - new Date(b.start_date).getTime());
 
-      if (bookings) {
-        const eventBookingService = new ItemsService("event_bookings", {
-          knex: database,
-          schema: req.schema,
-          accountability: AdminAccountability
-        });
+    if (count && events.length > count) {
+      events = events.slice(0, count);
+    }
 
-        for (const event of events) {
-          let filter = {};
+    if (includeBookings && events.length) {
+      const eventBookingService = new ItemsService("event_bookings", {
+        knex: database,
+        schema: req.schema,
+        accountability: AdminAccountability
+      });
 
-          const eventId = event.parent_event?.id ?? event.id;
+      // Sessions of a multi-date event share the bookings of their parent
+      const bookingEventIds = [...new Set(events.map(e => e.parent_event?.id ?? e.id))];
 
-          if (event.instance !== undefined) {
-            filter = {
-              _and: [
-                {
-                  event: {
-                    _eq: eventId
-                  },
-                },
-                {
-                  instance: {
-                    _eq: event.instance
-                  }
-                }
-              ]
-            };
-          } else {
-            filter = {
+      // One grouped count instead of a query per event
+      const bookingCounts = await eventBookingService.readByQuery({
+        aggregate: {
+          count: ["*"]
+        },
+        group: ["event", "instance"],
+        filter: {
+          _and: [
+            {
               event: {
-                _eq: eventId
+                _in: bookingEventIds
               }
-            };
-          }
-
-          const bookings = await eventBookingService.readByQuery({
-            filter: {
-              ...filter,
+            },
+            {
               status: {
                 _neq: "cancelled"
               }
             }
-          });
-          event.bookings = bookings.length;
-        }
+          ]
+        },
+        limit: -1
+      });
+
+      const countsByEvent = new Map<string, number>();
+      const countsByInstance = new Map<string, number>();
+
+      for (const row of bookingCounts) {
+        const total = Number(row.count);
+        countsByEvent.set(row.event, (countsByEvent.get(row.event) ?? 0) + total);
+        countsByInstance.set(`${row.event}:${row.instance}`, total);
+      }
+
+      for (const event of events) {
+        const eventId = event.parent_event?.id ?? event.id;
+
+        event.bookings = event.instance === undefined
+          ? countsByEvent.get(eventId) ?? 0
+          : countsByInstance.get(`${eventId}:${event.instance}`) ?? 0;
       }
     }
 
