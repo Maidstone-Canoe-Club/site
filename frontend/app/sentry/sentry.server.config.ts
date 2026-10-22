@@ -7,6 +7,7 @@ if (process.env.SENTRY_DSN) {
     environment: process.env.SENTRY_ENVIRONMENT,
     tracesSampleRate: 1.0
   });
-} else {
+}
+else {
   console.warn("Sentry DSN not set, skipping Sentry initialization");
 }

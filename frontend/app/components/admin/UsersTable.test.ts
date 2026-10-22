@@ -8,7 +8,7 @@ const { getUsers } = vi.hoisted(() => ({ getUsers: vi.fn() }));
 mockNuxtImport("useDirectusUsers", () => () => ({ getUsers }));
 mockNuxtImport("useDirectus", () => () => async () => ({ data: [{ id: "r1", name: "Member" }, { id: "r2", name: "Unapproved" }] }));
 
-function makeUsers (count: number) {
+function makeUsers(count: number) {
   return Array.from({ length: count }, (_, i) => ({
     id: `u${i}`,
     first_name: "First",
@@ -34,7 +34,7 @@ describe("UsersTable", () => {
     mounted = null;
   });
 
-  async function mountTable () {
+  async function mountTable() {
     const wrapper = await mountSuspended(UsersTable, {
       global: {
         stubs: { UserEditModal: true, InputDropdown: true }

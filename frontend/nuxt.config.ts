@@ -131,24 +131,6 @@ export default defineNuxtConfig({
     }
   },
 
-  sentry: {
-    // The server config is bundled into the Nitro build, so the Docker CMD doesn't need node --import
-    configDir: "~/sentry",
-    authToken: process.env.SENTRY_AUTH_TOKEN,
-    org: process.env.SENTRY_ORG,
-    project: process.env.SENTRY_PROJECT,
-    telemetry: false,
-    release: {
-      name: process.env.SENTRY_RELEASE
-    },
-    sourcemaps: {
-      // Without a token there is nothing to upload to (e.g. local builds)
-      disable: process.env.SENTRY_AUTH_TOKEN ? false : "disable-upload",
-      // Upload client maps to Sentry, then remove them so they aren't publicly served
-      filesToDeleteAfterUpload: [".output/public/**/*.map"]
-    }
-  },
-
   postcss: {
     plugins: {
       // Tailwind 3 exposes nesting as a folder, which Nuxt's ES module loader can't import,
@@ -188,6 +170,24 @@ export default defineNuxtConfig({
     directus: {
       // This URL needs to include the final `assets/` directory
       baseURL: `${process.env.NUXT_PUBLIC_DIRECTUS_URL}/assets/`
+    }
+  },
+
+  sentry: {
+    // The server config is bundled into the Nitro build, so the Docker CMD doesn't need node --import
+    configDir: "~/sentry",
+    authToken: process.env.SENTRY_AUTH_TOKEN,
+    org: process.env.SENTRY_ORG,
+    project: process.env.SENTRY_PROJECT,
+    telemetry: false,
+    release: {
+      name: process.env.SENTRY_RELEASE
+    },
+    sourcemaps: {
+      // Without a token there is nothing to upload to (e.g. local builds)
+      disable: process.env.SENTRY_AUTH_TOKEN ? false : "disable-upload",
+      // Upload client maps to Sentry, then remove them so they aren't publicly served
+      filesToDeleteAfterUpload: [".output/public/**/*.map"]
     }
   },
 
