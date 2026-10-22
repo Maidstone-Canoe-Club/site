@@ -27,7 +27,7 @@ const showAll = ref(false);
 
 const {
   data: events,
-  pending
+  status
 } = await useAsyncData<EventItem[]>(`upcoming-events-${props.types?.join("-")}`, async () => {
   return await directus<EventItem[]>("/events", {
     method: "GET",
@@ -42,6 +42,11 @@ const {
   server: !props.lazy,
   lazy: props.lazy || false
 });
+
+// A lazy list isn't fetched during SSR, so its status is still "idle" on the server while it's already
+// "pending" in the browser. Treat both as loading, otherwise the server renders the "no events" message,
+// the browser hydrates with the spinner, and visitors briefly see "no events" before the list appears.
+const loading = computed(() => status.value === "idle" || status.value === "pending");
 
 interface CourseEventItem extends EventItem {
   spacesLeft?: number
@@ -198,7 +203,7 @@ function onViewClick (event: CourseEventItem) {
 
 <template>
   <div>
-    <div v-if="pending" class="flex py-12 justify-center items-center">
+    <div v-if="loading" class="flex py-12 justify-center items-center">
       <loading-spinner color="#6366F1" />
     </div>
 
