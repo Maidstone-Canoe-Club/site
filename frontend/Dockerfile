@@ -1,6 +1,6 @@
-﻿FROM node:22-bullseye-slim AS prebase
+﻿FROM node:22-bookworm-slim AS prebase
 
-RUN apt-get update && apt-get install -y --no-install-recommends netcat wget ca-certificates \
+RUN apt-get update && apt-get install -y --no-install-recommends netcat-openbsd wget ca-certificates \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
