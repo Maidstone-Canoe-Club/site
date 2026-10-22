@@ -94,7 +94,9 @@ async function handleMailingList(data: InboundEmail, toAddress: FullAddress, mai
           list: {
             _eq: mailingList.id
           }
-        }
+        },
+        // Without this Directus only returns the first 100 subscribers
+        limit: -1
       });
 
     if (!(subscribers && subscribers.length)) {

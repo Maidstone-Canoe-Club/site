@@ -434,7 +434,8 @@ async function notifyBookings(req: any, services: any, database: any, event: any
       "user.parent.first_name",
       "user.parent.last_name",
     ],
-    filter
+    filter,
+    limit: -1
   });
 
   if (!bookings || bookings.length === 0) {

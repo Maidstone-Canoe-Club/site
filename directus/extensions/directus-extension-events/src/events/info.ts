@@ -154,7 +154,8 @@ export async function getInfo(req: any, res: any, services: any, database: any) 
           "user.*",
           "user.role.name"
         ],
-        filter: eventBookingsFilter
+        filter: eventBookingsFilter,
+        limit: -1
       });
 
     let spacesLeft = null;
@@ -256,7 +257,9 @@ export async function getInfo(req: any, res: any, services: any, database: any) 
               }
             }
           ]
-        }
+        },
+        // A long-standing member can have more than the default 100 paid orders
+        limit: -1
       });
 
       if (event.one_time_payment && event.payment_reference) {

@@ -168,11 +168,14 @@ const showMoreLabel = computed(() => {
     return null;
   }
 
-  if (events.value.length <= props.displayCount) {
+  // Sessions of a multi-date event are listed under their parent, so don't count them
+  const listedCount = events.value.filter(e => !e.parent_event).length;
+
+  if (listedCount <= props.displayCount) {
     return null;
   }
 
-  const count = events.value.length - props.displayCount;
+  const count = listedCount - props.displayCount;
   return `Show ${count} more`;
 });
 

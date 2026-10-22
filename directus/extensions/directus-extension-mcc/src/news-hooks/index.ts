@@ -27,7 +27,9 @@ async function handleHook(context: any, schema: any, services: any, database: an
           "user.email",
           "id",
           "unsubscribe_token"
-        ]
+        ],
+        // Without this Directus only returns the first 100 subscribers
+        limit: -1
       });
 
       logger.info(subscribers, "news subscribers");

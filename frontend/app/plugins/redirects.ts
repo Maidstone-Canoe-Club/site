@@ -19,7 +19,9 @@ export default defineNuxtPlugin(async (nuxtApp) => {
         "url_old",
         "url_new",
         "response_code"
-      ]
+      ],
+      // Without this Directus only returns the first 100 redirects
+      limit: -1
     }
   });
 

@@ -69,6 +69,11 @@ export async function sendResetPasswordEmail(services: any, schema: any, databas
 }
 
 export async function sendBatchEmail(data: any) {
+  if (process.env.IGNORE_MAIL) {
+    console.log(`not sending ${data.length} batch emails:`, data.map((email: any) => email.To));
+    return;
+  }
+
   console.log("Sending batch emails");
   return await ofetch("/email/batch", {
     method: "POST",

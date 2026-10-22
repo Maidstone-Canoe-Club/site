@@ -82,7 +82,9 @@ export async function messageAttendees(req: any, res: any, services: any, databa
 
     const bookings = await eventBookingService.readByQuery({
       fields: ["*", "user.email", "user.role.name", "user.parent.email"],
-      filter: bookingsFilter
+      filter: bookingsFilter,
+      // Without this Directus only returns the first 100 bookings
+      limit: -1
     });
 
     if (!bookings || bookings.length === 0) {
