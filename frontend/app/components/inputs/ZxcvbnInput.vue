@@ -33,16 +33,15 @@ import type { ZxcvbnResult } from "@zxcvbn-ts/core";
 import type { Validation } from "@vuelidate/core";
 import type { Ref } from "vue";
 
-const { zxcvbnOptions, zxcvbnAsync, debounce } = await import("@zxcvbn-ts/core");
+const { ZxcvbnFactory, debounce } = await import("@zxcvbn-ts/core");
 const zxcvbnCommonPackage = await import("@zxcvbn-ts/language-common");
 
-const options = {
+const zxcvbn = new ZxcvbnFactory({
   dictionary: {
-    ...zxcvbnCommonPackage.default.dictionary
+    ...zxcvbnCommonPackage.dictionary
   },
-  graphs: zxcvbnCommonPackage.default.adjacencyGraphs
-};
-zxcvbnOptions.setOptions(options);
+  graphs: zxcvbnCommonPackage.adjacencyGraphs
+});
 
 const props = defineProps<{
   modelValue?: string,
@@ -69,7 +68,7 @@ const password = computed<string>({
 
 const useZxcvbn = async () => {
   if (password) {
-    result.value = await zxcvbnAsync(password.value);
+    result.value = await zxcvbn.checkAsync(password.value);
   } else {
     result.value = null;
   }
