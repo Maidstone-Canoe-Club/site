@@ -80,6 +80,9 @@ ARG PORT
 ENV PORT ${PORT}
 EXPOSE ${PORT}
 
+HEALTHCHECK --interval=10s --timeout=5s --start-period=60s --retries=3 \
+  CMD wget -q --spider http://127.0.0.1:8055/server/ping || exit 1
+
 CMD npx directus bootstrap && \
     npx directus schema apply snapshots/latest.yml --yes && \
     npx directus start
