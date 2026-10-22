@@ -8,7 +8,7 @@ WORKDIR /mcc
 
 RUN npm i -g --force corepack && corepack enable
 
-COPY package.json pnpm-lock.yaml .npmrc ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
 
 FROM prebase AS base
 
