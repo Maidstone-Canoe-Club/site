@@ -6,8 +6,8 @@ import {update} from "./update";
 import {getInfo} from "./info";
 import {nanoid} from "nanoid";
 import {messageAttendees, messageLeader} from "./message";
-import {AdminAccountability} from "./utils";
-import {sendEmail} from "../mail-forwards";
+import {AdminAccountability} from "../../../shared/utils";
+import {sendEmail} from "../../../shared/mail-forwards";
 
 export default defineEndpoint((router, {services, database}) => {
   const {
@@ -116,12 +116,12 @@ export default defineEndpoint((router, {services, database}) => {
             filter
           });
 
-        console.log("found event bookings", eventBookings);
+        console.log(`found ${eventBookings.length} event bookings`);
         if (eventBookings && eventBookings.length) {
           // For each event booking, cancel the booking
           for (const booking of eventBookings) {
             booking.status = "cancelled";
-            console.log("booking cancelled for", booking, booking.user.email);
+            console.log("booking cancelled", booking.id);
             if (booking.user.email) {
               try {
                 const htmlBody = await mailService.renderTemplate("event-cancelled", {
@@ -199,7 +199,7 @@ export default defineEndpoint((router, {services, database}) => {
 
         return res.status(200).send("ok");
       } else {
-        console.error("user does not have permission to cancel this event", loggedInUser, userCreatedEvent, userHasRole);
+        console.error("user does not have permission to cancel this event", loggedInUser.id);
         return res.status(401).send("not allowed to cancel this event");
       }
     } catch (e) {
