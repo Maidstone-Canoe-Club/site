@@ -27,6 +27,39 @@ export default defineEndpoint((router, {services, database}) => {
     admin: true
   };
 
+  // Members can only read other users' names, so a parent's juniors are listed here rather than through /users
+  router.get("/", async (req: any, res: any) => {
+    try {
+      const loggedInUserId = req.accountability?.user;
+
+      if (!loggedInUserId) {
+        return res.status(401).send("You must be logged in to list your juniors");
+      }
+
+      const usersService = new UsersService({
+        knex: database,
+        schema: req.schema,
+        accountability: adminAccountability
+      });
+
+      const juniors = await usersService.readByQuery({
+        fields: ["id", "first_name", "last_name", "email", "avatar", "dob", "bc_number", "parent", "role.name"],
+        filter: {
+          parent: {
+            _eq: loggedInUserId
+          }
+        },
+        sort: ["first_name"],
+        limit: -1
+      });
+
+      return res.json(juniors);
+    } catch (err: any) {
+      console.error("Error listing juniors", err);
+      return res.status(500).send("Error listing juniors");
+    }
+  });
+
   router.post("/update", async (req: any, res: any) => {
     try {
       const loggedInUserId = req.accountability?.user;

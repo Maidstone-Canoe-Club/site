@@ -462,7 +462,6 @@ const activeBookings = computed(() => {
 });
 
 const { getItems } = useDirectusItems();
-const { getUserById } = useDirectusUsers();
 const user = useDirectusUser();
 const directus = useDirectus();
 
@@ -618,15 +617,8 @@ async function loadEmergencyContactDetails () {
 async function viewParent () {
   loading.value = true;
   try {
-    viewingUser.value = await getUserById({
-      id: viewingUser.value.parent,
-      params: {
-        fields: [
-          "*",
-          "role.name"
-        ]
-      }
-    });
+    // Leaders can't read other users' contact details directly, so the parent comes from the attendee's booking
+    viewingUser.value = await directus(`/events/attendee-parent?bookingId=${viewingUserBooking.value.id}`);
     viewingUserBooking.value = internalBookings.value.find(b => b.user.id === user.id);
   } catch (e) {
     console.log("error loading parent", e);

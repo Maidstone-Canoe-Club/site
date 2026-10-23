@@ -58,9 +58,10 @@
 
 <script setup lang="ts">
 import { format } from "date-fns";
+import type { DirectusUser } from "nuxt-directus/dist/runtime/types";
 
 const user = useDirectusUser();
-const { getUsers } = useDirectusUsers();
+const directus = useDirectus();
 const { getItems } = useDirectusItems();
 
 const mode = ref<"create" | "edit" | null>(null);
@@ -72,16 +73,8 @@ const { data: juniors } = await useAsyncData(`juniors-${user.value!.id}`, async 
 });
 
 async function loadData () {
-  return await getUsers({
-    params: {
-      // TODO: and role === junior
-      filter: {
-        parent: {
-          _eq: user.value!.id
-        }
-      }
-    }
-  });
+  // Other users' details can't be read directly, so juniors come from the juniors endpoint
+  return await directus<DirectusUser[]>("/juniors");
 }
 
 async function onFormComplete () {
