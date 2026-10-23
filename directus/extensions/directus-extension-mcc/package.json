@@ -45,11 +45,6 @@
 			},
 			{
 				"type": "endpoint",
-				"name": "content",
-				"source": "src/content/index.ts"
-			},
-			{
-				"type": "endpoint",
 				"name": "juniors",
 				"source": "src/juniors/index.ts"
 			},
