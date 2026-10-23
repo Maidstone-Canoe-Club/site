@@ -114,7 +114,6 @@ export default defineEndpoint((router, {services, database, logger}) => {
   router.post("/unsubscribe", async (req: any, res: any) => {
     const userId = req.accountability.user;
 
-    console.log("user id:", userId);
 
     try {
       if (userId) {
@@ -124,7 +123,6 @@ export default defineEndpoint((router, {services, database, logger}) => {
           accountability: req.accountability
         });
 
-        console.log("loading subs");
 
         const subscribers = await subscribersService.readByQuery({
           fields: ["user.id", "id"],
@@ -138,7 +136,7 @@ export default defineEndpoint((router, {services, database, logger}) => {
         console.log("found " + subscribers.length + " subscribers");
 
         if (subscribers?.length) {
-          console.log("deleting many", subscribers);
+          console.log(`removing ${subscribers.length} news subscription(s)`);
           await subscribersService.deleteMany(subscribers.map((x: any) => x.id));
         }
 
@@ -148,7 +146,6 @@ export default defineEndpoint((router, {services, database, logger}) => {
         const id = req.body.id;
         const token = req.body.token;
 
-        console.log("here", id, token);
 
         if (!id) {
           return res.status(400).send("Missing id");
@@ -182,7 +179,6 @@ export default defineEndpoint((router, {services, database, logger}) => {
   router.get("/check", async (req: any, res: any) => {
     const userId = req.accountability.user;
 
-    console.log("checking user", userId);
 
     try {
       if (userId) {
@@ -203,7 +199,6 @@ export default defineEndpoint((router, {services, database, logger}) => {
 
         const hasSubscribers = subscribers && subscribers.length > 0;
 
-        console.log("found subscribers", subscribers, hasSubscribers);
 
         return res.status(200).send(hasSubscribers);
       }

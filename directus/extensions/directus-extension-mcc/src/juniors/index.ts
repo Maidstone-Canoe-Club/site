@@ -1,24 +1,5 @@
 import {defineEndpoint} from "@directus/extensions-sdk";
-
-async function getRole(name: string, rolesService: any) {
-  const roles = await rolesService.readByQuery({
-    filter: {
-      name: {
-        _eq: name
-      }
-    }
-  });
-
-  if (!roles || !roles.length) {
-    return null;
-  }
-
-  if (roles.length > 1) {
-    throw new Error("Found multiple roles with the same name: " + name);
-  }
-
-  return roles[0];
-}
+import {getRole} from "../../../shared/utils";
 
 // Only these medical fields can be set from the profile page, and the record always belongs to the junior
 function pickMedicalInfo(medicalInfo: any, juniorId: string) {

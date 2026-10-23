@@ -1,4 +1,4 @@
-﻿import {AdminAccountability, isUserLeader} from "./utils";
+﻿import {AdminAccountability, isUserLeader} from "../../../shared/utils";
 import {getOccurrences} from "./occurrences";
 
 export async function getConsentInfo(req: any, res: any, services: any, database: any) {

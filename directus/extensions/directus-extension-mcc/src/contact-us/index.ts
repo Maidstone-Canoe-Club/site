@@ -1,6 +1,7 @@
+import {requireTurnstile} from "../turnstile";
 import {defineEndpoint} from "@directus/extensions-sdk";
-import {InboundEmail} from "../types";
-import {extractForwardTarget, handleMailForward} from "../mail-forwards";
+import {InboundEmail} from "../../../shared/types";
+import {extractForwardTarget, handleMailForward} from "../../../shared/mail-forwards";
 
 export default defineEndpoint((router, {services, database}) => {
   const {
@@ -13,11 +14,10 @@ export default defineEndpoint((router, {services, database}) => {
     admin: true
   };
 
-  router.post("/", async (req: any, res: any) => {
+  router.post("/", requireTurnstile, async (req: any, res: any) => {
     try {
       const data = req.body;
 
-      console.log("got contact us message:", data);
 
       if (!data) {
         return res.status(400).send("missing data");
@@ -92,11 +92,10 @@ export default defineEndpoint((router, {services, database}) => {
     }
   });
 
-  router.post("/user", async (req: any, res: any) => {
+  router.post("/user", requireTurnstile, async (req: any, res: any) => {
     try {
       const data = req.body;
 
-      console.log("got contact user message:", data);
 
       if (!data) {
         return res.status(400).send("missing data");
@@ -131,7 +130,6 @@ export default defineEndpoint((router, {services, database}) => {
         }
       });
 
-      console.log("got forwards for", user.email, mailForwards);
 
       const mailService = new MailService({schema: req.schema, knex: database});
       const sentFromMessage = `This email was sent by ${data.fromName} (${data.fromEmail})`;

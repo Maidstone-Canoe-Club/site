@@ -66,7 +66,7 @@ function handleMailForwardUpdate(payload: any, meta: Record<string, any>) {
   const signatureFromName = payload.from_name;
   const signatureId = payload.sender_signature_id;
 
-  console.log("mail forward changed", payload);
+  console.log("mail forward changed", Object.keys(payload));
 
   // TODO: if payload.from_name change, api call to delete old signature, api call to create new one with new name
   // else if payload.name change, api call to update existing one from sender_signature_id

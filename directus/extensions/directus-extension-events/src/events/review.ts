@@ -1,5 +1,5 @@
-﻿import {AdminAccountability} from "./utils";
-import {sendEmail} from "../mail-forwards";
+﻿import {AdminAccountability} from "../../../shared/utils";
+import {sendEmail} from "../../../shared/mail-forwards";
 
 export async function review(req: any, res: any, services: any, database: any) {
   const {
@@ -31,7 +31,6 @@ export async function review(req: any, res: any, services: any, database: any) {
     const event = await eventsService.readOne(eventId, {
       fields: ["*", "user_created.email"]
     });
-    console.log("got event", event);
 
     if (!event) {
       console.error("Unable to review unknown event");
@@ -59,9 +58,7 @@ export async function review(req: any, res: any, services: any, database: any) {
       return res.status(400).send("No event reviewers found");
     }
 
-    console.log("got reviewers", reviewers);
     const approver = reviewers.find((a: any) => a.user.id === userId);
-    console.log("got approver", approver);
 
     if (!approver) {
       console.error(`User is not allowed to review event: ${userId}`);

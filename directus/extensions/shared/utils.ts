@@ -1,9 +1,28 @@
-﻿export const AdminAccountability = {
+export const AdminAccountability = {
   admin: true
 };
 
+export async function getRole(name: string, rolesService: any) {
+  const roles = await rolesService.readByQuery({
+    filter: {
+      name: {
+        _eq: name
+      }
+    }
+  });
+
+  if (!roles || !roles.length) {
+    return null;
+  }
+
+  if (roles.length > 1) {
+    throw new Error("Found multiple roles with the same name: " + name);
+  }
+
+  return roles[0];
+}
+
 export async function userHasRole(req: any, services: any, database: any, userId: string, roles: string[]) {
-  console.log("checking is user has role", userId, roles);
   const {
     UsersService
   } = services;
@@ -18,15 +37,10 @@ export async function userHasRole(req: any, services: any, database: any, userId
     fields: ["role.name"]
   });
 
-  console.log("found user", user);
-  const includes = roles.map(r => r.toLowerCase()).includes(user.role.name.toLowerCase());
-
-  console.log("result", includes);
-  return includes;
+  return roles.map(r => r.toLowerCase()).includes(user.role.name.toLowerCase());
 }
 
 export async function isUserLeader(req: any, services: any, database: any, eventId: string, userId: string) {
-  console.log("checking if user is leader");
   const {
     ItemsService
   } = services;
@@ -38,23 +52,18 @@ export async function isUserLeader(req: any, services: any, database: any, event
   });
 
   const leaders = await eventLeadersService.readByQuery({
-    fields: ["*", "directus_users_id.first_name", "directus_users_id.last_name", "directus_users_id.avatar", "directus_users_id.id"],
+    fields: ["directus_users_id.id"],
     filter: {
       events_id: {
         _eq: eventId
       }
-    }
+    },
+    limit: -1
   });
-
-  console.log("leaders", leaders);
 
   if (!leaders || leaders.length === 0) {
     return false;
   }
 
-  console.log("got leaders", leaders);
-
-  const userIsLeader = leaders.find((x: any) => x.directus_users_id.id === userId);
-  console.log("result", !!userIsLeader);
-  return !!userIsLeader;
+  return leaders.some((x: any) => x.directus_users_id?.id === userId);
 }
