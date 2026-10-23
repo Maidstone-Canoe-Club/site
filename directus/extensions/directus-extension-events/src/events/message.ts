@@ -1,9 +1,9 @@
-﻿import {AdminAccountability} from "./utils";
-import {InboundEmail} from "directus-extension-mcc/src/types";
+﻿import {AdminAccountability} from "../../../shared/utils";
+import {InboundEmail} from "../../../shared/types";
 import {formatInTimeZone} from "date-fns-tz";
 import {RRule} from "rrule";
-import {handleMailForward} from "../mail-forwards";
-import {sendEmail} from "../mail-forwards";
+import {handleMailForward} from "../../../shared/mail-forwards";
+import {sendEmail} from "../../../shared/mail-forwards";
 
 export async function messageAttendees(req: any, res: any, services: any, database: any) {
   const {
@@ -233,7 +233,6 @@ export async function messageLeader(req: any, res: any, services: any, database:
       filter: eventBookingFilter
     });
 
-    console.log("found requesting user booking", loggedInUserBookings);
 
     if (!loggedInUserBookings || loggedInUserBookings.length === 0) {
       console.warn("user cannot message leader if they aren't booked onto event");
@@ -245,7 +244,7 @@ export async function messageLeader(req: any, res: any, services: any, database:
 
     if (userSendingMessage.role.name === "Junior") {
       onBehalfOf = userSendingMessage;
-      console.log("booked user is junior, sending message on behalf of", onBehalfOf.first_name, userSendingMessage.first_name);
+      console.log("booked user is junior, sending message on behalf of", onBehalfOf.id);
       userSendingMessage = userSendingMessage.parent;
     }
 
@@ -277,7 +276,7 @@ export async function messageLeader(req: any, res: any, services: any, database:
     }
 
     const leader = leaders[0].directus_users_id;
-    console.log("found leader", leader);
+    console.log("found leader", leader.id);
 
     const mailForwardsService = new ItemsService("mail_forwards", {
       knex: database,
@@ -294,7 +293,7 @@ export async function messageLeader(req: any, res: any, services: any, database:
     });
 
     if (!mailForwards || mailForwards.length === 0) {
-      console.warn(`no mail forward found for ${leader.email}, creating new forward`);
+      console.warn(`no mail forward found for leader ${leader.id}, creating new forward`);
 
       const newForwardId = await mailForwardsService.createOne({
         name: `${userSendingMessage.first_name}.${userSendingMessage.last_name}`.toLowerCase(),
@@ -307,7 +306,6 @@ export async function messageLeader(req: any, res: any, services: any, database:
       mailForwards = [newForward];
     }
 
-    console.log("got forwards for", userSendingMessage.email, mailForwards);
     const mailService = new MailService({schema: req.schema, knex: database});
 
     let eventLabel = event.title;
@@ -356,7 +354,7 @@ export async function messageLeader(req: any, res: any, services: any, database:
       }
     };
 
-    console.log("sending mail to leader", inboundEmail);
+    console.log("sending mail to leader", leader.id);
     await handleMailForward(inboundEmail, undefined, mailForward, mailThreadsService, mailForwardsService);
     return res.status(200).send("ok");
   } catch (e: any) {

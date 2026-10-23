@@ -1,4 +1,4 @@
-import {AdminAccountability, userHasRole} from "../utils";
+import {AdminAccountability, userHasRole} from "../../../shared/utils";
 
 // Matches the roles the admin Users page won't let you pick
 const unassignableRoles = ["administrator", "junior", "unverified"];
