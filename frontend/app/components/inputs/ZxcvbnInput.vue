@@ -67,7 +67,8 @@ const password = computed<string>({
 // const showPassword = ref(false);
 
 const useZxcvbn = async () => {
-  if (password) {
+  // password is a computed ref, so check its value rather than the ref itself (which is always truthy)
+  if (password.value) {
     result.value = await zxcvbn.checkAsync(password.value);
   } else {
     result.value = null;
