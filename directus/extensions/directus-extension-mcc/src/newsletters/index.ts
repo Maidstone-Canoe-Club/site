@@ -1,4 +1,5 @@
 import {defineEndpoint} from "@directus/extensions-sdk";
+import {requireTurnstile} from "../turnstile";
 
 export default defineEndpoint((router, {services, database}) => {
   const {
@@ -9,7 +10,7 @@ export default defineEndpoint((router, {services, database}) => {
     admin: true
   };
 
-  router.post("/subscribe", async (req, res) => {
+  router.post("/subscribe", requireTurnstile, async (req, res) => {
     try {
       const data = req.body;
 
