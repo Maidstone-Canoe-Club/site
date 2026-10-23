@@ -1,6 +1,7 @@
 import {defineEndpoint} from "@directus/extensions-sdk";
 import {create} from "./create";
 import {get, getConsentInfo} from "./get";
+import {getAttendeeParent} from "./attendee-parent";
 import {review} from "./review";
 import {update} from "./update";
 import {getInfo} from "./info";
@@ -26,6 +27,10 @@ export default defineEndpoint((router, {services, database}) => {
 
   router.get("/consent-info", async (req: any, res: any) => {
     return await getConsentInfo(req, res, services, database);
+  });
+
+  router.get("/attendee-parent", async (req: any, res: any) => {
+    return await getAttendeeParent(req, res, services, database);
   });
 
   router.post("/review", async (req: any, res: any) => {
@@ -308,7 +313,8 @@ export default defineEndpoint((router, {services, database}) => {
     try {
 
       const eventId = req.query.eventId;
-      const loggedInUserId = req.query.userId;
+      // The logged in user comes from the token, not the userId query parameter the website also sends
+      const loggedInUserId = req.accountability?.user;
       const instance = req.query.instance;
       const userIds = req.body.userIds;
 
@@ -317,19 +323,47 @@ export default defineEndpoint((router, {services, database}) => {
       }
 
       if (!loggedInUserId) {
-        return res.status(400).send("missing logged in user id");
+        return res.status(401).send("You must be logged in to book onto an event");
       }
 
+      if (!Array.isArray(userIds) || userIds.length === 0) {
+        return res.status(400).send("missing user ids");
+      }
+
+      // People can only book themselves and their own juniors
+      const usersService = new UsersService({
+        knex: database,
+        schema: req.schema,
+        accountability: AdminAccountability
+      });
+      const bookableUsers = await usersService.readByQuery({
+        fields: ["id"],
+        filter: {
+          _or: [
+            {id: {_eq: loggedInUserId}},
+            {parent: {_eq: loggedInUserId}}
+          ]
+        },
+        limit: -1
+      });
+      const bookableIds = new Set(bookableUsers.map((u: any) => u.id));
+
+      if (userIds.some((id: any) => !bookableIds.has(id))) {
+        return res.status(403).send("You can only book yourself and your juniors");
+      }
+
+      // Reading the event as the user checks they're allowed to see it
       const eventsService = new ItemsService("events", {
         knex: database,
         schema: req.schema,
         accountability: req.accountability
       });
 
+      // Members can't create or change bookings directly, and need to see everyone's bookings to check the space left
       const eventBookingService = new ItemsService("event_bookings", {
         knex: database,
         schema: req.schema,
-        accountability: req.accountability
+        accountability: AdminAccountability
       });
 
       const event = await eventsService.readOne(eventId);

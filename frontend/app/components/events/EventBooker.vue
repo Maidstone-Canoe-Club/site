@@ -65,6 +65,7 @@
 
 <script setup lang="ts">
 import type { EventItem } from "~/types";
+import type { DirectusUser } from "nuxt-directus/dist/runtime/types";
 
 const emits = defineEmits(["refresh"]);
 
@@ -82,7 +83,7 @@ const props = defineProps<{
 
 const user = useDirectusUser();
 const route = useRoute();
-const { getUsers } = useDirectusUsers();
+const directus = useDirectus();
 
 const loginUrl = computed(() => `/login?redirect=${encodeURIComponent(route.fullPath)}`);
 
@@ -99,16 +100,8 @@ const canBookJuniors = computed(() => {
 
 async function loadJuniors() {
   if (user.value) {
-    return await getUsers({
-      params: {
-        fields: ["id", "first_name", "last_name", "role.name", "dob"],
-        filter: {
-          parent: {
-            _eq: user.value.id
-          }
-        }
-      }
-    });
+    // Other users' details can't be read directly, so juniors come from the juniors endpoint
+    return await directus<DirectusUser[]>("/juniors");
   }
 
   return [];

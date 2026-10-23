@@ -35,6 +35,11 @@
 			},
 			{
 				"type": "hook",
+				"name": "users-me-hook",
+				"source": "src/users-me-hook/index.ts"
+			},
+			{
+				"type": "hook",
 				"name": "user-created-hook",
 				"source": "src/user-created-hook/index.ts"
 			},
