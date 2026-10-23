@@ -6,8 +6,6 @@ import {customAlphabet} from "nanoid";
 const postmarkUrl = "https://api.postmarkapp.com";
 const nanoid = customAlphabet(alphanumeric, 11);
 
-
-// THIS NEEDS TO BE NOT DUPLICATED
 export async function extractForwardTarget(targetName: string, mailForwardsService: any) {
 
   console.log("extracting mail forward target email for", targetName);
@@ -25,12 +23,12 @@ export async function extractForwardTarget(targetName: string, mailForwardsServi
   if (forwards && forwards.length) {
     for (const forward of forwards) {
       if (forward.target_email.endsWith("@maidstonecanoeclub.net") || forward.target_email.endsWith("@mccdev.co.uk")) {
-        console.log("Mail forward target is another mail forward, searching for target email: " + forward.target_email);
+        console.log("Mail forward target is another mail forward, following it: " + forward.id);
         // this email points to a different mail forward
         // find the target email THAT mail forward points to
         const split = forward.target_email.split("@");
         if (!split || split.length !== 2) {
-          console.error("Invalid target email address: " + forward.target_email);
+          console.error("Invalid target email address on mail forward: " + forward.id);
           continue;
         }
         const name = split[0]!;
@@ -42,14 +40,14 @@ export async function extractForwardTarget(targetName: string, mailForwardsServi
     }
   }
 
-  console.log("found extracted targets", results.map(x => x.target_email));
+  console.log(`found ${results.length} mail forward target(s)`);
 
   return results;
 }
 
 export async function handleMailForward(data: InboundEmail, toAddress?: FullAddress, forward?: MailForward, mailThreadsService: any, mailForwardsService: any) {
 
-  console.log("handing mail forward to", toAddress?.Email,"from", data.From);
+  console.log("handling mail forward", forward?.id ?? "");
   if (toAddress && toAddress.Email.startsWith("reply+")) {
     const threadId = toAddress.MailboxHash;
 
@@ -59,7 +57,7 @@ export async function handleMailForward(data: InboundEmail, toAddress?: FullAddr
       if (existingThread) {
         console.log("found an existing thread");
         if (data.FromFull.Email.toLowerCase() === existingThread.target_email.toLowerCase()) {
-          console.log("sending to " + existingThread.sender_email);
+          console.log("replying to the sender on mail thread " + existingThread.id);
 
           const forwards = await mailForwardsService.readByQuery({
             filter: {
@@ -95,7 +93,7 @@ export async function handleMailForward(data: InboundEmail, toAddress?: FullAddr
             console.error("unable to find mail forward for thread: ", existingThread.id, existingThread.forward);
           }
         } else if (data.FromFull.Email.toLowerCase() === existingThread.sender_email.toLowerCase()) {
-          console.log("sending to " + existingThread.target_email);
+          console.log("replying to the target on mail thread " + existingThread.id);
           let fromName = `forwards@${process.env.EMAIL_DOMAIN}`;
 
           if (data.FromName) {
@@ -124,7 +122,7 @@ export async function handleMailForward(data: InboundEmail, toAddress?: FullAddr
       } else {
         console.log("something went wrong, unknown from address for thread");
       }
-    } catch (e) {
+    } catch (e: any) {
       console.log("something went wrong continuing mail thread", threadId, e, e.message, e.data);
     }
   } else {
@@ -188,7 +186,7 @@ async function handleNewMailThread(data: InboundEmail, toAddress?: FullAddress, 
     } else {
       console.log("no mail forward found or provided");
     }
-  } catch (e) {
+  } catch (e: any) {
     console.error("something went wrong creating a new mail thread", e, e.message, e.data);
   }
 }
@@ -196,11 +194,12 @@ async function handleNewMailThread(data: InboundEmail, toAddress?: FullAddress, 
 export async function sendEmail(email: OutboundEmail) {
 
   if (process.env.IGNORE_MAIL) {
+    // IGNORE_MAIL is only set locally, where seeing the whole email helps with testing
     console.log("not sending email:", email);
     return;
   }
 
-  console.log("Sending email to " + email.To + " from: " + email.From);
+  console.log(`Sending email from: ${email.From}`);
 
   return await ofetch("/email", {
     baseURL: postmarkUrl,
@@ -209,7 +208,7 @@ export async function sendEmail(email: OutboundEmail) {
       "X-Postmark-Server-Token": process.env.EMAIL_SMTP_PASSWORD!
     },
     body: email
-  }).catch((err) => {
+  }).catch((err: any) => {
     console.log("send mail error: ", err.data);
   });
 }

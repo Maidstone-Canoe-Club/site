@@ -4,8 +4,8 @@ import {
   InboundEmail,
   FullAddress,
   Subscriber
-} from "../types";
-import {handleMailForward, sendEmail} from "../mail-forwards";
+} from "../../../shared/types";
+import {handleMailForward, sendEmail} from "../../../shared/mail-forwards";
 import {chunkArray, sendBatchEmail} from "../send-email";
 
 export default defineEndpoint((router, {services, database}) => {
@@ -80,7 +80,7 @@ async function handleMailingList(data: InboundEmail, toAddress: FullAddress, mai
 
     const mailingList: MailingList | null | undefined = foundLists.length > 0 ? foundLists[0] : null;
 
-    console.log("found mailing list", mailingList);
+    console.log("found mailing list", mailingList?.id);
 
     if (!mailingList) {
       console.log("could not find mailing list:", emailName);
@@ -105,7 +105,7 @@ async function handleMailingList(data: InboundEmail, toAddress: FullAddress, mai
     }
 
     if (!subscribers.some(s => s.email.toLowerCase() === data.From.toLowerCase())) {
-      console.log(`${data.From} tried to send email to ${emailName.toLowerCase()} mailing list but not a subscriber`);
+      console.log(`someone who isn't a subscriber tried to send email to the ${emailName.toLowerCase()} mailing list`);
       await sendEmail({
         From: `web@${process.env.EMAIL_DOMAIN}`,
         To: data.From,

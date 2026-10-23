@@ -1,7 +1,7 @@
 ﻿import {nanoid} from "nanoid";
 import {createError} from "@directus/errors";
 import {ofetch} from "ofetch";
-import {sendEmail} from "./mail-forwards";
+import {sendEmail} from "../../shared/mail-forwards";
 
 const MailSendError = createError("VERIFY_MAIL_SEND_ERROR", "Unable to send verify email address email");
 const postmarkUrl = "https://api.postmarkapp.com";
@@ -58,7 +58,7 @@ export async function sendResetPasswordEmail(services: any, schema: any, databas
   });
 
   // Don't log the body, it contains a working reset link
-  console.log("sending reset email to: ", targetEmail);
+  console.log("sending password reset email");
 
   await sendEmail({
     From: `reset@${process.env.EMAIL_DOMAIN}`,

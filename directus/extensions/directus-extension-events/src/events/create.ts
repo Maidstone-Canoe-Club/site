@@ -1,6 +1,6 @@
 ﻿import {format} from "date-fns";
-import {AdminAccountability} from "./utils";
-import {sendEmail} from "../mail-forwards";
+import {AdminAccountability} from "../../../shared/utils";
+import {sendEmail} from "../../../shared/mail-forwards";
 
 export async function create(req: any, res: any, services: any, database: any) {
   const {
@@ -15,9 +15,6 @@ export async function create(req: any, res: any, services: any, database: any) {
     const leaders = req.body.leaders;
 
     console.log("creating new event");
-    console.log("event item", eventItem);
-    console.log("event dates", eventDates);
-    console.log("leaders", leaders);
 
     eventItem.status = "published";
 
@@ -55,7 +52,6 @@ export async function create(req: any, res: any, services: any, database: any) {
       }
     });
 
-    console.log("got reviewers", reviewers);
     if (!reviewers || reviewers.length === 0) {
       console.warn("No event reviewers found! Publishing event");
     } else {
@@ -112,7 +108,6 @@ export async function create(req: any, res: any, services: any, database: any) {
       const subject = `New event requires approval: ${eventItem.title} - ${eventDate}`;
 
       for (const reviewer of reviewers) {
-        console.log("sending review mail to " + reviewer.user.email);
         const htmlBody = await mailService.RenderTemplate("event-approve", {
           eventTitle: eventItem.title,
           eventDate,
@@ -132,7 +127,6 @@ export async function create(req: any, res: any, services: any, database: any) {
       const subject = `New event created: ${eventItem.title} - ${eventDate}`;
 
       for (const reviewer of reviewers) {
-        console.log("sending notification mail to " + reviewer.user.email);
         const htmlBody = await mailService.RenderTemplate("event-created", {
           eventTitle: eventItem.title,
           eventDate,

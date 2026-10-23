@@ -1,8 +1,5 @@
 ﻿import {defineEndpoint} from "@directus/extensions-sdk";
-import {ofetch} from "ofetch";
-
-const postmarkUrl = "https://api.postmarkapp.com";
-
+import {chunkArray, sendBatchEmail} from "../send-email";
 
 export default defineEndpoint((router, {services, database}) => {
   const {ItemsService} = services;
@@ -191,33 +188,3 @@ export default defineEndpoint((router, {services, database}) => {
     });
   });
 });
-
-async function sendBatchEmail(data: any) {
-  console.log("Sending batch emails", data);
-
-  if (process.env.IGNORE_MAIL) {
-    console.log("not sending batch emails ", data.length);
-    return;
-  }
-
-  return await ofetch("/email/batch", {
-    method: "POST",
-    baseURL: postmarkUrl,
-    body: data,
-    headers: {
-      "X-Postmark-Server-Token": process.env.EMAIL_SMTP_PASSWORD!
-    }
-  }).catch((err) => {
-    console.log("send mail error: ", err.data);
-  });
-}
-
-function chunkArray<T>(input: T[], size: number): T[][] {
-  const result: T[][] = [];
-
-  for (let i = 0; i < input.length; i += size) {
-    result.push(input.slice(i, i + size));
-  }
-
-  return result;
-}

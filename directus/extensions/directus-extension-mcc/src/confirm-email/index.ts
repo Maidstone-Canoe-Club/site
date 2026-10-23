@@ -1,5 +1,6 @@
 ﻿import {defineEndpoint} from "@directus/extensions-sdk";
 import {sendConfirmAccountEmail} from "../send-email";
+import {getRole} from "../../../shared/utils";
 
 export default defineEndpoint((router, {services, database}) => {
   const {UsersService, RolesService} = services;
@@ -36,7 +37,7 @@ export default defineEndpoint((router, {services, database}) => {
       const user = users.length > 0 ? users[0] : null;
 
       if (!user) {
-        console.error(`Could not find send new confirmation link email, could not find user using token: ${token}`);
+        console.error("Could not send a new confirmation link email, unknown token");
         return res.json({
           result: false,
           statusCode: 102,
@@ -104,7 +105,7 @@ export default defineEndpoint((router, {services, database}) => {
       const user = users.length > 0 ? users[0] : null;
 
       if (!user) {
-        console.error(`Cannot confirm email, unknown token used: ${token}`);
+        console.error("Cannot confirm email, unknown token used");
         return res.json({
           result: false,
           statusCode: 101,
@@ -134,7 +135,6 @@ export default defineEndpoint((router, {services, database}) => {
         });
       }
 
-
       const userUpdateFields: any = {
         email_confirmed: true
       };
@@ -157,7 +157,7 @@ export default defineEndpoint((router, {services, database}) => {
 
       await userService.updateOne(user.id, userUpdateFields);
 
-      console.log(`User email confirmed with token: ${token}`);
+      console.log(`User email confirmed: ${user.id}`);
       return res.json({
         result: true,
         statusCode: 100,
@@ -173,23 +173,3 @@ export default defineEndpoint((router, {services, database}) => {
     }
   });
 });
-
-async function getRole(name: string, rolesService: any) {
-  const roles = await rolesService.readByQuery({
-    filter: {
-      name: {
-        _eq: name
-      }
-    }
-  });
-
-  if (!roles || !roles.length) {
-    return null;
-  }
-
-  if (roles.length > 1) {
-    throw new Error("Found multiple roles with the same name: " + name);
-  }
-
-  return roles[0];
-}

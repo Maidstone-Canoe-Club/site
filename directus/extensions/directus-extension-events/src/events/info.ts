@@ -1,4 +1,4 @@
-﻿import {AdminAccountability} from "./utils";
+﻿import {AdminAccountability} from "../../../shared/utils";
 
 export async function getInfo(req: any, res: any, services: any, database: any) {
   const {
@@ -99,7 +99,6 @@ export async function getInfo(req: any, res: any, services: any, database: any) 
         }
       });
 
-      console.log("other event bookings", bookings);
 
       if (bookings && bookings.length) {
         console.log("has required booking!");
@@ -107,7 +106,6 @@ export async function getInfo(req: any, res: any, services: any, database: any) 
       }
 
       const requiredEvent = await eventsService.readOne(event.required_event);
-      console.log("required event", requiredEvent);
       requiredEventTitle = requiredEvent.title;
     }
 

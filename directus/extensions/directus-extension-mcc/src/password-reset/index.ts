@@ -17,7 +17,6 @@ export default defineEndpoint((router, {services, database}) => {
     try {
       const email = req.body.email;
 
-      console.log("Creating password reset request for email", email);
 
       if (!email) {
         return res.status(400).send("Missing email");
@@ -38,13 +37,13 @@ export default defineEndpoint((router, {services, database}) => {
       });
 
       if (!users || users.length === 0) {
-        console.log("No user found with email", email);
+        console.log("Password reset requested for an unknown email address");
         return res.json({success: true});
       }
 
       const user = users[0];
 
-      console.log("Found user with email", email, user.id);
+      console.log("Creating password reset token for user", user.id);
 
       const rawToken = randomBytes(32).toString("base64url");
       const token = hashToken(rawToken);

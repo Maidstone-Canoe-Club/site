@@ -1,25 +1,6 @@
 ﻿import {defineEndpoint} from "@directus/extensions-sdk";
 import {nanoid} from "nanoid";
-
-async function getRole(name: string, rolesService: any) {
-  const roles = await rolesService.readByQuery({
-    filter: {
-      name: {
-        _eq: name
-      }
-    }
-  });
-
-  if (!roles || !roles.length) {
-    return null;
-  }
-
-  if (roles.length > 1) {
-    throw new Error("Found multiple roles with the same name: " + name);
-  }
-
-  return roles[0];
-}
+import {getRole} from "../../../shared/utils";
 
 function lowerCase(value: unknown) {
   return typeof value === "string" ? value.trim().toLowerCase() : "";

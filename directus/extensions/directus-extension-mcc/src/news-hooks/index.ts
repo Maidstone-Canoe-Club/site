@@ -1,5 +1,5 @@
 import {defineHook} from "@directus/extensions-sdk";
-import {sendEmail} from "../mail-forwards";
+import {sendEmail} from "../../../shared/mail-forwards";
 
 async function handleHook(context: any, schema: any, services: any, database: any, logger: any) {
   const {payload} = context;

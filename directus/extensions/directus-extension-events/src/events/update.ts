@@ -1,4 +1,4 @@
-﻿import {AdminAccountability, isUserLeader, userHasRole} from "./utils";
+﻿import {AdminAccountability, isUserLeader, userHasRole} from "../../../shared/utils";
 
 export async function update(req: any, res: any, services: any, database: any) {
   const {
@@ -15,7 +15,6 @@ export async function update(req: any, res: any, services: any, database: any) {
     const editType = req.query.editType;
 
     console.log("got user", userId);
-    console.log("got event", event);
     console.log("got event dates", eventDates);
 
     if (!event) {
@@ -35,7 +34,6 @@ export async function update(req: any, res: any, services: any, database: any) {
       return res.status(404).send("Cannot update event. Event not found");
     }
 
-    console.log("got event", event);
 
     const userCreatedEvent = existingEvent.user_created === userId;
     const userHasRolePermission = await userHasRole(req, services, database, userId, ["committee", "administrator"]);
@@ -355,7 +353,7 @@ async function updateLeaders(req: any, services: any, database: any, eventId: st
     }
   });
 
-  console.log("found existing leaders", existingLeaders);
+  console.log(`found ${existingLeaders.length} existing leaders`);
 
   const toAdd: string[] = [];
   const toRemove: string[] = [];
@@ -443,12 +441,8 @@ async function notifyBookings(req: any, services: any, database: any, event: any
     return;
   }
 
-  for (const booking of bookings) {
-    const isJunior = !!booking.user.parent;
-    const email = isJunior ? booking.user.parent.email : booking.user.email;
-
-    console.log("SENDING EMAIL TO ", email);
-  }
+  // TODO: email these attendees (or a junior's parent) about the change. Nothing is sent yet
+  console.log(`${bookings.length} booking(s) to notify about the event change`);
 }
 
 function hasDateChange(event: any, existingEvent: any) {
