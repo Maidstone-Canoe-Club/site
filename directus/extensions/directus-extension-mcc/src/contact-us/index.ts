@@ -1,3 +1,4 @@
+import {requireTurnstile} from "../turnstile";
 import {defineEndpoint} from "@directus/extensions-sdk";
 import {InboundEmail} from "../../../shared/types";
 import {extractForwardTarget, handleMailForward} from "../../../shared/mail-forwards";
@@ -13,7 +14,7 @@ export default defineEndpoint((router, {services, database}) => {
     admin: true
   };
 
-  router.post("/", async (req: any, res: any) => {
+  router.post("/", requireTurnstile, async (req: any, res: any) => {
     try {
       const data = req.body;
 
@@ -91,7 +92,7 @@ export default defineEndpoint((router, {services, database}) => {
     }
   });
 
-  router.post("/user", async (req: any, res: any) => {
+  router.post("/user", requireTurnstile, async (req: any, res: any) => {
     try {
       const data = req.body;
 
