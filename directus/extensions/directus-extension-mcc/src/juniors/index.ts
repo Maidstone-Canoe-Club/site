@@ -20,6 +20,21 @@ async function getRole(name: string, rolesService: any) {
   return roles[0];
 }
 
+// Only these medical fields can be set from the profile page, and the record always belongs to the junior
+function pickMedicalInfo(medicalInfo: any, juniorId: string) {
+  return {
+    allergies: medicalInfo.allergies,
+    asthma: medicalInfo.asthma,
+    epilepsy: medicalInfo.epilepsy,
+    diabetes: medicalInfo.diabetes,
+    other: medicalInfo.other,
+    details: medicalInfo.details,
+    first_aid_consent: medicalInfo.first_aid_consent,
+    photography_consent: medicalInfo.photography_consent,
+    user: juniorId
+  };
+}
+
 export default defineEndpoint((router, {services, database}) => {
   const {
     UsersService,
@@ -33,9 +48,14 @@ export default defineEndpoint((router, {services, database}) => {
 
   router.post("/update", async (req: any, res: any) => {
     try {
+      const loggedInUserId = req.accountability?.user;
       const juniorUser = req.body.user;
 
-      if (!juniorUser) {
+      if (!loggedInUserId) {
+        return res.status(401).send("You must be logged in to update a junior");
+      }
+
+      if (!juniorUser || !juniorUser.id) {
         return res.status(400).send("missing user");
       }
 
@@ -45,12 +65,20 @@ export default defineEndpoint((router, {services, database}) => {
         accountability: adminAccountability
       });
 
+      const existingJunior = await usersService.readOne(juniorUser.id, {
+        fields: ["id", "parent", "role.name"]
+      }).catch(() => null);
+
+      // Parents can only edit their own juniors
+      if (!existingJunior || existingJunior.role?.name !== "Junior" || existingJunior.parent !== loggedInUserId) {
+        return res.status(403).send("You are not allowed to update that junior");
+      }
+
       // TODO: might need email address
-      const newUserId = await usersService.updateOne(juniorUser.id, {
+      const juniorId = await usersService.updateOne(existingJunior.id, {
         first_name: juniorUser.first_name,
         last_name: juniorUser.last_name,
         dob: juniorUser.dob,
-        parent: juniorUser.parentId,
         bc_number: juniorUser.bc_number
       });
 
@@ -60,16 +88,27 @@ export default defineEndpoint((router, {services, database}) => {
           schema: req.schema,
           accountability: adminAccountability
         });
-        juniorUser.medicalInformation.user = newUserId;
+        const medicalInfo = pickMedicalInfo(juniorUser.medicalInformation, juniorId);
 
-        if(juniorUser.medicalInformation.id) {
-          await medicalInfoService.updateOne(juniorUser.medicalInformation.id, juniorUser.medicalInformation);
-        }else{
-          await medicalInfoService.createOne(juniorUser.medicalInformation);
+        // Look the record up by the junior rather than trusting the id that was sent
+        const existingMedicalInfo = await medicalInfoService.readByQuery({
+          fields: ["id"],
+          filter: {
+            user: {
+              _eq: juniorId
+            }
+          },
+          limit: 1
+        });
+
+        if (existingMedicalInfo && existingMedicalInfo.length) {
+          await medicalInfoService.updateOne(existingMedicalInfo[0].id, medicalInfo);
+        } else {
+          await medicalInfoService.createOne(medicalInfo);
         }
       }
 
-      return res.send(newUserId);
+      return res.send(juniorId);
     } catch (err: any) {
       console.error("Error updating junior details", err);
       return res.status(500).send("Error updating junior details");
@@ -78,7 +117,12 @@ export default defineEndpoint((router, {services, database}) => {
 
   router.post("/create", async (req: any, res: any) => {
     try{
+      const loggedInUserId = req.accountability?.user;
       const juniorUser = req.body.user;
+
+      if (!loggedInUserId) {
+        return res.status(401).send("You must be logged in to add a junior");
+      }
 
       if (!juniorUser) {
         return res.status(400).send("missing user");
@@ -92,7 +136,7 @@ export default defineEndpoint((router, {services, database}) => {
 
       const juniorRole = await getRole("Junior", rolesService);
 
-      if (!juniorUser) {
+      if (!juniorRole) {
         console.error("could not find junior role");
         return res.status(400).send("could not find junior role");
       }
@@ -107,7 +151,8 @@ export default defineEndpoint((router, {services, database}) => {
         first_name: juniorUser.first_name,
         last_name: juniorUser.last_name,
         dob: juniorUser.dob,
-        parent: juniorUser.parentId,
+        // A junior is always added by their own parent
+        parent: loggedInUserId,
         role: juniorRole.id,
         bc_number: juniorUser.bc_number,
         email_confirmed: true
@@ -119,8 +164,7 @@ export default defineEndpoint((router, {services, database}) => {
           schema: req.schema,
           accountability: adminAccountability
         });
-        juniorUser.medicalInformation.user = newUserId;
-        await medicalInfoService.createOne(juniorUser.medicalInformation);
+        await medicalInfoService.createOne(pickMedicalInfo(juniorUser.medicalInformation, newUserId));
       }
 
       return res.send(newUserId);

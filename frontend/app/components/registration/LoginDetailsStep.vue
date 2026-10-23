@@ -116,9 +116,8 @@ async function onSubmit () {
 
         if (inviteInfo.result && inviteInfo.invite) {
           const invite = inviteInfo.invite;
+          // Membership numbers aren't returned for an email lookup, registration copies them from the invite
           internalValue.value!.email = invite.email;
-          internalValue.value!.bc_number = invite.bc_number;
-          internalValue.value!.club_number = invite.club_number;
           internalValue.value!.first_name = invite.first_name;
           internalValue.value!.last_name = invite.last_name;
           emits("invite", invite.id);

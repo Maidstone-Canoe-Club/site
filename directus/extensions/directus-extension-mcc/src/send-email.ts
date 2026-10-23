@@ -57,8 +57,8 @@ export async function sendResetPasswordEmail(services: any, schema: any, databas
     url
   });
 
+  // Don't log the body, it contains a working reset link
   console.log("sending reset email to: ", targetEmail);
-  console.log(htmlBody);
 
   await sendEmail({
     From: `reset@${process.env.EMAIL_DOMAIN}`,

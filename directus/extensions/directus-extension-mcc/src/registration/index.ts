@@ -21,6 +21,29 @@ async function getRole(name: string, rolesService: any) {
   return roles[0];
 }
 
+function lowerCase(value: unknown) {
+  return typeof value === "string" ? value.trim().toLowerCase() : "";
+}
+
+// Only the fields the registration form collects can be set; anything else in the request is ignored
+function pickUser(user: any) {
+  return {
+    email: user.email,
+    password: user.password,
+    bc_number: user.bc_number,
+    club_number: user.club_number,
+    first_name: user.first_name,
+    last_name: user.last_name,
+    dob: user.dob,
+    home_tel: user.home_tel,
+    mobile: user.mobile,
+    street_address: user.street_address,
+    city: user.city,
+    county: user.county,
+    postcode: user.postcode
+  };
+}
+
 export default defineEndpoint((router, {services, database, logger}) => {
   const {
     ItemsService,
@@ -81,7 +104,7 @@ export default defineEndpoint((router, {services, database, logger}) => {
       const emergencyContacts = req.body.emergencyContacts;
       const medicalInfo = req.body.medicalInfo;
 
-      if (!user) {
+      if (!user || !user.email || !user.password) {
         return res.status(400).send("missing user");
       }
 
@@ -99,15 +122,39 @@ export default defineEndpoint((router, {services, database, logger}) => {
         accountability: adminAccountability
       });
 
+      const inviteService = new ItemsService("member_invites", {
+        knex: database,
+        schema: req.schema,
+        accountability: adminAccountability
+      });
+
+      const newUser: any = pickUser(user);
+
+      // An invite skips approval, so it has to be real, unused and for the email address being registered.
+      // Otherwise the user goes through the normal confirm-and-approve route
+      let invite = null;
       if (inviteId) {
-        const memberRole = await getRole("Member", rolesService);
-        user.role = memberRole.id;
-      } else {
-        const unverifiedRole = await getRole("Unverified", rolesService);
-        user.role = unverifiedRole.id;
+        invite = await inviteService.readOne(inviteId, {
+          fields: ["id", "email", "accepted", "bc_number", "club_number"]
+        }).catch(() => null);
+
+        if (!invite || invite.accepted || lowerCase(invite.email) !== lowerCase(newUser.email)) {
+          logger.warn(`Ignoring invite ${inviteId} for registration, it is missing, already accepted or for another email address`);
+          invite = null;
+        }
       }
 
-      user.last_med_check = new Date();
+      if (invite) {
+        const memberRole = await getRole("Member", rolesService);
+        newUser.role = memberRole.id;
+        newUser.bc_number = invite.bc_number ?? newUser.bc_number;
+        newUser.club_number = invite.club_number ?? newUser.club_number;
+      } else {
+        const unverifiedRole = await getRole("Unverified", rolesService);
+        newUser.role = unverifiedRole.id;
+      }
+
+      newUser.last_med_check = new Date();
 
       const usersService = new UsersService({
         knex: database,
@@ -115,36 +162,38 @@ export default defineEndpoint((router, {services, database, logger}) => {
         accountability: adminAccountability
       });
 
-      const newUserId = await usersService.createOne(user);
-
-      medicalInfo.user = newUserId;
-      for (let i = 0; i < emergencyContacts.length; i++) {
-        emergencyContacts[i].user = newUserId;
-      }
+      const newUserId = await usersService.createOne(newUser);
 
       const emergencyContactsService = new ItemsService("emergency_contacts", {
         knex: database,
         schema: req.schema,
         accountability: adminAccountability
       });
-      await emergencyContactsService.createMany(emergencyContacts);
+      await emergencyContactsService.createMany(emergencyContacts.map((contact: any) => ({
+        full_name: contact.full_name,
+        contact_number: contact.contact_number,
+        user: newUserId
+      })));
 
       const medicalInfoService = new ItemsService("medical_info", {
         knex: database,
         schema: req.schema,
         accountability: adminAccountability
       });
-      await medicalInfoService.createOne(medicalInfo);
+      await medicalInfoService.createOne({
+        allergies: medicalInfo.allergies,
+        asthma: medicalInfo.asthma,
+        epilepsy: medicalInfo.epilepsy,
+        diabetes: medicalInfo.diabetes,
+        other: medicalInfo.other,
+        details: medicalInfo.details,
+        first_aid_consent: medicalInfo.first_aid_consent,
+        photography_consent: medicalInfo.photography_consent,
+        user: newUserId
+      });
 
-      if (inviteId) {
-        const inviteService = new ItemsService("member_invites", {
-          knex: database,
-          schema: req.schema,
-          accountability: adminAccountability
-        });
-        const invite = await inviteService.readOne(inviteId);
-        invite.accepted = true;
-        await inviteService.updateOne(inviteId, invite);
+      if (invite) {
+        await inviteService.updateOne(invite.id, {accepted: true});
       }
 
       if (newsPostNotifications) {

@@ -139,7 +139,6 @@ export default defineEndpoint((router, {services, database}) => {
     const id = req.query.id;
     const email = req.query.email;
 
-    console.log("got id", id, "got email", email);
     if (!id && !email) {
       return res.status(404).send();
     }
@@ -148,18 +147,34 @@ export default defineEndpoint((router, {services, database}) => {
 
     let invite;
 
-    if (id) {
-      invite = await itemService.readOne(id);
-    } else if (email) {
-      const invites = await itemService.readByQuery({
-        filter: {
-          email: {
-            _eq: email
-          }
-        }
-      });
+    try {
+      if (id) {
+        // The id comes from the link in the invite email, so it can see the membership numbers to pre-fill the form
+        invite = await itemService.readOne(id, {
+          fields: ["id", "email", "first_name", "last_name", "bc_number", "club_number"]
+        });
+      } else if (email) {
+        // Anyone can look up an email address, so leave out the membership numbers. Registration copies them
+        // from the invite instead
+        const invites = await itemService.readByQuery({
+          fields: ["id", "email", "first_name", "last_name"],
+          filter: {
+            email: {
+              _eq: email
+            },
+            // _neq would also skip invites where accepted is still null
+            _or: [
+              {accepted: {_eq: false}},
+              {accepted: {_null: true}}
+            ]
+          },
+          limit: 1
+        });
 
-      invite = invites.length ? invites[0] : null;
+        invite = invites.length ? invites[0] : null;
+      }
+    } catch {
+      invite = null;
     }
 
     if (!invite) {
