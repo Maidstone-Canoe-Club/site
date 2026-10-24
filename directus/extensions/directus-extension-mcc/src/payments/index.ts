@@ -1,4 +1,8 @@
 import {defineEndpoint} from "@directus/extensions-sdk";
+import Stripe from "stripe";
+
+// The version this Stripe library defaults to, so nothing changes
+const stripe = new Stripe(process.env.STRIPE_KEY!, {apiVersion: "2023-08-16"});
 
 export default defineEndpoint((router, {services}) => {
   const {ItemsService} = services;
@@ -65,7 +69,26 @@ export default defineEndpoint((router, {services}) => {
 
   router.post("/orders", async (req: any, res: any) => {
     try{
-      const orders = req.body.orders;
+      const userId = req.accountability?.user;
+
+      if (!userId) {
+        return res.status(401).send("not logged in");
+      }
+
+      if (!Array.isArray(req.body.orders)) {
+        return res.status(400).send("missing orders");
+      }
+
+      // Only take the fields checkout sets, orders always start pending and belong to the logged in user
+      const orders = req.body.orders.map((order: any) => ({
+        user: userId,
+        status: "pending",
+        amount: order.amount,
+        customer_id: order.customer_id,
+        description: order.description,
+        payment_reference: order.payment_reference,
+        metadata: order.metadata
+      }));
 
       const ordersService = new ItemsService("orders", {
         schema: req.schema,
@@ -83,14 +106,65 @@ export default defineEndpoint((router, {services}) => {
 
   router.post("/handle/event", async (req: any, res: any) => {
     try {
-      const sessionWithLineItems = req.body.sessionWithLineItems;
-      const metadata = sessionWithLineItems.metadata;
+      // This endpoint is public, so only the session id is taken from the request and everything
+      // else is read back from Stripe. Older callers send the whole session, so fall back to its id.
+      const sessionId = req.body.sessionId ?? req.body.sessionWithLineItems?.id;
 
-      console.log("session with line items", JSON.stringify(sessionWithLineItems));
-      console.log("metadata", metadata);
+      if (typeof sessionId !== "string" || !sessionId.startsWith("cs_")) {
+        return res.status(400).send("missing session id");
+      }
 
-      if(!sessionWithLineItems){
-        return res.status(400).send("missing data");
+      let session: Stripe.Checkout.Session;
+      try {
+        session = await stripe.checkout.sessions.retrieve(sessionId);
+      } catch (e: any) {
+        console.error("unable to retrieve checkout session", sessionId, e.message);
+        return res.status(400).send("unknown session");
+      }
+
+      if (session.status !== "complete" || session.payment_status !== "paid") {
+        console.warn("checkout session is not paid", sessionId, session.status, session.payment_status);
+        return res.status(400).send("session not paid");
+      }
+
+      const metadata: any = session.metadata ?? {};
+      console.log("handling paid checkout session", sessionId, metadata);
+
+      if (!metadata.event_id || !metadata.user_ids || !metadata.order_ids) {
+        console.error("checkout session is missing booking metadata", sessionId);
+        return res.status(400).send("missing booking metadata");
+      }
+
+      const ordersService = new ItemsService("orders", {
+        schema: req.schema,
+        accountability: adminAccountability
+      });
+
+      const orderIds = metadata.order_ids.split(",");
+
+      // Stripe can deliver the same webhook more than once, don't book people twice
+      const alreadyPaid = await ordersService.readByQuery({
+        fields: ["id"],
+        filter: {
+          _and: [
+            {
+              id: {
+                _in: orderIds
+              }
+            },
+            {
+              status: {
+                _eq: "paid"
+              }
+            }
+          ]
+        },
+        limit: -1
+      });
+
+      if (alreadyPaid.length) {
+        console.log("checkout session already handled", sessionId);
+        return res.send("ok");
       }
 
       // TODO: payments will be for different things like memberships, boat storage, keys, ect, need to handle for them
@@ -116,17 +190,11 @@ export default defineEndpoint((router, {services}) => {
 
       await bookingService.createMany(eventBookings);
 
-      const ordersService = new ItemsService("orders", {
-        schema: req.schema,
-        accountability: adminAccountability
-      });
-
-      const orderIds = metadata.order_ids.split(",");
       const orders = orderIds
         .map((id: string) => ({
           id,
           status: "paid",
-          payment_intent: sessionWithLineItems.payment_intent,
+          payment_intent: session.payment_intent,
         }));
 
       await ordersService.updateBatch(orders);

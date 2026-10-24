@@ -41,20 +41,16 @@ export default defineEventHandler(async (event) => {
   }
 
   if (stripeEvent.type === "checkout.session.completed") {
-    console.log("completed!");
-    const sessionWithLineItems = await stripe.checkout.sessions.retrieve(stripeEvent.data.object.id,
-      {
-        expand: ["line_items"]
-      });
-
-    console.log("in webhook, got session with line items", sessionWithLineItems);
+    const sessionId = stripeEvent.data.object.id;
+    console.log("checkout session completed", sessionId);
 
     try {
+      // Directus reads the session back from Stripe itself, so only the id is passed on
       await ofetch("/payments/handle/event", {
         method: "POST",
         baseURL: process.env.NUXT_PUBLIC_DIRECTUS_URL,
         body: {
-          sessionWithLineItems
+          sessionId
         }
       });
     } catch (e) {
