@@ -7,6 +7,7 @@ import {
 } from "../../../shared/types";
 import {handleMailForward, sendEmail} from "../../../shared/mail-forwards";
 import {chunkArray, sendBatchEmail} from "../send-email";
+import {requireInboundAuth} from "./inbound-auth";
 
 export default defineEndpoint((router, {services, database}) => {
   const {ItemsService, MailService} = services;
@@ -14,7 +15,7 @@ export default defineEndpoint((router, {services, database}) => {
     admin: true
   };
 
-  router.post("/mail-inbound", async (req: any, res: any) => {
+  router.post("/mail-inbound", requireInboundAuth, async (req: any, res: any) => {
     try {
       const data: InboundEmail = req.body;
 
