@@ -204,6 +204,15 @@ export default defineEventHandler(async (event) => {
 
     return sendRedirect(event, session.url, 302);
   } catch (e) {
+    // Directus refuses when the user isn't logged in or tries to pay for someone who isn't them or their junior
+    const statusCode = (e as { statusCode?: number })?.statusCode;
+    if (statusCode === 401 || statusCode === 403) {
+      throw createError({
+        statusCode,
+        statusMessage: "You can only pay for yourself and your juniors"
+      });
+    }
+
     console.error("Unable to submit payment", e.message);
     throw createError({
       statusCode: 500,
