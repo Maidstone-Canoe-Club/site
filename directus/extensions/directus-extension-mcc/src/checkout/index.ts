@@ -102,7 +102,7 @@ export default defineEndpoint((router, {services, database}) => {
     }
   });
 
-  router.post("/data", async (req, res) => {
+  router.post("/data", async (req: any, res: any) => {
 
     try {
       const eventId = req.query.eventId;

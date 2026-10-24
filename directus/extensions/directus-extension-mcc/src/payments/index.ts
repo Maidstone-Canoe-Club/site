@@ -1,7 +1,8 @@
 import {defineEndpoint} from "@directus/extensions-sdk";
 import Stripe from "stripe";
 
-const stripe = new Stripe(process.env.STRIPE_KEY!);
+// The version this Stripe library defaults to, so nothing changes
+const stripe = new Stripe(process.env.STRIPE_KEY!, {apiVersion: "2023-08-16"});
 
 export default defineEndpoint((router, {services}) => {
   const {ItemsService} = services;
