@@ -6,7 +6,8 @@ import {review} from "./review";
 import {update} from "./update";
 import {getInfo} from "./info";
 import {nanoid} from "nanoid";
-import {messageAttendees, messageLeader} from "./message";
+import {getDatesOfInstance, messageAttendees, messageLeader} from "./message";
+import {bookingClosedReason, BookingUser, priceForUser, userNotAllowedReason} from "./book-rules";
 import {AdminAccountability} from "../../../shared/utils";
 import {sendEmail} from "../../../shared/mail-forwards";
 
@@ -336,8 +337,8 @@ export default defineEndpoint((router, {services, database}) => {
         schema: req.schema,
         accountability: AdminAccountability
       });
-      const bookableUsers = await usersService.readByQuery({
-        fields: ["id"],
+      const bookableUsers: BookingUser[] = await usersService.readByQuery({
+        fields: ["id", "parent", "dob", "bc_number", "is_coach", "role.name"],
         filter: {
           _or: [
             {id: {_eq: loggedInUserId}},
@@ -366,7 +367,63 @@ export default defineEndpoint((router, {services, database}) => {
         accountability: AdminAccountability
       });
 
-      const event = await eventsService.readOne(eventId);
+      // Reading the event as the user checks they can see it. The rules need fields they may not be able to read
+      const visibleEvent = await eventsService.readOne(eventId, {fields: ["id"]}).catch(() => null);
+      if (!visibleEvent) {
+        return res.status(404).send("Event not found");
+      }
+
+      const adminEventsService = new ItemsService("events", {
+        knex: database,
+        schema: req.schema,
+        accountability: AdminAccountability
+      });
+      const event = await adminEventsService.readOne(eventId);
+
+      // Every reply has one result per person, so the website can show why a booking didn't go through
+      const refuseAll = (message: string) => res.json(userIds.map((userId: string) => ({result: false, message, userId})));
+
+      const hasInstance = instance !== null && instance !== undefined && instance !== "";
+      const isRecurringSession = !!event.is_recurring && hasInstance;
+      let start: Date | undefined;
+      let end: Date | undefined;
+      try {
+        ({start, end} = isRecurringSession
+          ? getDatesOfInstance(event, Number(instance))
+          : {start: new Date(event.start_date), end: new Date(event.end_date)});
+      } catch {
+        // A session number past the end of the series
+        start = undefined;
+      }
+
+      if (!start || !end || Number.isNaN(start.getTime())) {
+        return refuseAll("That session doesn't exist");
+      }
+
+      let isSessionCancelled = false;
+      if (isRecurringSession) {
+        const exceptionsService = new ItemsService("event_exception", {
+          knex: database,
+          schema: req.schema,
+          accountability: AdminAccountability
+        });
+        const cancellations = await exceptionsService.readByQuery({
+          fields: ["id"],
+          filter: {
+            event: {_eq: eventId},
+            instance: {_eq: instance},
+            is_cancelled: {_eq: true}
+          },
+          limit: 1
+        });
+        isSessionCancelled = cancellations.length > 0;
+      }
+
+      const closedReason = bookingClosedReason(event, start, end, isSessionCancelled);
+      if (closedReason) {
+        return refuseAll(closedReason);
+      }
+
       const filter: any = {
         _and: [
           {
@@ -377,7 +434,7 @@ export default defineEndpoint((router, {services, database}) => {
         ]
       };
 
-      if (instance !== null && instance !== undefined) {
+      if (hasInstance) {
         filter._and.push({
           instance: {
             _eq: instance
@@ -396,71 +453,90 @@ export default defineEndpoint((router, {services, database}) => {
       const usersToBook = userIds.length;
 
       if (maxBookings && currentBookings + usersToBook > maxBookings) {
-        return res.json({
-          result: false,
-          statusCode: 101,
-          message: "Event is full"
-        });
+        return refuseAll("Event is full");
+      }
+
+      // Payments made by the logged in user for this event, so paid places can be re-booked as paid
+      const ordersService = new ItemsService("orders", {
+        knex: database,
+        schema: req.schema,
+        accountability: AdminAccountability
+      });
+      const paidOrders = await ordersService.readByQuery({
+        fields: ["metadata"],
+        filter: {
+          user: {_eq: loggedInUserId},
+          status: {_eq: "paid"}
+        },
+        limit: -1
+      });
+      const hasPaidFor = (userId: string) => paidOrders.some((order: any) => {
+        let metadata: any = null;
+        try {
+          metadata = typeof order.metadata === "string" ? JSON.parse(order.metadata) : order.metadata;
+        } catch {
+          return false;
+        }
+
+        return metadata?.event_id === eventId
+          && metadata.booked_user === userId
+          && (!hasInstance || String(metadata.instance) === String(instance));
+      });
+
+      let requiredEventTitle: string | null = null;
+      if (event.required_event) {
+        const requiredEvent = await adminEventsService.readOne(event.required_event, {fields: ["title"]}).catch(() => null);
+        requiredEventTitle = requiredEvent?.title ?? "another event";
       }
 
       const bookingResults = [];
 
       for (const userId of userIds) {
+        const user = bookableUsers.find(u => u.id === userId)!;
+        const refuse = (message: string) => bookingResults.push({result: false, message, userId});
+
         const alreadyBooked = existingBookings?.filter((x: any) => x.user === userId && x.status !== "cancelled");
         if (alreadyBooked?.length) {
-          bookingResults.push({
-            result: false,
-            message: "That user is already booked",
-            userId
-          });
+          refuse("That user is already booked");
           continue;
         }
+
+        const notAllowedReason = userNotAllowedReason(event, user);
+        if (notAllowedReason) {
+          refuse(notAllowedReason);
+          continue;
+        }
+
+        if (event.required_event) {
+          const requiredBookings = await eventBookingService.readByQuery({
+            fields: ["id"],
+            filter: {
+              event: {_eq: event.required_event},
+              user: {_eq: userId},
+              status: {_neq: "cancelled"}
+            },
+            limit: 1
+          });
+
+          if (!requiredBookings.length) {
+            refuse(`You must be booked onto ${requiredEventTitle} first`);
+            continue;
+          }
+        }
+
+        // Paid places are booked by the payment webhook. Here they can only be re-added after a cancellation
+        const paid = hasPaidFor(userId);
+        const price = priceForUser(event, user);
+        if (price && price > 0 && !paid) {
+          refuse("This event needs to be paid for");
+          continue;
+        }
+
+        const status = paid ? "paid" : "booked";
 
         const alreadyCancelledBookings = existingBookings?.filter((x: any) => x.user === userId && x.status === "cancelled");
         if (alreadyCancelledBookings?.length) {
           const cancelledBooking = alreadyCancelledBookings[0];
-
-          let status = "booked";
-
-          const ordersService = new ItemsService("orders", {
-            knex: database,
-            schema: req.schema,
-            accountability: AdminAccountability
-          });
-
-          const orders = await ordersService.readByQuery({
-            filter: {
-              user: {
-                _eq: loggedInUserId
-              }
-            }
-          });
-
-          if (orders && orders.length) {
-            const eventOrder = orders.filter((o: any) => {
-              const metadata = JSON.parse(o.metadata);
-              let result = metadata.event_id === eventId
-                                    && o.status === "paid"
-                                    && metadata.booked_user === userId;
-
-              if (instance !== null && instance !== undefined) {
-                result = result && metadata.instance === instance;
-              }
-
-              return result;
-            });
-
-            if (eventOrder.length) {
-              console.log("Found an existing payment for this user!");
-              status = "paid";
-            // } else {
-            //   console.log("User has not paid for this event yet");
-            }
-          } else {
-            console.warn("No orders found for customer when re-booking event attendee");
-            // Not sure what case this would be, possibly when a payment doesn't complete,
-            // so we have a customer but no orders yet
-          }
 
           await eventBookingService.updateOne(cancelledBooking.id, {
             status
@@ -478,8 +554,8 @@ export default defineEndpoint((router, {services, database}) => {
         const bookingId = await eventBookingService.createOne({
           user: userId,
           event: eventId,
-          instance: instance,
-          status: "booked",
+          instance: hasInstance ? instance : null,
+          status,
           checkin_code: nanoid()
         });
 
