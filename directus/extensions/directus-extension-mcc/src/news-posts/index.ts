@@ -52,7 +52,14 @@ export default defineEndpoint((router, {services, database, logger}) => {
         accountability: adminAccountability
       });
 
-      const newId = await newsService.createOne(data);
+      // Only the fields the news form sends. Posts are either published now or scheduled, and always belong to
+      // the poster, whatever else the request contains (the content is sanitised by the sanitise-html hook)
+      const newId = await newsService.createOne({
+        title: data.title,
+        content: data.content,
+        publish_date: data.publish_date ?? null,
+        status: data.publish_date ? "scheduled" : "published"
+      });
 
       await newsService.updateOne(newId, {
         user_created: {
