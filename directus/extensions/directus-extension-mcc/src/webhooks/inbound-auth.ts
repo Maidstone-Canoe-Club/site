@@ -1,7 +1,13 @@
-import {createHash, timingSafeEqual} from "node:crypto";
+import {timingSafeEqual} from "node:crypto";
 
-function digest(value: string) {
-  return createHash("sha256").update(value).digest();
+// Compares in constant time, so the time taken doesn't reveal how much of the credentials were right.
+// timingSafeEqual needs equal lengths, so a wrong length is compared against itself and then rejected.
+export function credentialsMatch(supplied: string, expected: string) {
+  const suppliedBytes = Buffer.from(supplied, "utf8");
+  const expectedBytes = Buffer.from(expected, "utf8");
+  const sameLength = suppliedBytes.length === expectedBytes.length;
+
+  return timingSafeEqual(sameLength ? suppliedBytes : expectedBytes, expectedBytes) && sameLength;
 }
 
 // Postmark posts inbound email with basic auth taken from the webhook URL
@@ -20,8 +26,7 @@ export function requireInboundAuth(req: any, res: any, next: any) {
   const header: string = req.headers.authorization ?? "";
   const supplied = header.startsWith("Basic ") ? Buffer.from(header.slice(6), "base64").toString("utf8") : "";
 
-  // Compare hashes so the check takes the same time whatever was sent
-  if (!timingSafeEqual(digest(supplied), digest(`${username}:${password}`))) {
+  if (!credentialsMatch(supplied, `${username}:${password}`)) {
     console.warn("Refused inbound email webhook with missing or wrong credentials");
     res.set("WWW-Authenticate", "Basic realm=\"inbound\"");
     return res.status(401).send("Unauthorized");
