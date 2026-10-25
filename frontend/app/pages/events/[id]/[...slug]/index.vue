@@ -268,6 +268,7 @@
                 :instance="instance"
                 :already-booked="alreadyBooked"
                 :has-required-booking="eventInfo.hasRequiredBooking"
+                :required-booking-user-ids="eventInfo.requiredBookingUserIds"
                 :other-booking-required="eventInfo.otherBookingRequired"
                 :required-event-title="eventInfo.requiredEventTitle"
                 :bookings="bookings"

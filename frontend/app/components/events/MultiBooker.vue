@@ -263,6 +263,8 @@ const props = defineProps<{
   oneTimePayment?: boolean;
   paymentReference?: string;
   paidUserIds?: string[];
+  otherBookingRequired?: boolean;
+  requiredBookingUserIds?: string[];
 }>();
 
 const user = useDirectusUser();
@@ -404,16 +406,21 @@ function userMeetsMinAge(user: DirectusUser) {
   return age >= props.event.min_age;
 }
 
+// Each person booked needs their own booking on the required event
+function hasRequiredBooking(id: string) {
+  return !props.otherBookingRequired || !!props.requiredBookingUserIds?.includes(id);
+}
+
 const usersThatCanBook = computed(() => {
   const result = [];
 
-  if (canBookNonJuniors.value && !userAlreadyBooked(user.value.id) && userMeetsMinAge(user.value)) {
+  if (canBookNonJuniors.value && !userAlreadyBooked(user.value.id) && userMeetsMinAge(user.value) && hasRequiredBooking(user.value.id)) {
     result.push(user.value);
   }
 
   if (props.juniors && props.juniors.length) {
     for (const j of props.juniors) {
-      if (!userAlreadyBooked(j.id) && userMeetsMinAge(j)) {
+      if (!userAlreadyBooked(j.id) && userMeetsMinAge(j) && hasRequiredBooking(j.id)) {
         result.push(j);
       }
     }

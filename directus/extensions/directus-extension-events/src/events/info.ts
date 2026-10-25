@@ -70,6 +70,8 @@ export async function getInfo(req: any, res: any, services: any, database: any) 
 
     const otherBookingRequired = !!event.required_event;
     let hasRequiredBooking = false;
+    // Which of the user and their juniors hold the required booking. Each person booked needs their own
+    let requiredBookingUserIds: string[] = [];
 
     let requiredEventTitle = null;
 
@@ -192,6 +194,19 @@ export async function getInfo(req: any, res: any, services: any, database: any) 
 
       if (!juniors) {
         juniors = [];
+      }
+
+      if (otherBookingRequired) {
+        const requiredBookings = await eventBookingService.readByQuery({
+          fields: ["user"],
+          filter: {
+            event: {_eq: event.required_event},
+            user: {_in: [userId, ...juniors.map((j: any) => j.id)]},
+            status: {_neq: "cancelled"}
+          },
+          limit: -1
+        });
+        requiredBookingUserIds = [...new Set<string>(requiredBookings.map((b: any) => b.user))];
       }
 
       if (allowedRoles.includes(user.role.name.toLowerCase()) || userIsLeader || isCoachAndBooked) {
@@ -327,6 +342,7 @@ export async function getInfo(req: any, res: any, services: any, database: any) 
       leaders,
       otherBookingRequired,
       hasRequiredBooking,
+      requiredBookingUserIds,
       requiredEventTitle,
       userCanApprove,
       reviewedBy,

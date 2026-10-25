@@ -23,9 +23,20 @@
           v-else
           class="w-full"
         >
+          <alert-box
+            v-if="someoneMissingRequiredBooking"
+            class="mb-4"
+            heading="Booking needed first"
+            variant="info"
+          >
+            <p>Only people booked onto <strong>{{ requiredEventTitle }}</strong> can be booked onto this event.</p>
+          </alert-box>
+
           <multi-booker
             v-if="canBookJuniors"
             :event="event"
+            :other-booking-required="otherBookingRequired"
+            :required-booking-user-ids="requiredBookingUserIds"
             :instance="instance"
             :price="event.price"
             :junior-price="event.junior_price"
@@ -75,6 +86,7 @@ const props = defineProps<{
   alreadyBooked: boolean;
   hasRequiredBooking: boolean;
   otherBookingRequired: boolean;
+  requiredBookingUserIds?: string[];
   requiredEventTitle?: string;
   spacesLeft?: number;
   paidUserIds?: string[];
@@ -202,13 +214,26 @@ function onRefresh() {
   emits("refresh");
 }
 
-const userHasRequiredBooking = computed(() => {
-  if (props.otherBookingRequired) {
-    return props.hasRequiredBooking;
+// Each person booked needs their own booking on the required event, so check whoever is being booked
+function hasRequiredBookingFor(id: string) {
+  if (!props.otherBookingRequired) {
+    return true;
   }
 
-  return true;
+  return props.requiredBookingUserIds?.includes(id) ?? (id === user.value?.id && props.hasRequiredBooking);
+}
+
+const bookableUserIds = computed(() => {
+  const ids = user.value ? [user.value.id] : [];
+  if (canBookJuniors.value && juniors.value) {
+    ids.push(...juniors.value.map((j: DirectusUser) => j.id));
+  }
+  return ids;
 });
+
+const userHasRequiredBooking = computed(() => bookableUserIds.value.some(hasRequiredBookingFor));
+
+const someoneMissingRequiredBooking = computed(() => bookableUserIds.value.some(id => !hasRequiredBookingFor(id)));
 </script>
 
 <style scoped lang="scss">
