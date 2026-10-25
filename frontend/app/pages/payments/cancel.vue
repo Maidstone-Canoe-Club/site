@@ -24,6 +24,12 @@
 <script setup lang="ts">
 import { XCircleIcon } from "@heroicons/vue/24/outline";
 
+// Only the person who placed the orders can cancel them. If their login expired while they were on Stripe,
+// they log in again and come back here with the same order ids
+definePageMeta({
+  middleware: ["auth"]
+});
+
 const directus = useDirectus();
 
 const route = useRoute();
